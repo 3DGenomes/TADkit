@@ -1,0 +1,27 @@
+{
+  "name": "TADkit",
+  "version": "0.0.1",
+  "description": "Frontend Visualization Tool for TADbit",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/3DGenomes/TADkit.git"
+  },
+  "author": "Mike Goodstadt",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/3DGenomes/TADkit/issues"
+  },
+  "homepage": "https://github.com/3DGenomes/TADkit",
+  "devDependencies": {
+    "gulp": "^3.8.7",
+    "gulp-concat": "^2.3.4",
+    "gulp-jshint": "^1.8.4",
+    "gulp-rename": "^1.2.0",
+    "gulp-sass": "^0.7.3",
+    "gulp-uglify": "^0.3.1"
+  }
+}
