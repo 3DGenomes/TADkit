@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+    <title>Learning Bower</title>
+</head>
+<body>
+ 
+<button>Animate Me!!</button>
+<div style="background:red;height:100px;width:100px;position:absolute;">
+</div>
+ 
+<script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript">
+ 
+    $(document).ready(function(){
+        $("button").click(function(){
+            $("div").animate({left:'250px'});
+        });
+    });
+</script>
+</body>
+</html>

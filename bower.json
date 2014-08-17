@@ -1,0 +1,22 @@
+{
+  "name": "TADkit",
+  "version": "0.0.1",
+  "homepage": "https://github.com/3DGenomes/TADkit",
+  "authors": [
+    "Mike Goodstadt <mikegoodstadt@gmail.com>"
+  ],
+  "description": "Frontend Visualization Tool for TADbit",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "d3": "~3.4.11",
+    "threejs": "*",
+    "jquery": "~2.1.1"
+  }
+}
