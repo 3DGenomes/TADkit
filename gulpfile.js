@@ -25,6 +25,8 @@ gulp.task('sass', function() {
 // Concatenate & Minify JS
 gulp.task('scripts', function() {
     return gulp.src('src/js/*.js')
+		// eg. file order  gulp.src(['./lib/file3.js', './lib/file1.js', './lib/file2.js'])
+
         .pipe(concat('all.js'))
         .pipe(gulp.dest('dist'))
         .pipe(rename('all.min.js'))
