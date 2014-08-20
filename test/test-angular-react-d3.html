@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Angular-React-D3 test</title>
+	<link rel="stylesheet" href="css/test-angular-react-d3.css" />
+
+</head>
+<body ng-app="RNG">
+	
+	<div ng-controller="chartController">
+	
+	<h1>Chart 1</h1>
+	<reactchart data="data" id="rchart"></reactchart>
+	
+	<h1>Chart 2</h1>
+	<reactchart data="data2" id="rchart2"></reactchart>
+	
+	</div>
+	
+	<script src="../bower_components/react/react.min.js"></script>
+	<script src="../bower_components/angular/angular.min.js"></script>
+	<script src="../bower_components/d3/d3.min.js"></script>
+	<script src="js/test-angular-react-d3.js"></script>
+	
+</body>
+</html>

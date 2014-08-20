@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Angular-React-D3 track</title>
+	<link rel="stylesheet" href="css/test-angular-react-d3-track.css" />
+
+</head>
+<body ng-app="APP">
+	
+	<div ng-controller="sequenceController">	
+		<h4>Sequence Track</h4>
+		<track data="data" id="sequence"></track>
+	</div>
+	
+	<div ng-controller="tadmodelController">	
+		<h4>TAD Model</h4>
+		<!--track data="data" id="tadmodel"></track-->
+	</div>
+
+	<script src="../bower_components/react/react.min.js"></script>
+	<script src="../bower_components/angular/angular.min.js"></script>
+	<script src="../bower_components/d3/d3.min.js"></script>
+	<script src="js/test-angular-d3-track.js"></script>
+	<script src="js/test-react-d3-track.js"></script>
+	
+</body>
+</html>
