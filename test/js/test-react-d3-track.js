@@ -59,7 +59,7 @@ var sequencetrack = React.createClass({displayName: 'sequencetrack',
 
 			svg.append("defs").append("clipPath")
 					.attr("id", "clip")
-				.append("rect")
+					.append("rect")
 					.attr("width", width)
 					.attr("height", height);
 
@@ -69,7 +69,6 @@ var sequencetrack = React.createClass({displayName: 'sequencetrack',
 					.selectAll("rect")
 					.data(function(d) {return data;})
 					.enter().append("g")
-					.attr("transform", function(d) { return "translate(" + function(d) { return x(d) } + "," + y + ")"; });
 
 				svg.select(".focus").append("g")
 						.attr("class", "x axis")
@@ -88,7 +87,6 @@ var sequencetrack = React.createClass({displayName: 'sequencetrack',
 					.selectAll("rect")
 					.data(function(d) {return data;})
 					.enter().append("g")
-					.attr("transform", function(d) { return "translate(" + function(d) { return x2(d) } + "," + y2 + ")"; });
 
 				svg.select(".context").append("g")
 						.attr("class", "x axis")

@@ -8,13 +8,18 @@
 </head>
 <body ng-app="APP">
 	
-	<div ng-view>
-		Sequence Track Loading...
+	<div ng-controller="sequenceController">	
+		<h4>Sequence Track</h4>
+		<track data="data" id="sequence"></track>
 	</div>
 	
+	<div ng-controller="tadmodelController">	
+		<h4>TAD Model</h4>
+		<track data="data" id="tadmodel"></track>
+	</div>
+
 	<script src="../bower_components/react/react.min.js"></script>
 	<script src="../bower_components/angular/angular.min.js"></script>
-	<script src="../bower_components/angular-route/angular-route.min.js"></script>
 	<script src="../bower_components/d3/d3.min.js"></script>
 	<script src="js/test-angular-d3-track.js"></script>
 	<script src="js/test-react-d3-track.js"></script>

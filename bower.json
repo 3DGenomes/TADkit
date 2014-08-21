@@ -22,6 +22,7 @@
     "angular": "~1.2.22",
     "react": "~0.11.1",
     "reqwest": "~1.1.2",
-    "angular-foundation": "~0.3.1"
+    "angular-foundation": "~0.3.1",
+    "angular-route": "~1.2.22"
   }
 }
