@@ -1,8 +1,14 @@
-#wrapper {
+/* React Styling */
+.track.title h4 {
+	font-size: 1.0rem;
+	margin: 0.2rem  0.5rem 0.5rem;
 }
 
+
+
+/* D3 Style */
 svg {
-	font: 10px sans-serif;
+	font: 0.7rem sans-serif;
 }
 
 .axis path,
@@ -11,10 +17,10 @@ svg {
 	stroke: #000;
 	shape-rendering: crispEdges;
 }
-
+.axis text { fill: #5c6; }
 .brush .extent {
-	stroke: #fff;
-	fill-opacity: .125;
+	stroke: #;
+	fill-opacity: .25;
 	shape-rendering: crispEdges;
 }
 .focus {

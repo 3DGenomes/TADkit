@@ -4,10 +4,40 @@
 	<meta charset="UTF-8">
 	<title>Angular-React-D3 track</title>
 	<link rel="stylesheet" href="css/test-angular-react-d3-track.css" />
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.3.3/css/foundation.css" rel="stylesheet">
 
 </head>
 <body ng-app="APP">
 	
+	<div ng-controller="TopBarDemoCtrl">
+	  <top-bar>
+		<ul class="title-area">
+		  <li class="name">
+			<h1><a href="#">TADkit</a></h1>
+		  </li>
+		  <li toggle-top-bar class="menu-icon"><a href="#">Menu</a></li>
+		</ul>
+
+		<top-bar-section>
+		  <!-- Right Nav Section -->
+		  <ul class="right">
+			<li class="active"><a href="#">Active</a></li>
+			<li has-dropdown>
+			  <a href="#">User</a>
+			  <ul top-bar-dropdown>
+				<li><a href="#">Save</a></li>
+			  </ul>
+			</li>
+		  </ul>
+
+		  <!-- Left Nav Section -->
+		  <ul class="left">
+			<li><a href="#">Load</a></li>
+		  </ul>
+		</top-bar-section>
+	  </top-bar>
+	</div>
+
 	<div ng-view>
 		Sequence Track Loading...
 	</div>
@@ -15,6 +45,8 @@
 	<script src="../bower_components/react/react.min.js"></script>
 	<script src="../bower_components/angular/angular.min.js"></script>
 	<script src="../bower_components/angular-route/angular-route.min.js"></script>
+	<script src="../bower_components/angular-foundation/mm-foundation.min.js"></script>
+	<script src="../bower_components/angular-foundation/mm-foundation-tpls.min.js"></script>
 	<script src="../bower_components/d3/d3.min.js"></script>
 	<script src="js/test-angular-d3-track.js"></script>
 	<script src="js/test-react-d3-track.js"></script>
