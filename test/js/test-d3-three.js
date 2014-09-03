@@ -8,7 +8,7 @@ var APP = angular.module('APP',['ngRoute', 'mm.foundation']);
 		.when('/',
 		{
 			controller:'sequenceController',
-			templateUrl:'template-track-sequence.html',
+			templateUrl:'testd3three-template-track.html',
 			resolve:{ 
 				'TADInputData':function(TADInput){
 				// TADinput will also be injectable in your controller, 
@@ -28,7 +28,8 @@ var APP = angular.module('APP',['ngRoute', 'mm.foundation']);
 		var TADSlice = metadata.chromosome + ":" + (metadata.end + 1 - EmsemblRequestLimit) + "-" + metadata.end;
 
 		// GET ASSEMBLY DATA FROM ENSEMBL
-		$http.get("http://rest.ensembl.org/info/assembly/" + species + "?content-type=application/json").
+		$http.get('json/drosophila_melanogaster.json').
+		// $http.get("http://rest.ensembl.org/info/assembly/" + species + "?content-type=application/json").
 		success(function(data){
 			$scope.assembly = data
 			var assemblyLength = 0;
@@ -59,29 +60,30 @@ var APP = angular.module('APP',['ngRoute', 'mm.foundation']);
 			restrict:'E',
 			scope:{data:'=',id:'@',length:'='},
 			link:function(scope,elm,attrs){
+				var thisElement = elm;
 				scope.$watch('data',function(newValue,oldValue){
 				    if(newValue != oldValue) {
-						React.renderComponent(sequenceTrack({data:scope.data,target:scope.id,length:scope.length}),elm[0]);
+						React.renderComponent(sequenceTrack({data:scope.data,target:scope.id,length:scope.length,elem:thisElement}),elm[0]);
 					}
 				})
 			}
 		}
 	})
 	
-	APP.controller('tadmodelController',['$http','$scope','TADInput',
-	function($http,$scope,TADInput){
-		var data = $scope.data;
-		var EmsemblRequestLimit = 5000000;
-		var species = metadata.species.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-		var TADSlice = metadata.chromosome + ":" + (metadata.end + 1 - EmsemblRequestLimit) + "-" + metadata.end;
-
-
-	}])
+	// APP.controller('tadmodelController',['$http','$scope','TADInput',
+	// function($http,$scope,TADInput){
+	// 	var data = $scope.data;
+	//
+	//
+	// }])
 
 	APP.directive('scene',function(){
 		return {
 			restrict:'E',
-			scope:{data:'=',id:'@'},
+			scope:{
+				data:'=',
+				id:'@'
+			},
 			link:function(scope,elm,attrs){
 				scope.$watch('data',function(newValue,oldValue){
 				    if(newValue != oldValue) {

@@ -1,0 +1,61 @@
+/* React Styling */
+.trackholder {
+/*	background: red;*/
+	min-height: 7rem;
+}
+.trackholder h4 {
+	font-size: 1.0rem;
+	margin: 0.2rem  0.5rem 0.5rem;
+}
+track {
+	display: block;
+/*	background: blue;*/
+}
+
+
+
+/* D3 Style */
+svg {
+	font: 0.7rem sans-serif;
+}
+
+.axis path,
+.axis line {
+	fill: none;
+	stroke: #000;
+	shape-rendering: crispEdges;
+}
+.axis text { fill: #5c6; }
+.brush .extent {
+	stroke: #;
+	fill-opacity: .25;
+	shape-rendering: crispEdges;
+}
+/* Context */
+.context {
+	fill: hsla(120,50%,50%,0.4);
+}
+/* Focus - Biotype colors */
+.protein_coding {
+	fill: hsla(120,50%,50%,0.4);
+}
+.pseudogene {
+	fill: hsla(120,50%,50%,0.4);
+}
+.ncRNA {
+	fill: hsla(120,50%,50%,0.4);
+}
+.snoRNA {
+	fill: hsla(120,50%,50%,0.4);
+}
+.pre_miRNA {
+	fill: hsla(120,50%,50%,0.4);
+}
+.tRNA {
+	fill: hsla(120,50%,50%,0.4);
+}
+.snRNA {
+	fill: hsla(120,50%,50%,0.4);
+}
+
+

@@ -13,6 +13,7 @@
     "bower_components",
     "test",
     "tests"
+    "tests-dashboard"
   ],
   "dependencies": {
     "d3": "~3.4.11",
@@ -24,6 +25,16 @@
     "reqwest": "~1.1.2",
     "angular-foundation": "~0.3.1",
     "angular-route": "~1.2.22",
-    "angular-loading-bar": "~0.5.0"
+    "angular-loading-bar": "~0.5.0",
+    "foundation": "zurb/bower-foundation#~5.4.0",
+    "bootstrap": "~3.2.0",
+    "jquery-ui": "~1.11.1",
+    "angular-bootstrap": "~0.11.0",
+    "angular-local-storage": "~0.0.7",
+    "angular-ui-sortable": "~0.12.10",
+    "angular-markdown-directive": "~0.3.0",
+    "angular-sanitize": "~1.2.23",
+    "angular-lodash": "~0.1.0",
+    "lodash": "~2.4.1"
   }
 }

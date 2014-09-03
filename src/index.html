@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Angular-React-D3 track</title>
+	<link rel="stylesheet" href="assets/css/tadkit.css" />
+    <!--link href="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.3.3/css/foundation.css" rel="stylesheet"-->
+	<link rel="stylesheet" href="../bower_components/foundation/css/foundation.css" />
+
+</head>
+<body ng-app="APP">
+	
+	<div ng-controller="topbarController">
+	  <top-bar>
+		<ul class="title-area">
+		  <li class="name">
+			<h1><a href="#">TADkit</a></h1>
+		  </li>
+		  <li toggle-top-bar class="menu-icon"><a href="#">Menu</a></li>
+		</ul>
+
+		<top-bar-section>
+		  <!-- Right Nav Section -->
+		  <ul class="right">
+			<li class="active"><a href="#">Active</a></li>
+			<li has-dropdown>
+			  <a href="#">User</a>
+			  <ul top-bar-dropdown>
+				<li><a href="#">Save</a></li>
+			  </ul>
+			</li>
+		  </ul>
+
+		  <!-- Left Nav Section -->
+		  <ul class="left">
+			<li><a href="#">Load</a></li>
+		  </ul>
+		</top-bar-section>
+	  </top-bar>
+	</div>
+
+	<div ng-view>
+		Sequence Track Loading...
+	</div>
+	
+	<script src="../bower_components/react/react.min.js"></script>
+	<script src="../bower_components/angular/angular.min.js"></script>
+	<script src="../bower_components/angular-route/angular-route.min.js"></script>
+	
+	<script src="../bower_components/angular-foundation/mm-foundation-tpls.min.js"></script>
+	<script src="../bower_components/d3/d3.min.js"></script>
+	<script src="../bower_components/threejs/build/three.min.js"></script>
+	<script src="assets/libs/Stats.min.js"></script>
+	<script src="assets/libs/OrbitControls.js"></script>
+	<!--script src="http://cdnjs.cloudflare.com/ajax/libs/stats.js/r11/Stats.min.js"></script-->
+	<!--script src="https://rawgit.com/mrdoob/three.js/master/examples/js/controls/OrbitControls.js"></script-->
+	<script src="common/tadkit.js"></script>
+	<script src="scenes/scenes.js"></script>
+	<script src="scenes/chromatin.tube.js"></script>
+	<script src="scenes/chromatin.js"></script>
+	<script src="tracks/tracks.js"></script>
+	
+</body>
+</html>

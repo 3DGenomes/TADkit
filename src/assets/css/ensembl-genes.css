@@ -1,0 +1,74 @@
+/* [gene]
+   .#genes / transcripts are labelled by biotype, the exceptions being
+   .#projected genes, vega genes and merged ensembl/havana genes.
+   .#The colour and legend term is defined below
+   */
+
+.default { fill: orange }
+.protein { fill: blue }
+.protein_coding { fill: rust }
+.pseudogene,
+.processed_pseudogene,
+.unprocessed_pseudogene,
+.polymorphic_pseudogene,
+.translated_processed_pseudogene,
+.transcribed_processed_pseudogene,
+.transcribed_unprocessed_pseudogene,
+.translated_unprocessed_pseudogene,
+.rrna_pseudogene,
+.unitary_pseudogene,
+.misc_rna_pseudogene,
+.mt_trna_pseudogene,
+.snorna_pseudogene,
+.scrna_pseudogene,
+.trna_pseudogene,
+.ig_pseudogene,
+.ig_c_pseudogene,
+.ig_j_pseudogene,
+.ig_v_pseudogene,
+.tr_pseudogene,
+.mirna_pseudogene,
+.ncrna_pseudogene,
+.snrna_pseudogene,
+.tr_v_pseudogene,
+.tr_j_pseudogene { fill: grey40 }
+.sense_intronic,
+.sense_overlapping,
+.processed_transcript,
+.nonsense_mediated_decay,
+.non_stop_decay,
+.antisense,
+.retained_intron,
+.tec,
+.non_coding,
+.ambiguous_orf,
+.disrupted_domain,
+.3prime_overlapping_ncrna { fill: blue }
+.lincrna,
+.mirna,
+.pre_mirna,
+.rna,
+.rrna,
+.snrna,
+.trna,
+.snorna,
+.mt_rrna,
+.mt_trna,
+.misc_rna,
+.ncrna,
+.ncrna_host,
+.snlrna { fill: plum4 }
+.ig_c_gene { fill: darkorange3 }
+.ig_d_gene { fill: peru }
+.ig_j_gene { fill: tan2 }
+.ig_lv_gene { fill: darkorange1 }
+.ig_m_gene { fill: tan3 }
+.ig_v_gene { fill: darkorange4 }
+.ig_z_gene { fill: chocolate2 }
+.tr_gene,
+.tr_c_gene,
+.tr_d_gene,
+.tr_j_gene, { fill: darkorange2 }
+.estgene { fill: purple2 }
+.singapore_est { fill: purple2 }
+.
