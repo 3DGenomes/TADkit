@@ -6,15 +6,15 @@
 APP.factory('ChromatinTube', [ function () {
 	// constructor for chromatin model instances
 	function ChromatinTube( data, chromatinMaterial, overrides) {
-        var defaults = {
-        	particleSegments: 10,
+		var defaults = {
+			particleSegments: 10,
 			curveSegments: 100,
 			radius: 15,
 			radiusSegments: 16,
 			closed: false
-        };		
+		};		
 		overrides = overrides || { };
-        angular.extend(this, angular.copy(defaults), overrides);
+		angular.extend(this, angular.copy(defaults), overrides);
 		var TADGeometry = getTADGeometry( data );
 		this.curveSegments = TADGeometry.vertices.length * 3;
 		var chromatinPath = getPath( TADGeometry.vertices );

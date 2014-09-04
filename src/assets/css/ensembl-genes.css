@@ -4,9 +4,14 @@
    .#The colour and legend term is defined below
    */
 
-.default { fill: orange }
-.protein { fill: blue }
-.protein_coding { fill: rust }
+/* Other */
+.default { fill: hsla(38.8,100%,50%,0.4) } /* orange #ffa500 decimal:16753920 */
+/* Protein Alignment */
+.protein { fill: hsla(240,100%,50%,0.4) } /* blue #0000ff decimal:255 */
+/* Protein Coding */
+.protein_coding { fill: hsla(18.1,85.8%,38.6%,0.2) } /* Ensembl: rust #b7410e decimal:12009742 */
+
+/* Pseudogene */
 .pseudogene,
 .processed_pseudogene,
 .unprocessed_pseudogene,
@@ -31,7 +36,9 @@
 .ncrna_pseudogene,
 .snrna_pseudogene,
 .tr_v_pseudogene,
-.tr_j_pseudogene { fill: grey40 }
+.tr_j_pseudogene { fill: hsla(0,0%,40%,0.4) } /* Ensembl: grey40 #666666 decimal:6710886 */
+
+/* Processed Transcript */
 .sense_intronic,
 .sense_overlapping,
 .processed_transcript,
@@ -43,7 +50,9 @@
 .non_coding,
 .ambiguous_orf,
 .disrupted_domain,
-.3prime_overlapping_ncrna { fill: blue }
+.3prime_overlapping_ncrna { fill: hsla(240,100%,50%,0.4) } /* blue #0000ff decimal:255 */
+
+/* RNA Gene */
 .lincrna,
 .mirna,
 .pre_mirna,
@@ -57,18 +66,23 @@
 .misc_rna,
 .ncrna,
 .ncrna_host,
-.snlrna { fill: plum4 }
-.ig_c_gene { fill: darkorange3 }
-.ig_d_gene { fill: peru }
-.ig_j_gene { fill: tan2 }
-.ig_lv_gene { fill: darkorange1 }
-.ig_m_gene { fill: tan3 }
-.ig_v_gene { fill: darkorange4 }
-.ig_z_gene { fill: chocolate2 }
+.snlrna { fill: hsla(300,15.4%,47.3%, 0.4) } /* Ensembl: plum4 #8b668b decimal:9135755 */
+
+/* IG ... Genes */
+.ig_c_gene { fill: hsla(29.9,100%,40.2%,0.4) } /* Ensembl: darkorange3 #cd6600 decimal:13460992 */
+.ig_d_gene { fill: hsla(29.6,58.7%,52.5%,0.4) } /* Ensembl: peru #cd853f decimal:13468991 */
+.ig_j_gene { fill: hsla(29.5,82.9%,61%,0.4) } /* Ensembl: tan2 #ee9a49 decimal:15637065 */
+.ig_lv_gene { fill: hsla(29.9,100%,50%,0.4) } /* Ensembl: darkorange1 #ff7f00 decimal:16744192 */
+.ig_m_gene { fill: hsla(29.6,58.7%,52.5%,0.4) } /* Ensembl: tan3 #cd853f decimal:13468991 */
+.ig_v_gene { fill: hsla(29.8,100%,27.3%,0.4) } /* Ensembl: darkorange4 #8b4500 decimal:9127168 */
+.ig_z_gene { fill: hsla(24.9,85.8%,53.1%,0.4) } /* Ensembl: chocolate2 #ee7621 decimal:15627809 */
+
+/* TR Gene */
 .tr_gene,
 .tr_c_gene,
 .tr_d_gene,
-.tr_j_gene, { fill: darkorange2 }
-.estgene { fill: purple2 }
-.singapore_est { fill: purple2 }
-.
+.tr_j_gene, { fill: hsla(29.7,100%,46.7%),0.4 } /* Ensembl: darkorange2 #ee7600 decimal:15627776 */
+
+/* EST Transcript */
+.estgene,
+.singapore_est { fill: hsla(271.2,85.1%,55.3%,0.4) } /* Ensembl: purple2 #912cee decimal:9514222 */

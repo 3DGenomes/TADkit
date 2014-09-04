@@ -1,6 +1,6 @@
 'use strict';
 
-APP.directive('scene', [ 'ChromatinTube', function(ChromatinTube){
+APP.directive('scene', [ 'ChromatinTubes', 'ChromatinLine', function(ChromatinTubes, ChromatinLine){
 	return {
 		restrict: 'E',
 		scope: { 
@@ -47,8 +47,19 @@ APP.directive('scene', [ 'ChromatinTube', function(ChromatinTube){
 			var rotation = 0;
 			
 			// ORBIT CONTROLS
-			controls = new THREE.OrbitControls( camera, viewport );
+			controls = new THREE.TrackballControls( camera );
+			controls.rotateSpeed = 1.5;
+			controls.zoomSpeed = 2.0;
+			controls.panSpeed = 0.8;
+			controls.noZoom = false;
+			controls.noPan = false;
+			controls.staticMoving = true;
+			controls.dynamicDampingFactor = 0.3;
+			
+			controls.keys = [ 65, 83, 68 ];
+
 			controls.addEventListener( 'change', scope.render );
+			
 			var position = position || new THREE.Vector3(0,0,0);
 			controls.target.copy(position);
 			// console.log(controls);
@@ -63,7 +74,7 @@ APP.directive('scene', [ 'ChromatinTube', function(ChromatinTube){
 
 			// HELPERS
 			var axisHelper = new THREE.AxisHelper( 100000 );
-			scene.add( axisHelper );
+			// scene.add( axisHelper );
 
 			// LIGHTS
 			// Ambient
@@ -100,16 +111,19 @@ APP.directive('scene', [ 'ChromatinTube', function(ChromatinTube){
 				transparent: false,
 				wireframe: false
 			});
-			var chromatin = new ChromatinTube( scope.data, chromatinMaterial, {} );
+			var chromatin = new ChromatinTubes( scope.data, chromatinMaterial, {} );
 			scene.add(chromatin.fiber);
-			var TADBounds = chromatin.fiber.geometry.boundingSphere;
-			scope.lookAtTAD(TADBounds.center, cameraTarget, TADBounds.radius * 3.0);
+			console.log(scene);
+			// var chromatinBounds = new THREE.BoundingBoxHelper (chromatin.fiber, 0xff0000);
+			// scene.add(chromatinBounds);
+			// console.log(chromatinBounds);
+			scope.lookAtTAD(chromatin.center, cameraTarget, chromatin.bounds * 3.0);
 			
 			// FOG SCENE
 			var fogColor = 0xFFFFFF,
-				fogNear = TADBounds.radius * 1.0,
-				fogFar = TADBounds.radius * 6.0;
-			scene.fog = new THREE.Fog( fogColor, fogNear, fogFar );
+				fogNear = chromatin.bounds * 1.0,
+				fogFar = chromatin.bounds * 6.0;
+			// scene.fog = new THREE.Fog( fogColor, fogNear, fogFar );
 			
 			// RENDERER
 			renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -124,6 +138,7 @@ APP.directive('scene', [ 'ChromatinTube', function(ChromatinTube){
 		// -----------------------------------
 		// Event listeners
 		// -----------------------------------
+		
 		scope.onWindowResize = function () {
 			scope.resizeCanvas();
 		};
@@ -155,11 +170,11 @@ APP.directive('scene', [ 'ChromatinTube', function(ChromatinTube){
 				camera.translateZ(translate);
 				//console.log("Camera reset: %s", JSON.stringify(camera.position) );
 				camera.updateMatrixWorld();
+				console.log("Camera position: %s", JSON.stringify(camera.position));
 								
 				// TARGET CONTROLS ON TAD
 				console.log("Controls target: %s", JSON.stringify(controls.target));
 				controls.target.copy(position);
-				console.log("Controls reset: %s", JSON.stringify(controls.target));
 		}
 
 		// -----------------------------------
@@ -167,12 +182,13 @@ APP.directive('scene', [ 'ChromatinTube', function(ChromatinTube){
 		// -----------------------------------
 		scope.animate = function () {
 			requestAnimationFrame( scope.animate );
+			controls.update();
 			scope.render();
-			stats.update();
 		};
 
 		scope.render = function () {
 			renderer.render( scene, camera );
+			stats.update();
 		};
 
 		// Begin

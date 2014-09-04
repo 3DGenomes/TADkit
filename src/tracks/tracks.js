@@ -89,7 +89,7 @@ var sequenceTrack = React.createClass({displayName: 'sequenceTrack',
 			.attr("y", function(d) { if (d.strand < 1) {return (trackMarkHeight)} else {return 0}; } )
 			.attr("width", function(d) { return Math.ceil(x(d.end) - x(d.start)) + "px"; } )
 			.attr("height", (trackMarkHeight) )
-			.attr("class", function(d) { return d.biotype } );
+			.attr("class", function(d) { return d.biotype.toLowerCase(); } );
 
 		// context.selectAll("rect")
 		// 	.data(data)

@@ -3,15 +3,15 @@
 
 'use strict';
 
-APP.factory('ChromatinLine', [ function () {
+APP.factory('ChromatinTubes', [ function () {
 	// constructor for chromatin model instances
-	function ChromatinLine( data, colors, overrides) {
+	function ChromatinTubes( data, tubeMaterial, overrides) {
 		var defaults = {
 			particleSegments: 10,
-			curveSegments: 100,
+			curveSegments: 1,
 			radius: 15,
 			radiusSegments: 16,
-			closed: false
+			pathClosed: false
 		};		
 		overrides = overrides || { };
 		angular.extend(this, angular.copy(defaults), overrides);
@@ -24,16 +24,18 @@ APP.factory('ChromatinLine', [ function () {
 		var chromatinFiber = new THREE.Object3D(); // unmerged mesh
 		var chromatinGeometry = new THREE.Geometry(); // to calculate merged bounds
 		for ( var i = 0 ; i < totalBezierCoords - 1; i++) {
-			var fragColor = new THREE.Color( colors[i], 0.8, 0.66 );
-			var fragmentMaterial = new THREE.LineBasicMaterial( {
-				color: fragColor,
-				opacity: 1.0,
-				transparent: true,
-				linewidth: 2
-			} );
-			var fragment = fragmentGeometry( bezierCoords[i], bezierCoords[i+1], this.radius, this.radiusSegments );
+			
+			// var fragColor = new THREE.Color( 230, 0.8, 0.66 );
+			// var fragmentMaterial = new THREE.LineBasicMaterial( {
+			// 	color: fragColor,
+			// 	opacity: 1.0,
+			// 	transparent: true,
+			// 	linewidth: 2
+			// } );
+			var fragment = fragmentGeometry(bezierCoords[i], bezierCoords[i+1], this );
 			chromatinGeometry.merge(fragment);
-			var chromatinFragment = new THREE.Line( fragment, fragmentMaterial);
+
+			var chromatinFragment = new THREE.Mesh( fragment, tubeMaterial);
 			chromatinFiber.add(chromatinFragment);
 		}
 		chromatinGeometry.computeBoundingSphere();
@@ -136,19 +138,19 @@ APP.factory('ChromatinLine', [ function () {
 		return bezierCoords;
 	}
 
-	function fragmentGeometry ( pointX, pointY, chromatinRadius, chromatinRadiusSegments ) {
+	function fragmentGeometry ( pointX, pointY, props ) {
 		/* edge from X to Y */
-		// var fragmentDirection = new THREE.Vector3().subVectors( pointY, pointX ); // UNUSED
 		var fragmentOrientation = new THREE.Matrix4();
 		/* THREE.Object3D().up (=Y) default orientation for all objects */
 		fragmentOrientation.lookAt(pointX, pointY, new THREE.Object3D().up);
 		fragmentOrientation.setPosition( pointX.add(pointY).multiplyScalar(0.5) );
-		var fragmentCircle = new THREE.CircleGeometry( chromatinRadius, chromatinRadiusSegments );
+		var path = new THREE.LineCurve3(pointX, pointY);
+		var fragmentTube = new THREE.TubeGeometry( path, props.curveSegments, props.radius, props.radiusSegments, props.pathClosed );
 		// Remove center vertex
-		fragmentCircle.vertices.shift();
-		fragmentCircle.applyMatrix(fragmentOrientation);
-		return fragmentCircle;
+		// fragmentTube.vertices.shift();
+		// fragmentTube.applyMatrix(fragmentOrientation);
+		return fragmentTube;
 	};
 	
-	return ChromatinLine;
+	return ChromatinTubes;
 }])
