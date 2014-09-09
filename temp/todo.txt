@@ -8,5 +8,18 @@ WED
 - Track Proximity Matrix
 - Track Chromatin Colors
 
+THUR
+* POSTER *
+
+FRI
+- Print Poster
+
+SAT
+- Build version
+
+
+MINOR
+- Load from file Module
+- Global Offline switch
 
 

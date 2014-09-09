@@ -1,11 +1,11 @@
 // Chromatin Geometry
-// 6. FOR EVERY BEZIER ADD CIRCLE GEOMETRY LINE TO CHROMATIN FIBER OBJECT
+// FOR EVERY BEZIER ADD CIRCLE GEOMETRY LINE TO CHROMATIN FIBER OBJECT
 
 'use strict';
 
-TADkit.factory('ChromatinCylinders', [ function () {
+TADkit.factory('Chromatin', [ function () {
 	// constructor for chromatin model instances
-	function ChromatinCylinders( data, colors, overrides) {
+	function Chromatin( data, colors, overrides) {
 		// console.log("colors in cly");
 		// console.log(colors.length);
 		
@@ -161,5 +161,5 @@ TADkit.factory('ChromatinCylinders', [ function () {
 		
 	};
 	
-	return ChromatinCylinders;
+	return Chromatin;
 }])

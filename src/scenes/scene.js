@@ -1,6 +1,6 @@
 'use strict';
 
-TADkit.directive('scene', [ 'ChromatinCylinders', function(ChromatinCylinders){
+TADkit.directive('scene', [ 'Chromatin', function(Chromatin){
 	return {
 		restrict: 'E',
 		scope: { 
@@ -113,7 +113,7 @@ TADkit.directive('scene', [ 'ChromatinCylinders', function(ChromatinCylinders){
 			var chromatinSettings = {particleSegments: scope.segments};
 			// console.log("scope.colors");
 			// console.log(scope.colors);
-			var chromatin = new ChromatinCylinders( scope.data, scope.colors, chromatinSettings );
+			var chromatin = new Chromatin( scope.data, scope.colors, chromatinSettings );
 			scene.add(chromatin.fiber);
 			scope.lookAtTAD(chromatin.center, cameraTarget, chromatin.bounds * 3.0);
 			
