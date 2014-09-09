@@ -1,12 +1,15 @@
 'use strict';
 
-APP.directive('scene', [ 'ChromatinTubes', 'ChromatinLine', function(ChromatinTubes, ChromatinLine){
+TADkit.directive('scene', [ 'ChromatinCylinders', function(ChromatinCylinders){
 	return {
 		restrict: 'E',
 		scope: { 
-			data: "="
+			data: "=",
+			colors: "=",
+			segments: "="
 		},
 		link: function postLink(scope, element, attrs) {
+			// console.log(scope);
 		var scene, viewport, stats, cube;
 		var camera, cameraPosition, cameraTarget, cameraTranslate;
 		var ambientLight, pointLight, loader, mesh,
@@ -70,7 +73,7 @@ APP.directive('scene', [ 'ChromatinTubes', 'ChromatinLine', function(ChromatinTu
 			stats.domElement.style.position = 'absolute';
 			stats.domElement.style.left = '10px';
 			stats.domElement.style.bottom = '10px';
-			viewport.appendChild( stats.domElement );
+			// viewport.appendChild( stats.domElement );
 
 			// HELPERS
 			var axisHelper = new THREE.AxisHelper( 100000 );
@@ -94,12 +97,7 @@ APP.directive('scene', [ 'ChromatinTubes', 'ChromatinLine', function(ChromatinTu
 			// Point Light Helper
 			var sphereSize = 500;
 			var pointLightHelper = new THREE.PointLightHelper( pointLight, sphereSize );
-			scene.add( pointLightHelper );
-			
-			// var geometry = new THREE.BoxGeometry(1000,1000,1000);
-			// var material = new THREE.MeshBasicMaterial({color: 0x0000ff});
-			// var cube = new THREE.Mesh(geometry, material);
-			// scene.add(cube);
+			// scene.add( pointLightHelper );
 			
 			var chromatinColor = "#37375f";
 			var chromatinMaterial = new THREE.MeshLambertMaterial({
@@ -111,19 +109,19 @@ APP.directive('scene', [ 'ChromatinTubes', 'ChromatinLine', function(ChromatinTu
 				transparent: false,
 				wireframe: false
 			});
-			var chromatin = new ChromatinTubes( scope.data, chromatinMaterial, {} );
+			
+			var chromatinSettings = {particleSegments: scope.segments};
+			// console.log("scope.colors");
+			// console.log(scope.colors);
+			var chromatin = new ChromatinCylinders( scope.data, scope.colors, chromatinSettings );
 			scene.add(chromatin.fiber);
-			console.log(scene);
-			// var chromatinBounds = new THREE.BoundingBoxHelper (chromatin.fiber, 0xff0000);
-			// scene.add(chromatinBounds);
-			// console.log(chromatinBounds);
 			scope.lookAtTAD(chromatin.center, cameraTarget, chromatin.bounds * 3.0);
 			
 			// FOG SCENE
 			var fogColor = 0xFFFFFF,
 				fogNear = chromatin.bounds * 1.0,
 				fogFar = chromatin.bounds * 6.0;
-			// scene.fog = new THREE.Fog( fogColor, fogNear, fogFar );
+			scene.fog = new THREE.Fog( fogColor, fogNear, fogFar );
 			
 			// RENDERER
 			renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -170,10 +168,10 @@ APP.directive('scene', [ 'ChromatinTubes', 'ChromatinLine', function(ChromatinTu
 				camera.translateZ(translate);
 				//console.log("Camera reset: %s", JSON.stringify(camera.position) );
 				camera.updateMatrixWorld();
-				console.log("Camera position: %s", JSON.stringify(camera.position));
+				// console.log("Camera position: %s", JSON.stringify(camera.position));
 								
 				// TARGET CONTROLS ON TAD
-				console.log("Controls target: %s", JSON.stringify(controls.target));
+				// console.log("Controls target: %s", JSON.stringify(controls.target));
 				controls.target.copy(position);
 		}
 

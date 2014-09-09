@@ -2,16 +2,16 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Angular-React-D3 track</title>
+	<title>TADkit</title>
 	<link rel="stylesheet" href="assets/css/tadkit.css" />
 	<link rel="stylesheet" href="assets/css/ensembl-genes.css" />
 	<!--link href="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.3.3/css/foundation.css" rel="stylesheet"-->
 	<link rel="stylesheet" href="../bower_components/foundation/css/foundation.css" />
 
 </head>
-<body ng-app="APP">
+<body ng-app="TADkit">
 	
-	<div ng-controller="topbarController">
+	<div ng-controller="TopbarCtrl">
 	  <top-bar>
 		<ul class="title-area">
 		  <li class="name">
@@ -57,12 +57,10 @@
 	<!--script src="http://cdnjs.cloudflare.com/ajax/libs/stats.js/r11/Stats.min.js"></script-->
 	<!--script src="https://rawgit.com/mrdoob/three.js/master/examples/js/controls/OrbitControls.js"></script-->
 	<script src="common/tadkit.js"></script>
+	<script src="tracks/track-genes.js"></script>
 	<script src="scenes/scenes.js"></script>
-	<script src="scenes/chromatin.tube.js"></script>
-	<script src="scenes/chromatin.line.js"></script>
-	<script src="scenes/chromatin.tubes.js"></script>
-	<script src="scenes/chromatin.js"></script>
-	<script src="tracks/tracks.js"></script>
+	<script src="scenes/chromatin.cylinders.js"></script>
+	<!--script src="scenes/chromatin.js"></script-->
 	
 </body>
 </html>

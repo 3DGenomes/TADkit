@@ -4,7 +4,7 @@
 var assemblyLength = 2300000000; // fallback
 var sequenceTrack = React.createClass({displayName: 'sequenceTrack',
 	componentWillReceiveProps:function(nextProps){
-		// console.log(nextProps);
+		console.log(nextProps);
 			if(nextProps.data){
 				this.renderChart(nextProps.data, nextProps.elem)
 			}

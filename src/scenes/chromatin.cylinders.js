@@ -3,39 +3,54 @@
 
 'use strict';
 
-APP.factory('ChromatinTubes', [ function () {
+TADkit.factory('ChromatinCylinders', [ function () {
 	// constructor for chromatin model instances
-	function ChromatinTubes( data, tubeMaterial, overrides) {
+	function ChromatinCylinders( data, colors, overrides) {
+		// console.log("colors in cly");
+		// console.log(colors.length);
+		
 		var defaults = {
-			particleSegments: 10,
+			particles: 0,
+			particleSegments: 5,
 			curveSegments: 1,
 			radius: 15,
 			radiusSegments: 16,
+			endcap: false,
 			pathClosed: false
 		};		
 		overrides = overrides || { };
 		angular.extend(this, angular.copy(defaults), overrides);
-		
+
 		var TADGeometry = getTADGeometry( data );
 		var pathControls = getPathControls( TADGeometry.vertices );
-		var bezierCoords = getBezierCoords( pathControls, this.particleSegments );
-		var totalBezierCoords = bezierCoords.length;
+		if (this.particles == 0) this.particles = pathControls.length - 5;
+		
+		var pathSegments = this.particles * this.particleSegments;
+		this.pathSegments = pathSegments;
+		// Calculate PathSegments based on number of base pairs in the TAD ?
+		var pathCoords = getSplinePath (pathControls, pathSegments);
 		
 		var chromatinFiber = new THREE.Object3D(); // unmerged mesh
 		var chromatinGeometry = new THREE.Geometry(); // to calculate merged bounds
-		for ( var i = 0 ; i < totalBezierCoords - 1; i++) {
+		var fragmentColors = getFragmentColors(pathSegments);
+
+		for ( var i = 0 ; i < pathSegments - 1; i++) {
+			this.endcap = ( i == 0 || i == pathSegments - 2 ) ? false : true ;
 			
-			// var fragColor = new THREE.Color( 230, 0.8, 0.66 );
-			// var fragmentMaterial = new THREE.LineBasicMaterial( {
-			// 	color: fragColor,
-			// 	opacity: 1.0,
-			// 	transparent: true,
-			// 	linewidth: 2
-			// } );
-			var fragment = fragmentGeometry(bezierCoords[i], bezierCoords[i+1], this );
+			var fragmentColor = colors[i];
+			var fragmentMaterial = new THREE.MeshLambertMaterial({
+				color: fragmentColor,
+				ambient: fragmentColor,
+				emissive: fragmentColor,
+				//shading: THREE.FlatShading,
+				opacity: 1.0,
+				transparent: false,
+				wireframe: false
+			});
+			var fragment = fragmentGeometry(pathCoords[i], pathCoords[i+1], this );
 			chromatinGeometry.merge(fragment);
 
-			var chromatinFragment = new THREE.Mesh( fragment, tubeMaterial);
+			var chromatinFragment = new THREE.Mesh( fragment, fragmentMaterial);
 			chromatinFiber.add(chromatinFragment);
 		}
 		chromatinGeometry.computeBoundingSphere();
@@ -43,10 +58,10 @@ APP.factory('ChromatinTubes', [ function () {
 		chromatinFiber.name = "chromatinFiber";
 		
 		this.fiber = chromatinFiber;
-		console.log(chromatinFiber);
 		this.center = chromatinGeometry.boundingSphere.center;
 		this.bounds = chromatinGeometry.boundingSphere.radius;
-		console.log(this);
+		// console.log("Chomatin Object");
+		// console.log(this);
 	}
 	
 	function getCenter( vertices ) {
@@ -105,46 +120,46 @@ APP.factory('ChromatinTubes', [ function () {
 				pathControls.push(endCoord);
 			};
 		};
-		console.log("Total Path Controls: %s", pathControls.length);
 		return pathControls;
 	}
 	
-	function getBezierCoords( controls, segments) {
-		// CALCULATE BEZIER COORDS => CONVERT TO FUNCTION OR USE INBUILT THREE FUNCTION
-		// Segments per Base Pair, multiple of BP, or arbitary division.
-		// i=+2 because (pre) base=i, (mid=i+1), fore=i+2, (end)
-		// range == eg. 1 MBP (ie. 1,000,000 BP) / TADbitGeometry (eg. 100) = BP per particle (eg. 10000) === RESOLUTION (see sample metadata)
-		// particleSegments > 1 then check resolution of any 2D/additional data overlayed
-		// USED ON OWN BEZIER - redundant when using user imput
-		console.log("BEZIER COORDS");
-		
-		var totalControls = controls.length;
-		var bezierCoords = [];
-		for ( var i = 0 ; i < totalControls - 1; i+=2)
-		{
-			var bezierCurve = new THREE.QuadraticBezierCurve3(controls[i], controls[i+1], controls[i+2]);
-			for ( var j = 0 ; j < segments; j++)
-			{
-				var t = j / segments;
-				var bezierPoint = bezierCurve.getPoint(t);
-				bezierCoords.push(bezierPoint);
-			}
-		}
-		bezierCoords.push(controls[totalControls - 1]);
-		console.log(bezierCoords);
-		var totalBezierCoords = bezierCoords.length;
-		console.log("Total Bezier Coords: %s", totalBezierCoords);
-
-		return bezierCoords;
+	function getSplinePath (controls,segments) {
+		var splinePath = new THREE.SplineCurve3(controls);
+		var splineDivisions = splinePath.getSpacedPoints(segments);
+		return splineDivisions;
 	}
-
+	
 	function fragmentGeometry ( pointX, pointY, props ) {
-		var path = new THREE.LineCurve3(pointX, pointY);
-		var pathClosed = false;
-		var fragmentGeometry = new THREE.TubeGeometry( path, props.curveSegments, props.radius, props.radiusSegments, pathClosed );
+	    /* edge from X to Y */
+	    var fragmentDirection = new THREE.Vector3().subVectors( pointY, pointX );
+	    var fragmentOrientation = new THREE.Matrix4();
+	    /* THREE.Object3D().up (=Y) default orientation for all objects */
+	    fragmentOrientation.lookAt(pointX, pointY, new THREE.Object3D().up);
+	    /* rotation around axis X by -90 degrees
+	     * matches the default orientation Y
+	     * with the orientation of looking Z */
+	    fragmentOrientation.multiply(new THREE.Matrix4( 1, 0, 0, 0,
+	                            						0, 0, 1, 0,
+	                             						0,-1, 0, 0,
+                         													0, 0, 0, 1 ));
+		fragmentOrientation.setPosition( pointX.add(pointY).multiplyScalar(0.5) );
+		var chromatinOpenEnded;
+		var chromatinOpenEnded = props.endcap;
+	    var fragmentGeometry = new THREE.CylinderGeometry( props.radius, props.radius, fragmentDirection.length(), props.radiusSegments, props.curveSegments, chromatinOpenEnded);
+	    fragmentGeometry.applyMatrix(fragmentOrientation);
 		
 		return fragmentGeometry;
 	};
 	
-	return ChromatinTubes;
+	function getFragmentColors (segments) {
+		// based on length 
+		// build array
+		// by checking all genes at each stage
+		
+		
+		
+		
+	};
+	
+	return ChromatinCylinders;
 }])
