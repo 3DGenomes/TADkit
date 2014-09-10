@@ -17,6 +17,7 @@ track {
 /* D3 Style */
 svg {
 	font: 0.7rem sans-serif;
+	padding: 20px 25px;
 }
 
 .axis path,

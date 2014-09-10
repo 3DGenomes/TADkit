@@ -11,7 +11,6 @@ TADkit.factory('Genes', ['$q', '$http', function($q, $http) {
 			.success(function(data){
 				genes = data;
 				console.log("Genes for Region " + requestSlice + " of " + species + " retreived from Ensembl.");
-				//console.log(data);
 				deferral.resolve(data);
 			});
 			return deferral.promise;
@@ -24,38 +23,45 @@ TADkit.factory('Genes', ['$q', '$http', function($q, $http) {
 		},
 		getColors: function(genes, biotypes, fragmentsCount, TADStart, fragmentLength) {
 			var colors = [];
-			var biotypesPresent = [];
+			var totalLength = fragmentsCount * fragmentLength;
 			for(var i=0; i<fragmentsCount; i++){
+				var biotypesPresent = [];
 				var fragmentLower = TADStart + (fragmentLength * i);
 				var fragmentUpper = fragmentLower + fragmentLength;
 				var genesCount = this.getGenesCount();
-				var color = "#888888"; // Base color - ie if none found
-				biotypesPresent.push([]);
+				var color = "#cccccc"; // Base color - ie if none found
 				for(var j=0; j<genesCount; j++){
 					var start = genes[j].start;
 					var end = genes[j].end;
-					var biotype = "";
 					if ( Math.max(fragmentLower, start) <= Math.min(fragmentUpper,end) ) {
-						biotype = genes[j].biotype;
-						console.log(biotype);
-						biotypesPresent[i].push(biotype);
-						
-						if (biotype in biotypes) {
-							// console.log("color found");
-							color = biotypes[biotype];
+						if (biotypesPresent.length > 0) {
+							// Simple weight - give preference to smaller fragments
+							if ( biotypesPresent[0] == "protein_coding" ) {
+								var biotype = genes[j].biotype;
+								biotypesPresent[0] = biotype;
+							}
 						} else {
-							console.log(biotype);
-							color = "#110100";
+							var biotype = genes[j].biotype;
+							biotypesPresent.push(biotype);							
 						}
 					} else {
 						// console.log("No fragment overlap.");
 					}
-					// 1. if number over 1 then
 				};
+				// console.log(i);
+				// console.log(biotypesPresent);
+				for(var k=0; k<biotypesPresent.length; k++){
+					var biotype = biotypesPresent[0].toLowerCase();
+					if (biotype in biotypes) {
+						color = biotypes[biotype];
+					} else {
+						color = "#110100";
+					}
+				}
 				colors.push(color);
+				// console.log(biotypesPresent);
 			};
-			console.log(JSON.stringify(biotypesPresent));
-			console.log(colors);
+			// console.log(colors);
 			return colors;
 		}
 	};

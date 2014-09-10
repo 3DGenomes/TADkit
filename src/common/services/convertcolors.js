@@ -13,7 +13,8 @@ TADkit.service('ConvertColors', [function () {
 	rootObj.colorNames = {
 		// ADDED FOR ENSEMBL WEBCODE COLORS
 		"transparent": "rgb(0, 0, 0)", // should be rgba...
-		"rust": "rgb(183, 65, 14)",
+//		"rust": "rgb(183, 65, 14)", // ORIGINL ENSEMBL RUST
+		"rust": "rgb(243, 137, 92)", // HALF INTENSITY OF RUST
 		"stripes": "rgb(255, 54, 54)",
 		"dark_blue": "rgb(0, 0, 139)", // FROM ENSEMBL DOCS = DARK BLUE
 		"contigblue1": "rgb(0, 0, 139)", // FROM ENSEMBL DOCS = DARK BLUE

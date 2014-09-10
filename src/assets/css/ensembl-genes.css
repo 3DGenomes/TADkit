@@ -5,11 +5,11 @@
    */
 
 /* Other */
-.default { fill: hsla(38.8,100%,50%,0.6) } /* orange #ffa500 decimal:16753920 */
+.default { fill: hsla(38.8,100%,50%,0.4) } /* orange #ffa500 decimal:16753920 */
 /* Protein Alignment */
-.protein { fill: hsla(240,100%,50%,0.6) } /* blue #0000ff decimal:255 */
+.protein { fill: hsla(240,100%,50%,0.2) } /* blue #0000ff decimal:255 */
 /* Protein Coding */
-.protein_coding { fill: hsla(18.1,85.8%,38.6%,0.6) } /* Ensembl: rust hsla(18.1,85.8%,38.6%) #b7410e decimal:12009742 */
+.protein_coding { fill: hsla(18.1,85.8%,38.6%,0.3) } /* Ensembl: rust hsla(18.1,85.8%,38.6%) #b7410e decimal:12009742 */
 
 /* Pseudogene */
 .pseudogene,
@@ -66,7 +66,7 @@
 .misc_rna,
 .ncrna,
 .ncrna_host,
-.snlrna { fill: hsla(300,15.4%,47.3%, 0.6) } /* Ensembl: plum4 #8b668b decimal:9135755 */
+.snlrna { fill: hsla(300,15.4%,47.3%, 1.0) } /* Ensembl: plum4 #8b668b decimal:9135755 */
 
 /* IG ... Genes */
 .ig_c_gene { fill: hsla(29.9,100%,40.2%,0.6) } /* Ensembl: darkorange3 #cd6600 decimal:13460992 */

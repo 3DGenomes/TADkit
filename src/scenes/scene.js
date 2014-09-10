@@ -29,6 +29,13 @@ TADkit.directive('scene', [ 'Chromatin', function(Chromatin){
 			windowHalfX = contW / 2,
 			windowHalfY = contH / 2,
 	
+			// RENDERER
+			renderer = new THREE.WebGLRenderer( { antialias: true } );
+			renderer.setClearColor( 0xffffff );
+			renderer.setSize( contW, contH );
+			viewport.appendChild( renderer.domElement );
+			// console.log(viewport);
+
 			// SCENE
 			scene = new THREE.Scene();
 			var sceneFogNear = 3000;
@@ -49,8 +56,8 @@ TADkit.directive('scene', [ 'Chromatin', function(Chromatin){
 			// console.log(camera);
 			var rotation = 0;
 			
-			// ORBIT CONTROLS
-			controls = new THREE.TrackballControls( camera );
+			// CONTROLS
+			controls = new THREE.TrackballControls( camera, renderer.domElement );
 			controls.rotateSpeed = 1.5;
 			controls.zoomSpeed = 2.0;
 			controls.panSpeed = 0.8;
@@ -58,7 +65,7 @@ TADkit.directive('scene', [ 'Chromatin', function(Chromatin){
 			controls.noPan = false;
 			controls.staticMoving = true;
 			controls.dynamicDampingFactor = 0.3;
-			
+
 			controls.keys = [ 65, 83, 68 ];
 
 			controls.addEventListener( 'change', scope.render );
@@ -81,13 +88,13 @@ TADkit.directive('scene', [ 'Chromatin', function(Chromatin){
 
 			// LIGHTS
 			// Ambient
-			var ambientColor = "#111";
+			var ambientColor = "#111111";
 			ambientLight = new THREE.AmbientLight( ambientColor );
 			ambientLight.name = "Scene Ambient Light";
 			scene.add(ambientLight);
 			// Point
-			var pointColor = "#fff";
-			var pointIntensity = 0.5;
+			var pointColor = "#ffffff";
+			var pointIntensity = 0.1;
 			//var pointDistance = 0.0; DEFAULT = infinite
 			pointLight = new THREE.PointLight( pointColor, pointIntensity );
 			pointLight.position.set( 20000, 20000, 20000 );
@@ -123,12 +130,6 @@ TADkit.directive('scene', [ 'Chromatin', function(Chromatin){
 				fogFar = chromatin.bounds * 6.0;
 			scene.fog = new THREE.Fog( fogColor, fogNear, fogFar );
 			
-			// RENDERER
-			renderer = new THREE.WebGLRenderer( { antialias: true } );
-			renderer.setClearColor( 0xffffff );
-			renderer.setSize( contW, contH );
-			viewport.appendChild( renderer.domElement );
-
 			window.addEventListener( 'resize', scope.onWindowResize, false );
 
 		};

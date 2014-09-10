@@ -1,14 +1,15 @@
 TUE
-- Track Cursor/Slider
 x Colors by Biotype (updateable=)
+x Isolate user interaction Scene from Tracks
 - check if updates = Vertex Colors?
-- Isolate user interaction Scene from Tracks
+- Track Cursor/Slider
 - Particles
 
 WED
 - Track Interaction
 - Track Proximity Matrix
 - Track Chromatin Colors
+- strand markers
 
 THUR
 * POSTER *

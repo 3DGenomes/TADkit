@@ -44,14 +44,17 @@ var trackGenes = React.createClass({displayName: 'trackGenes',
 			y = d3.scale.ordinal().rangeBands([0, height], 0);
 
 		var xAxis = d3.svg.axis().scale(x).orient("bottom"),
-			yAxis = d3.svg.axis().scale(y).orient("left");
+			prime3Axis = d3.svg.axis().orient("left"),
+			prime5Axis = d3.svg.axis().orient("right");
+
+			var zoom = d3.behavior.zoom()
+			    .on("zoom", draw);
 
 		var svg = d3.select('#' + this.props.target).selectAll('div').append("svg")
 			.attr("width", width + margin.left + margin.right)
-			.attr("height", height + margin.top + margin.bottom);
+			.attr("height", height + margin.top + margin.bottom)
+		    .call(zoom);
 
-		var zoom = d3.behavior.zoom()
-		    .on("zoom", draw);
 
 		svg.append("defs").append("clipPath")
 			.attr("id", "clip")
@@ -70,17 +73,54 @@ var trackGenes = React.createClass({displayName: 'trackGenes',
 			y.domain(data.map(function(d) { return d.ID; }));
 			var dataScale= 480;
 			var dataOffset = ((fragmentEnd - fragmentStart) / assemblyLength) * dataScale * width  * 0.5;
-			console.log(dataOffset);
+			// console.log(dataOffset);
 			var dataCentered = (width * 0.5) - dataOffset;
-			console.log(dataCentered);
+			// console.log(dataCentered);
 		    zoom.x(x);
 			
-
 		svg.select(".focus").append("g")
 			.attr("class", "x axis")
 			.attr("transform", "translate(0," + height + ")")
 			.call(xAxis);
+			
+		// svg.select(".focus").append("g")
+		// 	.attr("class", "prime3 axis")
+		// 	.attr("transform", "translate(0,0)")
+		// 	.call(prime3Axis);
+		//
+		// svg.select(".focus").append("g")
+		// 	.attr("class", "prime5 axis")
+		// 	.attr("transform", "translate(" + width + ",3)")
+		// 	.call(prime5Axis);
 
+		var prime3 = svg.append("text")
+			.attr("x", -12)             
+			.attr("y", -3)
+			.attr("text-anchor", "right")  
+			.style("font-size", "10px") 
+			.text("3'");
+		
+		var prime5 = svg.append("text")
+			.attr("x", width + 8)             
+			.attr("y", -3)
+			.attr("text-anchor", "left")  
+			.style("font-size", "10px") 
+			.text("5'");
+		
+			var sense = svg.append("text")
+				.attr("x", -18)             
+				.attr("y", 8)
+				.attr("text-anchor", "right")  
+				.style("font-size", "10px") 
+				.text("<<");
+		
+			var antisense = svg.append("text")
+				.attr("x", -18)             
+				.attr("y", 18)
+				.attr("text-anchor", "right")  
+				.style("font-size", "10px") 
+				.text(">>");
+		
 		var focusGraph = barsGroup.selectAll("rect")
 			.data(data)
 			.enter().append("rect")
@@ -93,6 +133,14 @@ var trackGenes = React.createClass({displayName: 'trackGenes',
 		    .call(zoom.translate([-2000,0]).scale(dataScale));
 		    draw();
 
+			// var background = barsGroup.append("rect")
+			//     .attr("width", width)
+			//     .attr("height", height)
+			//     .style("fill", "none")
+			//         //make transparent (vs black if commented-out)
+			//     .style("pointer-events", "all");
+			//         //respond to mouse, even when transparent
+				
 		function draw() {
 			svg.select("g.x.axis").call(xAxis);
 			barsGroup.selectAll("rect")
