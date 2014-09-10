@@ -85,6 +85,7 @@ var trackGenes = React.createClass({displayName: 'trackGenes',
 			.data(data)
 			.enter().append("rect")
 			.attr("x", function(d) { return Math.floor(x(d.start)); } )
+			// .attr("y", function(d) { if (d.strand < 1) {return 0} else {return 0}; } )
 			.attr("y", function(d) { if (d.strand < 1) {return (trackMarkHeight)} else {return 0}; } )
 			.attr("width", function(d) { return Math.ceil(x(d.end) - x(d.start)) + "px"; } )
 			.attr("height", (trackMarkHeight) )

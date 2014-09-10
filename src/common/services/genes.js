@@ -22,37 +22,40 @@ TADkit.factory('Genes', ['$q', '$http', function($q, $http) {
 		getGenesCount: function () {
 			return genes.length;
 		},
-		getColors: function(genes, fragmentsCount, TADStart, fragmentLength) {
+		getColors: function(genes, biotypes, fragmentsCount, TADStart, fragmentLength) {
 			var colors = [];
+			var biotypesPresent = [];
 			for(var i=0; i<fragmentsCount; i++){
 				var fragmentLower = TADStart + (fragmentLength * i);
 				var fragmentUpper = fragmentLower + fragmentLength;
 				var genesCount = this.getGenesCount();
-				var color = "#666666"; // Base color - ie if none found
-
+				var color = "#888888"; // Base color - ie if none found
+				biotypesPresent.push([]);
 				for(var j=0; j<genesCount; j++){
 					var start = genes[j].start;
 					var end = genes[j].end;
+					var biotype = "";
 					if ( Math.max(fragmentLower, start) <= Math.min(fragmentUpper,end) ) {
-						// Str biotype = geneBiotype[j];
-						// for(int k=0; k<biotypesPresent -> size(); k++) // for every type
-						// {
-						//	   if ( biotypesList[k].find(biotype) == biotypesList[k].end() )
-						//	   {
-						//		  console.log("No " + biotype + " found at" + i ;
-						//	   } else {
-						//		   (*(*biotypesPresent)[k])[i] = (*(*biotypesPresent)[k])[i] + 1;
-						//		   (*biotypesScales)[i] = (*biotypesScales)[i] + 1;
-						//	   }
-						// }
+						biotype = genes[j].biotype;
+						console.log(biotype);
+						biotypesPresent[i].push(biotype);
 						
-						color =  "#115522";
+						if (biotype in biotypes) {
+							// console.log("color found");
+							color = biotypes[biotype];
+						} else {
+							console.log(biotype);
+							color = "#110100";
+						}
 					} else {
 						// console.log("No fragment overlap.");
 					}
+					// 1. if number over 1 then
 				};
 				colors.push(color);
 			};
+			console.log(JSON.stringify(biotypesPresent));
+			console.log(colors);
 			return colors;
 		}
 	};

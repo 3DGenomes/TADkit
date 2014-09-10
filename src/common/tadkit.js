@@ -38,12 +38,15 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 		$scope.segments = segments;
 		
 		var genes = Genes.getGenes();
+		var biotypes = Assembly.getBiotypeColors().gene;
+		// console.log(biotypes);
+		// console.log(JSON.stringify(biotypes));
 		var fragmentCount = particles * segments;
 		var TADStart = TAD.getMetadata().start;
 		// var fragmentLength = Math.round(TAD.getMetadata().lengthBP / TAD.getParticlesCount()) / segments;
 		var fragmentLength = TAD.getMetadata().resolution / segments;
-		
-			$scope.colors = Genes.getColors( genes, fragmentCount, TADStart, fragmentLength);
+		$scope.colors = Genes.getColors( genes, biotypes, fragmentCount, TADStart, fragmentLength);
+		// console.log($scope.colors);
 	}])	
 
 	TADkit.controller('TrackCtrl',['$scope', '$timeout', 'Genes', 
@@ -62,14 +65,6 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 	}])
 
 	TADkit.service('loadTAD', function($http, TAD, Assembly, Genes) {
-  
-	// EG. FUNCTION IF LOAD NEEDS TO DO SOMMIT
-	//	  var loadUser = $http.get('data.json')
-	//		.success(function (data) {
-	//				console.log("Loader complete");
-	//		  return data;
-	//		});
-
 		var species = "";
 		var slice = "X:0-4999999"; // Ensembl max :P
 		// LOAD TAD
@@ -85,7 +80,8 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 			return Genes.loadRegionGenes(species,slice);
 		})
 		.then(function(promise){
-			return promise;
+			// LOAD BIOTYPE COLORS
+			return Assembly.loadBiotypeColors();
 		});
 	
 		return {

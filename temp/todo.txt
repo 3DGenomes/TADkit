@@ -1,7 +1,9 @@
 TUE
 - Track Cursor/Slider
-- Colors by Biotype (updateable=) == check if updates Vertex Colors?
+x Colors by Biotype (updateable=)
+- check if updates = Vertex Colors?
 - Isolate user interaction Scene from Tracks
+- Particles
 
 WED
 - Track Interaction
@@ -10,6 +12,7 @@ WED
 
 THUR
 * POSTER *
+* LOGO *
 
 FRI
 - Print Poster

@@ -81,13 +81,13 @@ TADkit.directive('scene', [ 'Chromatin', function(Chromatin){
 
 			// LIGHTS
 			// Ambient
-			var ambientColor = "#999";
+			var ambientColor = "#111";
 			ambientLight = new THREE.AmbientLight( ambientColor );
 			ambientLight.name = "Scene Ambient Light";
 			scene.add(ambientLight);
 			// Point
 			var pointColor = "#fff";
-			var pointIntensity = 1.00;
+			var pointIntensity = 0.5;
 			//var pointDistance = 0.0; DEFAULT = infinite
 			pointLight = new THREE.PointLight( pointColor, pointIntensity );
 			pointLight.position.set( 20000, 20000, 20000 );

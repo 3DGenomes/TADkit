@@ -1,8 +1,9 @@
 'use strict';
 
-TADkit.service('Assembly', ['$q', '$http', function($q, $http) {
+TADkit.service('Assembly', ['$q', '$http', 'ColorsFromINI', function($q, $http, ColorsFromINI) {
 	var ensemblRoot = "http://rest.ensembl.org/";
-	var assembly = "";
+	var assembly = {};
+	var biotypeColors = {};
 	return {
 		loadInfoAssembly: function(species) {
 			var deferral = $q.defer();
@@ -18,7 +19,7 @@ TADkit.service('Assembly', ['$q', '$http', function($q, $http) {
 		getAssembly: function () {
 			return assembly;
 		},
-		getInfoBiotypes: function() {
+		loadInfoBiotypes: function() {
 			var deferral = $q.defer();
 			var species = TAD.getSpecies();
 			$http.get('assets/json/drosophila_melanogaster-biotypes.json'). // OFFLINE
@@ -29,18 +30,22 @@ TADkit.service('Assembly', ['$q', '$http', function($q, $http) {
 			});
 			return deferral.promise;
 		},
-		getBiotypeColors: function() {
+		loadBiotypeColors: function() {
 			var deferral = $q.defer();
 			$http.get('assets/json/ensembl-webcode-COLOUR.ini'). // OFFLINE
 			// $http.get("https://raw.githubusercontent.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini").
 			success(function(data){
-				var iniData = ini.parse(data);
+				var iniData = ColorsFromINI.parse(data);
+				biotypeColors = iniData;
 				console.log("Ensembl webcode biotype colors retrieved Ensembl.");
 				deferral.resolve(data);
 			});
 			return deferral.promise;
 		},
-		getRegionGenes: function(requestSlice) {
+		getBiotypeColors: function () {
+			return biotypeColors;
+		},
+		loadRegionGenes: function(requestSlice) {
 			var deferral = $q.defer();
 			var species = TAD.getSpecies();
 			$http.get('assets/json/drosophila_melanogaster-genes.json'). // OFFLINE
@@ -72,6 +77,42 @@ TADkit.service('Assembly', ['$q', '$http', function($q, $http) {
 			console.log(TADBiotypes);
 			var totalTADBiotypes = TADBiotypes.length;
 			console.log("Total TAD Biotypes: %s", totalTADBiotypes);
+		}
+	};
+}])
+
+TADkit.service('ColorsFromINI', ['ConvertColors', function (ConvertColors) {
+	return {
+		parse: function(data) {
+			var regex = {
+				section: /^\s*\[\s*([^\]]*)\s*\]\s*$/,
+				param: /^\s*([\w\.\-\_]+)\s*=\s*([\w\.\-\_]+)/,
+				comment: /^\s*#.*$/
+			};
+			var value = {};
+			var lines = data.split(/\r\n|\r|\n/);
+			var section = null;
+			lines.forEach(function(line){
+				if(regex.comment.test(line) || line === ""){
+					return;
+				};
+				if(regex.param.test(line)){
+					var match = line.match(regex.param);
+					if(section){
+						var hexColor = ConvertColors.nameToHex( match[2] );
+						value[section][match[1]] = hexColor;
+					}else{
+						value[match[1]] = match[2];
+					}
+				}else if(regex.section.test(line)){
+					var match = line.match(regex.section);
+					value[match[1]] = {};
+					section = match[1];
+				}else if(line.length == 0 && section){
+					section = null;
+				};
+			});
+			return value;
 		}
 	};
 }])

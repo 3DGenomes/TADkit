@@ -2,6 +2,7 @@
 
 TADkit.factory('TAD', ['$q', '$http', function($q, $http) {
 	var TAD = null;
+	var detailFactor = 10;
 	return {
 		loadTAD: function() {
 			var deferral = $q.defer();
@@ -9,7 +10,7 @@ TADkit.factory('TAD', ['$q', '$http', function($q, $http) {
 				success(function(data){
 					TAD = data;
 					TAD.metadata.lengthBP = TAD.metadata.end - TAD.metadata.start;
-					TAD.metadata.segments = 10; //parseInt( TAD.metadata.lengthBP / TAD.metadata.resolution ) / 10;
+					TAD.metadata.segments = parseInt( TAD.metadata.lengthBP / TAD.metadata.resolution ) / detailFactor;
 					console.log("TAD data retreived from file.");
 					deferral.resolve(data);
 				});
