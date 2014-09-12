@@ -11,19 +11,6 @@ TADkit.directive('scene', [ 'Particles', 'Chromatin', function(Particles, Chroma
 			segments: "="
 		},
 		link: function postLink(scope, element, attrs) {
-			// console.log(scope);
-			// var particles = scene.getObjectByName( "Particles Cloud" );
-	        scope.$watch('particles', function(n,o) {
-				console.log("directive watching");
-				console.log(n);
-				console.log(o);
-					if (n) {
-						console.log("toggled");
-						console.log(n);
-						console.log(o);
-					// particles.visible = scope.particles;
-				}
-	        });
 
 		var scene, viewport, stats, cube;
 		var camera, cameraPosition, cameraTarget, cameraTranslate;
@@ -158,6 +145,18 @@ TADkit.directive('scene', [ 'Particles', 'Chromatin', function(Particles, Chroma
 			
 			window.addEventListener( 'resize', scope.onWindowResize, false );
 
+			var particlesObj = scene.getObjectByName( "Particles Cloud" );
+				scope.$watch('particles', function(n,o) {
+					if (n !== o) {
+					particlesObj.visible = scope.particles;
+				}
+			});
+			var chromatinObj = scene.getObjectByName( "Chromatin Fiber" );
+				scope.$watch('chromatin', function(n,o) {
+					if (n !== o) {
+					chromatinObj.visible = scope.chromatin;
+				}
+			});
 		};
 
 		// -----------------------------------

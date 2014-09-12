@@ -57,7 +57,7 @@ TADkit.factory('Chromatin', [ function () {
 		}
 		chromatinGeometry.computeBoundingSphere();
 		chromatinFiber.boundingSphere = chromatinGeometry.boundingSphere;
-		chromatinFiber.name = "chromatinFiber";
+		chromatinFiber.name = "Chromatin Fiber";
 		chromatinFiber.visible = this.chromatinVisibility;
 		
 		this.fiber = chromatinFiber;

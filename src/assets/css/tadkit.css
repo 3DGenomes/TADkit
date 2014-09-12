@@ -1,7 +1,28 @@
-h2 {
-		font-size: 1.0rem !important;
-		margin: 0.5rem 0.5rem 0.5rem;
-	}
+/* General Style - crude Foundation overrides... */
+.tadkit-title img {
+	margin-top: -2px;
+}
+.tad-species {
+	color: #fff;
+}
+.tad-slice {
+	color: #ccc;
+	margin: 0 0.4rem;
+}
+.btn-cog {
+	color: #fff;
+	text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+}
+#scene-controls {
+	float: right;
+	padding-right: 60px;
+	list-style-type: none;
+	font-size: 0.8rem;
+	color: #666;
+	text-align: right;
+}
+#scene-controls a {
+	color: #999;
 }
 
 /* React Styling */

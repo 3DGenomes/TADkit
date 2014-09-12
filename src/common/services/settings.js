@@ -2,6 +2,7 @@
 
 TADkit.factory('Settings', function() {
 	var particles = false;
+	var chromatin = true;
 	return {
 		toggle: function (bool) {
 			bool = !bool;
@@ -13,6 +14,18 @@ TADkit.factory('Settings', function() {
 		},
 		getParticles: function () {
 			return particles;
+		},
+		toggleChromatin: function () {
+			chromatin = this.toggle(chromatin);
+			return chromatin;
+		},
+		getChromatin: function () {
+			return chromatin;
 		}
 	};
+})
+
+
+TADkit.factory('test', function() {
+	return "Here it is!";
 })

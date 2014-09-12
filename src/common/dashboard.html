@@ -1,8 +1,22 @@
-<h2 class="tadtitle row">{{title.text}}</h2>
 	<div  ng-controller="TrackCtrl" class="trackholder row">
 		<track data="genes" id="genes" assemblylength="assemblyLength" class=""></track>
 	</div>
 	<div  ng-controller="SceneCtrl" class="trackholder row">
+		<ul id="scene-controls"  class="right">
+			<li>
+				<a ng-click="toggleParticles()" class="toggle">Particles 
+					<span data-ng-hide="particles"><i class="fa fa-toggle-off"></i></span>
+					<span data-ng-show="particles"><i class="fa fa-toggle-on"></i></span>
+				</a>
+			</li>
+			<li>
+				<a ng-click="toggleChromatin()" class="toggle">Chromatin 
+					<span data-ng-hide="chromatin"><i class="fa fa-toggle-off"></i></span>
+					<span data-ng-show="chromatin"><i class="fa fa-toggle-on"></i></span>
+				</a>
+			</li>
+			<a ng-click="toggleParticles()"><i class="icon-adjust"></i></a>
+		</ul>
 		<scene data="vertices" particles="particles" chromatin="chromatin" colors="colors" segments="segments" id="tadmodel" class=""></scene>
 	</div>
 	<div  ng-controller="TrackCtrl" class="trackholder row">

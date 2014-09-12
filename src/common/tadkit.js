@@ -17,17 +17,9 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 		})
 	})
 
-	TADkit.controller('TopbarCtrl', ['$scope', 'Settings', function($scope, Settings){
-		
-		$scope.particles = Settings.getParticles();
-		$scope.toggleParticles = function() {
-			$scope.particles = Settings.toggleParticles();
-			console.log("Ctrl toggle");
-		}
-		
-	}])
+	TADkit.controller('TopbarCtrl', ['$rootScope', '$scope', function($rootScope, $scope){}])
 
-	TADkit.controller('DashboardCtrl',['$scope', 'Settings', 'TAD', 'Assembly', 'Genes', function($scope, Settings, TAD, Assembly, Genes){
+	TADkit.controller('DashboardCtrl',['$rootScope', '$scope', 'Settings', 'TAD', 'Assembly', 'Genes', function($rootScope, $scope, Settings, TAD, Assembly, Genes){
 		$scope.assembly = Assembly.getAssembly();
 		var assemblyLength = 0;
 		var regions = $scope.assembly.top_level_region;
@@ -66,37 +58,35 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 		
 		var species = TAD.getSpecies();
 		var slice = TAD.getSlice();
-		$scope.title = { text: species + ' - ' + slice };
+		$rootScope.species = { text: species };
+		$rootScope.slice = { text: slice };
 		
-		// $scope.particles = Settings.getParticles();
-		// $scope.$watch('particles', function (newValue) {
-		// 	console.log("watching");
-		// 	if (newValue)
-		// 	$scope.particles = Settings.getParticles();
-		// })
-
+		$scope.particles = Settings.getParticles();
+		$scope.toggleParticles = function() {
+			$scope.particles = !$scope.particles;
+		}
+		$scope.chromatin = Settings.getChromatin();
+		$scope.toggleChromatin = function() {
+			$scope.chromatin = !$scope.chromatin;
+		}
 	}])	
 
-	TADkit.controller('TrackCtrl',['$scope', '$timeout', 'Genes', 'Interactions',
-	function($scope, $timeout, Genes, Interactions){
+	TADkit.controller('TrackCtrl',['$scope', '$timeout', 'test', 'Genes', 'Interactions',
+	function($scope, $timeout, test, Genes, Interactions){
 		// Timeout as temp fix to pause rendering until DOM complete
 		$timeout( function() {
 			$scope.genes = Genes.getGenes();
-			$scope.interactions = Genes.getInteractions();
+			$scope.interactions = Interactions.getInteractions();
 		}, 0 );
 		console.log('Track now active.');
-
 	}])
 
-	TADkit.controller('SceneCtrl',['$scope', '$timeout', 'Settings', 'TAD',
-	function($scope, $timeout, Settings, TAD){
+	TADkit.controller('SceneCtrl',['$scope', '$timeout', 'test', 'TAD',
+	function($scope, $timeout, test, TAD){
 		// Timeout as temp fix to pause rendering until DOM complete
 		// $timeout( function() {$scope.vertices = TAD.getVertices()}, 0 ); // WHY NOT?
 
 		$scope.vertices = TAD.getVertices();
-		$scope.chromatin = true;
-		
-		$scope.particles = Settings.getParticles();
 	}])
 
 	TADkit.service('loadTAD', function($http, TAD, Assembly, Genes) {
