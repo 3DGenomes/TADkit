@@ -10,6 +10,7 @@ TADkit.factory('Chromatin', [ function () {
 		// console.log(colors.length);
 		
 		var defaults = {
+			chromatinVisibility: true,
 			particles: 0,
 			particleSegments: 5,
 			curveSegments: 1,
@@ -20,10 +21,10 @@ TADkit.factory('Chromatin', [ function () {
 		};		
 		overrides = overrides || { };
 		angular.extend(this, angular.copy(defaults), overrides);
-
+		
 		var TADGeometry = getTADGeometry( data );
 		var pathControls = getPathControls( TADGeometry.vertices );
-		if (this.particles == 0) this.particles = pathControls.length - 5;
+		if (this.particles == 0) this.particles = pathControls.length - 1;
 		
 		var pathSegments = this.particles * this.particleSegments;
 		this.pathSegments = pathSegments;
@@ -42,6 +43,7 @@ TADkit.factory('Chromatin', [ function () {
 				color: fragmentColor,
 				ambient: fragmentColor,
 				emissive: fragmentColor,
+				vertexColors: THREE.VertexColors,
 				//shading: THREE.FlatShading,
 				opacity: 1.0,
 				transparent: false,
@@ -56,6 +58,7 @@ TADkit.factory('Chromatin', [ function () {
 		chromatinGeometry.computeBoundingSphere();
 		chromatinFiber.boundingSphere = chromatinGeometry.boundingSphere;
 		chromatinFiber.name = "chromatinFiber";
+		chromatinFiber.visible = this.chromatinVisibility;
 		
 		this.fiber = chromatinFiber;
 		this.center = chromatinGeometry.boundingSphere.center;

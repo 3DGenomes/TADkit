@@ -1,11 +1,13 @@
+h2 {
+		font-size: 1.0rem !important;
+		margin: 0.5rem 0.5rem 0.5rem;
+	}
+}
+
 /* React Styling */
 .trackholder {
 /*	background: red;*/
-	min-height: 7rem;
-}
-.trackholder h4 {
-	font-size: 1.0rem;
-	margin: 0.2rem  0.5rem 0.5rem;
+	min-height: 5rem;
 }
 track {
 	display: block;

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.axis {
+  font: 10px sans-serif;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+.axis .domain {
+  fill: none;
+/*  stroke: #000;
+  stroke-opacity: .3;
+  stroke-width: 10px;
+  stroke-linecap: square;*/
+}
+
+.axis .halo {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 4px;
+  stroke-linecap: square;
+}
+
+.particle {
+	fill: #999;
+}
+.slider .handle {
+  fill: #fff;
+  stroke: #333;
+  stroke-opacity: .5;
+  stroke-width: 2.5px;
+  pointer-events: none;
+}
+
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+
+var data;
+
+d3.json("kartes_example_X_1559-1660.json", function(json) {
+    //rendering logic here
+data = json;
+console.log(data);
+
+var particles = 102;
+var currentParticle = 51;
+
+var margin = {top: 0, right: 40, bottom: 40, left: 40},
+    width = 760 - margin.left - margin.right,
+    height = 60 - margin.bottom - margin.top,
+	trackMarkHeight = 10;
+
+var particleWidth = width / particles;
+
+var x = d3.scale.linear()
+    .range([0, width])
+    .clamp(true);
+var y = d3.scale.linear()
+    .range([0, 20])
+    .clamp(true);
+
+var brush = d3.svg.brush()
+    .x(x)
+    .extent([0, 0])
+    .on("brush", brushed);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var interact = svg.append("g")
+			.attr("class", "interact");
+
+var clipped = interact.append("g")
+	.attr('clip-path', 'url(#clip)');
+
+	x.domain([1, particles]);
+	y.domain([0, 1]);
+	
+svg.select(".interact").append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.svg.axis()
+      .scale(x)
+      .orient("bottom")
+      .tickFormat(function(d) { return d; })
+      .tickSize(0)
+      .tickPadding(20))
+  .select(".domain")
+  .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+    .attr("class", "halo");
+
+var slider = svg.append("g")
+    .attr("class", "slider")
+    .call(brush);
+
+slider.selectAll(".extent,.resize")
+    .remove();
+
+slider.select(".background")
+    .attr("height", height);
+
+var handle = slider.append("circle")
+    .attr("class", "handle")
+    .attr("transform", "translate(0," + height + ")")
+    .attr("r", 6);
+
+slider
+  //   .call(brush.event)
+  // .transition() // gratuitous intro!
+  //   .duration(750)
+    .call(brush.extent([currentParticle, 0]))
+    .call(brush.event);
+
+var interactGraph = clipped.selectAll("rect")
+	.data(data)
+	.enter().append("rect")
+	.filter(function(d){ return d.a == brush.extent()[0]; })
+	.attr("x", function(d) { return x(d.b) - (particleWidth * 0.5) ; } )
+	.attr("y", 0 )
+	.attr("width", function(d) { return particleWidth + "px"; } )
+	.attr("height", function(d) { return y(d.dist); } )
+	.attr("class", "particle" );
+
+
+function brushed() {
+    var extent0 = brush.extent(),
+        extent1;
+
+    // if dragging, preserve the width of the extent
+    if (d3.event.mode === "move") {
+      var d0 = d3.round(extent0[0]),
+          d1 = d3.offset(d0, Math.round((extent0[1] - extent0[0]) / 864e5));
+      extent1 = [d0, d1];
+    }
+
+    // otherwise, if resizing, round both dates
+    else {
+      extent1 = extent0.map(d3.round);
+
+      // if empty when rounded, use floor & ceil instead
+      if (extent1[0] >= extent1[1]) {
+        extent1[0] = Math.floor(extent0[0]);
+        extent1[1] = Math.ceil(extent0[1]);
+      }
+    }
+
+    d3.select(this).call(brush.extent(extent1));
+	
+	
+  var value = brush.extent()[0];
+ 
+  // if (d3.event.sourceEvent) { // not a programmatic event
+  //   value = x.invert(d3.mouse(this)[0]);
+  //   brush.extent([value, value]);
+  // }
+  handle.attr("cx", x(value));
+
+	var current = brush.extent()[0];
+	console.log(current);
+	  interactGraph = interact.selectAll("rect").remove();
+		// 	  	.filter(function(d){ return d.a == current; })
+		// .attr("x", function(d) { return 0; } );
+
+	 interactGraph = interact.selectAll("rect")
+	 			.data(data)
+	 			.enter().append("rect")
+	 			.filter(function(d){ return d.a == brush.extent()[0]; })
+	 			.attr("x", function(d) { return x(d.b) - (particleWidth * 0.5) ; } )
+	 			.attr("y", 0 )
+	 			.attr("width", function(d) { return particleWidth + "px"; } )
+	 			.attr("height", function(d) { return  y(d.dist); } )
+	 			.attr("class", "particle" );
+
+
+}
+
+}); // end JSON
+
+</script>

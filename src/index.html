@@ -23,7 +23,7 @@
 		<top-bar-section>
 		  <!-- Right Nav Section -->
 		  <ul class="right">
-			<li class="active"><a href="#">Active</a></li>
+			<li class=""><a ng-click="toggleParticles()">Particles</a></li>
 			<li has-dropdown>
 			  <a href="#">User</a>
 			  <ul top-bar-dropdown>
@@ -51,20 +51,23 @@
 	<script src="../bower_components/angular-foundation/mm-foundation-tpls.min.js"></script>
 	<script src="../bower_components/d3/d3.min.js"></script>
 	<script src="../bower_components/threejs/build/three.js"></script>
-	<script src="assets/libs/Stats.min.js"></script>
-	<script src="assets/libs/OrbitControls.js"></script>
+	<script src="assets/libs/stats.min.js"></script>
 	<script src="assets/libs/TrackballControls.js"></script>
 	<!--script src="http://cdnjs.cloudflare.com/ajax/libs/stats.js/r11/Stats.min.js"></script-->
 	<!--script src="https://rawgit.com/mrdoob/three.js/master/examples/js/controls/OrbitControls.js"></script-->
 	<script src="common/tadkit.js"></script>
+	<script src="common/services/settings.js"></script>
 	<script src="common/services/tad.js"></script>
 	<script src="common/services/assembly.js"></script>
 	<script src="common/services/genes.js"></script>
+	<script src="common/services/interactions.js"></script>
 	<script src="common/services/convertcolors.js"></script>
 	<script src="tracks/track.js"></script>
 	<script src="tracks/track-genes.js"></script>
+	<script src="tracks/track-interactions.js"></script>
 	<script src="scenes/scene.js"></script>
 	<script src="scenes/scene-chromatin.js"></script>
+	<script src="scenes/scene-particles.js"></script>
 	<!--script src="scenes/chromatin.js"></script-->
 	
 </body>

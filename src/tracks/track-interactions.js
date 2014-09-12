@@ -2,7 +2,7 @@
 
 // REACT D3 TRACK COMPONENT
 var assemblyLength = 0;
-var trackGenes = React.createClass({displayName: 'trackGenes',
+var trackInteractions = React.createClass({displayName: 'Long Range Interactions Track',
 	componentWillReceiveProps:function(nextProps){
 		// console.log(nextProps);
 			if(nextProps.data){
@@ -35,8 +35,6 @@ var trackGenes = React.createClass({displayName: 'trackGenes',
 			height = 60 - margin.top - margin.bottom,
 			trackMarkHeight = 10;
 
-		var parseDate = d3.time.format("%b %Y").parse;
-
 		var x = d3.scale.linear().range([0, width]).clamp(true),
 			y = d3.scale.ordinal().rangeBands([0, height], 0);
 
@@ -51,7 +49,6 @@ var trackGenes = React.createClass({displayName: 'trackGenes',
 			.attr("width", width + margin.left + margin.right)
 			.attr("height", height + margin.top + margin.bottom)
 		    .call(zoom);
-
 
 		svg.append("defs").append("clipPath")
 			.attr("id", "clip")
@@ -108,16 +105,17 @@ var trackGenes = React.createClass({displayName: 'trackGenes',
 				.style("font-size", "10px") 
 				.text(">>");
 		
-		var focusGraph = barsGroup.selectAll("rect")
-			.data(data)
-			.enter().append("rect")
-			.attr("x", function(d) { return Math.floor(x(d.start)); } )
-			// .attr("y", function(d) { if (d.strand < 1) {return 0} else {return 0}; } )
-			.attr("y", function(d) { if (d.strand < 1) {return (trackMarkHeight)} else {return 0}; } )
-			.attr("width", function(d) { return Math.ceil(x(d.end) - x(d.start)) + "px"; } )
-			.attr("height", (trackMarkHeight) )
-			.attr("class", function(d) { return d.biotype.toLowerCase(); } )
-		    .call(zoom.translate([-2000,0]).scale(dataScale));
+		// var focusGraph = barsGroup.selectAll("rect")
+		// 	.data(data)
+		// 	.enter().append("rect")
+		// 	.attr("x", function(d) { return Math.floor(x(d.start)); } )
+		// 	// .attr("y", function(d) { if (d.strand < 1) {return 0} else {return 0}; } )
+		// 	.attr("y", function(d) { if (d.strand < 1) {return (trackMarkHeight)} else {return 0}; } )
+		// 	.attr("width", function(d) { return Math.ceil(x(d.end) - x(d.start)) + "px"; } )
+		// 	.attr("height", (trackMarkHeight) )
+		// 	.attr("class", function(d) { return d.biotype.toLowerCase(); } )
+		//     .call(zoom.translate([-2000,0]).scale(dataScale));
+			
 		    draw();
 
 			// var background = barsGroup.append("rect")
@@ -137,11 +135,11 @@ var trackGenes = React.createClass({displayName: 'trackGenes',
 
 	},
 	render: function() {
-		// console.log("Genes Track rendering");
+		// console.log("Interactions Track rendering");
 		return React.DOM.div( {id:this.props.target} )
 	},
 	componentDidMount:function(){
-		console.log("Genes Track mounted");
+		console.log("Interactions Track mounted");
 	}
 })
 

@@ -1,17 +1,19 @@
 TUE
 x Colors by Biotype (updateable=)
 x Isolate user interaction Scene from Tracks
-- check if updates = Vertex Colors?
-- Track Cursor/Slider
-- Particles
+x prime, sense markers
+- updates = Vertex Colors?
+x Track Cursor/Slider
 
 WED
-- Track Interaction
-- Track Proximity Matrix
-- Track Chromatin Colors
-- strand markers
+x Particles (point cloud)
+- Occupancy (-c -i  => json)
+x Track LRInteractions (.lri)
 
 THUR
+- Track Proximity Matrix (.col)
+- Track Chromatin Colors
+
 * POSTER *
 * LOGO *
 
@@ -22,8 +24,25 @@ SAT
 - Build version
 
 
-MINOR
+LATER
+- keyboard input
+- download and unzip Guillame's data
 - Load from file Module
 - Global Offline switch
+- geometry-color mismatch 2040-2039??
 
 
+
+
+
+
+
+
+
+    if (track == "LRI") trackHue = 0.0; // White
+    if (track == "HMM") trackHue = 1.0; // Black
+    if (track == "HP1") { trackHue = 0.38; trackColumn = 4; } // Green
+    if (track == "BRM") { trackHue = 0.00; trackColumn = 44; } // Red
+    if (track == "MRG15") { trackHue = 0.17; trackColumn = 12; } // Yellow
+    if (track == "PC") { trackHue = 0.66; trackColumn = 33; } // Blue
+    if (track == "H1") { trackHue = 1.00; trackColumn = 37; } // Black (Magneta)

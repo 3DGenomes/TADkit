@@ -30,6 +30,10 @@ TADkit.factory('TAD', ['$q', '$http', function($q, $http) {
 		},
 		getSpecies: function () {
 			var species = TAD.metadata.species;
+			return species;
+		},
+		getSpeciesUrl: function () {
+			var species = TAD.metadata.species;
 			species = species.replace(/[^a-z0-9]/gi, '_').toLowerCase();
 			return species;
 		},

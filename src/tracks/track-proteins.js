@@ -2,7 +2,7 @@
 
 // REACT D3 TRACK COMPONENT
 var assemblyLength = 0;
-var trackGenes = React.createClass({displayName: 'trackGenes',
+var trackProteins = React.createClass({displayName: 'Proteins Track',
 	componentWillReceiveProps:function(nextProps){
 		// console.log(nextProps);
 			if(nextProps.data){
@@ -44,7 +44,7 @@ var trackGenes = React.createClass({displayName: 'trackGenes',
 			prime3Axis = d3.svg.axis().orient("left"),
 			prime5Axis = d3.svg.axis().orient("right");
 
-		var zoom = d3.behavior.zoom()
+			var zoom = d3.behavior.zoom()
 			    .on("zoom", draw);
 
 		var svg = d3.select('#' + this.props.target).selectAll('div').append("svg")
@@ -80,19 +80,29 @@ var trackGenes = React.createClass({displayName: 'trackGenes',
 			.attr("transform", "translate(0," + height + ")")
 			.call(xAxis);
 			
-			var prime3 = svg.append("text")
-				.attr("x", -12)             
-				.attr("y", -3)
-				.attr("text-anchor", "right")  
-				.style("font-size", "10px") 
-				.text("3'");
+		// svg.select(".focus").append("g")
+		// 	.attr("class", "prime3 axis")
+		// 	.attr("transform", "translate(0,0)")
+		// 	.call(prime3Axis);
+		//
+		// svg.select(".focus").append("g")
+		// 	.attr("class", "prime5 axis")
+		// 	.attr("transform", "translate(" + width + ",3)")
+		// 	.call(prime5Axis);
+
+		var prime3 = svg.append("text")
+			.attr("x", -12)             
+			.attr("y", -3)
+			.attr("text-anchor", "right")  
+			.style("font-size", "10px") 
+			.text("3'");
 		
-			var prime5 = svg.append("text")
-				.attr("x", width + 8)             
-				.attr("y", -3)
-				.attr("text-anchor", "left")  
-				.style("font-size", "10px") 
-				.text("5'");
+		var prime5 = svg.append("text")
+			.attr("x", width + 8)             
+			.attr("y", -3)
+			.attr("text-anchor", "left")  
+			.style("font-size", "10px") 
+			.text("5'");
 		
 			var sense = svg.append("text")
 				.attr("x", -18)             
@@ -137,11 +147,11 @@ var trackGenes = React.createClass({displayName: 'trackGenes',
 
 	},
 	render: function() {
-		// console.log("Genes Track rendering");
+		// console.log("Proteins Track rendering");
 		return React.DOM.div( {id:this.props.target} )
 	},
 	componentDidMount:function(){
-		console.log("Genes Track mounted");
+		console.log("Proteins Track mounted");
 	}
 })
 

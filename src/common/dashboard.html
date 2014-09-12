@@ -1,8 +1,10 @@
+<h2 class="tadtitle row">{{title.text}}</h2>
 	<div  ng-controller="TrackCtrl" class="trackholder row">
-		<h4 class="">Sequence Track</h4>
-		<track data="genes" id="sequence" assemblylength="assemblyLength" class=""></track>
+		<track data="genes" id="genes" assemblylength="assemblyLength" class=""></track>
 	</div>
 	<div  ng-controller="SceneCtrl" class="trackholder row">
-		<h4 class="">TAD Model</h4>
-		<scene data="vertices" colors="colors" segments="segments" id="tadmodel" class=""></scene>
+		<scene data="vertices" particles="particles" chromatin="chromatin" colors="colors" segments="segments" id="tadmodel" class=""></scene>
+	</div>
+	<div  ng-controller="TrackCtrl" class="trackholder row">
+		<track data="interactions" id="interactions" assemblylength="assemblyLength" class=""></track>
 	</div>

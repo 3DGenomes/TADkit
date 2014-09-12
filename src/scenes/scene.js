@@ -1,15 +1,30 @@
 'use strict';
 
-TADkit.directive('scene', [ 'Chromatin', function(Chromatin){
+TADkit.directive('scene', [ 'Particles', 'Chromatin', function(Particles, Chromatin){
 	return {
 		restrict: 'E',
 		scope: { 
 			data: "=",
+			particles: "=",
+			chromatin: "=",
 			colors: "=",
 			segments: "="
 		},
 		link: function postLink(scope, element, attrs) {
 			// console.log(scope);
+			// var particles = scene.getObjectByName( "Particles Cloud" );
+	        scope.$watch('particles', function(n,o) {
+				console.log("directive watching");
+				console.log(n);
+				console.log(o);
+					if (n) {
+						console.log("toggled");
+						console.log(n);
+						console.log(o);
+					// particles.visible = scope.particles;
+				}
+	        });
+
 		var scene, viewport, stats, cube;
 		var camera, cameraPosition, cameraTarget, cameraTranslate;
 		var ambientLight, pointLight, loader, mesh,
@@ -75,11 +90,11 @@ TADkit.directive('scene', [ 'Chromatin', function(Chromatin){
 			// console.log(controls);
 
 			// STATS
-			stats = new Stats();
-			stats.setMode(0); // 0: fps, 1: ms
-			stats.domElement.style.position = 'absolute';
-			stats.domElement.style.left = '10px';
-			stats.domElement.style.bottom = '10px';
+			// stats = new Stats();
+			// stats.setMode(0); // 0: fps, 1: ms
+			// stats.domElement.style.position = 'absolute';
+			// stats.domElement.style.left = '10px';
+			// stats.domElement.style.bottom = '10px';
 			// viewport.appendChild( stats.domElement );
 
 			// HELPERS
@@ -117,9 +132,20 @@ TADkit.directive('scene', [ 'Chromatin', function(Chromatin){
 				wireframe: false
 			});
 			
-			var chromatinSettings = {particleSegments: scope.segments};
-			// console.log("scope.colors");
-			// console.log(scope.colors);
+			var particlesSettings = {
+					particlesVisibility: scope.particles,
+					particleColor: "#ffffff",
+					particleSize: 350,
+					particleOpacity: 0.8
+			};
+			var particles = new Particles( scope.data, particlesSettings );
+			scene.add(particles.cloud);
+
+			var chromatinSettings = {
+					chromatinVisibility: scope.chromatin,
+					particleSegments: scope.segments
+			};
+
 			var chromatin = new Chromatin( scope.data, scope.colors, chromatinSettings );
 			scene.add(chromatin.fiber);
 			scope.lookAtTAD(chromatin.center, cameraTarget, chromatin.bounds * 3.0);
@@ -187,7 +213,7 @@ TADkit.directive('scene', [ 'Chromatin', function(Chromatin){
 
 		scope.render = function () {
 			renderer.render( scene, camera );
-			stats.update();
+			// stats.update();
 		};
 
 		// Begin

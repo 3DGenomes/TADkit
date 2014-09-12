@@ -19,9 +19,8 @@ TADkit.service('Assembly', ['$q', '$http', 'ColorsFromINI', function($q, $http, 
 		getAssembly: function () {
 			return assembly;
 		},
-		loadInfoBiotypes: function() {
+		loadInfoBiotypes: function(species) {
 			var deferral = $q.defer();
-			var species = TAD.getSpecies();
 			$http.get('assets/json/drosophila_melanogaster-biotypes.json'). // OFFLINE
 			// $http.get(ensemblRoot + "info/biotypes/" + species + "?content-type=application/json").
 			success(function(data){
@@ -44,17 +43,6 @@ TADkit.service('Assembly', ['$q', '$http', 'ColorsFromINI', function($q, $http, 
 		},
 		getBiotypeColors: function () {
 			return biotypeColors;
-		},
-		loadRegionGenes: function(requestSlice) {
-			var deferral = $q.defer();
-			var species = TAD.getSpecies();
-			$http.get('assets/json/drosophila_melanogaster-genes.json'). // OFFLINE
-			// $http.get(ensemblRoot + "overlap/region/" + species + "/" + requestSlice + "?feature=gene;content-type=application/json").
-			success(function(data){
-				console.log("Genes for Region " + requestSlice + " of " + species + " retreived from Ensembl.");
-				deferral.resolve(data);
-			});
-			return deferral.promise;
 		},
 		getRegionBiotypes: function (genes) {
 			// GET BIOTYPES AND SET BIOTYPE COLORS
