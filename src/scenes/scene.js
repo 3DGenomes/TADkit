@@ -11,7 +11,7 @@ TADkit.directive('scene', [ 'Particles', 'Chromatin', function(Particles, Chroma
 			segments: "="
 		},
 		link: function postLink(scope, element, attrs) {
-
+			// console.log(scope);
 		var scene, viewport, stats, cube;
 		var camera, cameraPosition, cameraTarget, cameraTranslate;
 		var ambientLight, pointLight, loader, mesh,

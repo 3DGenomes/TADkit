@@ -20,6 +20,7 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 	TADkit.controller('TopbarCtrl', ['$rootScope', '$scope', function($rootScope, $scope){}])
 
 	TADkit.controller('DashboardCtrl',['$rootScope', '$scope', 'Settings', 'TAD', 'Assembly', 'Genes', function($rootScope, $scope, Settings, TAD, Assembly, Genes){
+
 		$scope.assembly = Assembly.getAssembly();
 		var assemblyLength = 0;
 		var regions = $scope.assembly.top_level_region;
@@ -43,10 +44,29 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 		var biotypes = Assembly.getBiotypeColors().gene;
 		// console.log(biotypes);
 		// console.log(JSON.stringify(biotypes));
+		
+		// Count fragments
 		var fragmentCount = particles * segments;
-		var TADStart = TAD.getMetadata().start;
+		$rootScope.fragments = fragmentCount;
+		// console.log($rootScope.fragments);
+
+		// Set initial position
+		var position = parseInt( fragmentCount * 0.5 );
+		$scope.slider = {};
+		$scope.slider.position = position;
+		// console.log($scope.slider.position);
+		
+		var TADMetadata = TAD.getMetadata();
+		var TADStart = TADMetadata.start;
 		// var fragmentLength = Math.round(TAD.getMetadata().lengthBP / TAD.getParticlesCount()) / segments;
-		var fragmentLength = TAD.getMetadata().resolution / segments;
+		var fragmentLength = TADMetadata.resolution / segments;
+
+		var focusStart = TADMetadata.start;
+		$scope.focusStart = focusStart;
+
+		var focusEnd = TADMetadata.end;
+		$scope.focusEnd = focusEnd;
+		
 		$scope.colors = Genes.getColors( genes, biotypes, fragmentCount, TADStart, fragmentLength);
 		// $scope.colors = Genes.getRandomColors(fragmentCount);
 
@@ -61,20 +81,27 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 		$rootScope.species = { text: species };
 		$rootScope.slice = { text: slice };
 		
-		$scope.particles = Settings.getParticles();
+		// Interaction Settings
+		$scope.showParticles = Settings.getParticles();
 		$scope.toggleParticles = function() {
-			$scope.particles = !$scope.particles;
+			$scope.showParticles = !$scope.showParticles;
 		}
-		$scope.chromatin = Settings.getChromatin();
+		$scope.showChromatin = Settings.getChromatin();
 		$scope.toggleChromatin = function() {
-			$scope.chromatin = !$scope.chromatin;
+			$scope.showChromatin = !$scope.showChromatin;
 		}
+		$scope.showSense = Settings.getSense();
+		$scope.toggleSense = function() {
+			$scope.showSense = !$scope.showSense;
+		}
+		
 	}])	
 
-	TADkit.controller('TrackCtrl',['$scope', '$timeout', 'test', 'Genes', 'Interactions',
-	function($scope, $timeout, test, Genes, Interactions){
+	TADkit.controller('TrackCtrl',['$scope', '$timeout', 'test', 'TAD', 'Genes', 'Interactions',
+	function($scope, $timeout, test, TAD, Genes, Interactions){
 		// Timeout as temp fix to pause rendering until DOM complete
 		$timeout( function() {
+			$scope.particles = TAD.getParticles();
 			$scope.genes = Genes.getGenes();
 			$scope.interactions = Interactions.getInteractions();
 		}, 0 );

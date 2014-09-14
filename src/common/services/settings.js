@@ -3,6 +3,7 @@
 TADkit.factory('Settings', function() {
 	var particles = false;
 	var chromatin = true;
+	var sense = true;
 	return {
 		toggle: function (bool) {
 			bool = !bool;
@@ -21,6 +22,14 @@ TADkit.factory('Settings', function() {
 		},
 		getChromatin: function () {
 			return chromatin;
+		},
+		toggleSense: function () {
+			sense = this.toggle(sense);
+			console.log(sense);
+			return sense;
+		},
+		getSense: function () {
+			return sense;
 		}
 	};
 })

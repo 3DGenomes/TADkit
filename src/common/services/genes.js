@@ -10,7 +10,7 @@ TADkit.factory('Genes', ['$q', '$http', function($q, $http) {
 			// $http.get(ensemblRoot + "overlap/region/" + species + "/" + requestSlice + "?feature=gene;content-type=application/json")
 			.success(function(data){
 				genes = data;
-				console.log("Genes for Region " + requestSlice + " of " + species + " retreived from Ensembl.");
+				console.log( data.length + " genes for region " + requestSlice + " of " + species + " retreived from Ensembl.");
 				deferral.resolve(data);
 			});
 			return deferral.promise;
@@ -24,29 +24,43 @@ TADkit.factory('Genes', ['$q', '$http', function($q, $http) {
 		getColors: function(genes, biotypes, fragmentsCount, TADStart, fragmentLength) {
 			var colors = [];
 			var totalLength = fragmentsCount * fragmentLength;
-			console.log(fragmentsCount);
+			// console.log(fragmentsCount);
+			
+			// For every fragment [i]...
 			for(var i=0; i<fragmentsCount; i++){
 				var biotypesPresent = [];
 				var fragmentLower = TADStart + (fragmentLength * i);
 				var fragmentUpper = fragmentLower + fragmentLength;
 				var genesCount = this.getGenesCount();
 				var color = "#cccccc"; // Base color - ie if none found
+
+				// For every gene [j]...
 				for(var j=0; j<genesCount; j++){
 					var start = genes[j].start;
 					var end = genes[j].end;
+					
+					 // check if overlaps current fragment [i]
 					if ( Math.max(fragmentLower, start) <= Math.min(fragmentUpper,end) ) {
+						if (i==3) console.log("Yes gene " + genes[j].external_name + "("+j+") in fragment " + i );
+						
+						
 						if (biotypesPresent.length > 0) {
+							
 							// Simple weight - give preference to smaller fragments
 							if ( biotypesPresent[0] == "protein_coding" ) {
 								var biotype = genes[j].biotype;
 								biotypesPresent[0] = biotype;
+							} else {
+								biotypesPresent.push(biotype);
 							}
 						} else {
 							var biotype = genes[j].biotype;
 							biotypesPresent.push(biotype);							
 						}
+						
 					} else {
-						// console.log("No fragment overlap.");
+						// if (i==3) console.log("No genes in fragment " + i );
+						// if (j == 0) console.log( JSON.stringify(fragmentLower)+", "+JSON.stringify(start)+" <= "+JSON.stringify(fragmentUpper)+", "+JSON.stringify(end) );
 					}
 				};
 				// console.log(i);

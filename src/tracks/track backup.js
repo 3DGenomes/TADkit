@@ -1,8 +1,16 @@
 TADkit.directive('track', function(){
 	return {
 		restrict:'E',
-		scope:{ data:'=', id:'@', assemblylength:'=' },
+		scope:{
+			data:'=',
+			id:'@',
+			assemblylength:'=',
+			focusstart:'=',
+			focusend:'=',
+			sense:'='
+		},
 		link:function(scope,elem,attrs){
+			// console.log(scope);
 			scope.$watch('data',function(newValue, oldValue){
 				if (scope.id=="genes"){
 					React.renderComponent(
@@ -10,6 +18,9 @@ TADkit.directive('track', function(){
 							data: scope.data,
 							target: scope.id,
 							assemblyLength: scope.assemblylength,
+							focusStart: scope.focusstart,
+							focusEnd: scope.focusend,
+							sense: scope.sense,
 							elem: elem[0]
 						}),
 						elem[0]
@@ -20,6 +31,17 @@ TADkit.directive('track', function(){
 							data: scope.data,
 							target: scope.id,
 							assemblyLength: scope.assemblylength,
+							focusLength: scope.focuslength,
+							sense: scope.sense,
+							elem: elem[0]
+						}),
+						elem[0]
+					);
+				} else if (scope.id=="slider") {
+					React.renderComponent(
+						trackSlider({
+							data: scope.data,
+							target: scope.id,
 							elem: elem[0]
 						}),
 						elem[0]

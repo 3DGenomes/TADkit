@@ -40,6 +40,20 @@ TADkit.factory('TAD', ['$q', '$http', function($q, $http) {
 		getVertices: function () {
 			return TAD.vertices;
 		},
+		getParticles: function () {
+			var vertices = this.getVertices();
+			var particles = [];
+			var offset = 0, particle;
+			var totalVertices = vertices.length;
+			while ( offset < totalVertices ) {
+				particle = {};
+				particle.x = vertices[ offset ++ ];
+				particle.y = vertices[ offset ++ ];
+				particle.z = vertices[ offset ++ ];
+				particles.push( particle );
+			}
+			return particles;
+		},
 		getParticlesCount: function () {
 			var particlesCount = TAD.vertices.length / 3;
 			return particlesCount;

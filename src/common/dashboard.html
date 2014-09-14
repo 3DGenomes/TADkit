@@ -1,24 +1,35 @@
+
 	<div  ng-controller="TrackCtrl" class="trackholder row">
-		<track data="genes" id="genes" assemblylength="assemblyLength" class=""></track>
+		<!--div id="track-controls" class="controls">
+			<ul  class="right">
+				<li>
+					<a ng-click="toggleSense()" class="toggle"> 
+						<span data-ng-hide="sense"><i class="fa fa-expand fa-lg"></i></span>
+						<span data-ng-show="sense"><i class="fa fa-compress fa-lg	"></i></span>
+					</a>
+				</li>
+			</ul>
+		</div-->
+		<genes data="genes" id="genes" position="slider.position" positions="fragments" assemblylength="assemblyLength" focusstart="focusStart" focusend="focusEnd" sense="showSense" class=""></genes>
+		<slider data="particles" id="slider" position="slider.position" fragments="fragments" class=""></slider>
 	</div>
 	<div  ng-controller="SceneCtrl" class="trackholder row">
-		<ul id="scene-controls"  class="right">
-			<li>
-				<a ng-click="toggleParticles()" class="toggle">Particles 
-					<span data-ng-hide="particles"><i class="fa fa-toggle-off"></i></span>
-					<span data-ng-show="particles"><i class="fa fa-toggle-on"></i></span>
-				</a>
-			</li>
-			<li>
-				<a ng-click="toggleChromatin()" class="toggle">Chromatin 
-					<span data-ng-hide="chromatin"><i class="fa fa-toggle-off"></i></span>
-					<span data-ng-show="chromatin"><i class="fa fa-toggle-on"></i></span>
-				</a>
-			</li>
-			<a ng-click="toggleParticles()"><i class="icon-adjust"></i></a>
-		</ul>
-		<scene data="vertices" particles="particles" chromatin="chromatin" colors="colors" segments="segments" id="tadmodel" class=""></scene>
-	</div>
-	<div  ng-controller="TrackCtrl" class="trackholder row">
-		<track data="interactions" id="interactions" assemblylength="assemblyLength" class=""></track>
+		<div id="scene-controls"  class="controls">
+			<ul class="right">
+				<li>
+					<a ng-click="toggleParticles()" class="toggle">Particles 
+						<span data-ng-hide="showParticles"><i class="fa fa-toggle-off"></i></span>
+						<span data-ng-show="showParticles"><i class="fa fa-toggle-on"></i></span>
+					</a>
+				</li>
+				<li>
+					<a ng-click="toggleChromatin()" class="toggle">Chromatin 
+						<span data-ng-hide="showChromatin"><i class="fa fa-toggle-off"></i></span>
+						<span data-ng-show="showChromatin"><i class="fa fa-toggle-on"></i></span>
+					</a>
+				</li>
+				<a ng-click="toggleParticles()"><i class="icon-adjust"></i></a>
+			</ul>
+		</div>
+		<scene data="vertices" particles="showParticles" chromatin="showChromatin" colors="colors" segments="segments" id="tadmodel" class=""></scene>
 	</div>

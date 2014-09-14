@@ -24,7 +24,7 @@ TADkit.factory('Particles', [ function () {
 			map: THREE.ImageUtils.loadTexture("assets/img/sphere-glossy.png"),
 			transparent: true
 		});
-		console.log(this.particleSize);
+		// console.log(this.particleSize);
 		var particlesGeometry = getGeometry( data );
 		
 		var particlesCloud = new THREE.PointCloud( particlesGeometry, particlesMaterial );
