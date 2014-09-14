@@ -2,6 +2,18 @@
 .tadkit-title img {
 	margin-top: -2px;
 }
+.dropdown ul {
+	line-height: 0.8rem;
+}
+.dropdown li {
+	color: #ccc;
+	padding: 0.1rem 1.5rem 0.5rem;
+	font-size: 0.7rem;
+}
+.tad-metatitle {
+	width: 5rem;
+	display: inline-block;
+}
 .tad-species {
 	color: #fff;
 }

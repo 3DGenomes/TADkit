@@ -5,6 +5,7 @@ TADkit.directive('scene', [ 'Particles', 'Chromatin', function(Particles, Chroma
 		restrict: 'E',
 		scope: { 
 			data: "=",
+			position:"=",
 			particles: "=",
 			chromatin: "=",
 			colors: "=",
@@ -20,6 +21,7 @@ TADkit.directive('scene', [ 'Particles', 'Chromatin', function(Particles, Chroma
 			materials = {};
 		var controls, gui, renderer;
 		var contW, contH, windowHalfX, windowHalfY;
+		var positionOriginalColor = new THREE.Color();
 
 		scope.materialType = 'lambert';
 		scope.init = function () {
@@ -146,17 +148,33 @@ TADkit.directive('scene', [ 'Particles', 'Chromatin', function(Particles, Chroma
 			window.addEventListener( 'resize', scope.onWindowResize, false );
 
 			var particlesObj = scene.getObjectByName( "Particles Cloud" );
-				scope.$watch('particles', function(n,o) {
-					if (n !== o) {
+			scope.$watch('particles', function(n,o) {
+				if (n !== o) {
 					particlesObj.visible = scope.particles;
 				}
 			});
 			var chromatinObj = scene.getObjectByName( "Chromatin Fiber" );
-				scope.$watch('chromatin', function(n,o) {
-					if (n !== o) {
+			scope.$watch('chromatin', function(n,o) {
+				if (n !== o) {
 					chromatinObj.visible = scope.chromatin;
 				}
 			});
+			scope.$watch('position', function(n,o) {
+				if (n !== o) {
+					var positionPrevious =  Math.floor(o);
+					var positionCurrent = Math.floor(n);
+					var fragmentPrevious = chromatinObj.getObjectByName( "fragment-"+positionPrevious );
+					fragmentPrevious.material.color = positionOriginalColor;
+					fragmentPrevious.material.ambient = positionOriginalColor;
+					fragmentPrevious.material.emissive = positionOriginalColor;
+					var fragmentCurrent = chromatinObj.getObjectByName( "fragment-"+positionCurrent );
+					positionOriginalColor = fragmentCurrent.material.color;
+					fragmentCurrent.material.color = new THREE.Color("rgb(0,0,255)");
+					fragmentCurrent.material.ambient = new THREE.Color("rgb(0,0,255)");
+					fragmentCurrent.material.emissive = new THREE.Color("rgb(0,0,255)");
+				}
+			});
+
 		};
 
 		// -----------------------------------

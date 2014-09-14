@@ -57,6 +57,7 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 		// console.log($scope.slider.position);
 		
 		var TADMetadata = TAD.getMetadata();
+		console.log(TADMetadata);
 		var TADStart = TADMetadata.start;
 		// var fragmentLength = Math.round(TAD.getMetadata().lengthBP / TAD.getParticlesCount()) / segments;
 		var fragmentLength = TADMetadata.resolution / segments;
@@ -77,9 +78,21 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 		// 	}, 3000);
 		
 		var species = TAD.getSpecies();
-		var slice = TAD.getSlice();
 		$rootScope.species = { text: species };
+		var slice = TAD.getSlice();
 		$rootScope.slice = { text: slice };
+		var identifier = TADMetadata.identifier;
+		$rootScope.identifier = { text: identifier };
+		var article = TADMetadata.article;
+		$rootScope.article = { text: article };
+		var assembly = TADMetadata.assembly;
+		$rootScope.assembly = { text: assembly };
+		var celltype = TADMetadata.cellType;
+		$rootScope.celltype = { text: celltype };
+		var experiment = TADMetadata.experimentType;
+		$rootScope.experiment = { text: experiment };
+		var resolution = TADMetadata.resolution;
+		$rootScope.resolution = { text: resolution };
 		
 		// Interaction Settings
 		$scope.showParticles = Settings.getParticles();

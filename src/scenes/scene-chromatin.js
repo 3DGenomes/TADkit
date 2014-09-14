@@ -53,6 +53,7 @@ TADkit.factory('Chromatin', [ function () {
 			chromatinGeometry.merge(fragment);
 
 			var chromatinFragment = new THREE.Mesh( fragment, fragmentMaterial);
+			chromatinFragment.name = "fragment-"+i;
 			chromatinFiber.add(chromatinFragment);
 		}
 		chromatinGeometry.computeBoundingSphere();
