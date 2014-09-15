@@ -73,6 +73,12 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 		$scope.focusEnd = focusEnd;
 		
 		$scope.colors = Genes.getColors( genes, biotypes, fragmentCount, TADStart, fragmentLength);
+		$scope.colorsGenes = Genes.getColors( genes, biotypes, fragmentCount, TADStart, fragmentLength);
+		$scope.colorsHP1 = Proteins.getColors( proteins, "HP1", fragmentCount, TADStart, fragmentLength);
+		$scope.colorsBRM = Proteins.getColors( proteins, "BRM", fragmentCount, TADStart, fragmentLength);
+		$scope.colorsMRG15 = Proteins.getColors( proteins, "MRG15", fragmentCount, TADStart, fragmentLength);
+		$scope.colorsPC = Proteins.getColors( proteins, "PC", fragmentCount, TADStart, fragmentLength);
+		$scope.colorsH1 = Proteins.getColors( proteins, "H1", fragmentCount, TADStart, fragmentLength);
 		// $scope.colors = Genes.getRandomColors(fragmentCount);
 
 		// setInterval(
@@ -109,6 +115,7 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 		}
 		$scope.showGenes = Settings.getGenes();
 		$scope.toggleGenes = function() {
+			$scope.colors = $scope.colorsGenes;
 			// CHANGE TO switchColors()...
 			if ($scope.showGenes == false) {
 	   			$scope.showGenes = true;
@@ -128,6 +135,7 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 		}
 		$scope.showHP1 = Settings.getHP1();
 		$scope.toggleHP1 = function() {
+			$scope.colors = $scope.colorsHP1;
 			if ($scope.showHP1 == false) {
 	   			$scope.showGenes = false;
 	   			$scope.showHP1 = true;
@@ -146,6 +154,7 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 		}
 		$scope.showBRM = Settings.getBRM();
 		$scope.toggleBRM = function() {
+			$scope.colors = $scope.colorsBRM;
 			if ($scope.showBRM == false) {
 	   			$scope.showGenes = false;
 	   			$scope.showHP1 = false;
@@ -164,6 +173,7 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 		}
 		$scope.showMRG15 = Settings.getMRG15();
 		$scope.toggleMRG15 = function() {
+			$scope.colors = $scope.colorsMRG15;
 			if ($scope.showMRG15 == false) {
 	   			$scope.showGenes = false;
 	   			$scope.showHP1 = false;
@@ -182,6 +192,7 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 		}
 		$scope.showPC = Settings.getPC();
 		$scope.togglePC = function() {
+			$scope.colors = $scope.colorsPC;
 			if ($scope.showPC == false) {
 	   			$scope.showGenes = false;
 	   			$scope.showHP1 = false;
@@ -200,6 +211,7 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 		}
 		$scope.showH1 = Settings.getH1();
 		$scope.toggleH1 = function() {
+			$scope.colors = $scope.colorsH1;
 			if ($scope.showH1 == false) {
 	   			$scope.showGenes = false;
 	   			$scope.showHP1 = false;
