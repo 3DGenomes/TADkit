@@ -107,6 +107,115 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 		$scope.toggleChromatin = function() {
 			$scope.showChromatin = !$scope.showChromatin;
 		}
+		$scope.showGenes = Settings.getGenes();
+		$scope.toggleGenes = function() {
+			// CHANGE TO switchColors()...
+			if ($scope.showGenes == false) {
+	   			$scope.showGenes = true;
+	   			$scope.showHP1 = false;
+	   			$scope.showBRM = false;
+	   			$scope.showMRG15 = false;
+	   			$scope.showPC = false;
+	   			$scope.showH1 = false;
+			} else {
+	   			$scope.showGenes = true;
+	   			$scope.showHP1 = false;
+	   			$scope.showBRM = false;
+	   			$scope.showMRG15 = false;
+	   			$scope.showPC = false;
+	   			$scope.showH1 = false;
+			}
+		}
+		$scope.showHP1 = Settings.getHP1();
+		$scope.toggleHP1 = function() {
+			if ($scope.showHP1 == false) {
+	   			$scope.showGenes = false;
+	   			$scope.showHP1 = true;
+	   			$scope.showBRM = false;
+	   			$scope.showMRG15 = false;
+	   			$scope.showPC = false;
+	   			$scope.showH1 = false;
+			} else {
+	   			$scope.showGenes = true;
+	   			$scope.showHP1 = false;
+	   			$scope.showBRM = false;
+	   			$scope.showMRG15 = false;
+	   			$scope.showPC = false;
+	   			$scope.showH1 = false;
+			}
+		}
+		$scope.showBRM = Settings.getBRM();
+		$scope.toggleBRM = function() {
+			if ($scope.showBRM == false) {
+	   			$scope.showGenes = false;
+	   			$scope.showHP1 = false;
+	   			$scope.showBRM = true;
+	   			$scope.showMRG15 = false;
+	   			$scope.showPC = false;
+	   			$scope.showH1 = false;
+			} else {
+	   			$scope.showGenes = true;
+	   			$scope.showHP1 = false;
+	   			$scope.showBRM = false;
+	   			$scope.showMRG15 = false;
+	   			$scope.showPC = false;
+	   			$scope.showH1 = false;
+			}
+		}
+		$scope.showMRG15 = Settings.getMRG15();
+		$scope.toggleMRG15 = function() {
+			if ($scope.showMRG15 == false) {
+	   			$scope.showGenes = false;
+	   			$scope.showHP1 = false;
+	   			$scope.showBRM = false;
+	   			$scope.showMRG15 = true;
+	   			$scope.showPC = false;
+	   			$scope.showH1 = false;
+			} else {
+	   			$scope.showGenes = true;
+	   			$scope.showHP1 = false;
+	   			$scope.showBRM = false;
+	   			$scope.showMRG15 = false;
+	   			$scope.showPC = false;
+	   			$scope.showH1 = false;
+			}
+		}
+		$scope.showPC = Settings.getPC();
+		$scope.togglePC = function() {
+			if ($scope.showPC == false) {
+	   			$scope.showGenes = false;
+	   			$scope.showHP1 = false;
+	   			$scope.showBRM = false;
+	   			$scope.showMRG15 = false;
+	   			$scope.showPC = true;
+	   			$scope.showH1 = false;
+			} else {
+	   			$scope.showGenes = true;
+	   			$scope.showHP1 = false;
+	   			$scope.showBRM = false;
+	   			$scope.showMRG15 = false;
+	   			$scope.showPC = false;
+	   			$scope.showH1 = false;
+			}
+		}
+		$scope.showH1 = Settings.getH1();
+		$scope.toggleH1 = function() {
+			if ($scope.showH1 == false) {
+	   			$scope.showGenes = false;
+	   			$scope.showHP1 = false;
+	   			$scope.showBRM = false;
+	   			$scope.showMRG15 = false;
+	   			$scope.showPC = false;
+	   			$scope.showH1 = true;
+			} else {
+	   			$scope.showGenes = true;
+	   			$scope.showHP1 = false;
+	   			$scope.showBRM = false;
+	   			$scope.showMRG15 = false;
+	   			$scope.showPC = false;
+	   			$scope.showH1 = false;
+			}
+		}
 		$scope.showSense = Settings.getSense();
 		$scope.toggleSense = function() {
 			$scope.showSense = !$scope.showSense;

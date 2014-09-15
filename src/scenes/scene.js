@@ -8,6 +8,7 @@ TADkit.directive('scene', [ 'Particles', 'Chromatin', function(Particles, Chroma
 			position:"=",
 			particles: "=",
 			chromatin: "=",
+			proteins: "=",
 			colors: "=",
 			segments: "="
 		},
@@ -157,6 +158,18 @@ TADkit.directive('scene', [ 'Particles', 'Chromatin', function(Particles, Chroma
 			scope.$watch('chromatin', function(n,o) {
 				if (n !== o) {
 					chromatinObj.visible = scope.chromatin;
+				}
+			});
+			scope.$watch('proteins', function(n,o) {
+				if (n !== o) {
+					var color = Math.floor(n);
+					var meshes = chromatinObj.children.length;
+					console.log(meshes);
+					for (var i = 0; i < meshes; i++) {
+						chromatinObj.children[i].material.color = new THREE.Color("rgb(0,255,0)");
+						chromatinObj.children[i].material.ambient = new THREE.Color("rgb(0,255,0)");
+						chromatinObj.children[i].material.emissive = new THREE.Color("rgb(0,255,0)");						
+					}
 				}
 			});
 			scope.$watch('position', function(n,o) {

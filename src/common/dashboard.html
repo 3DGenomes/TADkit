@@ -27,10 +27,48 @@
 						<span data-ng-show="showChromatin"><i class="fa fa-toggle-on"></i></span>
 					</a>
 				</li>
-				<a ng-click="toggleParticles()"><i class="icon-adjust"></i></a>
+				<!--li>
+					<hr />
+				</li>
+				<li>
+					<a ng-click="toggleGenes()" class="toggle">Genes 
+						<span data-ng-hide="showGenes"><i class="fa fa-toggle-off"></i></span>
+						<span data-ng-show="showGenes"><i class="fa fa-toggle-on"></i></span>
+					</a>
+				</li>
+				<li>
+					<a ng-click="toggleHP1()" class="toggle">HP1 Protein 
+						<span data-ng-hide="showHP1"><i class="fa fa-toggle-off"></i></span>
+						<span data-ng-show="showHP1"><i class="fa fa-toggle-on"></i></span>
+					</a>
+				</li>
+				<li>
+					<a ng-click="toggleBRM()" class="toggle">BRM Protein 
+						<span data-ng-hide="showBRM"><i class="fa fa-toggle-off"></i></span>
+						<span data-ng-show="showBRM"><i class="fa fa-toggle-on"></i></span>
+					</a>
+				</li>
+				<li>
+					<a ng-click="toggleMRG15()" class="toggle">MRG15 Protein 
+						<span data-ng-hide="showMRG15"><i class="fa fa-toggle-off"></i></span>
+						<span data-ng-show="showMRG15"><i class="fa fa-toggle-on"></i></span>
+					</a>
+				</li>
+				<li>
+					<a ng-click="togglePC()" class="toggle">PC Protein 
+						<span data-ng-hide="showPC"><i class="fa fa-toggle-off"></i></span>
+						<span data-ng-show="showPC"><i class="fa fa-toggle-on"></i></span>
+					</a>
+				</li>
+				<li>
+					<a ng-click="toggleH1()" class="toggle">H1 Protein 
+						<span data-ng-hide="showH1"><i class="fa fa-toggle-off"></i></span>
+						<span data-ng-show="showH1"><i class="fa fa-toggle-on"></i></span>
+					</a>
+				</li-->
 			</ul>
 		</div>
-		<scene data="vertices" position="slider.position" particles="showParticles" chromatin="showChromatin" colors="colors" segments="segments" id="tadmodel" class=""></scene>
+		<scene data="vertices" position="slider.position" particles="showParticles" chromatin="showChromatin" proteins="showHP1" colors="colors" segments="segments" id="tadmodel" class=""></scene>
 	</div>
 	<div  ng-controller="TrackCtrl" class="trackholder row lower-tracks">
 		<proteins data="proteins" id="HP1" color="green" position="slider.position" positions="fragments" assemblylength="assemblyLength" focusstart="focusStart" focusend="focusEnd" class=""></proteins>
