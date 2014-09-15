@@ -35,8 +35,10 @@ TADkit.factory('Chromatin', [ function () {
 		var chromatinGeometry = new THREE.Geometry(); // to calculate merged bounds
 		var fragmentColors = getFragmentColors(pathSegments);
 
-		for ( var i = 0 ; i < pathSegments - 1; i++) {
-			this.endcap = ( i == 0 || i == pathSegments - 2 ) ? false : true ;
+		// for ( var i = 0 ; i < pathSegments - 1; i++) {
+		// 	this.endcap = ( i == 0 || i == pathSegments - 2 ) ? false : true ;
+		for ( var i = 0 ; i < pathSegments; i++) {
+			this.endcap = ( i == 0 || i == pathSegments - 1 ) ? false : true ;
 			
 			var fragmentColor = colors[i];
 			var fragmentMaterial = new THREE.MeshLambertMaterial({
@@ -103,6 +105,7 @@ TADkit.factory('Chromatin', [ function () {
 		// (totalParticles - 1) because (fore = [i+1])
 		var totalParticles = vertices.length;
 		var pathControls = [];
+		// for (var i = 0 ; i < totalParticles - 1 ; i++) {
 		for (var i = 0 ; i < totalParticles - 1 ; i++) {
 			var baseParticle = vertices[i];
 			var foreParticle = vertices[i + 1];
@@ -117,6 +120,12 @@ TADkit.factory('Chromatin', [ function () {
 			};
 			//pathControls.push(baseParticle);
 			pathControls.push(midCoord);
+			// if (i == totalParticles - 2) {
+			// //	pathControls.push(foreParticle);
+			// 	var endCoord = new THREE.Vector3(0,0,0);
+			// 	endCoord.copy(foreParticle).add(midOffset);
+			// 	pathControls.push(endCoord);
+			// };
 			if (i == totalParticles - 2) {
 			//	pathControls.push(foreParticle);
 				var endCoord = new THREE.Vector3(0,0,0);

@@ -1,4 +1,3 @@
-
 	<div  ng-controller="TrackCtrl" class="trackholder row">
 		<!--div id="track-controls" class="controls">
 			<ul  class="right">
@@ -32,4 +31,11 @@
 			</ul>
 		</div>
 		<scene data="vertices" position="slider.position" particles="showParticles" chromatin="showChromatin" colors="colors" segments="segments" id="tadmodel" class=""></scene>
+	</div>
+	<div  ng-controller="TrackCtrl" class="trackholder row lower-tracks">
+		<proteins data="proteins" id="HP1" color="green" position="slider.position" positions="fragments" assemblylength="assemblyLength" focusstart="focusStart" focusend="focusEnd" class=""></proteins>
+		<proteins data="proteins" id="BRM" color="red" position="slider.position" positions="fragments" assemblylength="assemblyLength" focusstart="focusStart" focusend="focusEnd" class=""></proteins>
+		<proteins data="proteins" id="MRG15" color="yellow" position="slider.position" positions="fragments" assemblylength="assemblyLength" focusstart="focusStart" focusend="focusEnd" class=""></proteins>
+		<proteins data="proteins" id="PC" color="blue" position="slider.position" positions="fragments" assemblylength="assemblyLength" focusstart="focusStart" focusend="focusEnd" class=""></proteins>
+		<proteins data="proteins" id="H1" color="black" position="slider.position" positions="fragments" assemblylength="assemblyLength" focusstart="focusStart" focusend="focusEnd" class=""></proteins>
 	</div>

@@ -66,9 +66,9 @@ track {
 #scene-controls a {
 	color: #999;
 }
-
-
-
+.lower-tracks {
+	margin-top: 20px !important;
+}
 /* D3 Style */
 svg {
 	font: 0.7rem sans-serif;
@@ -141,6 +141,38 @@ svg {
 }
 .snRNA {
 	fill: hsla(120,50%,50%,0.4);
+}
+/* Proteins */ 
+proteins svg {
+	padding: 0 40px;
+}
+proteins path {
+	fill: none;
+	stroke: #ccc;
+	stroke-width: 1px;
+	shape-rendering: crispEdges;
+}
+#H1 line, #H1 text, 
+#HP1 line, #HP1 text, 
+#BRM line, #BRM text,
+#MRG15 line, #MRG15 text,
+#PC line, #PC text {
+	display: none;
+}
+.HP1 {
+	fill: green;
+}
+.BRM {
+	fill: red;
+}
+.MRG15 {
+	fill: yellow;
+}
+.PC {
+	fill: blue;
+}
+.H1 {
+	fill: black;
 }
 
 

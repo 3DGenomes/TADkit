@@ -2,23 +2,22 @@ TUE
 x Colors by Biotype (updateable=)
 x Isolate user interaction Scene from Tracks
 x prime, sense markers
-- updates = Vertex Colors?
+x updates to materials
 x Track Cursor/Slider
 
 WED
 x Particles (point cloud)
-- Occupancy (-c -i  => json)
 x Track LRInteractions (.lri)
 
 THUR
-- Track Proximity Matrix (.col)
 - Track Chromatin Colors
+- Track Proximity Matrix (.col)
 
 * POSTER *
 * LOGO *
 
 FRI
-- Print Poster
+x Print Poster
 
 SAT
 - Build version
@@ -30,7 +29,8 @@ LATER
 - Load from file Module
 - Global Offline switch
 - geometry-color mismatch 2040-2039??
-
+- Vertex Colors?
+- Occupancy (-c -i  => json)
 
 
 

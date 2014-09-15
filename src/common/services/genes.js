@@ -41,7 +41,7 @@ TADkit.factory('Genes', ['$q', '$http', function($q, $http) {
 					
 					 // check if overlaps current fragment [i]
 					if ( Math.max(fragmentLower, start) <= Math.min(fragmentUpper,end) ) {
-						if (i==3) console.log("Yes gene " + genes[j].external_name + "("+j+") in fragment " + i );
+						// if (i==3) console.log("Yes gene " + genes[j].external_name + "("+j+") in fragment " + i );
 						
 						
 						if (biotypesPresent.length > 0) {

@@ -41,7 +41,7 @@ TADkit.directive('slider', function(){
 				var x = d3.scale.linear().range([0, width]).clamp(true);
 
 				var sliderStart = 0;
-				var sliderEnd = fragments;
+				var sliderEnd = fragments-1;
 				// console.log(sliderEnd);
 
 				x.domain([sliderStart, sliderEnd]);
@@ -83,7 +83,7 @@ TADkit.directive('slider', function(){
 
 				var handle = slider.append("rect")
 					.attr("class", "handle")
-					.attr("x", 0 )
+					.attr("x", -1.0 * (handleWidth * 0.5) )
 					.attr("y", 0)
 					.attr("width", handleWidth)
 					.attr("height", handleHeight);
@@ -100,7 +100,7 @@ TADkit.directive('slider', function(){
 					brush.extent([value, value]);
 				  }
 
-				  handle.attr("x", x(value));
+				  handle.attr("x", x(value) - (handleWidth * 0.5));
 				
 					updatePosition(value);
 				}

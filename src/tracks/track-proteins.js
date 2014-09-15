@@ -1,27 +1,26 @@
-TADkit.directive('genes', function(){
+TADkit.directive('proteins', function(){
 	return {
 		restrict:'E',
 		scope:{
 			data:'=',
 			id:'@',
+			color:'@',
 			position:'=',
 			positions:'=',
 			assemblylength:'=',
 			focusstart:'=',
-			focusend:'=',
-			sense:'='
+			focusend:'='
 		},
 		link:function(scope, elem, attrs){
 			// console.log(scope);
 			
 			scope.$watch('position',function(newValue, oldValue){
 				if (newValue !== oldValue) {
-					// console.log(newValue);
 					var positions = scope.positions;
-					
+
 					var divWidth = elem[0].parentNode.clientWidth;
 
-					var margin = {top: 0, right: 40, bottom: 40, left: 40};
+					var margin = {top: 0, right: 0, bottom: 0, left: 0};
 					var width = divWidth - margin.left - margin.right;
 					var x = d3.scale.linear().range([0, width]).clamp(true);
 
@@ -31,56 +30,73 @@ TADkit.directive('genes', function(){
 					var positionWidth = focusLength / positions;
 					var highlightWidth = positionWidth * width / focusLength;
 
-				if (highlightWidth < 4) highlightWidth = 4; 
+				if (highlightWidth < 4) highlightWidth = 4;
 					var highlightPosition = focusStart + (positionWidth * newValue);
 					// console.log(  highlightPosition  );
-					
+
 					x.domain([focusStart, focusEnd]);
-					
-					d3.select("#highlight").style("visibility", "visible");
+
+					// d3.select("#highlight").style("visibility", "visible");
 
 					// d3.select("#highlight").attr("x", function() { return x( highlightPosition - (positionWidth * 0.5)) }); // DOES OFFSET CORRECTLY
-					d3.select("#highlight").attr("x", function() { return x( highlightPosition - (positionWidth * 4)) });
+					d3.selectAll("#highlight").attr("x", function() { return x( highlightPosition - (positionWidth * 4)) });
 				}
 			})
 			
+			function getProteinArray (data, id) {
+				var dataset = [];
+				for (var i = 0; i < data.length; i++) {
+					if (data[i][id]==1) {
+						var sample = [];
+						dataset.push( {"fragmentID":data[i]["fragmentID"], "chromosome":data[i]["chromosome"], "start":data[i]["start"], "end":data[i]["end"]} );
+					} else {
+						// console.log("None found in sample.");
+					}
+				}
+				// console.log(dataset);
+				return dataset;
+			}
+			
 			scope.$watch('data',function(newValue, oldValue){
-			if (newValue !== oldValue) {
+				// console.log(scope.id);
+				
+			if ( newValue ) {
 				// *** START D3 ****
 				// d3.select(window).on('resize', resize);
-				console.log("D3 initiated");
-		
-				var data = scope.data;
+				console.log("Protein tracks initiated");
+				var dataset = getProteinArray(scope.data, scope.id);
+				var data = dataset;
 				var assemblyLength = scope.assemblylength;
 				var target = scope.id;
 				var position = scope.position;
 				var positions = scope.positions;
-				
+
 				var divWidth = elem[0].parentNode.clientWidth;
 
-				var margin = {top: 0, right: 40, bottom: 40, left: 40},
+				var margin = {top: 0, right: 0, bottom: 0, left: 0},
 					width = divWidth - margin.left - margin.right,
-					height = 60 - margin.top - margin.bottom,
+					height = 20 - margin.top - margin.bottom,
 					nodeHeight = 10;
 
 				var chrStart = 0;
 				var chrEnd = scope.assemblylength;
 				// console.log(chrEnd);
-				
+
 				var x = d3.scale.linear().range([0, width]).clamp(true);
-				
+
 				var focusStart = scope.focusstart;
 				var focusEnd = scope.focusend;
 				var focusLength = focusEnd - focusStart;
 				var positionWidth = focusLength / positions;
 				var highlightWidth = positionWidth * width / focusLength;
-				if (highlightWidth < 4) highlightWidth = 4; 
+				if (highlightWidth < 4) highlightWidth = 4;
+				// console.log(highlightWidth);
 
 				var focusScale = assemblyLength / focusLength;
 				// console.log(focusScale);
 				var focusMargin = focusScale * 0.05;
 				focusScale = focusScale - (focusMargin * 2.0);
-	
+
 				var focusCenter = focusLength * 0.5;
 				var assemblyCenter = assemblyLength * 0.5;
 				var focusOffset = x(assemblyCenter) - x(focusCenter) ;
@@ -95,13 +111,13 @@ TADkit.directive('genes', function(){
 					prime3Axis = d3.svg.axis().orient("left"),
 					prime5Axis = d3.svg.axis().orient("right");
 
-				var zoom = d3.behavior.zoom()
-					    .on("zoom", draw);
+				// var zoom = d3.behavior.zoom()
+				// 	    .on("zoom", draw);
 
 				var svg = d3.select('#' + target).append("svg")
 					.attr("width", width + margin.left + margin.right)
-					.attr("height", height + margin.top + margin.bottom)
-				    .call(zoom);
+					.attr("height", height + margin.top + margin.bottom);
+				    // .call(zoom);
 
 
 				svg.append("defs").append("clipPath")
@@ -117,51 +133,23 @@ TADkit.directive('genes', function(){
 					.attr('clip-path', 'url(#clip)');
 
 					x.domain([focusStart, focusEnd]);
-			
-				    zoom.x(x);
-			
+
+				    // zoom.x(x);
+
 				svg.select(".focus").append("g")
 					.attr("class", "x axis")
-					.attr("transform", "translate(0," + height + ")")
+					.attr("transform", "translate(0," + nodeHeight + ")")
 					.call(xAxis);
 
-					var prime3 = svg.append("text")
-						.attr("x", -12)             
-						.attr("y", -3)
-						.attr("text-anchor", "right")  
-						.style("font-size", "10px") 
-						.text("3'");
-		
-					var prime5 = svg.append("text")
-						.attr("x", width + 8)             
-						.attr("y", -3)
-						.attr("text-anchor", "left")  
-						.style("font-size", "10px") 
-						.text("5'");
-		
-					var sense = svg.append("text")
-						.attr("x", -18)             
-						.attr("y", 8)
-						.attr("text-anchor", "right")  
-						.style("font-size", "10px") 
-						.text("<<");
-		
-					var antisense = svg.append("text")
-						.attr("x", -18)             
-						.attr("y", 18)
-						.attr("text-anchor", "right")  
-						.style("font-size", "10px") 
-						.text(">>");
-		
 				var focusGraph = barsGroup.selectAll("rect")
 					.data(data)
 					.enter().append("rect")
 					.attr("x", function(d) { return Math.floor(x(d.start)); } )
-					.attr("y", function(d) { if (scope.sense) { if (d.strand < 1) {return (nodeHeight)} } else {return 0}; } )
+					.attr("y", 0 )
 					.attr("width", function(d) { return Math.ceil(x(d.end) - x(d.start)) + "px"; } )
 					.attr("height", (nodeHeight) )
-					.attr("class", function(d) { return d.biotype.toLowerCase(); } );
-			
+					.attr("class", function(d) { return scope.id; } );
+
 					var highlightPosition = focusStart + (positionWidth * position);
 					// console.log(highlightPosition);
 
@@ -172,24 +160,24 @@ TADkit.directive('genes', function(){
 						.attr("width", highlightWidth )
 						.attr("height", height)
 						.attr("class", "highlight");
-					 
-					// focusGraph.call(zoom.translate([focusTranslate,0]).scale(focusScale));
-			
-				    draw();
 
-				function draw() {
-					svg.select("g.x.axis").call(xAxis);
-					barsGroup.selectAll("rect")
-					.attr("x", function(d) { return Math.floor(x(d.start)); } )
-					.attr("y", function(d) { if (scope.sense) { if (d.strand < 1) {return (nodeHeight)} } else {return 0}; } )
-					.attr("width", function(d) { return Math.ceil(x(d.end) - x(d.start)) + "px"; } );
-					// console.log(zoom.translate());
-					// console.log(zoom.scale());
-					svg.select("#highlight").style("visibility", "hidden");
-					// .attr("x", function(d) { return x( highlightPosition - (positionWidth * 4)); } )
-					// .attr("width", highlightWidth );
-					
-				}
+					// focusGraph.call(zoom.translate([focusTranslate,0]).scale(focusScale));
+
+				    // draw();
+
+				// function draw() {
+				// 	svg.select("g.x.axis").call(xAxis);
+				// 	barsGroup.selectAll("rect")
+				// 	.attr("x", function(d) { return Math.floor(x(d.start)); } )
+				// 	.attr("y", 0 )
+				// 	.attr("width", function(d) { return Math.ceil(x(d.end) - x(d.start)) + "px"; } );
+				// 	// console.log(zoom.translate());
+				// 	// console.log(zoom.scale());
+				// 	svg.select("#highlight").style("visibility", "hidden");
+				// 	.attr("x", function(d) { return x( highlightPosition - (positionWidth * 4)); } )
+				// 	.attr("width", highlightWidth );
+				//
+				// }
 		
 				// function resize(target) {
 				// 	var divWidth = elem.parentNode.clientWidth;
