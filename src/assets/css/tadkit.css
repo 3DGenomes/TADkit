@@ -152,11 +152,11 @@ proteins path {
 	stroke-width: 1px;
 	shape-rendering: crispEdges;
 }
-#H1 line, #H1 text, 
-#HP1 line, #HP1 text, 
-#BRM line, #BRM text,
-#MRG15 line, #MRG15 text,
-#PC line, #PC text {
+#H1 .tick line, #H1 .tick text, 
+#HP1 .tick line, #HP1 .tick text, 
+#BRM .tick line, #BRM .tick text,
+#MRG15 .tick line, #MRG15 .tick text,
+#PC .tick line, #PC .tick text {
 	display: none;
 }
 .HP1 {

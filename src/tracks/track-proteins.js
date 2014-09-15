@@ -140,6 +140,13 @@ TADkit.directive('proteins', function(){
 					.attr("class", "x axis")
 					.attr("transform", "translate(0," + nodeHeight + ")")
 					.call(xAxis);
+					var titletext = scope.id;
+					var title = svg.append("text")
+						.attr("x", -6)             
+						.attr("y", 8)
+						.attr("text-anchor", "end")  
+						.style("font-size", "10px") 
+						.text(titletext);
 
 				var focusGraph = barsGroup.selectAll("rect")
 					.data(data)
