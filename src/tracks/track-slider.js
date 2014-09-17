@@ -1,4 +1,4 @@
-TADkit.directive('slider', function(){
+TADkit.directive('tkSlider', function(){
 	return {
 		restrict:'E',
 		scope:{
@@ -81,12 +81,17 @@ TADkit.directive('slider', function(){
 				slider.select(".background")
 					.attr("height", height);
 
-				var handle = slider.append("rect")
+				// var handle = slider.append("rect")
+				// 	.attr("class", "handle")
+				// 	.attr("x", -1.0 * (handleWidth * 0.5) )
+				// 	.attr("y", 0)
+				// 	.attr("width", handleWidth)
+				// 	.attr("height", handleHeight);
+
+				var handle = slider.append("circle")
 					.attr("class", "handle")
-					.attr("x", -1.0 * (handleWidth * 0.5) )
-					.attr("y", 0)
-					.attr("width", handleWidth)
-					.attr("height", handleHeight);
+						.attr("cy", 10)
+					.attr("r", handleWidth * 1.6);
 
 				slider
 					.call(brush.extent([(scope.position), 0]))
@@ -100,7 +105,8 @@ TADkit.directive('slider', function(){
 					brush.extent([value, value]);
 				  }
 
-				  handle.attr("x", x(value) - (handleWidth * 0.5));
+				  // handle.attr("x", x(value) - (handleWidth * 0.5));
+				  handle.attr("cx", x(value) - (handleWidth * 0.5));
 				
 					updatePosition(value);
 				}

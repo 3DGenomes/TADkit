@@ -1,16 +1,22 @@
-TADkit.directive('proteins', function(){
+TADkit.directive('tkProteins', function(){
 	return {
 		restrict:'E',
 		scope:{
 			data:'=',
 			id:'@',
+			// toggleHP1: '&',
 			color:'@',
 			position:'=',
 			positions:'=',
-			assemblylength:'=',
 			focusstart:'=',
 			focusend:'='
 		},
+		// template:'<span id="chart{{id}}"></span>' +
+		// 		'<a ng-click="toggleHP1()" class="toggle">{{id}}' +
+		// 		'	<span data-ng-hide="showHP1"><i class="fa fa-toggle-off"></i></span>' +
+		// 		'	<span data-ng-show="showHP1"><i class="fa fa-toggle-on"></i></span>' +
+		// 		'</a>' +
+		// 		'</span>',
 		link:function(scope, elem, attrs){
 			// console.log(scope);
 			
@@ -20,7 +26,7 @@ TADkit.directive('proteins', function(){
 
 					var divWidth = elem[0].parentNode.clientWidth;
 
-					var margin = {top: 0, right: 0, bottom: 0, left: 0};
+					var margin = {top: 0, right: 40, bottom: 0, left: 40};
 					var width = divWidth - margin.left - margin.right;
 					var x = d3.scale.linear().range([0, width]).clamp(true);
 
@@ -32,7 +38,7 @@ TADkit.directive('proteins', function(){
 
 				if (highlightWidth < 4) highlightWidth = 4;
 					var highlightPosition = focusStart + (positionWidth * newValue);
-					// console.log(  highlightPosition  );
+					// console.log( positionWidth );
 
 					x.domain([focusStart, focusEnd]);
 
@@ -73,14 +79,10 @@ TADkit.directive('proteins', function(){
 
 				var divWidth = elem[0].parentNode.clientWidth;
 
-				var margin = {top: 0, right: 0, bottom: 0, left: 0},
+				var margin = {top: 0, right: 40, bottom: 0, left: 40},
 					width = divWidth - margin.left - margin.right,
 					height = 20 - margin.top - margin.bottom,
 					nodeHeight = 10;
-
-				var chrStart = 0;
-				var chrEnd = scope.assemblylength;
-				// console.log(chrEnd);
 
 				var x = d3.scale.linear().range([0, width]).clamp(true);
 
@@ -89,36 +91,18 @@ TADkit.directive('proteins', function(){
 				var focusLength = focusEnd - focusStart;
 				var positionWidth = focusLength / positions;
 				var highlightWidth = positionWidth * width / focusLength;
+				// var highlightWidth = 1 / positions * width; //???
+				
 				if (highlightWidth < 4) highlightWidth = 4;
-				// console.log(highlightWidth);
 
-				var focusScale = assemblyLength / focusLength;
-				// console.log(focusScale);
-				var focusMargin = focusScale * 0.05;
-				focusScale = focusScale - (focusMargin * 2.0);
-
-				var focusCenter = focusLength * 0.5;
-				var assemblyCenter = assemblyLength * 0.5;
-				var focusOffset = x(assemblyCenter) - x(focusCenter) ;
-				// console.log(focusOffset);
-
-				var focusTranslate = x(focusOffset) * focusScale;
-				// console.log("focusTranslate");
-				// console.log(focusTranslate);
-				focusTranslate = -12615;
-
-				var xAxis = d3.svg.axis().scale(x).orient("bottom"),
+				var xAxis = d3.svg.axis().scale(x).orient("top"),
 					prime3Axis = d3.svg.axis().orient("left"),
 					prime5Axis = d3.svg.axis().orient("right");
 
-				// var zoom = d3.behavior.zoom()
-				// 	    .on("zoom", draw);
-
 				var svg = d3.select('#' + target).append("svg")
+				// var svg = d3.select('#chart').append("svg")
 					.attr("width", width + margin.left + margin.right)
 					.attr("height", height + margin.top + margin.bottom);
-				    // .call(zoom);
-
 
 				svg.append("defs").append("clipPath")
 					.attr("id", "clip")
@@ -126,29 +110,28 @@ TADkit.directive('proteins', function(){
 					.attr("width", width)
 					.attr("height", height);
 
-				var focus = svg.append("g")
-					.attr("class", "focus");
+				var chart = svg.append("g")
+					.attr("class", "chart");
 
-				var barsGroup = focus.append("g")
+				var clipped = chart.append("g")
 					.attr('clip-path', 'url(#clip)');
 
 					x.domain([focusStart, focusEnd]);
 
-				    // zoom.x(x);
-
-				svg.select(".focus").append("g")
+				svg.select(".chart").append("g")
 					.attr("class", "x axis")
-					.attr("transform", "translate(0," + nodeHeight + ")")
+					.attr("transform", "translate(0,0)")
 					.call(xAxis);
-					var titletext = scope.id;
-					var title = svg.append("text")
-						.attr("x", -6)             
-						.attr("y", 8)
-						.attr("text-anchor", "end")  
-						.style("font-size", "10px") 
-						.text(titletext);
 
-				var focusGraph = barsGroup.selectAll("rect")
+				var titletext = scope.id;
+				var title = svg.append("text")
+					.attr("x", -6)             
+					.attr("y", 8)
+					.attr("text-anchor", "end")  
+					.style("font-size", "10px") 
+					.text(titletext);
+
+				var focusGraph = clipped.selectAll("rect")
 					.data(data)
 					.enter().append("rect")
 					.attr("x", function(d) { return Math.floor(x(d.start)); } )
@@ -157,8 +140,8 @@ TADkit.directive('proteins', function(){
 					.attr("height", (nodeHeight) )
 					.attr("class", function(d) { return scope.id; } );
 
-					var highlightPosition = focusStart + (positionWidth * position);
-					// console.log(highlightPosition);
+				var highlightPosition = focusStart + (positionWidth * position);
+				// console.log(highlightPosition);
 
 				var highlight = svg.append("rect")
 						.attr("id", "highlight")
@@ -168,24 +151,6 @@ TADkit.directive('proteins', function(){
 						.attr("height", height)
 						.attr("class", "highlight");
 
-					// focusGraph.call(zoom.translate([focusTranslate,0]).scale(focusScale));
-
-				    // draw();
-
-				// function draw() {
-				// 	svg.select("g.x.axis").call(xAxis);
-				// 	barsGroup.selectAll("rect")
-				// 	.attr("x", function(d) { return Math.floor(x(d.start)); } )
-				// 	.attr("y", 0 )
-				// 	.attr("width", function(d) { return Math.ceil(x(d.end) - x(d.start)) + "px"; } );
-				// 	// console.log(zoom.translate());
-				// 	// console.log(zoom.scale());
-				// 	svg.select("#highlight").style("visibility", "hidden");
-				// 	.attr("x", function(d) { return x( highlightPosition - (positionWidth * 4)); } )
-				// 	.attr("width", highlightWidth );
-				//
-				// }
-		
 				// function resize(target) {
 				// 	var divWidth = elem.parentNode.clientWidth;
 				// 	var margin = {top: 0, right: 40, bottom: 40, left: 40};

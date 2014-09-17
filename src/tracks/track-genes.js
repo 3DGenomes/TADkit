@@ -1,4 +1,4 @@
-TADkit.directive('genes', function(){
+TADkit.directive('tkGenes', function(){
 	return {
 		restrict:'E',
 		scope:{
@@ -33,7 +33,7 @@ TADkit.directive('genes', function(){
 
 				if (highlightWidth < 4) highlightWidth = 4; 
 					var highlightPosition = focusStart + (positionWidth * newValue);
-					// console.log(  highlightPosition  );
+					// console.log( highlightPosition );
 					
 					x.domain([focusStart, focusEnd]);
 					

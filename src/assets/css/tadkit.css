@@ -58,7 +58,7 @@ track {
 	font-size: 0.8rem;
 	color: #666;
 	text-align: right;
-	border: solid 1px #ccc;
+/*	border: solid 1px #ccc;*/
 	padding: 6px;
 	margin-right: 40px;
 	margin-top: 6px;
@@ -87,8 +87,8 @@ svg {
 	cursor: n-resize !important;
 }
 #slider .handle {
-	fill: #fff;
-	stroke: #999;
+	fill: #ee6363;
+	stroke: #f00;
 	cursor: col-resize;
 }
 #slider .axis text, #slider .axis line {
@@ -142,11 +142,28 @@ svg {
 .snRNA {
 	fill: hsla(120,50%,50%,0.4);
 }
-/* Proteins */ 
-proteins svg {
+/* Contacts */ 
+data-tk-contacts svg {
 	padding: 0 40px;
 }
-proteins path {
+data-tk-contacts path {
+	fill: none;
+	stroke: #ccc;
+	stroke-width: 1px;
+	shape-rendering: crispEdges;
+}
+#contacts line, #contacts .tick text {
+	display: none;
+}
+.particle {
+	fill: hsla(300, 100%, 25%,1.0);
+}
+
+/* Proteins */ 
+data-tk-proteins svg {
+	padding: 0 40px;
+}
+data-tk-proteins path {
 	fill: none;
 	stroke: #ccc;
 	stroke-width: 1px;

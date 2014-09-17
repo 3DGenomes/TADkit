@@ -79,9 +79,9 @@ TADkit.factory('Proteins', ['$q', '$http', function($q, $http) {
 				};
 				colors.push(proteinPresent);
 			};
-			console.log(colors);
+			// console.log(colors);
 			return colors;
-		},
+		}
 		
 	};
 }])

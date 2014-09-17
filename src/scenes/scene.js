@@ -1,6 +1,6 @@
 'use strict';
 
-TADkit.directive('scene', [ 'Particles', 'Chromatin', function(Particles, Chromatin){
+TADkit.directive('tkScene', [ 'Particles', 'Chromatin', function(Particles, Chromatin){
 	return {
 		restrict: 'E',
 		scope: { 
@@ -183,9 +183,10 @@ TADkit.directive('scene', [ 'Particles', 'Chromatin', function(Particles, Chroma
 					fragmentPrevious.material.emissive = positionOriginalColor;
 					var fragmentCurrent = chromatinObj.getObjectByName( "fragment-"+positionCurrent );
 					positionOriginalColor = fragmentCurrent.material.color;
-					fragmentCurrent.material.color = new THREE.Color("rgb(0,0,255)");
-					fragmentCurrent.material.ambient = new THREE.Color("rgb(0,0,255)");
-					fragmentCurrent.material.emissive = new THREE.Color("rgb(0,0,255)");
+					var positionColor = new THREE.Color("rgb(255,0,0)");
+					fragmentCurrent.material.color = positionColor;
+					fragmentCurrent.material.ambient = positionColor;
+					fragmentCurrent.material.emissive = positionColor;
 				}
 			});
 

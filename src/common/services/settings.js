@@ -3,7 +3,8 @@
 TADkit.factory('Settings', function() {
 	var particles = false;
 	var chromatin = true;
-	var genes = true
+	var genes = true;
+	var contacts = false;
 	var hp1 = false;
 	var brm = false;
 	var mrg15 = false;
@@ -35,6 +36,13 @@ TADkit.factory('Settings', function() {
 		},
 		getGenes: function () {
 			return genes;
+		},
+		toggleContacts: function () {
+			contacts = this.toggle(contacts);
+			return contacts;
+		},
+		getContacts: function () {
+			return contacts;
 		},
 		toggleHP1: function () {
 			hp1 = this.toggle(hp1);
