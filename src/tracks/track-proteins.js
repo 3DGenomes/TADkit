@@ -1,4 +1,7 @@
+/*global TADkit, d3 */
+
 TADkit.directive('tkProteins', function(){
+	"use strict";
 	return {
 		restrict:'E',
 		scope:{
@@ -44,17 +47,17 @@ TADkit.directive('tkProteins', function(){
 
 					// d3.select("#highlight").style("visibility", "visible");
 
-					// d3.select("#highlight").attr("x", function() { return x( highlightPosition - (positionWidth * 0.5)) }); // DOES OFFSET CORRECTLY
-					d3.selectAll("#highlight").attr("x", function() { return x( highlightPosition - (positionWidth * 4)) });
+					// d3.select("#highlight").attr("x", function() { return x( highlightPosition - (positionWidth * 0.5)); }); // DOES OFFSET CORRECTLY
+					d3.selectAll("#highlight").attr("x", function() { return x( highlightPosition - (positionWidth * 4)); });
 				}
-			})
+			});
 			
 			function getProteinArray (data, id) {
 				var dataset = [];
 				for (var i = 0; i < data.length; i++) {
 					if (data[i][id]==1) {
 						var sample = [];
-						dataset.push( {"fragmentID":data[i]["fragmentID"], "chromosome":data[i]["chromosome"], "start":data[i]["start"], "end":data[i]["end"]} );
+						dataset.push( {"fragmentID":data[i].fragmentID, "chromosome":data[i].chromosome, "start":data[i].start, "end":data[i].end} );
 					} else {
 						// console.log("None found in sample.");
 					}
@@ -171,8 +174,8 @@ TADkit.directive('tkProteins', function(){
 				// }
 			}
 
-			})
+			});
 		}
-	}
-})
+	};
+});
 			

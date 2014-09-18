@@ -1,4 +1,7 @@
+/*global TADkit, d3 */
+
 TADkit.directive('tkGenes', function(){
+	"use strict";
 	return {
 		restrict:'E',
 		scope:{
@@ -15,6 +18,7 @@ TADkit.directive('tkGenes', function(){
 			// console.log(scope);
 			
 			scope.$watch('position',function(newValue, oldValue){
+
 				if (newValue !== oldValue) {
 					// console.log(newValue);
 					var positions = scope.positions;
@@ -40,11 +44,26 @@ TADkit.directive('tkGenes', function(){
 					d3.select("#highlight").style("visibility", "visible");
 
 					// d3.select("#highlight").attr("x", function() { return x( highlightPosition - (positionWidth * 0.5)) }); // DOES OFFSET CORRECTLY
-					d3.select("#highlight").attr("x", function() { return x( highlightPosition - (positionWidth * 4)) });
+					d3.select("#highlight").attr("x", function() { return x( highlightPosition - (positionWidth * 4)); });
 				}
-			})
+			});
 			
 			scope.$watch('data',function(newValue, oldValue){
+				
+			function draw() {
+				svg.select("g.x.axis").call(xAxis);
+				barsGroup.selectAll("rect")
+				.attr("x", function(d) { return Math.floor(x(d.start)); } )
+				.attr("y", function(d) { if (scope.sense) { if (d.strand < 1) {return (nodeHeight);} } else {return 0;} } )
+				.attr("width", function(d) { return Math.ceil(x(d.end) - x(d.start)) + "px"; } );
+				// console.log(zoom.translate());
+				// console.log(zoom.scale());
+				svg.select("#highlight").style("visibility", "hidden");
+				// .attr("x", function(d) { return x( highlightPosition - (positionWidth * 4)); } )
+				// .attr("width", highlightWidth );
+				
+			}
+		
 			if (newValue !== oldValue) {
 				// *** START D3 ****
 				// d3.select(window).on('resize', resize);
@@ -157,7 +176,7 @@ TADkit.directive('tkGenes', function(){
 					.data(data)
 					.enter().append("rect")
 					.attr("x", function(d) { return Math.floor(x(d.start)); } )
-					.attr("y", function(d) { if (scope.sense) { if (d.strand < 1) {return (nodeHeight)} } else {return 0}; } )
+					.attr("y", function(d) { if (scope.sense) { if (d.strand < 1) {return (nodeHeight);} } else {return 0;} } )
 					.attr("width", function(d) { return Math.ceil(x(d.end) - x(d.start)) + "px"; } )
 					.attr("height", (nodeHeight) )
 					.attr("class", function(d) { return d.biotype.toLowerCase(); } );
@@ -177,20 +196,6 @@ TADkit.directive('tkGenes', function(){
 			
 				    draw();
 
-				function draw() {
-					svg.select("g.x.axis").call(xAxis);
-					barsGroup.selectAll("rect")
-					.attr("x", function(d) { return Math.floor(x(d.start)); } )
-					.attr("y", function(d) { if (scope.sense) { if (d.strand < 1) {return (nodeHeight)} } else {return 0}; } )
-					.attr("width", function(d) { return Math.ceil(x(d.end) - x(d.start)) + "px"; } );
-					// console.log(zoom.translate());
-					// console.log(zoom.scale());
-					svg.select("#highlight").style("visibility", "hidden");
-					// .attr("x", function(d) { return x( highlightPosition - (positionWidth * 4)); } )
-					// .attr("width", highlightWidth );
-					
-				}
-		
 				// function resize(target) {
 				// 	var divWidth = elem.parentNode.clientWidth;
 				// 	var margin = {top: 0, right: 40, bottom: 40, left: 40};
@@ -211,8 +216,8 @@ TADkit.directive('tkGenes', function(){
 				// }
 			}
 
-			})
+			});
 		}
-	}
-})
+	};
+});
 			

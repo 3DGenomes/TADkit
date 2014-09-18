@@ -1,6 +1,7 @@
-'use strict';
+/*global TADkit */
 
 TADkit.factory('Proteins', ['$q', '$http', function($q, $http) {
+	"use strict";
 	var proteins = "";
 	return {
 		loadProteins: function(species, requestSlice) {
@@ -38,7 +39,7 @@ TADkit.factory('Proteins', ['$q', '$http', function($q, $http) {
 			var dataset = [];
 			for (var i = 0; i < data.length; i++) {
 				if (data[i][id]==1) {
-					dataset.push( {"fragmentID":data[i]["fragmentID"], "chromosome":data[i]["chromosome"], "start":data[i]["start"], "end":data[i]["end"]} );
+					dataset.push( {"fragmentID":data[i].fragmentID, "chromosome":data[i].chromosome, "start":data[i].start, "end":data[i].end} );
 				} else {
 					// console.log("None found in sample.");
 				}
@@ -76,12 +77,12 @@ TADkit.factory('Proteins', ['$q', '$http', function($q, $http) {
 					if ( Math.max(fragmentLower, start) <= Math.min(fragmentUpper,end) ) {
 							proteinPresent = proteinColor;
 					}
-				};
+				}
 				colors.push(proteinPresent);
-			};
+			}
 			// console.log(colors);
 			return colors;
 		}
 		
 	};
-}])
+}]);

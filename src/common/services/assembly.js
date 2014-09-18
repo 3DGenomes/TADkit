@@ -1,14 +1,15 @@
-'use strict';
+/*global TADkit */
 
 TADkit.service('Assembly', ['$q', '$http', 'ColorsFromINI', function($q, $http, ColorsFromINI) {
+	"use strict";
 	var ensemblRoot = "http://rest.ensembl.org/";
 	var assembly = {};
 	var biotypeColors = {};
 	return {
 		loadInfoAssembly: function(species) {
 			var deferral = $q.defer();
-			$http.get('assets/json/drosophila_melanogaster-assembly.json'). // OFFLINE
-			// $http.get(ensemblRoot + "info/assembly/" + species + "?content-type=application/json").
+			// $http.get('assets/json/drosophila_melanogaster-assembly.json'). // OFFLINE
+			$http.get(ensemblRoot + "info/assembly/" + species + "?content-type=application/json").
 			success(function(data){
 				assembly = data;
 				console.log("Assembly Info for " + species + " retreived from Ensembl.");
@@ -21,8 +22,8 @@ TADkit.service('Assembly', ['$q', '$http', 'ColorsFromINI', function($q, $http, 
 		},
 		loadInfoBiotypes: function(species) {
 			var deferral = $q.defer();
-			$http.get('assets/json/drosophila_melanogaster-biotypes.json'). // OFFLINE
-			// $http.get(ensemblRoot + "info/biotypes/" + species + "?content-type=application/json").
+			// $http.get('assets/json/drosophila_melanogaster-biotypes.json'). // OFFLINE
+			$http.get(ensemblRoot + "info/biotypes/" + species + "?content-type=application/json").
 			success(function(data){
 				console.log("Biotypes for " + species + " retreived from Ensembl.");
 				deferral.resolve(data);
@@ -31,8 +32,9 @@ TADkit.service('Assembly', ['$q', '$http', 'ColorsFromINI', function($q, $http, 
 		},
 		loadBiotypeColors: function() {
 			var deferral = $q.defer();
-			$http.get('assets/json/ensembl-webcode-COLOUR.ini'). // OFFLINE
-			// $http.get("https://raw.githubusercontent.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini").
+			// $http.get('assets/json/ensembl-webcode-COLOUR.ini'). // OFFLINE
+			// $http.get("https://raw.githubusercontent.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini"). // NOT PERMITTED
+			$http.get("https://cdn.rawgit.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini").
 			success(function(data){
 				var iniData = ColorsFromINI.parse(data);
 				biotypeColors = iniData;
@@ -54,7 +56,7 @@ TADkit.service('Assembly', ['$q', '$http', 'ColorsFromINI', function($q, $http, 
 				// pseudogene: 6710886
 			];
 			var TADBiotypesLookup = {};
-			for (var item, i = 0; item = genes[i++];) {
+			for (var item, i = 0; item == genes[i++];) {
 			  var TADGeneBiotype = item.biotype;
 			  if (!(TADGeneBiotype in TADBiotypesLookup)) {
 				TADBiotypesLookup[TADGeneBiotype] = 1;
@@ -67,9 +69,10 @@ TADkit.service('Assembly', ['$q', '$http', 'ColorsFromINI', function($q, $http, 
 			console.log("Total TAD Biotypes: %s", totalTADBiotypes);
 		}
 	};
-}])
+}]);
 
 TADkit.service('ColorsFromINI', ['ConvertColors', function (ConvertColors) {
+	"use strict";
 	return {
 		parse: function(data) {
 			var regex = {
@@ -83,9 +86,10 @@ TADkit.service('ColorsFromINI', ['ConvertColors', function (ConvertColors) {
 			lines.forEach(function(line){
 				if(regex.comment.test(line) || line === ""){
 					return;
-				};
+				}
+				var match;
 				if(regex.param.test(line)){
-					var match = line.match(regex.param);
+					match = line.match(regex.param);
 					if(section){
 						var hexColor = ConvertColors.nameToHex( match[2] );
 						value[section][match[1]] = hexColor;
@@ -93,14 +97,14 @@ TADkit.service('ColorsFromINI', ['ConvertColors', function (ConvertColors) {
 						value[match[1]] = match[2];
 					}
 				}else if(regex.section.test(line)){
-					var match = line.match(regex.section);
+					match = line.match(regex.section);
 					value[match[1]] = {};
 					section = match[1];
-				}else if(line.length == 0 && section){
+				}else if(line.length === 0 && section){
 					section = null;
-				};
+				}
 			});
 			return value;
 		}
 	};
-}])
+}]);

@@ -1,6 +1,7 @@
-'use strict';
+/*global TADkit */
 
 TADkit.factory('Settings', function() {
+	"use strict";
 	var particles = false;
 	var chromatin = true;
 	var genes = true;
@@ -91,9 +92,10 @@ TADkit.factory('Settings', function() {
 			return sense;
 		}
 	};
-})
+});
 
 
 TADkit.factory('test', function() {
+	"use strict";
 	return "Here it is!";
-})
+});

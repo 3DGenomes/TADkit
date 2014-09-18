@@ -1,9 +1,7 @@
-// Particles Geometry
-// FOR EVERY BEZIER ADD CIRCLE GEOMETRY LINE TO CHROMATIN FIBER OBJECT
-
-'use strict';
+/*global angular, TADkit, THREE */
 
 TADkit.factory('Particles', [ function () {
+	"use strict";
 	// constructor for chromatin model instances
 	function Particles( data, overrides ) {
 		
@@ -70,4 +68,4 @@ TADkit.factory('Particles', [ function () {
 	}
 		
 	return Particles;
-}])
+}]);

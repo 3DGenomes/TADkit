@@ -11,6 +11,12 @@
 		</div-->
 		<data-tk-genes data="genes" id="genes" position="slider.position" positions="fragments" assemblylength="assemblyLength" focusstart="focusStart" focusend="focusEnd" sense="showSense" class=""></data-tk-genes>
 		<data-tk-slider data="particles" id="slider" position="slider.position" fragments="fragments" class=""></data-tk-slider>
+	    <!--div id="">
+	      <h3>Genes present</h3>
+	      <ul ng-repeat="gene in genes | filter: filterGenes | orderBy: 'id' ">
+	        <li>{{gene.id}} ({{gene.start}})</li>
+	      </ul>
+	    </div-->
 	</div>
 	<div  ng-controller="SceneCtrl" class="trackholder row">
 		<div id="scene-controls"  class="controls">

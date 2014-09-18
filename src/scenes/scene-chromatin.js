@@ -1,9 +1,7 @@
-// Chromatin Geometry
-// FOR EVERY BEZIER ADD CIRCLE GEOMETRY LINE TO CHROMATIN FIBER OBJECT
-
-'use strict';
+/*global angular, TADkit, THREE */
 
 TADkit.factory('Chromatin', [ function () {
+	"use strict";
 	// constructor for chromatin model instances
 	function Chromatin( data, colors, overrides) {
 		// console.log("colors in cly");
@@ -24,7 +22,7 @@ TADkit.factory('Chromatin', [ function () {
 		
 		var TADGeometry = getTADGeometry( data );
 		var pathControls = getPathControls( TADGeometry.vertices );
-		if (this.particles == 0) this.particles = pathControls.length - 1;
+		if (this.particles === 0) this.particles = pathControls.length - 1;
 		
 		var pathSegments = this.particles * this.particleSegments;
 		this.pathSegments = pathSegments;
@@ -38,7 +36,7 @@ TADkit.factory('Chromatin', [ function () {
 		// for ( var i = 0 ; i < pathSegments - 1; i++) {
 		// 	this.endcap = ( i == 0 || i == pathSegments - 2 ) ? false : true ;
 		for ( var i = 0 ; i < pathSegments; i++) {
-			this.endcap = ( i == 0 || i == pathSegments - 1 ) ? false : true ;
+			this.endcap = ( i === 0 || i === pathSegments - 1 ) ? false : true ;
 			
 			var fragmentColor = colors[i];
 			var fragmentMaterial = new THREE.MeshLambertMaterial({
@@ -113,11 +111,11 @@ TADkit.factory('Chromatin', [ function () {
 			midCoord.addVectors(baseParticle,foreParticle).divideScalar(2);
 			var midOffset = new THREE.Vector3(0,0,0);
 			midOffset.copy(midCoord).sub(baseParticle);
-			if (i == 0) { // insert backprojected first coord
+			if (i === 0) { // insert backprojected first coord
 				var preCoord = new THREE.Vector3(0,0,0);
 				preCoord.copy(baseParticle).sub(midOffset);
 				pathControls.push(preCoord);
-			};
+			}
 			//pathControls.push(baseParticle);
 			pathControls.push(midCoord);
 			// if (i == totalParticles - 2) {
@@ -131,8 +129,8 @@ TADkit.factory('Chromatin', [ function () {
 				var endCoord = new THREE.Vector3(0,0,0);
 				endCoord.copy(foreParticle).add(midOffset);
 				pathControls.push(endCoord);
-			};
-		};
+			}
+		}
 		return pathControls;
 	}
 	
@@ -156,23 +154,20 @@ TADkit.factory('Chromatin', [ function () {
 	                             						0,-1, 0, 0,
                          													0, 0, 0, 1 ));
 		fragmentOrientation.setPosition( pointX.add(pointY).multiplyScalar(0.5) );
-		var chromatinOpenEnded;
-		var chromatinOpenEnded = props.endcap;
-	    var fragmentGeometry = new THREE.CylinderGeometry( props.radius, props.radius, fragmentDirection.length(), props.radiusSegments, props.curveSegments, chromatinOpenEnded);
-	    fragmentGeometry.applyMatrix(fragmentOrientation);
+		var openEnded;
+		openEnded = props.endcap;
+	    var geometry = new THREE.CylinderGeometry( props.radius, props.radius, fragmentDirection.length(), props.radiusSegments, props.curveSegments, openEnded);
+	    geometry.applyMatrix(fragmentOrientation);
 		
-		return fragmentGeometry;
-	};
+		return geometry;
+	}
 	
 	function getFragmentColors (segments) {
 		// based on length 
 		// build array
 		// by checking all genes at each stage
 		
-		
-		
-		
-	};
+	}
 	
 	return Chromatin;
-}])
+}]);

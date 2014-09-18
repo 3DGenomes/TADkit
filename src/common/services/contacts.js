@@ -1,6 +1,7 @@
-'use strict';
+/*global TADkit */
 
 TADkit.factory('Contacts', ['$q', '$http', 'ConvertColors', function($q, $http, ConvertColors) {
+	"use strict";
 	var contacts = "";
 	return {
 		loadContacts: function() {
@@ -58,7 +59,7 @@ TADkit.factory('Contacts', ['$q', '$http', 'ConvertColors', function($q, $http, 
 				for(var j=0; j<currentContactsCount; j++){
 					if ( i == particlePosition) {
 						colorHex = "#ff0000";
-					};					
+					}
 					// Look for Contacts at current particle + 1
 					if ( currentContacts[j].b == i+1 ) {
 						// Lumiosity by distance
@@ -74,17 +75,16 @@ TADkit.factory('Contacts', ['$q', '$http', 'ConvertColors', function($q, $http, 
 						var contactHSL = "hsl(300," + saturation + "," + luminosity + ")";
 						// console.log(contactHSL);
 						colorHex = new ConvertColors.hslToHex(contactHSL).process();
-					};
+					}
 				}
 				for(var k=0; k<segments; k++){
 					colors.push(colorHex);
 				}
 				colorHex = "#cccccc";
-			};
+			}
 			// console.log("current position: " + JSON.stringify(particlePosition));
 			// console.log(colors);
 			return colors;
 		}
-
 	};
-}])
+}]);

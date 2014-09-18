@@ -1,6 +1,7 @@
-'use strict';
+/*global TADkit */
 
 TADkit.service('ConvertColors', [function () {
+	"use strict";
 	var rootObj = this;
 	rootObj.re_ = {
 	  // An X11 "rgb:ddd/ddd/ddd" value.
@@ -793,22 +794,23 @@ TADkit.service('ConvertColors', [function () {
 
 		nameToHex: function(name) {
 			name = name.replace('/#','/');
+			var hexColor;
 			var isHex = this.testIfHex(name);
 			if (isHex) {
 				return "#" + name;
 			}
 			if (name in rootObj.colorNames) {
-				var hexColor = this.rgbToHex(rootObj.colorNames[name]);
+				hexColor = this.rgbToHex(rootObj.colorNames[name]);
 				return hexColor;
 			}
 			name = name.toLowerCase();
 			if (name in rootObj.colorNames) {
-				var hexColor = this.rgbToHex(rootObj.colorNames[name]);
+				hexColor = this.rgbToHex(rootObj.colorNames[name]);
 				return hexColor;
 			}
 			name = name.replace(/\s+/g, '');
 			if (name in rootObj.colorNames) {
-				var hexColor = this.rgbToHex(rootObj.colorNames[name]);
+				hexColor = this.rgbToHex(rootObj.colorNames[name]);
 				return hexColor;
 			}
 			return null;
@@ -864,9 +866,6 @@ TADkit.service('ConvertColors', [function () {
 
 			ary.splice(0, 1);
 			return rootObj.arrayToRGBA(ary.map(scale));
-		}
-		
+		}	
 	};
-	
-
-}])
+}]);

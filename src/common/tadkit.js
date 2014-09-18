@@ -1,9 +1,10 @@
-'use strict';
+/*global angular */
 
 // ANGULAR APP
 var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 
 	TADkit.config(function($routeProvider){
+		"use strict";
 		$routeProvider
 		.when('/',
 		{
@@ -14,13 +15,14 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 		          return loadTAD.promise;
 				}
 			}
-		})
-	})
+		});
+	});
 
-	TADkit.controller('TopbarCtrl', ['$rootScope', '$scope', function($rootScope, $scope){}])
+	TADkit.controller('TopbarCtrl', ['$rootScope', '$scope', function($rootScope, $scope){"use strict";}]);
 
 	TADkit.controller('DashboardCtrl',['$rootScope', '$scope', 'Settings', 'TAD', 'Assembly', 'Genes', 'Proteins', 'Contacts', function($rootScope, $scope, Settings, TAD, Assembly, Genes, Proteins, Contacts){
-
+		"use strict";
+		
 		$scope.assembly = Assembly.getAssembly();
 		var assemblyLength = 0;
 		var regions = $scope.assembly.top_level_region;
@@ -44,6 +46,8 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 		// console.log(segments);
 		
 		var genes = Genes.getGenes();
+		// console.log(genes);
+		
 		var biotypes = Assembly.getBiotypeColors().gene;
 		// console.log(biotypes);
 		// console.log(JSON.stringify(biotypes));
@@ -117,15 +121,17 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 		$scope.showParticles = Settings.getParticles();
 		$scope.toggleParticles = function() {
 			$scope.showParticles = !$scope.showParticles;
-		}
+		};
+		
 		$scope.showChromatin = Settings.getChromatin();
 		$scope.toggleChromatin = function() {
 			$scope.showChromatin = !$scope.showChromatin;
-		}
+		};
+		
 		$scope.showGenes = Settings.getGenes();
 		$scope.toggleGenes = function() {
 			// CHANGE TO switchColors()...
-			if ($scope.showGenes == false) {
+			if ($scope.showGenes === false) {
 				$scope.colors = $scope.colorsGenes;
 	   			$scope.showGenes = true;
 	   			$scope.showContacts = false;
@@ -144,13 +150,14 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 	   			$scope.showPC = false;
 	   			$scope.showH1 = false;
 			}
-		}
+		};
+		
 		$scope.showContacts = Settings.getContacts();
 		$scope.toggleContacts = function() {
 			// console.log($scope.slider.position);
 			$scope.colors = Contacts.getColors( contacts, $scope.slider.position, particlesCount, segments );
 			// CHANGE TO switchColors()...
-			if ($scope.showContacts == false) {
+			if ($scope.showContacts === false) {
 	   			$scope.showGenes = false;
 	   			$scope.showContacts = true;
 	   			$scope.showHP1 = false;
@@ -168,10 +175,11 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 	   			$scope.showPC = false;
 	   			$scope.showH1 = false;
 			}
-		}
+		};
+		
 		$scope.showHP1 = Settings.getHP1();
 		$scope.toggleHP1 = function() {
-			if ($scope.showHP1 == false) {
+			if ($scope.showHP1 === false) {
 				$scope.colors = $scope.colorsHP1;
 	   			$scope.showGenes = false;
 	   			$scope.showContacts = false;
@@ -190,10 +198,11 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 	   			$scope.showPC = false;
 	   			$scope.showH1 = false;
 			}
-		}
+		};
+		
 		$scope.showBRM = Settings.getBRM();
 		$scope.toggleBRM = function() {
-			if ($scope.showBRM == false) {
+			if ($scope.showBRM === false) {
 				$scope.colors = $scope.colorsBRM;
 	   			$scope.showGenes = false;
 	   			$scope.showContacts = false;
@@ -212,10 +221,11 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 	   			$scope.showPC = false;
 	   			$scope.showH1 = false;
 			}
-		}
+		};
+		
 		$scope.showMRG15 = Settings.getMRG15();
 		$scope.toggleMRG15 = function() {
-			if ($scope.showMRG15 == false) {
+			if ($scope.showMRG15 === false) {
 				$scope.colors = $scope.colorsMRG15;
 	   			$scope.showGenes = false;
 	   			$scope.showContacts = false;
@@ -234,10 +244,11 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 	   			$scope.showPC = false;
 	   			$scope.showH1 = false;
 			}
-		}
+		};
+		
 		$scope.showPC = Settings.getPC();
 		$scope.togglePC = function() {
-			if ($scope.showPC == false) {
+			if ($scope.showPC === false) {
 				$scope.colors = $scope.colorsPC;
 	   			$scope.showGenes = false;
 	   			$scope.showContacts = false;
@@ -256,10 +267,11 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 	   			$scope.showPC = false;
 	   			$scope.showH1 = false;
 			}
-		}
+		};
+		
 		$scope.showH1 = Settings.getH1();
 		$scope.toggleH1 = function() {
-			if ($scope.showH1 == false) {
+			if ($scope.showH1 === false) {
 				$scope.colors = $scope.colorsH1;
 	   			$scope.showGenes = false;
 	   			$scope.showContacts = false;
@@ -278,21 +290,24 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 	   			$scope.showPC = false;
 	   			$scope.showH1 = false;
 			}
-		}
+		};
+		
 		$scope.showSense = Settings.getSense();
 		$scope.toggleSense = function() {
 			$scope.showSense = !$scope.showSense;
-		}
+		};
 		
 		$scope.$watch('slider.position', function(n,o) {
 			if (n !== o && $scope.showContacts ) {
 				$scope.colors = Contacts.getColors( contacts, $scope.slider.position, particlesCount, segments );
 			}
 		});
-	}])	
+	}]);
 
 	TADkit.controller('TrackCtrl',['$scope', '$timeout', 'test', 'TAD', 'Genes', 'Proteins', 'Contacts',
 	function($scope, $timeout, test, TAD, Genes, Proteins, Contacts){
+		"use strict";
+		
 		// Timeout as temp fix to pause rendering until DOM complete
 		// *** move to parent controller???
 		$timeout( function() {
@@ -301,19 +316,26 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 			$scope.proteins = Proteins.getProteins();
 			$scope.contacts = Contacts.getContacts();
 		}, 0 );
+	    $scope.filterGenes = function(element) {
+			// filterGenes($scope.slider.position);
+			// var positionGenes = getGenesPresent(genes,  $scope.slider.position, fragmentCount, TADStart, fragmentLength );
+	    	// return element.name.match(/^Ma/) ? true : false;
+	    };
 		console.log('Track now active.');
-	}])
+	}]);
 
 	TADkit.controller('SceneCtrl',['$scope', '$timeout', 'test', 'TAD', 'Contacts',
 	function($scope, $timeout, test, TAD, Contacts){
+		"use strict";
 		// Timeout as temp fix to pause rendering until DOM complete
 		// $timeout( function() {$scope.vertices = TAD.getVertices()}, 0 ); // WHY NOT?
 
 		$scope.vertices = TAD.getVertices();
 		
-	}])
+	}]);
 
 	TADkit.service('loadTAD', function($http, TAD, Assembly, Genes, Proteins, Contacts) {
+		"use strict";
 		var species = "";
 		var slice = "X:0-4999999"; // Ensembl max :P
 		// LOAD TAD

@@ -1,4 +1,7 @@
+/*global TADkit, d3 */
+
 TADkit.directive('tkSlider', function(){
+	"use strict";
 	return {
 		restrict:'E',
 		scope:{
@@ -22,16 +25,29 @@ TADkit.directive('tkSlider', function(){
 				scope.safeApply( function (	) {
 					scope.position = position;
 					// console.log(scope.position);
-				})
+				});
 			}
 			
 			scope.$watch('data',function(newValue, oldValue){
+
+				function brushed() {
+				    /*jshint validthis: true */
+					var value = brush.extent()[0];
+
+					if (d3.event.sourceEvent) {
+						value = x.invert(d3.mouse(this)[0]);
+						brush.extent([value, value]);
+					}
+					handle.attr("cx", x(value) - (handleWidth * 0.5));
+					updatePosition(value);
+				}
+
 				if (newValue !== oldValue) {
-				
+
 				var data = scope.data;
 				var target = scope.id;
 				var divWidth = elem[0].parentNode.clientWidth;
-				var fragments = scope.fragments
+				var fragments = scope.fragments;
 		
 				var margin = {top: 0, right: 40, bottom: 0, left: 40},
 					width = divWidth - margin.left - margin.right,
@@ -97,22 +113,8 @@ TADkit.directive('tkSlider', function(){
 					.call(brush.extent([(scope.position), 0]))
 					.call(brush.event);
 
-				function brushed() {
-				  var value = brush.extent()[0];
-
-				  if (d3.event.sourceEvent) { // not a programmatic event
-					value = x.invert(d3.mouse(this)[0]);
-					brush.extent([value, value]);
-				  }
-
-				  // handle.attr("x", x(value) - (handleWidth * 0.5));
-				  handle.attr("cx", x(value) - (handleWidth * 0.5));
-				
-					updatePosition(value);
-				}
 			}
-			})
+			});
 		}
-	}
-})
-			
+	};
+});

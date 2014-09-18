@@ -1,13 +1,14 @@
-'use strict';
+/*global TADkit */
 
 TADkit.factory('Genes', ['$q', '$http', function($q, $http) {
+	"use strict";
 	var ensemblRoot = "http://rest.ensembl.org/";
 	var genes = "";
 	return {
 		loadRegionGenes: function(species, requestSlice) {
 			var deferral = $q.defer();
-			$http.get('assets/json/drosophila_melanogaster-genes.json')
-			// $http.get(ensemblRoot + "overlap/region/" + species + "/" + requestSlice + "?feature=gene;content-type=application/json")
+			// $http.get('assets/json/drosophila_melanogaster-genes.json')
+			$http.get(ensemblRoot + "overlap/region/" + species + "/" + requestSlice + "?feature=gene;content-type=application/json")
 			.success(function(data){
 				genes = data;
 				console.log( data.length + " genes for region " + requestSlice + " of " + species + " retreived from Ensembl.");
@@ -20,6 +21,20 @@ TADkit.factory('Genes', ['$q', '$http', function($q, $http) {
 		},
 		getGenesCount: function () {
 			return genes.length;
+		},
+		getGenesPresent: function (genes, currentFragment, fragmentsCount, TADStart, fragmentLength) {
+			var genesPresent = [];
+			var fragmentLower = TADStart + (fragmentLength * currentFragment);
+			var fragmentUpper = fragmentLower + fragmentLength;
+			// For every gene [j]...
+			for(var j=0; j<genes.length; j++){
+				var start = genes[j].start;
+				var end = genes[j].end;
+				if ( Math.max(fragmentLower, start) <= Math.min(fragmentUpper,end) ) {
+					genesPresent.push(genes[j]);
+				}
+			}
+			return genesPresent;
 		},
 		getColors: function(genes, biotypes, fragmentsCount, TADStart, fragmentLength) {
 			var colors = [];
@@ -38,31 +53,31 @@ TADkit.factory('Genes', ['$q', '$http', function($q, $http) {
 				for(var j=0; j<genesCount; j++){
 					var start = genes[j].start;
 					var end = genes[j].end;
-					
+					var inFragments = [];
 					 // check if overlaps current fragment [i]
 					if ( Math.max(fragmentLower, start) <= Math.min(fragmentUpper,end) ) {
-						// if (i==3) console.log("Yes gene " + genes[j].external_name + "("+j+") in fragment " + i );
-						
+						// console.log("Yes gene " + genes[j].external_name + "("+j+") in fragment " + i );
+						inFragments.push(i);
 						
 						if (biotypesPresent.length > 0) {
 							
 							// Simple weight - give preference to smaller fragments
 							if ( biotypesPresent[0] == "protein_coding" ) {
-								var biotype = genes[j].biotype;
-								biotypesPresent[0] = biotype;
+								biotypesPresent[0] = genes[j].biotype;
 							} else {
 								biotypesPresent.push(biotype);
 							}
 						} else {
-							var biotype = genes[j].biotype;
-							biotypesPresent.push(biotype);							
+							biotypesPresent.push(genes[j].biotype);							
 						}
 						
 					} else {
 						// if (i==3) console.log("No genes in fragment " + i );
 						// if (j == 0) console.log( JSON.stringify(fragmentLower)+", "+JSON.stringify(start)+" <= "+JSON.stringify(fragmentUpper)+", "+JSON.stringify(end) );
 					}
-				};
+					// console.log(inFragments);
+					genes[j].inFragments = inFragments;
+				}
 				// console.log(i);
 				// console.log(biotypesPresent);
 				for(var k=0; k<biotypesPresent.length; k++){
@@ -75,8 +90,9 @@ TADkit.factory('Genes', ['$q', '$http', function($q, $http) {
 				}
 				colors.push(color);
 				// console.log(biotypesPresent);
-			};
+			}
 			// console.log(colors);
+			// console.log(genes);
 			return colors;
 		},
 		getRandomColors: function( fragmentsCount ) {
@@ -89,4 +105,4 @@ TADkit.factory('Genes', ['$q', '$http', function($q, $http) {
 			return colors;
 		}
 	};
-}])
+}]);

@@ -1,6 +1,7 @@
-'use strict';
+/*global window, TADkit, THREE, requestAnimationFrame */
 
 TADkit.directive('tkScene', [ 'Particles', 'Chromatin', function(Particles, Chromatin){
+	"use strict";
 	return {
 		restrict: 'E',
 		scope: { 
@@ -31,8 +32,8 @@ TADkit.directive('tkScene', [ 'Particles', 'Chromatin', function(Particles, Chro
 			viewport =  element[0];
 			contW = viewport.parentNode.clientWidth * 0.8;
 			contH = contW * 0.66;
-			windowHalfX = contW / 2,
-			windowHalfY = contH / 2,
+			windowHalfX = contW / 2;
+			windowHalfY = contH / 2;
 	
 			// RENDERER
 			renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -144,7 +145,7 @@ TADkit.directive('tkScene', [ 'Particles', 'Chromatin', function(Particles, Chro
 			var fogColor = 0xFFFFFF,
 				fogNear = chromatin.bounds * 1.0,
 				fogFar = chromatin.bounds * 6.0;
-			scene.fog = new THREE.Fog( fogColor, fogNear, fogFar );
+			// scene.fog = new THREE.Fog( fogColor, fogNear, fogFar );
 			
 			window.addEventListener( 'resize', scope.onWindowResize, false );
 
@@ -207,8 +208,8 @@ TADkit.directive('tkScene', [ 'Particles', 'Chromatin', function(Particles, Chro
 
 			contW = viewport.parentNode.clientWidth * 0.66;
 			contH = contW * 0.66;
-			windowHalfX = contW / 2,
-			windowHalfY = contH / 2,
+			windowHalfX = contW / 2;
+			windowHalfY = contH / 2;
 
 			camera.aspect = contW / contH;
 			camera.updateProjectionMatrix();
@@ -232,12 +233,39 @@ TADkit.directive('tkScene', [ 'Particles', 'Chromatin', function(Particles, Chro
 				// TARGET CONTROLS ON TAD
 				// console.log("Controls target: %s", JSON.stringify(controls.target));
 				controls.target.copy(position);
-		}
+		};
+
+		scope.checkRotation = function (usrAngle){
+
+			var angle = 0.1;
+		    var position = new THREE.Vector3(camera.position.x,camera.position.y,camera.position.z);
+			var target = new THREE.Vector3( -4720.09000762387, -14279.253850598721, 6903.477032057158);
+			var translate = 0;
+			
+		        var x = position.x;
+		        var y = position.y;
+    
+				var x_origin = target.x;
+				var y_origin = target.y;
+				
+				console.log(x);
+				console.log(y);
+				
+				position.x = ((x - x_origin) * Math.cos(angle)) - ((y_origin - y) * Math.sin(angle)) + x_origin;
+				position.y = ((y_origin - y) * Math.cos(angle)) - ((x - x_origin) * Math.sin(angle)) + y_origin;
+				
+				
+			scope.lookAtTAD(position,target,translate);
+    
+		};
 
 		// -----------------------------------
 		// Draw and Animate
 		// -----------------------------------
 		scope.animate = function () {
+			// var rotSpeed = .02
+			// scope.checkRotation(rotSpeed);
+			
 			requestAnimationFrame( scope.animate );
 			controls.update();
 			scope.render();

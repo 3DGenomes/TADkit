@@ -1,6 +1,7 @@
-'use strict';
+/*global TADkit */
 
 TADkit.factory('TAD', ['$q', '$http', function($q, $http) {
+	"use strict";
 	var TAD = null;
 	var detailFactor = 20;
 	return {
@@ -68,4 +69,4 @@ TADkit.factory('TAD', ['$q', '$http', function($q, $http) {
 			return slice;
 		}
 	};
-}])
+}]);

@@ -1,4 +1,7 @@
+/*global TADkit, d3 */
+
 TADkit.directive('tkContacts', function(){
+	"use strict";
 	return {
 		restrict:'E',
 		scope:{
@@ -15,6 +18,9 @@ TADkit.directive('tkContacts', function(){
 			
 			scope.$watch('position',function(newValue, oldValue){
 				if (newValue !== oldValue) {
+
+					var data = scope.data;
+
 					var position = newValue;
 					var positions = scope.positions;
 					var segments = scope.segments;
@@ -53,7 +59,7 @@ TADkit.directive('tkContacts', function(){
 					// d3.select("#highlight").style("visibility", "visible");
 
 					// d3.select("#highlight").attr("x", function() { return x( highlightPosition - (positionWidth * 0.5)) }); // DOES OFFSET CORRECTLY
-					d3.selectAll("#highlight").attr("x", function() { return Math.floor(particlePosition - (particleWidth * 0.5)) });
+					d3.selectAll("#highlight").attr("x", function() { return Math.floor(particlePosition - (particleWidth * 0.5)); });
 
 					d3.select("#contacts").selectAll(".clipped").remove();
 					// console.log(data);
@@ -73,12 +79,13 @@ TADkit.directive('tkContacts', function(){
 					.attr("class", "particle" );
 
 				}
-			})
+			});
 
 			scope.$watch('data',function(newValue, oldValue){
 				if (newValue !== oldValue) {
-					data = newValue;
-				
+
+					var data = newValue;
+					
 					var divWidth = elem[0].parentNode.clientWidth;
 					var target = scope.id;
 					var position = scope.position;
@@ -167,8 +174,8 @@ TADkit.directive('tkContacts', function(){
 							.attr("class", "highlight");
 
 				}	
-			})
+			});
 		}
-	}
-})
+	};
+});
 			
