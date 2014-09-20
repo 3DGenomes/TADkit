@@ -8,8 +8,8 @@ TADkit.service('Assembly', ['$q', '$http', 'ColorsFromINI', function($q, $http, 
 	return {
 		loadInfoAssembly: function(species) {
 			var deferral = $q.defer();
-			// $http.get('assets/json/drosophila_melanogaster-assembly.json'). // OFFLINE
-			$http.get(ensemblRoot + "info/assembly/" + species + "?content-type=application/json").
+			$http.get('assets/json/drosophila_melanogaster-assembly.json'). // OFFLINE
+			// $http.get(ensemblRoot + "info/assembly/" + species + "?content-type=application/json").
 			success(function(data){
 				assembly = data;
 				console.log("Assembly Info for " + species + " retreived from Ensembl.");
@@ -22,8 +22,8 @@ TADkit.service('Assembly', ['$q', '$http', 'ColorsFromINI', function($q, $http, 
 		},
 		loadInfoBiotypes: function(species) {
 			var deferral = $q.defer();
-			// $http.get('assets/json/drosophila_melanogaster-biotypes.json'). // OFFLINE
-			$http.get(ensemblRoot + "info/biotypes/" + species + "?content-type=application/json").
+			$http.get('assets/json/drosophila_melanogaster-biotypes.json'). // OFFLINE
+			// $http.get(ensemblRoot + "info/biotypes/" + species + "?content-type=application/json").
 			success(function(data){
 				console.log("Biotypes for " + species + " retreived from Ensembl.");
 				deferral.resolve(data);
@@ -32,9 +32,9 @@ TADkit.service('Assembly', ['$q', '$http', 'ColorsFromINI', function($q, $http, 
 		},
 		loadBiotypeColors: function() {
 			var deferral = $q.defer();
-			// $http.get('assets/json/ensembl-webcode-COLOUR.ini'). // OFFLINE
+			$http.get('assets/json/ensembl-webcode-COLOUR.ini'). // OFFLINE
 			// $http.get("https://raw.githubusercontent.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini"). // NOT PERMITTED
-			$http.get("https://cdn.rawgit.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini").
+			// $http.get("https://cdn.rawgit.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini").
 			success(function(data){
 				var iniData = ColorsFromINI.parse(data);
 				biotypeColors = iniData;

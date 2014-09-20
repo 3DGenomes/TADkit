@@ -7,8 +7,8 @@ TADkit.factory('Genes', ['$q', '$http', function($q, $http) {
 	return {
 		loadRegionGenes: function(species, requestSlice) {
 			var deferral = $q.defer();
-			// $http.get('assets/json/drosophila_melanogaster-genes.json')
-			$http.get(ensemblRoot + "overlap/region/" + species + "/" + requestSlice + "?feature=gene;content-type=application/json")
+			$http.get('assets/json/drosophila_melanogaster-genes.json')
+			// $http.get(ensemblRoot + "overlap/region/" + species + "/" + requestSlice + "?feature=gene;content-type=application/json")
 			.success(function(data){
 				genes = data;
 				console.log( data.length + " genes for region " + requestSlice + " of " + species + " retreived from Ensembl.");
