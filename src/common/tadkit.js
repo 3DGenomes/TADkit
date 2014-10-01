@@ -11,8 +11,8 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 			controller:'DashboardCtrl',
 			templateUrl:'common/dashboard.html',
 			resolve:{ 
-		        'loadTADData':function(loadTAD){
-		          return loadTAD.promise;
+				'loadTADData':function(loadTAD){
+					return loadTAD.promise;
 				}
 			}
 		});
@@ -22,7 +22,7 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 
 	TADkit.controller('DashboardCtrl',['$rootScope', '$scope', 'Settings', 'TAD', 'Assembly', 'Genes', 'Proteins', 'Contacts', function($rootScope, $scope, Settings, TAD, Assembly, Genes, Proteins, Contacts){
 		"use strict";
-		
+
 		$scope.assembly = Assembly.getAssembly();
 		var assemblyLength = 0;
 		var regions = $scope.assembly.top_level_region;
@@ -76,6 +76,7 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 		var TADStart = TADMetadata.start;
 		// var fragmentLength = TAD.getMetadata().lengthBP / fragmentCount;
 		var fragmentLength = TADMetadata.resolution / segments; // base pairs
+		$scope.fragmentLength = fragmentLength;
 		// console.log(fragmentLength);
 
 		var focusStart = TADMetadata.start;
@@ -304,8 +305,8 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 		});
 	}]);
 
-	TADkit.controller('TrackCtrl',['$scope', '$timeout', 'test', 'TAD', 'Genes', 'Proteins', 'Contacts',
-	function($scope, $timeout, test, TAD, Genes, Proteins, Contacts){
+	TADkit.controller('TrackCtrl',['$scope', '$timeout', 'TAD', 'Genes', 'Proteins', 'Contacts',
+	function($scope, $timeout, TAD, Genes, Proteins, Contacts){
 		"use strict";
 		
 		// Timeout as temp fix to pause rendering until DOM complete
@@ -316,16 +317,37 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 			$scope.proteins = Proteins.getProteins();
 			$scope.contacts = Contacts.getContacts();
 		}, 0 );
-	    $scope.filterGenes = function(element) {
-			// filterGenes($scope.slider.position);
-			// var positionGenes = getGenesPresent(genes,  $scope.slider.position, fragmentCount, TADStart, fragmentLength );
-	    	// return element.name.match(/^Ma/) ? true : false;
-	    };
 		console.log('Track now active.');
 	}]);
 
-	TADkit.controller('SceneCtrl',['$scope', '$timeout', 'test', 'TAD', 'Contacts',
-	function($scope, $timeout, test, TAD, Contacts){
+	TADkit.controller('ControlsCtrl',['$scope', '$timeout', 'Genes',
+	function($scope, $timeout, Genes){
+		"use strict";
+		
+		$timeout( function() {
+			$scope.genes = Genes.getGenes();
+		}, 0 );
+	    $scope.filterGenes = function(gene) {
+			var currentLower = $scope.focusStart + parseInt($scope.fragmentLength * $scope.slider.position);
+			// console.log(currentUpper);
+			var currentUpper = currentLower + ($scope.fragmentLength - 1);
+			// console.log(currentLower);
+			var genePresent = false;
+			// console.log( JSON.stringify(currentLower) + ", " + JSON.stringify(currentUpper) );
+			// console.log( JSON.stringify(gene.start) + ", " +  JSON.stringify(gene.end) );
+			// console.log(JSON.stringify(parseInt($scope.slider.position)) + ": " + JSON.stringify(Math.max(currentLower, gene.start)) + " <= " + JSON.stringify(Math.min(currentUpper, gene.end)));
+			if ( Math.max(currentLower, gene.start) <= Math.min(currentUpper, gene.end) ) {
+			// if ( gene.start <= currentLower && currentUpper <= gene.end) {
+				genePresent = true;
+				// console.log(genePresent);
+			}
+			return genePresent;
+		};
+		console.log('Controls now active.');
+	}]);
+
+	TADkit.controller('SceneCtrl',['$scope', '$timeout', 'TAD', 'Contacts',
+	function($scope, $timeout, TAD, Contacts){
 		"use strict";
 		// Timeout as temp fix to pause rendering until DOM complete
 		// $timeout( function() {$scope.vertices = TAD.getVertices()}, 0 ); // WHY NOT?

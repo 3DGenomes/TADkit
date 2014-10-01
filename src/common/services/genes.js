@@ -41,7 +41,7 @@ TADkit.factory('Genes', ['$q', '$http', function($q, $http) {
 			var totalLength = fragmentsCount * fragmentLength;
 			// console.log(fragmentsCount);
 			
-			// For every fragment [i]...
+			// For every fragment [i]... => extract as generic function, matching screen position to coord upper and lower
 			for(var i=0; i<fragmentsCount; i++){
 				var biotypesPresent = [];
 				var fragmentLower = TADStart + (fragmentLength * i);

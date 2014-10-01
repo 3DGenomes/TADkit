@@ -93,9 +93,3 @@ TADkit.factory('Settings', function() {
 		}
 	};
 });
-
-
-TADkit.factory('test', function() {
-	"use strict";
-	return "Here it is!";
-});
