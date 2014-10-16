@@ -30,7 +30,7 @@ TADkit.directive('tkScene', [ 'Particles', 'Chromatin', function(Particles, Chro
 
 			// VIEWPORT
 			viewport =  element[0];
-			contW = viewport.parentNode.clientWidth * 0.8;
+			contW = viewport.parentNode.clientWidth * 1.0;
 			contH = contW * 0.66;
 			windowHalfX = contW / 2;
 			windowHalfY = contH / 2;
