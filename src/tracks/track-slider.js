@@ -35,7 +35,7 @@ TADkit.directive('tkSlider', function(){
 					var value = brush.extent()[0];
 
 					if (d3.event.sourceEvent) {
-						value = x.invert(d3.mouse(this)[0]);
+						value = parseInt(x.invert(d3.mouse(this)[0]));
 						brush.extent([value, value]);
 					}
 					handle.attr("cx", x(value) - (handleWidth * 0.5));

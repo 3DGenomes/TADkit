@@ -67,8 +67,7 @@ TADkit.directive('tkGenes', function(){
 			if (newValue !== oldValue) {
 				// *** START D3 ****
 				// d3.select(window).on('resize', resize);
-				console.log("D3 initiated");
-		
+						
 				var data = scope.data;
 				var assemblyLength = scope.assemblylength;
 				var target = scope.id;
@@ -179,7 +178,9 @@ TADkit.directive('tkGenes', function(){
 					.attr("y", function(d) { if (scope.sense) { if (d.strand < 1) {return (nodeHeight);} } else {return 0;} } )
 					.attr("width", function(d) { return Math.ceil(x(d.end) - x(d.start)) + "px"; } )
 					.attr("height", (nodeHeight) )
-					.attr("class", function(d) { return d.biotype.toLowerCase(); } );
+					.attr("class", function(d) { return d.biotype.toLowerCase(); } )
+					.append("svg:title")
+					.text(function(d) { return d.external_name; });
 			
 					var highlightPosition = focusStart + (positionWidth * position);
 					// console.log(highlightPosition);
