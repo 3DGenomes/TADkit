@@ -1,87 +1,75 @@
-/*global angular, TADkit, THREE */
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.factory('Chromatin', Chromatin);
 
-TADkit.factory('Chromatin', [ function () {
-	"use strict";
 	// constructor for chromatin model instances
-	function Chromatin( data, colors, overrides) {
-		// console.log("colors in cly");
-		// console.log(colors.length);
-		
-		var defaults = {
-			chromatinVisibility: true,
-			particles: 0,
-			particleSegments: 5,
-			curveSegments: 1,
-			radius: 15,
-			radiusSegments: 16,
-			endcap: false,
-			pathClosed: false
-		};		
-		overrides = overrides || { };
-		angular.extend(this, angular.copy(defaults), overrides);
-		
-		var TADGeometry = getTADGeometry( data );
-		var pathControls = getPathControls( TADGeometry.vertices );
-		if (this.particles === 0) this.particles = pathControls.length - 1;
-		
-		var pathSegments = this.particles * this.particleSegments;
-		this.pathSegments = pathSegments;
-		// Calculate PathSegments based on number of base pairs in the TAD ?
-		var pathCoords = getSplinePath (pathControls, pathSegments);
-		
-		var chromatinFiber = new THREE.Object3D(); // unmerged mesh
-		var chromatinGeometry = new THREE.Geometry(); // to calculate merged bounds
-		var fragmentColors = getFragmentColors(pathSegments);
-
-		// for ( var i = 0 ; i < pathSegments - 1; i++) {
-		// 	this.endcap = ( i == 0 || i == pathSegments - 2 ) ? false : true ;
-		for ( var i = 0 ; i < pathSegments; i++) {
-			this.endcap = ( i === 0 || i === pathSegments - 1 ) ? false : true ;
+	function Chromatin() {
+		return function( data, colors, overrides) {
+			console.log("colors in cly");
+			// console.log(colors.length);
 			
-			var fragmentColor = colors[i];
-			var fragmentMaterial = new THREE.MeshLambertMaterial({
-				color: fragmentColor,
-				ambient: fragmentColor,
-				emissive: fragmentColor,
-				vertexColors: THREE.VertexColors,
-				//shading: THREE.FlatShading,
-				opacity: 1.0,
-				transparent: false,
-				wireframe: false
-			});
-			var fragment = fragmentGeometry(pathCoords[i], pathCoords[i+1], this );
-			chromatinGeometry.merge(fragment);
+			var defaults = {
+				chromatinVisibility: true,
+				particles: 0,
+				particleSegments: 5,
+				curveSegments: 1,
+				radius: 15,
+				radiusSegments: 16,
+				endcap: false,
+				pathClosed: false
+			};		
+			overrides = overrides || { };
+			angular.extend(this, angular.copy(defaults), overrides);
+			
+			var TADGeometry = getTADGeometry( data );
+			var pathControls = getPathControls( TADGeometry.vertices );
+			if (this.particles === 0) this.particles = pathControls.length - 1;
+			
+			var pathSegments = this.particles * this.particleSegments;
+			this.pathSegments = pathSegments;
+			// Calculate PathSegments based on number of base pairs in the TAD ?
+			var pathCoords = getSplinePath (pathControls, pathSegments);
+			
+			var chromatinFiber = new THREE.Object3D(); // unmerged mesh
+			var chromatinGeometry = new THREE.Geometry(); // to calculate merged bounds
+			var fragmentColors = getFragmentColors(pathSegments);
 
-			var chromatinFragment = new THREE.Mesh( fragment, fragmentMaterial);
-			chromatinFragment.name = "fragment-"+i;
-			chromatinFiber.add(chromatinFragment);
-		}
-		chromatinGeometry.computeBoundingSphere();
-		chromatinFiber.boundingSphere = chromatinGeometry.boundingSphere;
-		chromatinFiber.name = "Chromatin Fiber";
-		chromatinFiber.visible = this.chromatinVisibility;
-		
-		this.fiber = chromatinFiber;
-		this.center = chromatinGeometry.boundingSphere.center;
-		this.bounds = chromatinGeometry.boundingSphere.radius;
-		// console.log("Chomatin Object");
-		// console.log(this);
-	}
-	
-	function getCenter( vertices ) {
-		var centroid = new THREE.Vector3();
-		var count = vertices.length;
-		for ( var i=0; i < count; i++ )
-		{
-			centroid.x += vertices[i].x;
-			centroid.y += vertices[i].y;
-			centroid.z += vertices[i].z;
-		}
-			centroid.x /= count;
-			centroid.y /= count;
-			centroid.z /= count;
-		console.log("Centroid: %s", JSON.stringify(centroid));
-		return centroid;
+			// for ( var i = 0 ; i < pathSegments - 1; i++) {
+			// 	this.endcap = ( i == 0 || i == pathSegments - 2 ) ? false : true ;
+			for ( var i = 0 ; i < pathSegments; i++) {
+				this.endcap = ( i === 0 || i === pathSegments - 1 ) ? false : true ;
+				
+				var fragmentColor = colors[i];
+				var fragmentMaterial = new THREE.MeshLambertMaterial({
+					color: fragmentColor,
+					ambient: fragmentColor,
+					emissive: fragmentColor,
+					vertexColors: THREE.VertexColors,
+					//shading: THREE.FlatShading,
+					opacity: 1.0,
+					transparent: false,
+					wireframe: false
+				});
+				var fragment = fragmentGeometry(pathCoords[i], pathCoords[i+1], this );
+				chromatinGeometry.merge(fragment);
+
+				var chromatinFragment = new THREE.Mesh( fragment, fragmentMaterial);
+				chromatinFragment.name = "fragment-"+i;
+				chromatinFiber.add(chromatinFragment);
+			}
+			chromatinGeometry.computeBoundingSphere();
+			chromatinFiber.boundingSphere = chromatinGeometry.boundingSphere;
+			chromatinFiber.name = "Chromatin Fiber";
+			chromatinFiber.visible = this.chromatinVisibility;
+			
+			this.fiber = chromatinFiber;
+			this.center = chromatinGeometry.boundingSphere.center;
+			this.bounds = chromatinGeometry.boundingSphere.radius;
+			// console.log("Chomatin Object");
+			// console.log(this);			
+		};
 	}
 	
 	function getTADGeometry( data ) {
@@ -166,8 +154,6 @@ TADkit.factory('Chromatin', [ function () {
 		// based on length 
 		// build array
 		// by checking all genes at each stage
-		
 	}
 	
-	return Chromatin;
-}]);
+})();

@@ -70,22 +70,35 @@
 	<!--script src="http://cdnjs.cloudflare.com/ajax/libs/stats.js/r11/Stats.min.js"></script-->
 	<!--script src="https://rawgit.com/mrdoob/three.js/master/examples/js/controls/OrbitControls.js"></script-->
 	<script src="assets/libs/tinycolor.js"></script>
-	<script src="common/tadkit.js"></script>
-	<script src="common/services/settings.js"></script>
-	<script src="common/services/tad.js"></script>
-	<script src="common/services/assembly.js"></script>
-	<script src="common/services/genes.js"></script>
-	<script src="common/services/proteins.js"></script>
-	<script src="common/services/contacts.js"></script>
-	<script src="common/services/convertcolors.js"></script>
-	<script src="tracks/track-genes.js"></script>
-	<script src="tracks/track-slider.js"></script>
-	<script src="tracks/track-contacts.js"></script>
-	<script src="tracks/track-proteins.js"></script>
-	<script src="scenes/scene.js"></script>
-	<script src="scenes/scene-chromatin.js"></script>
-	<script src="scenes/scene-particles.js"></script>
-	<!--script src="scenes/chromatin.js"></script-->
+
+	<!-- MAIN -->
+	<script src="tadkit.js"></script>
+	<script src="tadkit.routes.js"></script>
+	<!-- LAYOUT -->
+	<script src="layout/controls.controller.js"></script>
+	<script src="layout/topbar.controller.js"></script>
+	<script src="layout/dashboard.controller.js"></script>
+	<!-- COMPONENTS: SCENES -->
+	<script src="components/scene/scene-chromatin.service.js"></script>
+	<script src="components/scene/scene-particles.service.js"></script>
+	<script src="components/scene/scene.controller.js"></script>
+	<script src="components/scene/scene.directive.js"></script>
+	<!-- COMPONENTS: TRACKS -->
+	<script src="components/track/track.controller.js"></script>
+	<script src="components/track/track-contacts.directive.js"></script>
+	<script src="components/track/track-genes.directive.js"></script>
+	<script src="components/track/track-proteins.directive.js"></script>
+	<script src="components/track/track-slider.directive.js"></script>
+	<!-- SERVICES -->
+	<script src="services/assembly.service.js"></script>
+	<script src="services/colors-from-ini.service.js"></script>
+	<script src="services/convertcolors.service.js"></script>
+	<script src="services/contacts.service.js"></script>
+	<script src="services/loadtad.service.js"></script>
+	<script src="services/genes.service.js"></script>
+	<script src="services/proteins.service.js"></script>
+	<script src="services/settings.service.js"></script>
+	<script src="services/tad.service.js"></script>
 	
 </body>
 </html>
