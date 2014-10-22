@@ -1,27 +1,10 @@
-/*global angular */
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.controller('DashboardCtrl', DashboardCtrl);
 
-// ANGULAR APP
-var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
-
-	TADkit.config(function($routeProvider){
-		"use strict";
-		$routeProvider
-		.when('/',
-		{
-			controller:'DashboardCtrl',
-			templateUrl:'common/dashboard.html',
-			resolve:{ 
-				'loadTADData':function(loadTAD){
-					return loadTAD.promise;
-				}
-			}
-		});
-	});
-
-	TADkit.controller('TopbarCtrl', ['$rootScope', '$scope', function($rootScope, $scope){"use strict";}]);
-
-	TADkit.controller('DashboardCtrl',['$rootScope', '$scope', 'Settings', 'TAD', 'Assembly', 'Genes', 'Proteins', 'Contacts', function($rootScope, $scope, Settings, TAD, Assembly, Genes, Proteins, Contacts){
-		"use strict";
+	function DashboardCtrl ($rootScope, $scope, Settings, TAD, Assembly, Genes, Proteins, Contacts){
 
 		$scope.assembly = Assembly.getAssembly();
 		var assemblyLength = 0;
@@ -303,92 +286,5 @@ var TADkit = angular.module('TADkit',['ngRoute', 'mm.foundation']);
 				$scope.colors = Contacts.getColors( contacts, $scope.slider.position, particlesCount, segments );
 			}
 		});
-	}]);
-
-	TADkit.controller('TrackCtrl',['$scope', '$timeout', 'TAD', 'Genes', 'Proteins', 'Contacts',
-	function($scope, $timeout, TAD, Genes, Proteins, Contacts){
-		"use strict";
-		
-		// Timeout as temp fix to pause rendering until DOM complete
-		// *** move to parent controller???
-		$timeout( function() {
-			$scope.particles = TAD.getParticles();
-			$scope.genes = Genes.getGenes();
-			$scope.proteins = Proteins.getProteins();
-			$scope.contacts = Contacts.getContacts();
-		}, 0 );
-		console.log('Track now active.');
-	}]);
-
-	TADkit.controller('ControlsCtrl',['$scope', '$timeout', 'Genes',
-	function($scope, $timeout, Genes){
-		"use strict";
-		
-		$timeout( function() {
-			$scope.genes = Genes.getGenes();
-		}, 0 );
-	    $scope.filterGenes = function(gene) {
-			var currentLower = $scope.focusStart + parseInt($scope.fragmentLength * $scope.slider.position);
-			// console.log(currentUpper);
-			var currentUpper = currentLower + ($scope.fragmentLength - 1);
-			// console.log(currentLower);
-			var genePresent = false;
-			// console.log( JSON.stringify(currentLower) + ", " + JSON.stringify(currentUpper) );
-			// console.log( JSON.stringify(gene.start) + ", " +  JSON.stringify(gene.end) );
-			// console.log(JSON.stringify(parseInt($scope.slider.position)) + ": " + JSON.stringify(Math.max(currentLower, gene.start)) + " <= " + JSON.stringify(Math.min(currentUpper, gene.end)));
-			if ( Math.max(currentLower, gene.start) <= Math.min(currentUpper, gene.end) ) {
-			// if ( gene.start <= currentLower && currentUpper <= gene.end) {
-				genePresent = true;
-				// console.log(genePresent);
-			}
-			return genePresent;
-		};
-		console.log('Controls now active.');
-	}]);
-
-	TADkit.controller('SceneCtrl',['$scope', '$timeout', 'TAD', 'Contacts',
-	function($scope, $timeout, TAD, Contacts){
-		"use strict";
-		// Timeout as temp fix to pause rendering until DOM complete
-		// $timeout( function() {$scope.vertices = TAD.getVertices()}, 0 ); // WHY NOT?
-
-		$scope.vertices = TAD.getVertices();
-		
-	}]);
-
-	TADkit.service('loadTAD', function($http, TAD, Assembly, Genes, Proteins, Contacts) {
-		"use strict";
-		var species = "";
-		var slice = "X:0-4999999"; // Ensembl max :P
-		// LOAD TAD
-		var initialiseData = TAD.loadTAD()
-		.then(function(promise){
-			// LOAD ASSEMBLY 
-			species = TAD.getSpeciesUrl();
-			return Assembly.loadInfoAssembly(species);
-		})
-		.then(function(promise){
-			// LOAD GENES
-			slice = TAD.getSlice();
-			return Genes.loadRegionGenes(species, slice);
-		})
-		.then(function(promise){
-			// LOAD BIOTYPE COLORS
-			return Assembly.loadBiotypeColors();
-		})
-		.then(function(promise){
-			// LOAD PROTEINS
-			return Proteins.loadProteins(species, slice);
-		})
-		.then(function(promise){
-			// LOAD CONTACTS
-			return Contacts.loadContacts();
-		});
-	
-		return {
-			promise:initialiseData,
-			newTAD: function () {
-				return null;
-			},
-		};
-	});
+	}
+})();

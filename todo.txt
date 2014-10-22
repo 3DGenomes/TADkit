@@ -1,0 +1,18 @@
+- $routeProvider multiple .when pages (implication of moving controllers?)
+
+- load multiple scripts (single file on html) (minor inconvenience as real example uses .min.js build version
+
+- check .min.js error: due to parameters being uglified? (where is eg. of best practice I was looking at???)
+
+- move controllers to subfolders (where was I looking at description of good mv* structure??? website in history???)
+
+- foundation side menu
+|- move SHOW/HIDE to side menu
+|- optimise SHOW/HIDE toggling code
+
+
+For Thursday:
+- load TAD from file
+- color by particle from file data
+  |- multiple views from two datasets/files
+  |- animation between two datasets/files
