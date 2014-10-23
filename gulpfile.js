@@ -11,10 +11,11 @@ var rename = require('gulp-rename');
 // Lint Task
 gulp.task('lint', function() {
     return gulp.src([
-		'src/common/*.js',
-		'src/common/services/*.js',
-		'src/tracks/*.js',
-		'src/scenes/*.js'
+		'src/*.js',
+		'src/components/scene/*.js',
+		'src/components/track/*.js',
+		'src/layout/*.js',
+		'src/services/*.js',
 		])
         .pipe(jshint({ devel: true }))
         .pipe(jshint.reporter('default'));
@@ -30,10 +31,11 @@ gulp.task('lint', function() {
 // Concatenate & Minify JS
 gulp.task('scripts', function() {
     return gulp.src([
-		'src/common/*.js',
-		'src/common/services/*.js',
-		'src/tracks/*.js',
-		'src/scenes/*.js'
+		'src/*.js',
+		'src/components/scene/*.js',
+		'src/components/track/*.js',
+		'src/layout/*.js',
+		'src/services/*.js',
 		])
 		// eg. file order  gulp.src(['./lib/file3.js', './lib/file1.js', './lib/file2.js'])
 
@@ -47,10 +49,11 @@ gulp.task('scripts', function() {
 // Watch Files For Changes
 gulp.task('watch', function() {
     gulp.watch([
-		'src/common/*.js',
-		'src/common/services/*.js',
-		'src/tracks/*.js',
-		'src/scenes/*.js'
+		'src/*.js',
+		'src/components/scene/*.js',
+		'src/components/track/*.js',
+		'src/layout/*.js',
+		'src/services/*.js',
 		], ['lint', 'scripts']);
     // gulp.watch('src/scss/*.scss', ['sass']);
 });

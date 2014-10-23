@@ -2,9 +2,9 @@
 	'use strict';
 	angular
 		.module('TADkit')
-		.factory('TAD', TAD);
+		.factory('TAD', TADfn);
 
-	function TAD ($q, $http){
+	function TADfn ($q, $http){
 		var TAD = null;
 		var detailFactor = 20;
 		return {

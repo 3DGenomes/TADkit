@@ -14,16 +14,10 @@
 						return loadTAD.promise;
 					}
 				}
-			}
-			// .when('/loader/',{
-			// 	templateUrl:'common/loader.html',
-			// 	controller:'LoaderCtrl',
-			// 	resolve:{ 
-			// 		'loadTADData':function(loadTAD){
-			// 			return loadTAD.promise;
-			// 		}
-			// 	}
-			// }
-			);
+			})
+			.when('/loader',{
+				templateUrl:'layout/loader.html',
+				controller:'LoaderCtrl',
+			});
 	}
 })();
