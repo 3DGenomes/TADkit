@@ -68,7 +68,7 @@
 		var focusEnd = TADMetadata.end;
 		$scope.focusEnd = focusEnd;
 		
-		$scope.colors = Genes.getColors( genes, biotypes, fragmentCount, TADStart, fragmentLength );
+		$scope.colorsTAD = TAD.getColors();
 		$scope.colorsGenes = Genes.getColors( genes, biotypes, fragmentCount, TADStart, fragmentLength );
 		$scope.colorsContacts = Contacts.getColors( contacts, $scope.slider.position, particlesCount, segments );
 		$scope.colorsHP1 = Proteins.getColors( proteins, "HP1", fragmentCount, TADStart, fragmentLength );
@@ -76,6 +76,7 @@
 		$scope.colorsMRG15 = Proteins.getColors( proteins, "MRG15", fragmentCount, TADStart, fragmentLength );
 		$scope.colorsPC = Proteins.getColors( proteins, "PC", fragmentCount, TADStart, fragmentLength );
 		$scope.colorsH1 = Proteins.getColors( proteins, "H1", fragmentCount, TADStart, fragmentLength );
+		$scope.colors = $scope.colorsTAD;
 		// $scope.colors = Genes.getRandomColors(fragmentCount);
 
 		// setInterval(
@@ -112,11 +113,26 @@
 			$scope.showChromatin = !$scope.showChromatin;
 		};
 		
+		$scope.showTAD = Settings.getTAD();
+		$scope.toggleTAD = function() {
+			// CHANGE TO switchColors()...
+				$scope.colors = $scope.colorsTAD;
+	   			$scope.showTAD = true;
+	   			$scope.showGenes = false;
+	   			$scope.showContacts = false;
+	   			$scope.showHP1 = false;
+	   			$scope.showBRM = false;
+	   			$scope.showMRG15 = false;
+	   			$scope.showPC = false;
+	   			$scope.showH1 = false;
+		};
+		
 		$scope.showGenes = Settings.getGenes();
 		$scope.toggleGenes = function() {
 			// CHANGE TO switchColors()...
 			if ($scope.showGenes === false) {
 				$scope.colors = $scope.colorsGenes;
+	   			$scope.showTAD = false;
 	   			$scope.showGenes = true;
 	   			$scope.showContacts = false;
 	   			$scope.showHP1 = false;
@@ -125,8 +141,9 @@
 	   			$scope.showPC = false;
 	   			$scope.showH1 = false;
 			} else {
-				$scope.colors = $scope.colorsGenes;
-	   			$scope.showGenes = true;
+				$scope.colors = $scope.colorsTAD;
+	   			$scope.showTAD = true;
+	   			$scope.showGenes = false;
 	   			$scope.showContacts = false;
 	   			$scope.showHP1 = false;
 	   			$scope.showBRM = false;
@@ -135,13 +152,13 @@
 	   			$scope.showH1 = false;
 			}
 		};
-		
+
 		$scope.showContacts = Settings.getContacts();
 		$scope.toggleContacts = function() {
-			// console.log($scope.slider.position);
 			$scope.colors = Contacts.getColors( contacts, $scope.slider.position, particlesCount, segments );
 			// CHANGE TO switchColors()...
 			if ($scope.showContacts === false) {
+	   			$scope.showTAD = false;
 	   			$scope.showGenes = false;
 	   			$scope.showContacts = true;
 	   			$scope.showHP1 = false;
@@ -150,8 +167,9 @@
 	   			$scope.showPC = false;
 	   			$scope.showH1 = false;
 			} else {
-				$scope.colors = $scope.colorsGenes;
-	   			$scope.showGenes = true;
+				$scope.colors = $scope.colorsTAD;
+	   			$scope.showTAD = true;
+	   			$scope.showGenes = false;
 	   			$scope.showContacts = false;
 	   			$scope.showHP1 = false;
 	   			$scope.showBRM = false;
@@ -165,6 +183,7 @@
 		$scope.toggleHP1 = function() {
 			if ($scope.showHP1 === false) {
 				$scope.colors = $scope.colorsHP1;
+	   			$scope.showTAD = false;
 	   			$scope.showGenes = false;
 	   			$scope.showContacts = false;
 	   			$scope.showHP1 = true;
@@ -173,8 +192,9 @@
 	   			$scope.showPC = false;
 	   			$scope.showH1 = false;
 			} else {
-				$scope.colors = $scope.colorsGenes;
-	   			$scope.showGenes = true;
+				$scope.colors = $scope.colorsTAD;
+	   			$scope.showTAD = true;
+	   			$scope.showGenes = false;
 	   			$scope.showContacts = false;
 	   			$scope.showHP1 = false;
 	   			$scope.showBRM = false;
@@ -188,6 +208,7 @@
 		$scope.toggleBRM = function() {
 			if ($scope.showBRM === false) {
 				$scope.colors = $scope.colorsBRM;
+	   			$scope.showTAD = false;
 	   			$scope.showGenes = false;
 	   			$scope.showContacts = false;
 	   			$scope.showHP1 = false;
@@ -196,8 +217,9 @@
 	   			$scope.showPC = false;
 	   			$scope.showH1 = false;
 			} else {
-				$scope.colors = $scope.colorsGenes;
-	   			$scope.showGenes = true;
+				$scope.colors = $scope.colorsTAD;
+	   			$scope.showTAD = true;
+	   			$scope.showGenes = false;
 	   			$scope.showContacts = false;
 	   			$scope.showHP1 = false;
 	   			$scope.showBRM = false;
@@ -211,6 +233,7 @@
 		$scope.toggleMRG15 = function() {
 			if ($scope.showMRG15 === false) {
 				$scope.colors = $scope.colorsMRG15;
+	   			$scope.showTAD = false;
 	   			$scope.showGenes = false;
 	   			$scope.showContacts = false;
 	   			$scope.showHP1 = false;
@@ -219,8 +242,9 @@
 	   			$scope.showPC = false;
 	   			$scope.showH1 = false;
 			} else {
-				$scope.colors = $scope.colorsGenes;
-	   			$scope.showGenes = true;
+				$scope.colors = $scope.colorsTAD;
+	   			$scope.showTAD = true;
+	   			$scope.showGenes = false;
 	   			$scope.showContacts = false;
 	   			$scope.showHP1 = false;
 	   			$scope.showBRM = false;
@@ -234,6 +258,7 @@
 		$scope.togglePC = function() {
 			if ($scope.showPC === false) {
 				$scope.colors = $scope.colorsPC;
+	   			$scope.showTAD = false;
 	   			$scope.showGenes = false;
 	   			$scope.showContacts = false;
 	   			$scope.showHP1 = false;
@@ -242,8 +267,9 @@
 	   			$scope.showPC = true;
 	   			$scope.showH1 = false;
 			} else {
-				$scope.colors = $scope.colorsGenes;
-	   			$scope.showGenes = true;
+				$scope.colors = $scope.colorsTAD;
+	   			$scope.showTAD = true;
+	   			$scope.showGenes = false;
 	   			$scope.showContacts = false;
 	   			$scope.showHP1 = false;
 	   			$scope.showBRM = false;
@@ -257,6 +283,7 @@
 		$scope.toggleH1 = function() {
 			if ($scope.showH1 === false) {
 				$scope.colors = $scope.colorsH1;
+	   			$scope.showTAD = false;
 	   			$scope.showGenes = false;
 	   			$scope.showContacts = false;
 	   			$scope.showHP1 = false;
@@ -265,8 +292,9 @@
 	   			$scope.showPC = false;
 	   			$scope.showH1 = true;
 			} else {
-				$scope.colors = $scope.colorsGenes;
-	   			$scope.showGenes = true;
+				$scope.colors = $scope.colorsTAD;
+	   			$scope.showTAD = true;
+	   			$scope.showGenes = false;
 	   			$scope.showContacts = false;
 	   			$scope.showHP1 = false;
 	   			$scope.showBRM = false;

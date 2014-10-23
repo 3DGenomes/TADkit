@@ -7,7 +7,7 @@
 	// constructor for chromatin model instances
 	function Chromatin() {
 		return function( data, colors, overrides) {
-			console.log("colors in cly");
+			// console.log("colors in cly");
 			// console.log(colors.length);
 			
 			var defaults = {
@@ -40,7 +40,6 @@
 			// 	this.endcap = ( i == 0 || i == pathSegments - 2 ) ? false : true ;
 			for ( var i = 0 ; i < pathSegments; i++) {
 				this.endcap = ( i === 0 || i === pathSegments - 1 ) ? false : true ;
-				
 				var fragmentColor = colors[i];
 				var fragmentMaterial = new THREE.MeshLambertMaterial({
 					color: fragmentColor,

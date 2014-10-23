@@ -12,8 +12,8 @@
 		return {
 			loadInfoAssembly: function(species) {
 				var deferral = $q.defer();
-				$http.get('assets/json/drosophila_melanogaster-assembly.json'). // OFFLINE
-				// $http.get(ensemblRoot + "info/assembly/" + species + "?content-type=application/json").
+				// $http.get('assets/json/drosophila_melanogaster-assembly.json'). // OFFLINE
+				$http.get(ensemblRoot + "info/assembly/" + species + "?content-type=application/json").
 				success(function(data){
 					assembly = data;
 					console.log("Assembly Info for " + species + " retreived from Ensembl.");
@@ -26,8 +26,8 @@
 			},
 			loadInfoBiotypes: function(species) {
 				var deferral = $q.defer();
-				$http.get('assets/json/drosophila_melanogaster-biotypes.json'). // OFFLINE
-				// $http.get(ensemblRoot + "info/biotypes/" + species + "?content-type=application/json").
+				// $http.get('assets/json/drosophila_melanogaster-biotypes.json'). // OFFLINE
+				$http.get(ensemblRoot + "info/biotypes/" + species + "?content-type=application/json").
 				success(function(data){
 					console.log("Biotypes for " + species + " retreived from Ensembl.");
 					deferral.resolve(data);
