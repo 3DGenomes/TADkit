@@ -25,16 +25,16 @@
 		<top-bar-section>
 		  <!-- Right Nav Section -->
 		  <ul class="right">
-			<li><a href="#">Reset</a></li>
 			<li has-dropdown>
 			  <a><i class="fa fa-cog fa-lg"></i></a>
 			  <ul top-bar-dropdown>
-				<li><a href="#">Save</a></li>
+			  	<li><a href="#/loader">Load</a></li>
+				<li><a href="#">Reset</a></li>
 			  </ul>
 			</li>
 		  </ul>
 	    <!-- Left Nav Section -->
-	    <ul class="left">
+<!-- 	    <ul class="left">
 	      <li has-dropdown class="">
 			  <a href="#" class="tad-title">
 				  <span class="tad-species">{{species.text}}</span> 
@@ -50,17 +50,17 @@
 	         </ul>
 		   </li>
 	    </ul>
-		</top-bar-section>
+ -->		</top-bar-section>
 	  </top-bar>
 	</div>
 
-	<div ng-view>
-		Sequence Track Loading...
-	</div>
+	<div ng-view></div>
 	
 	<!--script src="../bower_components/react/react.min.js"></script-->
+	<!--script src="../bower_components/ng-file-upload/angular-file-upload-shim.min.js"></script--> 
 	<script src="../bower_components/angular/angular.min.js"></script>
 	<script src="../bower_components/angular-route/angular-route.min.js"></script>
+	<!--script src="../bower_components/ng-file-upload/angular-file-upload.min.js"></script-->
 	
 	<script src="../bower_components/angular-foundation/mm-foundation-tpls.min.js"></script>
 	<script src="../bower_components/d3/d3.min.js"></script>
@@ -69,7 +69,7 @@
 	<script src="assets/libs/TrackballControls.js"></script>
 	<!--script src="http://cdnjs.cloudflare.com/ajax/libs/stats.js/r11/Stats.min.js"></script-->
 	<!--script src="https://rawgit.com/mrdoob/three.js/master/examples/js/controls/OrbitControls.js"></script-->
-	<script src="assets/libs/tinycolor.js"></script>
+	<!--script src="assets/libs/tinycolor.js"></script-->
 
 	<!-- MAIN -->
 	<script src="tadkit.js"></script>
@@ -77,6 +77,7 @@
 	<!-- LAYOUT -->
 	<script src="layout/controls.controller.js"></script>
 	<script src="layout/topbar.controller.js"></script>
+	<script src="layout/loader.controller.js"></script>
 	<script src="layout/dashboard.controller.js"></script>
 	<!-- COMPONENTS: SCENES -->
 	<script src="components/scene/scene-chromatin.service.js"></script>
