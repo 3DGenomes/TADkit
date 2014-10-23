@@ -10,7 +10,9 @@
 		return {
 			loadTAD: function() {
 				var deferral = $q.defer();
-				$http.get('assets/json/tad.json').
+				$http.get('assets/json/tad-homo_sapiens.json').
+				// $http.get('assets/json/tad-drosophila_melanogaster.json').
+
 					success(function(data){
 						TAD = data;
 						TAD.metadata.lengthBP = TAD.metadata.end - TAD.metadata.start;
@@ -70,6 +72,21 @@
 				var metadata = TAD.metadata;
 				var slice = metadata.chromosome + ":" + metadata.start + "-" + metadata.end;
 				return slice;
+			},
+			getColors: function() {
+				var colors = [];
+				var particles = this.getParticlesCount();
+				var segments = this.getSegments();
+				for(var i=0; i<particles; i++){
+					for(var j=0; j<segments; j++){
+						if(TAD.colors[i]) {
+							colors.push(TAD.colors[i]);
+						} else {
+							colors.push("#cccccc");
+						}
+					}
+				}
+				return colors;
 			}
 		};
 	}

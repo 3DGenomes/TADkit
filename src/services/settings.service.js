@@ -8,7 +8,8 @@
 
 		var particles = false;
 		var chromatin = true;
-		var genes = true;
+		var tad = true;
+		var genes = false;
 		var contacts = false;
 		var hp1 = false;
 		var brm = false;
@@ -34,6 +35,13 @@
 			},
 			getChromatin: function () {
 				return chromatin;
+			},
+			toggleTAD: function () {
+				tad = this.toggle(tad);
+				return tad;
+			},
+			getTAD: function () {
+				return tad;
 			},
 			toggleGenes: function () {
 				genes = this.toggle(genes);
