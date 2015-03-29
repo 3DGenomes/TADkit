@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('colorsFromINI', colorsFromINI);
 
-	function colorsFromINI (convertColors) {
+	function colorsFromINI(colorConvert) {
 
 		return {
 			parse: function(data) {
@@ -24,7 +24,7 @@
 					if(regex.param.test(line)){
 						match = line.match(regex.param);
 						if(section){
-							var hexColor = convertColors.nameToHex( match[2] );
+							var hexColor = colorConvert.nameToHex( match[2] );
 							value[section][match[1]] = hexColor;
 						}else{
 							value[match[1]] = match[2];

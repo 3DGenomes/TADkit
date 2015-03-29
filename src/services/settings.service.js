@@ -4,104 +4,51 @@
 		.module('TADkit')
 		.factory('Settings', Settings);
 
-	function Settings () {
+	function Settings($q, $http, uuid4) {
+		var settings = {};
 
-		var particles = false;
-		var chromatin = true;
-		var tadcolors = true;
-		var genes = false;
-		var contacts = false;
-		var hp1 = false;
-		var brm = false;
-		var mrg15 = false;
-		var pc = false;
-		var h1 = false;
-		var sense = true;
 		return {
-			toggle: function (bool) {
-				bool = !bool;
-				return bool;
+			load: function() {
+				var deferral = $q.defer();
+				var source = "assets/json/tk-defaults-settings.json";
+				if( Object.getOwnPropertyNames(settings).length > 0 ) {
+					deferral.resolve(settings);
+				} else {
+					$http.get(source)
+					.success( function(data) {
+						settings = data;
+						console.log("Settings loaded from " + source);
+						deferral.resolve(settings);
+					});
+				}
+				return deferral.promise;
 			},
-			toggleParticles: function () {
-				particles = this.toggle(particles);
-				return particles;
+			add: function(setting) {
+				// // rewrite for Object
+				// settings.push(settingID);
+				return settings;
 			},
-			getParticles: function () {
-				return particles;
+			remove: function(setting) {
+				// // rewrite for Object
+				// var index = settings.indexOf(settingID);
+				// settings.splice(index, 1);
+				return settings;
 			},
-			toggleChromatin: function () {
-				chromatin = this.toggle(chromatin);
-				return chromatin;
+			getState: function(setting) {
+				var settingState = settings[settingID].state;
+				return settingState;
 			},
-			getChromatin: function () {
-				return chromatin;
+			get: function() {
+				return settings;
 			},
-			toggleTAD: function () {
-				tadcolors = this.toggle(tadcolors);
-				return tadcolors;
-			},
-			getTAD: function () {
-				return tadcolors;
-			},
-			toggleGenes: function () {
-				genes = this.toggle(genes);
-				return genes;
-			},
-			getGenes: function () {
-				return genes;
-			},
-			toggleContacts: function () {
-				contacts = this.toggle(contacts);
-				return contacts;
-			},
-			getContacts: function () {
-				return contacts;
-			},
-			toggleHP1: function () {
-				hp1 = this.toggle(hp1);
-				return hp1;
-			},
-			getHP1: function () {
-				return hp1;
-			},
-			toggleBRM: function () {
-				brm = this.toggle(brm);
-				return brm;
-			},
-			getBRM: function () {
-				return brm;
-			},
-			toggleMRG15: function () {
-				mrg15 = this.toggle(mrg15);
-				return mrg15;
-			},
-			getMRG15: function () {
-				return mrg15;
-			},
-			togglePC: function () {
-				pc = this.toggle(pc);
-				return pc;
-			},
-			getPC: function () {
-				return pc;
-			},
-			toggleH1: function () {
-				h1 = this.toggle(h1);
-				return h1;
-			},
-			getH1: function () {
-				return h1;
-			},
-			switchColors: function () {
-				
-			},
-			toggleSense: function () {
-				sense = this.toggle(sense);
-				console.log(sense);
-				return sense;
-			},
-			getSense: function () {
-				return sense;
+			toggle: function(selected) {
+				// settings = $filter('filter')(settings, {name: '!settingID'}) // USE THIS???
+				angular.forEach(settings, function(name, setting) {
+					if (selected == name.id) {
+						name.state = !name.state;
+					}
+				});
+				return settings;
 			}
 		};
 	}

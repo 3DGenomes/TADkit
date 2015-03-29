@@ -38,6 +38,7 @@
 .tr_v_pseudogene,
 .tr_j_pseudogene { fill: hsla(0,0%,40%,0.6) } /* Ensembl: grey40 #666666 decimal:6710886 */
 
+
 /* Processed Transcript */
 .sense_intronic,
 .sense_overlapping,
@@ -50,7 +51,7 @@
 .non_coding,
 .ambiguous_orf,
 .disrupted_domain,
-.3prime_overlapping_ncrna { fill: hsla(240,100%,50%,0.6) } /* blue #0000ff decimal:255 */
+._3prime_overlapping_ncrna { fill: hsla(240,100%,50%,0.6) } /* blue #0000ff decimal:255 */
 
 /* RNA Gene */
 .lincrna,
