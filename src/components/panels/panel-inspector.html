@@ -1,0 +1,36 @@
+<div ng-controller='PanelInspectorController' class="component-controller">
+	<div class="component-header">
+		<h6>{{state.title}}</h6>
+	</div>
+	<div class="component-controls">
+		<a ng-click='toggleOptions()' class="options toggle-{{optionsState}}">
+			<md-icon class="icon-settings"></md-icon>
+		</a>
+		<a ng-click='toggleOptions()' class="options toggle-{{optionsState}}">
+			<md-icon class="icon-settings"></md-icon>
+		</a>
+	</div>
+	<div class="component-options" ng-show='optionsState'>
+		<input id="particles" type="checkbox" ng-model="view.settings.particles.visible" />
+		<label for="particles">Do something</label>
+		<input id="chromatin" type="checkbox" ng-model="view.settings.chromatin.visible" />
+		<label for="chromatin">Do dsomething else</label>
+	</div>
+	<div class="component-body">
+		<div width="{{width}}" height="{{height}}" style="width:{{state.width}}; height:{{state.height}};">
+			<accordion>
+				<accordion-group data-ng-repeat='gene in data | filter:atPosition' is-open="isopen">
+					<accordion-heading>
+						{{gene.external_name}} <span ng-class="{'icon-chevron-down': isopen, 'icon-chevron-right': !isopen}"></span>
+					</accordion-heading>
+					<table id="searchTextResults">
+						<tr ng-repeat="(property, detail) in gene">
+							<td>{{property}}</td>
+							<td>{{detail}}</td>
+						</tr>
+					</table>
+				</accordion-group>
+			</accordion>
+		</div>
+	</div>
+</div>

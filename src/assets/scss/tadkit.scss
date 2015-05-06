@@ -1,0 +1,726 @@
+@charset 'UTF-8';
+@import "foundation_settings";
+@import "../../../bower_components/foundation/scss/foundation/components/grid";
+// @import "../../../bower_components/foundation/scss/foundation/components/accordion";
+// @import "../../../bower_components/foundation/scss/foundation/components/alert-boxes";
+// @import "../../../bower_components/foundation/scss/foundation/components/block-grid";
+// @import "../../../bower_components/foundation/scss/foundation/components/breadcrumbs";
+// @import "../../../bower_components/foundation/scss/foundation/components/button-groups";
+@import "../../../bower_components/foundation/scss/foundation/components/buttons";
+// @import "../../../bower_components/foundation/scss/foundation/components/clearing";
+// @import "../../../bower_components/foundation/scss/foundation/components/dropdown";
+// @import "../../../bower_components/foundation/scss/foundation/components/dropdown-buttons";
+// @import "../../../bower_components/foundation/scss/foundation/components/flex-video";
+// @import "../../../bower_components/foundation/scss/foundation/components/forms";
+// @import "../../../bower_components/foundation/scss/foundation/components/icon-bar";
+// @import "../../../bower_components/foundation/scss/foundation/components/inline-lists";
+// @import "../../../bower_components/foundation/scss/foundation/components/joyride";
+// @import "../../../bower_components/foundation/scss/foundation/components/keystrokes";
+// @import "../../../bower_components/foundation/scss/foundation/components/labels";
+// @import "../../../bower_components/foundation/scss/foundation/components/magellan";
+// @import "../../../bower_components/foundation/scss/foundation/components/orbit";
+// @import "../../../bower_components/foundation/scss/foundation/components/pagination";
+// @import "../../../bower_components/foundation/scss/foundation/components/panels";
+// @import "../../../bower_components/foundation/scss/foundation/components/pricing-tables";
+// @import "../../../bower_components/foundation/scss/foundation/components/progress-bars";
+// @import "../../../bower_components/foundation/scss/foundation/components/range-slider";
+// @import "../../../bower_components/foundation/scss/foundation/components/reveal";
+// @import "../../../bower_components/foundation/scss/foundation/components/side-nav";
+// @import "../../../bower_components/foundation/scss/foundation/components/split-buttons";
+// @import "../../../bower_components/foundation/scss/foundation/components/sub-nav";
+// @import "../../../bower_components/foundation/scss/foundation/components/switches";
+@import "../../../bower_components/foundation/scss/foundation/components/tables";
+// @import "../../../bower_components/foundation/scss/foundation/components/tabs";
+// @import "../../../bower_components/foundation/scss/foundation/components/thumbs";
+// @import "../../../bower_components/foundation/scss/foundation/components/tooltips";
+// @import "../../../bower_components/foundation/scss/foundation/components/top-bar";
+@import "../../../bower_components/foundation/scss/foundation/components/type";
+// @import "../../../bower_components/foundation/scss/foundation/components/offcanvas";
+// @import "../../../bower_components/foundation/scss/foundation/components/visibility";
+
+//colors
+$color_salem_approx: #128a3d;
+$color_fuel_yellow_approx: #e6b729;
+$color_maroon_flush_approx: #cb225a;
+$white: #fff;
+$color_woodsmoke_approx: #111;
+$color_mine_shaft_approx: #333;
+$color_mountain_mist_approx: #999;
+$color_celeste_approx: #ccc;
+$black_25: rgba(0,0,0,0.25);
+$color_abbey_approx: #4f4f58;
+$color_charade_approx: #2d2d33;
+$color_storm_dust_approx: #666;
+$color_alto_approx: #ddd;
+$color_portage_approx: #99f;
+$blue: #00f;
+$white_80: rgba(255,255,255,0.8);
+$color_apple_40_approx: hsla(120,50%,50%,0.4);
+$red: #f00;
+$color_forest_green_40_approx: hsla(130,58%,33%,0.4);
+$color_lime_40_approx: hsla(80,100%,50%,0.4);
+$color_alizarin_crimson_40_approx: hsla(360,81%,50%,0.4);
+$color_royal_blue_40_approx: hsla(240,100%,70%,0.4);
+$color_cape_cod_60_approx: hsla(0,0%,26%,0.6);
+
+//fonts
+$font_0: sans-serif;
+$font_1: FontAwesome;
+
+//data-uris
+$data_uri_0: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMDAlJyBoZWlnaHQ9JzEwMCUnPgoJPHJhZGlhbEdyYWRpZW50IGlkPSdnbG93JyBncmFkaWVudFVuaXRzPSd1c2VyU3BhY2VPblVzZScgY3g9JzM1MCcgY3k9JzMwMCcgcj0nNTAwJz4KCQk8c3RvcCBvZmZzZXQ9JzAlJyBzdG9wLWNvbG9yPScjOWI5YmFkJyAvPgoJCTxzdG9wIG9mZnNldD0nNjAlJyBzdG9wLWNvbG9yPScjNGY0ZjU4JyAvPgoJCTxzdG9wIG9mZnNldD0nMTAwJScgc3RvcC1jb2xvcj0nIzJkMmQzMycgLz4KCTwvcmFkaWFsR3JhZGllbnQ+Cgk8cmVjdCBmaWxsPSd1cmwoI2dsb3cpJyB4PSctMSUnIHk9Jy0xJScgd2lkdGg9JzEwMiUnIGhlaWdodD0nMTAyJScvPgo8L3N2Zz4=";
+
+//@extend-elements
+//original selectors
+//.button.large, .button.small
+%extend_1 {
+	background-color: $color_salem_approx;
+	border-width: 2px;
+	border-color: $color_abbey_approx;
+	color: $white;
+	//Instead of the line below you could use @includetext-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+	text-shadow: 2px 2px $color_salem_approx;
+}
+
+//original selectors
+//#genes-listing p, #genes-listing ul
+%extend_2 {
+	list-style-type: none;
+	font-size: 0.8rem;
+	color: $color_mountain_mist_approx;
+	text-align: right;
+	padding: 6px;
+	margin-right: 40px;
+	margin-top: 6px;
+	margin-bottom: 6px;
+}
+
+
+* {
+	//Instead of the line below you could use @includebox-sizing($bs)
+	box-sizing: border-box;
+}
+svg {
+	font: 0.7rem $font_0;
+}
+.codecheck {
+	height: 6rem;
+	background: $color_woodsmoke_approx;
+	color: $white;
+	overflow-y: scroll;
+}
+#tklogo {
+	z-index: 1000;
+	position: absolute;
+	padding: 0 0.7rem;
+	margin-right: 1.5rem;
+	background: $color_mine_shaft_approx;
+}
+.tadkit-title {
+	line-height: 1;
+	margin: 0;
+	font-size: 2.75rem;
+	img {
+		vertical-align: inherit;
+	}
+}
+.top-bar {
+	.name h1 {
+		font-size: 2.75rem !important;
+	}
+	.toggle-topbar.menu-icon {
+		margin-right: 3rem;
+	}
+}
+@media only screen and(min-width: 40.063em) {
+	.top-bar-section {
+		ul.left {
+			margin-left: 6rem !important;
+		}
+		li.active:not(.has-form) a:not(.button) {
+			background: $color_salem_approx !important;
+			//Instead of the line below you could use @includetext-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+			text-shadow: 2px 2px $color_salem_approx;
+		}
+		li:not(.has-form) a:not(.button):hover {
+			background: $color_fuel_yellow_approx !important;
+		}
+	}
+}
+.tab-bar {
+	ul {
+		margin: 0;
+		list-style: none;
+		line-height: 2.8125rem;
+	}
+	.menu-icon {
+		text-indent: 0.4rem !important;
+		color: $color_mountain_mist_approx !important;
+		:hover {
+			color: $white !important;
+		}
+		span::after {
+			//Instead of the line below you could use @includebox-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+			box-shadow: none !important;
+		}
+	}
+	li.active-sidebar {
+		display: inherit;
+	}
+}
+#settings {
+	h2 {
+		line-height: 1;
+		font-size: 1.3rem;
+		margin-top: 0.8rem;
+		margin-bottom: 0.8rem;
+		color: $white;
+		padding: 0 1rem;
+	}
+	.list-title {
+		font-size: 1rem;
+		color: $white;
+		padding: 0 1rem;
+		width: 100%;
+	}
+	ul {
+		list-style: none;
+		font-size: 1rem;
+		padding-bottom: 1rem;
+		border-bottom: 2px $white solid;
+		width: 13rem;
+		padding-right: 3rem;
+	}
+	li {
+	}
+	a {
+		color: $color_mountain_mist_approx;
+		&:hover {
+			color: $white;
+		}
+		&.active {
+			color: $white;
+		}
+	}
+}
+.leftmenu {
+	margin-left: 9rem;
+}
+.left {
+	margin-right: 1rem;
+	a {
+		color: $color_celeste_approx;
+	}
+	&:hover a {
+		color: $white;
+	}
+}
+.infobox {
+	margin-left: 2rem;
+}
+.dropdown {
+	ul {
+		line-height: 0.8rem;
+	}
+	li {
+		color: $color_celeste_approx;
+		padding: 0.1rem 1.5rem 0.5rem;
+		font-size: 0.7rem;
+	}
+}
+.tad-metatitle {
+	width: 5rem;
+	display: inline-block;
+}
+.tad-species {
+	color: $white;
+}
+.tad-slice {
+	color: $color_celeste_approx;
+	margin: 0 0.4rem;
+}
+.btn-cog {
+	color: $white;
+	//Instead of the line below you could use @includetext-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+	text-shadow: 0 -1px 0 $black_25;
+}
+.trackholder {
+	min-height: 5rem;
+}
+.button {
+	&.large {
+		@extend %extend_1;
+		&:hover {
+			background-color: $color_fuel_yellow_approx;
+		}
+	}
+	&.small {
+		@extend %extend_1;
+		&:hover {
+			background-color: $color_fuel_yellow_approx;
+		}
+	}
+}
+#homepage-hero {
+	background: $color_abbey_approx;
+	background-color: $color_charade_approx;
+	background-image: url($data_uri_0);
+	height: 650px;
+	text-align: left;
+	position: relative;
+	padding: 100px 20px 0;
+	h1 {
+		font-size: 4em;
+		color: $color_mine_shaft_approx;
+		font-weight: 500;
+		margin-bottom: 0;
+		line-height: 100%;
+	}
+	h4 {
+		font-size: 1.35em;
+		color: $color_storm_dust_approx;
+		font-weight: 300;
+	}
+	h3 {
+		color: $white;
+		//Instead of the line below you could use @includetext-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+		text-shadow: 2px 2px $color_mine_shaft_approx;
+	}
+	.floatingtad {
+		width: 400px;
+		height: 400px;
+		position: absolute;
+		right: 250px;
+		top: 50px;
+		img {
+			max-width: 50%;
+			position: absolute;
+			right: 100px;
+			top: 30px;
+		}
+	}
+}
+@media screen and(max-width: 768px) {
+	#homepage-hero h3 {
+		font-size: 18px;
+		line-height: 28px;
+	}
+}
+@media screen and(max-width: 1024px) {
+	#homepage-hero {
+		height: 500px;
+	}
+}
+@media only screen and(max-width: 40em) {
+	#homepage-hero .floatingtad img {
+		width: 100%;
+		position: relative;
+		right: 0;
+		bottom: 0;
+		top: 0;
+		left: 120px;
+	}
+}
+@media only screen and(min-width:40.063em) and(max-width:64em) {
+	#homepage-hero .floatingtad img {
+		width: 100%;
+		position: absolute;
+		right: 0;
+		bottom: 0;
+	}
+}
+input[type=checkbox] {
+	display: none;
+	+ label:before {
+		font-family: $font_1;
+		display: inline-block;
+		min-width: 21px;
+		content: "\f096";
+		letter-spacing: 10px;
+	}
+	&:checked + label:before {
+		content: "\f046";
+		letter-spacing: 5px;
+	}
+}
+.fa-sm {
+	font-size: 0.8rem;
+}
+#storyboard {
+}
+.component {
+	position: relative;
+	a {
+		color: $color_alto_approx;
+		&.toggle-false {
+			&:hover {
+				color: $color_portage_approx;
+			}
+			&:focus {
+				color: $color_portage_approx;
+			}
+		}
+		&.toggle-true {
+			color: $blue;
+			color: $blue;
+		}
+	}
+}
+.component-controller {
+	position: relative;
+	display: inline-block;
+}
+.component-header {
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin: 0.2rem;
+	padding: 0 0.3rem;
+	background: $white_80;
+	h6 {
+		color: $color_mine_shaft_approx;
+		font-size: 0.7rem;
+		margin-top: 0.1rem;
+		margin-bottom: 0.1rem;
+	}
+}
+#slider {
+	h6 {
+		margin-top: 0;
+		margin-bottom: 0;
+	}
+	.axis {
+		path {
+			fill: none;
+			stroke: $color_celeste_approx;
+			stroke-width: 2px;
+			shape-rendering: crispEdges;
+		}
+		text {
+			display: none;
+		}
+		line {
+			display: none;
+		}
+	}
+	.background {
+		cursor: n-resize !important;
+	}
+	.handle {
+		fill: $white;
+		stroke: $color_celeste_approx;
+		stroke-width: 2;
+		cursor: col-resize;
+	}
+}
+.component-controls {
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 0 0 0 0.5rem;
+	padding: 0 0 0 0.3rem;
+	font-size: 0.8rem;
+	.icon {
+		margin-top: 0.2rem;
+		margin-bottom: 0.2rem;
+		padding: 0 1px;
+	}
+}
+.component-options {
+	position: absolute;
+	top: 28px;
+	left: 0;
+	margin: 0.2rem;
+	padding: 0.3rem;
+	background: $white_80;
+	border: $color_portage_approx solid 1px;
+	font-size: 0.6rem;
+	&.track {
+		position: relative;
+		top: 0;
+		left: 0;
+		margin-top: 28px;
+		border: none;
+		border-bottom: $color_portage_approx dashed 1px;
+	}
+	ul {
+		list-style-type: none;
+		color: $color_storm_dust_approx;
+		text-align: right;
+		padding: 6px;
+		margin-right: 40px;
+		margin-top: 6px;
+	}
+}
+.component-body {
+	display: inline-block;
+	font-size: 0.4rem;
+	line-height: 0;
+	margin: 0;
+	padding: 0;
+}
+.component-container {
+	width: 100%;
+	.gutter-sizer {
+		width: 2%;
+		display: none;
+	}
+	.component {
+		height: auto;
+		width: 100%;
+		float: left;
+		&:hover {
+		}
+		&.is-dragging {
+			cursor: move;
+			z-index: 2;
+		}
+	}
+	.component-sizer {
+		height: auto;
+		width: 100%;
+	}
+	.scene {
+		width: 400px;
+		height: 300px;
+	}
+	.panel-inspector {
+		width: 400px;
+		height: 200px;
+	}
+	.track-slider {
+		width: 100%;
+		height: 20px;
+	}
+	.track-genes {
+		width: 100%;
+		height: 20px;
+	}
+	.component-container:after {
+		content: ' ';
+		display: block;
+		clear: both;
+	}
+}
+.component-handle {
+	width: 20px;
+	height: 20px;
+}
+.center {
+	min-height: 100vh;
+}
+#scene-controls {
+	position: relative;
+	ul {
+		list-style-type: none;
+		font-size: 0.8rem;
+		color: $color_storm_dust_approx;
+		text-align: right;
+		padding: 6px;
+		margin-right: 40px;
+		margin-top: 6px;
+	}
+	a {
+		color: $color_mountain_mist_approx;
+	}
+}
+#track-controls {
+	position: relative;
+	ul {
+		position: absolute;
+		top: 20px;
+		right: 35px;
+		list-style-type: none;
+		font-size: 0.8rem;
+		color: $color_storm_dust_approx;
+		text-align: right;
+	}
+	a {
+		color: $color_mountain_mist_approx;
+	}
+}
+#genes-listing {
+	position: relative;
+	p {
+		@extend %extend_2;
+	}
+	ul {
+		@extend %extend_2;
+	}
+	a {
+		color: $color_mountain_mist_approx;
+	}
+}
+.lower-tracks {
+	margin-top: 20px !important;
+}
+.axis {
+	path {
+		fill: none;
+		stroke: $color_mountain_mist_approx;
+		stroke-width: 2px;
+		shape-rendering: crispEdges;
+	}
+	text {
+		fill: $color_mountain_mist_approx;
+	}
+}
+.context {
+	fill: $color_apple_40_approx;
+}
+.undefined {
+	fill: $color_apple_40_approx;
+}
+.protein_coding {
+	fill: $color_apple_40_approx;
+}
+.pseudogene {
+	fill: $color_apple_40_approx;
+}
+.ncRNA {
+	fill: $color_apple_40_approx;
+}
+.snoRNA {
+	fill: $color_apple_40_approx;
+}
+.pre_miRNA {
+	fill: $color_apple_40_approx;
+}
+.tRNA {
+	fill: $color_apple_40_approx;
+}
+.snRNA {
+	fill: $color_apple_40_approx;
+}
+#contacts {
+	line {
+		display: none;
+	}
+	.tick text {
+		display: none;
+	}
+}
+.particle {
+	fill: hsla(300, 100%, 25%,1.0);
+}
+#highlight {
+	fill: none;
+	stroke: $red;
+	stroke-width: 1px;
+}
+.HP1 {
+	fill: $color_forest_green_40_approx;
+}
+.BRM {
+	fill: $color_lime_40_approx;
+}
+.MRG15 {
+	fill: $color_alizarin_crimson_40_approx;
+}
+.PC {
+	fill: $color_royal_blue_40_approx;
+}
+.H1 {
+	fill: $color_cape_cod_60_approx;
+}
+#watch a {
+	color: $color_maroon_flush_approx !important;
+	&:hover {
+		color: $white !important;
+	}
+}
+.top-bar-section ul li {
+	> a {
+		font-size: 1rem !important;
+		&:hover {
+			background: $color_fuel_yellow_approx !important;
+		}
+	}
+	&.active > a {
+		background: $color_salem_approx !important;
+		//Instead of the line below you could use @includetext-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+		text-shadow: 2px 2px $color_salem_approx;
+	}
+}
+.move-left .tab-bar .menu-icon {
+	color: $white !important;
+}
+ul.left {
+	line-height: inherit;
+	list-style-type: none;
+	margin-bottom: 0;
+}
+.panel-inspector .component-body {
+	div {
+		overflow: scroll;
+		padding: 20px;
+	}
+	ul {
+		list-style: none;
+		margin: 0;
+	}
+}
+asdoanç aksjdnasd track {
+	display: block;
+}
+.brush .extent {
+	stroke: #;
+	fill-opacity: .25;
+	shape-rendering: crispEdges;
+}
+data-tk-contacts path {
+	fill: none;
+	stroke: $color_celeste_approx;
+	stroke-width: 1px;
+	shape-rendering: crispEdges;
+}
+#genes .axis path {
+	fill: none;
+	stroke: $white;
+}
+data-tk-proteins path {
+	fill: none;
+	stroke: $color_celeste_approx;
+	stroke-width: 1px;
+	shape-rendering: crispEdges;
+}
+#H1 .tick {
+	line {
+		display: none;
+	}
+	text {
+		display: none;
+	}
+}
+#HP1 .tick {
+	line {
+		display: none;
+	}
+	text {
+		display: none;
+	}
+}
+#BRM .tick {
+	line {
+		display: none;
+	}
+	text {
+		display: none;
+	}
+}
+#MRG15 .tick {
+	line {
+		display: none;
+	}
+	text {
+		display: none;
+	}
+}
+#PC .tick {
+	line {
+		display: none;
+	}
+	text {
+		display: none;
+	}
+}

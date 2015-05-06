@@ -12,7 +12,7 @@
 	<!-- <link rel="stylesheet" href="assets/css/normalize.css" /> -->
 	<!-- <link rel="stylesheet" href="assets/css/foundation.css" /> -->
 	<!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=RobotoDraft:400,500,700,400italic"> -->
-	<link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css" />
+	<!-- <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css" /> -->
 	
 </head>
 <body ng-app="TADkit">
@@ -26,10 +26,12 @@
 	<script src="../bower_components/angular-animate/angular-animate.js"></script>
 	<script src="../bower_components/angular-material/angular-material.js"></script>
 
+	<script src="../bower_components/angular-file-upload/angular-file-upload.min.js"></script>
 	<!--script src="../bower_components/angular-foundation/mm-foundation-tpls.min.js"></script-->
 	<script src="../bower_components/flow.js/dist/flow.min.js"></script>
 	<script src="../bower_components/ng-flow/dist/ng-flow.min.js"></script>
 	<script src="../bower_components/angular-uuid4/angular-uuid4.min.js"></script>
+	<script src="../bower_components/papaparse/papaparse.min.js"></script>
 	<!--script src="../bower_components/packery/dist/packery.pkgd.min.js"></script-->
 	<!--script src="http://packery.metafizzy.co/packery.pkgd.js"></script-->
 	<!--script src="../bower_components/draggabilly/dist/draggabilly.pkgd.min.js"></script-->
@@ -41,6 +43,7 @@
 	<script src="assets/libs/stats.min.js"></script>
 	<script src="assets/libs/TrackballControls.js"></script>
 	<script src="assets/libs/OrbitControls.js"></script>
+	<!--script src="assets/libs/uuid.js"></script-->
 	<!-- MAIN -->
 	<script src="tadkit.js"></script>
 	<script src="tadkit.config.js"></script>
@@ -52,10 +55,12 @@
 	<script src="layout/project.controller.js"></script>
 	<script src="layout/project-content.controller.js"></script>
 	<script src="layout/project-dataset.controller.js"></script>
+	<script src="layout/project-loader.directive.js"></script>
 	<script src="layout/project-overlay.controller.js"></script>
 	<script src="layout/project-storyboard.controller.js"></script>
-	<script src="layout/project-loader.directive.js"></script>
-	<script src="layout/browser.controller.js"></script>
+	<script src="layout/project-upload.controller.js"></script>
+	<script src="layout/overlay.controller.js"></script>
+	<script src="layout/overlay-import.directive.js"></script>
 	<script src="layout/topbar.controller.js"></script>
 	<script src="layout/sidebar.user.controller.js"></script>
 	<script src="layout/sidebar.project.controller.js"></script>
@@ -72,17 +77,18 @@
 	<script src="components/panels/panel-inspector.directive.js"></script>
 	<!-- COMPONENTS: SCENES -->
 	<script src="components/scenes/scene.controller.js"></script>
-	<script src="components/scenes/scene-cluster.service.js"></script>
-	<script src="components/scenes/scene-cluster.directive.js"></script>
 	<script src="components/scenes/scene-chromatin.service.js"></script>
-	<script src="components/scenes/scene-particles.service.js"></script>
+	<script src="components/scenes/scene-cluster.directive.js"></script>
+	<script src="components/scenes/scene-cluster.service.js"></script>
 	<script src="components/scenes/scene-contacts.service.js"></script>
-	<script src="components/scenes/scene.directive.js"></script>
 	<script src="components/scenes/scene-floatingtad.directive.js"></script>
+	<script src="components/scenes/scene-particles.service.js"></script>
+	<script src="components/scenes/scene.directive.js"></script>
 	<!-- COMPONENTS: TRACKS -->
 	<script src="components/tracks/track.controller.js"></script>
 	<script src="components/tracks/track-slider.directive.js"></script>
 	<script src="components/tracks/track-genes.directive.js"></script>
+	<script src="components/tracks/track-wiggle.directive.js"></script>
 	<!-- SERVICES -->
 	<script src="services/color.service.js"></script>
 	<script src="services/color-convert.service.js"></script>

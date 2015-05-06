@@ -3,69 +3,19 @@
 <head>
 	<meta charset="UTF-8">
 	<title>TADkit</title>
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 	<!-- DISTRIBUTION ASSETS -->
-	<link rel="stylesheet" href="../dist/css/tadkit.css" />
-	<link rel="stylesheet" href="../dist/css/ensembl-genes.css" />
-	<!-- ESSENTIAL CDN ASSETS -->
-	<link href="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.3.3/css/foundation.css" rel="stylesheet">
-	<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="assets/css/angular-material.css">
+	<link rel="stylesheet" href="assets/css/tadkit.css" />
+	<link rel="stylesheet" href="assets/css/ensembl-genes.css" />
 	
 </head>
 <body ng-app="TADkit">
-	
-	<div ng-controller="TopbarCtrl">
-	  <top-bar>
-		<ul class="title-area">
-		  <li class="name">
-			<h1 class="tadkit-title"><a href="#"><img alt="TADkit" src="assets/img/tadkit-logo-invert.png" width="100" height="32"/></a></h1>
-		  </li>
-		  <li toggle-top-bar class="menu-icon"><a href="#">Menu</a></li>
-		</ul>
 
-		<top-bar-section>
-		  <!-- Right Nav Section -->
-		  <ul class="right">
-			<li><a href="#">Reset</a></li>
-			<li has-dropdown>
-			  <a><i class="fa fa-cog fa-lg"></i></a>
-			  <ul top-bar-dropdown>
-				<li><a href="#">Save</a></li>
-			  </ul>
-			</li>
-		  </ul>
-	    <!-- Left Nav Section -->
-	    <ul class="left">
-	      <li has-dropdown class="">
-			  <a href="#" class="tad-title">
-				  <span class="tad-species">{{species.text}}</span> 
-				   <span class="tad-slice">{{slice.text}}</span>
-			  </a>
-			  <ul top-bar-dropdown>
-	           <li><span class="tad-metatitle">Identifier: </span><span class="tad-metadata">{{identifier.text}}</span></li>
-	           <li><span class="tad-metatitle">Article: </span><span class="tad-metadata">{{article.text}}</span></li>
-	           <li><span class="tad-metatitle">Assembly: </span><span class="tad-metadata">{{assembly.text}}</span></li>
-	           <li><span class="tad-metatitle">Cell Type: </span><span class="tad-metadata">{{celltype.text}}</span></li>
-	           <li><span class="tad-metatitle">Experiment: </span><span class="tad-metadata">{{experiment.text}}</span></li>
-	           <li><span class="tad-metatitle">Resolution: </span><span class="tad-metadata">{{resolution.text}}</span></li>
-	         </ul>
-		   </li>
-	    </ul>
-		</top-bar-section>
-	  </top-bar>
-	</div>
-
-	<div ng-view></div>
+	<div data-ui-view id="main" class="fullheight"></div>
 	
-	<!-- ESSENTIAL EXTERNAL ASSETS -->
-	<script src="http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular.min.js"></script>
-	<script src="http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular-route.min.js"></script>
-	<script src="assets/libs/mm-foundation-tpls.min.js"></script>
-	<script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js"></script>
-	<script src="http://cdnjs.cloudflare.com/ajax/libs/three.js/r68/three.min.js"></script>
-	<script src="assets/libs/TrackballControls.js"></script>
-	
-	<!-- SRC SCRIPTS to be subsituted by following BUILD reference -->
-	<script src="../dist/tadkit.js"></script>
+	<script src="assets/js/vendors.js"></script>
+	<script src="assets/js/tadkit.js"></script>
 	
 </body>
 </html>

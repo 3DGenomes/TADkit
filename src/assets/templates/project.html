@@ -1,0 +1,8 @@
+<div layout="column" class="fullheight">
+	<div ui-view="topbar"></div>
+	<section layout="row" flex class="fullheight">
+		<md-sidenav id="project-items" ui-view="sidebarproject" layout-padding class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')"></md-sidenav>
+		<md-content id="project-content" ui-view="content" flex></md-content>
+		<md-sidenav id="user-projects" ui-view="sidebaruser" layout-padding class="md-sidenav-right md-whiteframe-z2" md-component-id="right"></md-sidenav>
+	</section>
+</div>

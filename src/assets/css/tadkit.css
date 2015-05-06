@@ -6,6 +6,7 @@
 /*** SRC WORK ***/
 svg {
 	font: 0.7rem sans-serif;
+	max-height: 100%; /* Webkit height error fix */
 }
 .codecheck {
 	height: 6rem;
@@ -50,17 +51,6 @@ md-toolbar {
 .tadkit-title img {
 	vertical-align: inherit;
 }
-
-.md-toolbar-tools .icon-keyboard-arrow-left {
-	background: rgba(255, 255, 255, 0.1);
-	/*font-size: 2rem;*/
-	border-radius: 4px;
-	margin-right: 0.6rem;
-}
-.md-toolbar-tools .icon-keyboard-arrow-left:hover  {
-	background: rgba(255, 255, 255, 0.2);
-}
-
 
 
 /*** SIDEBARS ***/
@@ -192,11 +182,12 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
 	padding: 0 0 0 0.3rem;
 	font-size: 0.8rem;
 }
-.component-controls .icon{
-	margin-top: 0.2rem;
+.component-controls md-icon {
+  font-size: 16px !important;
+/*	margin-top: 0.2rem;
 	margin-bottom: 0.2rem;
 	padding: 0 1px;
-}
+*/}
 .component-options {
 	position: absolute;
 	top: 28px; /* height of #component-title */
@@ -283,6 +274,32 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
 	width: 20px;
 	height: 20px;
 }
+
+
+/**
+ * MODALS
+ */
+.dialogdemoBasicUsage .dialogDemo1 {
+  height: 500px; }
+.dialogdemoBasicUsage .full {
+  width: 100%;
+  height: 100%; }
+.dialogdemoBasicUsage .gap {
+  width: 50px; }
+.dialogdemoBasicUsage md-dialog md-content.sticky-container {
+  padding: 0; }
+.dialogdemoBasicUsage md-dialog md-content.sticky-container .dialog-content {
+  padding: 0 24px 24px; }
+.dialogdemoBasicUsage .md-subheader {
+  background-color: #dcedc8;
+  margin: 0px; }
+.dialogdemoBasicUsage h2.md-subheader.md-sticky-clone {
+  margin-right: 0px;
+  margin-top: 0px;
+  box-shadow: 0px 2px 4px 0 rgba(0, 0, 0, 0.16); }
+.dialogdemoBasicUsage h2 .md-subheader-content {
+  padding-left: 10px; }
+
 
 /* ********** */
 /* COMPONENTS */
@@ -433,6 +450,22 @@ track {
 	color: #999;
 }
 
+/* wiggle_0 */
+.wiggle_0 {
+	margin-top: -4px !important;
+}
+.wiggle_0 .component-header {
+	/*margin: 0;*/
+}
+.wiggle_0 .component-body {
+	font-size: 0.2rem;
+}
+#highlight.highlight-follow {
+	fill: #999;
+	stroke: #fff;
+	stroke-width: 0px;
+}
+
 .lower-tracks {
 	margin-top: 20px !important;
 }
@@ -520,7 +553,6 @@ data-tk-proteins path {
 	font-weight: normal;
 	font-style: normal;
 }
-
 [class^="icon-"], [class*=" icon-"] {
 	font-family: 'tadkit';
 	speak: none;
@@ -534,48 +566,79 @@ data-tk-proteins path {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
-
+md-icon {
+  font-size: 24px;
+}
+.md-icon-sm {
+  font-size: 12px;
+}
+/* IcoMoon code <md-icon> classes */
+.icon-exit-to-app:before {
+	content: "\e60f";
+}
+.icon-input:before {
+	content: "\e60e";
+}
 .icon-open-in-browser:before {
 	content: "\e600";
 }
-
 .icon-perm-identity:before {
 	content: "\e605";
 }
-
 .icon-search:before {
 	content: "\e601";
 }
-
 .icon-settings:before {
 	content: "\e602";
 }
-
+.icon-swap-horiz:before {
+	content: "\e60b";
+}
 .icon-view-carousel:before {
 	content: "\e606";
 }
-
 .icon-view-module:before {
 	content: "\e607";
 }
-
+.icon-fast-forward:before {
+	content: "\e60c";
+}
+.icon-fast-rewind:before {
+	content: "\e60d";
+}
 .icon-pause:before {
 	content: "\e608";
 }
-
 .icon-play-arrow:before {
 	content: "\e609";
 }
-
 .icon-add:before {
 	content: "\e603";
 }
-
 .icon-clear:before {
 	content: "\e604";
 }
-
+.icon-cloud-download:before {
+	content: "\e610";
+}
+.icon-file-upload:before {
+	content: "\e611";
+}
 .icon-keyboard-arrow-left:before {
 	content: "\e60a";
 }
-
+.icon-keyboard-backspace:before {
+	content: "\e612";
+}
+.icon-check-box:before {
+	content: "\e613";
+}
+.icon-check-box-outline-blank:before {
+	content: "\e614";
+}
+.icon-radio-button-off:before {
+	content: "\e615";
+}
+.icon-radio-button-on:before {
+	content: "\e616";
+}
