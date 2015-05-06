@@ -2,7 +2,7 @@
 	'use strict';
 
 	// ANGULAR APP
-	angular.module('TADkit',['ui.router','ngMaterial','flow','uuid4','d3']);
+	angular.module('TADkit',['ui.router','angularFileUpload','ngMaterial','flow','uuid4','d3']);
 	     
 })();
 (function() {
