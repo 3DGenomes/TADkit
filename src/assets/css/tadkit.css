@@ -216,8 +216,8 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
 }
 .component-body {
 	display: inline-block;
-	font-size: 0.4rem;
-	line-height: 0;
+/*	font-size: 0.4rem;
+*/	line-height: 0;
 	margin: 0;
 	padding: 0;
 }
@@ -335,7 +335,12 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
 	line-height: 0.8rem;
 	padding: 0;
 }
-
+md-list-item .md-secondary-container, md-list-item .md-secondary, md-list-item .md-list-item-inner .md-secondary-container, md-list-item .md-list-item-inner .md-secondary {
+  margin-left: 16px;
+  position: absolute;
+  right: 16px;
+  top: 10%;
+}
 
 /**
  * SCENES
@@ -573,72 +578,103 @@ md-icon {
   font-size: 12px;
 }
 /* IcoMoon code <md-icon> classes */
+
 .icon-exit-to-app:before {
 	content: "\e60f";
 }
+
+.icon-info:before {
+	content: "\e617";
+}
+
+.icon-info-outline:before {
+	content: "\e618";
+}
+
 .icon-input:before {
 	content: "\e60e";
 }
+
 .icon-open-in-browser:before {
 	content: "\e600";
 }
+
 .icon-perm-identity:before {
 	content: "\e605";
 }
+
 .icon-search:before {
 	content: "\e601";
 }
+
 .icon-settings:before {
 	content: "\e602";
 }
+
 .icon-swap-horiz:before {
 	content: "\e60b";
 }
+
 .icon-view-carousel:before {
 	content: "\e606";
 }
+
 .icon-view-module:before {
 	content: "\e607";
 }
+
 .icon-fast-forward:before {
 	content: "\e60c";
 }
+
 .icon-fast-rewind:before {
 	content: "\e60d";
 }
+
 .icon-pause:before {
 	content: "\e608";
 }
+
 .icon-play-arrow:before {
 	content: "\e609";
 }
+
 .icon-add:before {
 	content: "\e603";
 }
+
 .icon-clear:before {
 	content: "\e604";
 }
+
 .icon-cloud-download:before {
 	content: "\e610";
 }
+
 .icon-file-upload:before {
 	content: "\e611";
 }
+
 .icon-keyboard-arrow-left:before {
 	content: "\e60a";
 }
+
 .icon-keyboard-backspace:before {
 	content: "\e612";
 }
+
 .icon-check-box:before {
 	content: "\e613";
 }
+
 .icon-check-box-outline-blank:before {
 	content: "\e614";
 }
+
 .icon-radio-button-off:before {
 	content: "\e615";
 }
+
 .icon-radio-button-on:before {
 	content: "\e616";
 }

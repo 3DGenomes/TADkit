@@ -313,7 +313,7 @@
 		.module('TADkit')
 		.controller('PanelInspectorController', PanelInspectorController);
 
-	function PanelInspectorController($scope){
+	function PanelInspectorController($scope, $mdDialog){
 
 		$scope.optionsState = false;
 		$scope.toggleOptions = function() {
@@ -330,6 +330,25 @@
 		$scope.atPosition = function(gene) {
 			if ($scope.$parent.settings.segmentUpper >= gene.start && $scope.$parent.settings.segmentLower <= gene.end) return true;
 			return false;
+		};
+
+		$scope.formatRegionName = function(regionName) {
+			if (regionName == "Chromosome") {
+				return regionName;
+			} else {
+				return "chr" + regionName;
+			}
+		};
+		
+		$scope.getDetails = function(item, event) {
+			$mdDialog.show(
+				$mdDialog.alert()
+					.title('Details')
+					.content(item.description)
+					.ariaLabel('Item details')
+					.ok('Close')
+					.targetEvent(event)
+			);
 		};
 	}
 
@@ -383,26 +402,22 @@
 
 			// Convert Data to Vector triplets
 			var geometry = getGeometry(data);
-			for (var i = geometry.vertices.length - 1; i >= 0; i--) {
-				var vertexColor = new THREE.Color(overlay[i*20]);
-				geometry.colors.unshift(vertexColor);
-			};
-			// console.log(geometry);
+			for (var g = geometry.vertices.length - 1; g >= 0; g--) {
+				var geometryColor = new THREE.Color(overlay[g*20]);
+				geometry.colors.unshift(geometryColor);
+			}
 
 			// Derive path controls from geometry vectors
 			// var pathControls = getPathControls( geometry.vertices );
 			var pathControls = getCubicControls(geometry.vertices, this.pathClosed);
-			// console.log(pathControls);
+
 			var controlsGeom = new THREE.Geometry();
-			for ( var i = 0; i < pathControls.vertices.length; i ++ ) {
-				controlsGeom.vertices.push( new THREE.Vector3( pathControls.vertices[ i ].x, pathControls.vertices[ i ].y, pathControls.vertices[ i ].z || 0) );
-			// }
-			// for (var i = controlsGeom.vertices.length - 1; i >= 0; i--) {
-				var vertexColor = pathControls.colors[i];//new THREE.Color(overlay[i*20]);
+			for ( var h = 0; h < pathControls.vertices.length; h ++ ) {
+				controlsGeom.vertices.push( new THREE.Vector3( pathControls.vertices[h].x, pathControls.vertices[h].y, pathControls.vertices[h].z || 0) );
+				var vertexColor = pathControls.colors[h];
 				controlsGeom.colors.push(vertexColor);
-			};
+			}
 			controlsGeom.name = "controlsGeom";
-			// console.log(controlsGeom);
 
 			// Set number of Particles
 			if (this.particles === 0) this.particles = geometry.vertices.length; //pathControls.vertices.length - 1;
@@ -426,14 +441,12 @@
 			// var quadGeom = quadPath.createPointsGeometry(pathSegments);
 			// // Cubic Bezer (4 controls)
 			var cubicPath = getCubicPath(pathControls.vertices, pathSegments, this.pathClosed);
-			console.log(cubicPath);
-			var cubicGeom = cubicPath.createPointsGeometry(820);//pathSegments);
-			for (var i = cubicGeom.vertices.length - 1; i >= 0; i--) {
-				var vertexColor = new THREE.Color(overlay[i]);
-				cubicGeom.colors.unshift(vertexColor);
-			};
+			var cubicGeom = cubicPath.createPointsGeometry(pathSegments);
+			for (var j = cubicGeom.vertices.length - 1; j >= 0; j--) {
+				var cubicGeomColor = new THREE.Color(overlay[j]);
+				cubicGeom.colors.unshift(cubicGeomColor);
+			}
 			cubicGeom.name = "cubicGeom";
-			// console.log(cubicGeom);
 
 
 			// ********************************************
