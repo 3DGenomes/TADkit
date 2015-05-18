@@ -31,6 +31,15 @@
 			}
 		};
 		
+		$scope.featureTitle = function(feature) {
+			if (!feature.external_name) {
+				return feature.id;
+			} else {
+				return feature.external_name;
+			}
+		};
+
+
 		$scope.getDetails = function(item, event) {
 			$mdDialog.show(
 				$mdDialog.alert()

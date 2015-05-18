@@ -30,8 +30,8 @@
 
 					// SVG GENERATION
 					var data = scope.data;
-					var focusStart = scope.view.viewpoint.startCoord;
-					var focusEnd = scope.view.viewpoint.endCoord;
+					var focusStart = scope.view.viewpoint.chromStart;
+					var focusEnd = scope.view.viewpoint.chromEnd;
 					var segments = scope.view.settings.segments;
 					var componentMargin = parseInt(scope.object.state.margin);
 					/* Rebuild margin Object to maintain D3 standard */

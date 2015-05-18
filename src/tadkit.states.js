@@ -5,7 +5,7 @@
 		.config(config);
 
 	function config($stateProvider, $urlRouterProvider) {
-		$urlRouterProvider.otherwise("/home");
+		$urlRouterProvider.otherwise("/project/loader");
 		
 		$stateProvider
 		.state('home', {
@@ -69,7 +69,7 @@
 				},
 				'content@main': {
 					templateUrl: 'assets/templates/project-loader.html',
-					controller: 'ProjectController'
+					controller: 'ProjectLoaderController'
 				},
 				'sidebar-right@main': {
 					templateUrl: 'assets/templates/sidebar.user.html',
@@ -77,27 +77,26 @@
 				}
 			}
 		})
-		.state('upload', {
-			parent: 'project',
-			url: '/upload',
-			views: {
-				'topbar@main': {
-					templateUrl: 'assets/templates/topbar.html',
-					controller: 'TopbarController'
-				},
-				'content@main': {
-					templateUrl: 'assets/templates/project-upload.html',
-					controller: 'ProjectUploadController'
-				},
-				'sidebar-right@main': {
-					templateUrl: 'assets/templates/sidebar.user.html',
-					controller: 'SidebarUserController'
-				}
-			}
-		})
+		// .state('upload', {
+		// 	parent: 'project',
+		// 	url: '/upload',
+		// 	views: {
+		// 		'topbar@main': {
+		// 			templateUrl: 'assets/templates/topbar.html',
+		// 			controller: 'TopbarController'
+		// 		},
+		// 		'content@main': {
+		// 			templateUrl: 'assets/templates/project-upload.html',
+		// 			controller: 'ProjectUploadController'
+		// 		},
+		// 		'sidebar-right@main': {
+		// 			templateUrl: 'assets/templates/sidebar.user.html',
+		// 			controller: 'SidebarUserController'
+		// 		}
+		// 	}
+		// })
 		.state('dataset', {
 			parent: 'project',
-			controller: 'ProjectDatasetController',
 			url: '/dataset',
 			views: {
 				'content@main': {
@@ -108,7 +107,6 @@
 		})
 		.state('overlay', {
 			parent: 'project',
-			controller: 'ProjectOverlayController',
 			url: '/overlay',
 			views: {
 				'content@main': {
@@ -119,7 +117,6 @@
 		})
 		.state('storyboard', {
 			parent: 'project',
-			controller: 'ProjectStoryboardController',
 			url: '/storyboard',
 			views: {
 				'content@main': {
@@ -130,7 +127,6 @@
 		})
 		.state('browser', {
 			parent: 'project',
-			// controller: 'BrowserController',
 			url: '/browser',
 			views: {
 				'sidebar-left@main': {

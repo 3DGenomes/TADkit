@@ -60,15 +60,15 @@
 				var segmentLength = currentDataset.object.resolution / particleSegments; // base pairs
 				return $q.all([settings, currentDataset, currentStoryboards, particleSegments, particlesCount, segmentsCount, segmentLength])
 				.then(function() {
-					var startCoord = currentDataset.object.startCoord;
+					var chromStart = currentDataset.object.chromStart;
 					var featureColors = results[7];
 					var featureTypes = featureColors;
-					settings.startCoord = startCoord;
+					settings.chromStart = chromStart;
 					settings.particlesCount = particlesCount;
 					settings.particleSegments = particleSegments;
 					settings.segmentsCount = segmentsCount;
 					settings.segmentLength = segmentLength;
-					Overlays.segmentOverlays(startCoord, segmentsCount, segmentLength, featureTypes);
+					Overlays.segmentOverlays(chromStart, segmentsCount, segmentLength, featureTypes);
 					return results;
 				});
 			})

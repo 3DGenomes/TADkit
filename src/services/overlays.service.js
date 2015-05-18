@@ -152,7 +152,7 @@
 			// 	overlays.current = overlays.loaded.length - 1;
 			// 	return overlays.loaded[overlays.current];
 			// },
-			segmentOverlays: function(startCoord, segmentsCount, segmentLength, featureTypes) {
+			segmentOverlays: function(chromStart, segmentsCount, segmentLength, featureTypes) {
 				featureTypes = featureTypes || [];
 				var self = this; // SYNChronous functions...
 				angular.forEach(overlays.loaded, function(overlay, key) {
@@ -170,14 +170,14 @@
 							// colors derived from BigWig color and altColor
 							// featureTypes == single hex for use as color
 							var featureColor = overlay.object.color;
-							colors = self.segmentLinear(overlay.data, startCoord, segmentsCount, segmentLength, featureColor);
+							colors = self.segmentLinear(overlay.data, chromStart, segmentsCount, segmentLength, featureColor);
 						} else if (type == "linear" && format == "seq") {
 							// data must contain array of indexs
-							colors = self.segmentLinear(overlay.data, startCoord, segmentsCount, segmentLength);
+							colors = self.segmentLinear(overlay.data, chromStart, segmentsCount, segmentLength);
 						} else if (type == "ensembl" && format == "json") {
 							// data must have .start and .end
 							featureTypes = featureTypes.gene; // TO DO: MAKE FUNCTION MORE GENERIC... ie. not just "gene"
-							colors = self.segmentFeatures(overlay.data, startCoord, segmentsCount, segmentLength, featureTypes);
+							colors = self.segmentFeatures(overlay.data, chromStart, segmentsCount, segmentLength, featureTypes);
 						}
 						overlay.colors = colors;
 					} else {					// already segmented --> ADD REsegement option...
@@ -234,7 +234,7 @@
 				}
 				return gradient;
 			},
-			segmentLinear: function(overlayData, startCoord, segmentsCount, segmentLength, featureColor) {
+			segmentLinear: function(overlayData, chromStart, segmentsCount, segmentLength, featureColor) {
 				var defaultColor = "#cccccc";
 				var colors = [];
 				for(var i=0; i<segmentsCount; i++){
@@ -248,13 +248,13 @@
 				}
 				return colors;
 			},
-			segmentFeatures: function(features, startCoord, segmentsCount, segmentLength, featureTypes) {
+			segmentFeatures: function(features, chromStart, segmentsCount, segmentLength, featureTypes) {
 				var colors = [];
 
 				for(var i=0; i<segmentsCount; i++){
 
 					var featuresPresent = [];
-					var segmentLower = startCoord + (segmentLength * i);
+					var segmentLower = chromStart + (segmentLength * i);
 					var segmentUpper = segmentLower + segmentLength;
 					var genesCount = features.length;
 					var hex = "cccccc"; // Base color - ie if none found

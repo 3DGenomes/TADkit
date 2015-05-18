@@ -1,18 +1,34 @@
-<md-content id="home" flex="100" class="fullheight">
+<md-content id="home" flex class="loader fullheight">
 	<div tk-component-scene-floatingtad class="floatingtad"></div>
-	<div layout="column" class="logo">
+	<div layout="column">
 		<h2 class="tadkit-title">
 			<img alt="TADkit" src="assets/img/tadkit-logo-invert.png" />
 		</h2>
 		<h3>3D genome browser <br class="hide-for-small">and TADbit front-end.</h3>
 	</div>
-	<div layout="column" layout-align="space-around left">
-		<md-input-container layout-padding>
-			<md-input type="file" accept=".json" tk-project-loader="addDataset($fileContent)" />
+	<div layout="column" layout-align="center center" md-theme="darkKit">
+<!-- 		<md-button class="md-raised md-primary" ng-click="openInput(); $event.stopPropagation();">
+			<label for="file-input">
+				<md-icon class="icon-file-upload"></md-icon>
+				Select TADbit JSON file to import...
+			</label>
+		</md-button>
+ -->		<div tk-project-dropzone="addDataset">
+			<!-- <label for="file-input"> -->
+				<md-icon class="icon-file-upload"></md-icon>
+				Drop a TADbit JSON file here...
+			<!-- </label> -->
+		</div>
+<!-- 			<div><label for="file-input-test">Press me</label></div>
+			<button>
+				<input id="file-input-test" type="file" accept=".json"/>
+				<label for="file-input-test">Press me</label>
+			</button> -->
+		<md-input-container>
+			<span>... or select TADbit JSON file to import.</span>
+			<!-- <input required name="description" ng-model="$fileContent"> -->
+			<md-input id="file-input" type="file" accept=".json" tk-project-loader="addDataset($fileContent)" />
 		</md-input-container>
-		<md-button layout-padding ui-sref="dataset" class="md-raised">
-			<md-icon class="icon-file-upload"></md-icon> TADkit Online</md-button>
-		<md-button layout-padding ui-sref="download" class="md-raised">
-			<md-icon class="icon-cloud-download"></md-icon> View @GitHub</md-button>
 	</div>
+	<md-sidenav  ui-view="sidebaruser" class="md-sidenav-right md-whiteframe-z2" md-component-id="right"></md-sidenav>
 </md-content>

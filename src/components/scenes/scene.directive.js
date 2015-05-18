@@ -25,7 +25,8 @@
 					var scene, viewport, stats;
 					var camera, cameraPosition, cameraTarget, cameraTranslate;
 					var ambientLight, pointLight;
-					var controls, renderer, particles, chromatin, contacts;
+					var playback, controls, renderer;
+					var particles, chromatin, contacts;
 					var width, height, contW, contH, windowHalfX, windowHalfY;
 
 					var particleOriginalColor = new THREE.Color();
@@ -66,9 +67,17 @@
 						scene.add(camera);
 	
 						// CONTROLS
+						// Use TrackballControls for interaction
 						controls = new THREE.TrackballControls( camera, renderer.domElement );
-						controls.autoRotate = scope.view.controls.autoRotate;
-						controls.autoRotateSpeed = scope.view.controls.autoRotateSpeed;
+						// Use OrbitControls for autoRotate
+						playback = new THREE.OrbitControls( camera, renderer.domElement );
+						playback.autoRotate = scope.view.controls.autoRotate;
+						playback.autoRotateSpeed = scope.view.controls.autoRotateSpeed;
+						// interaction FALSE so as not to conflict with controls
+						playback.noZoom = true;
+						playback.noRotate = true;
+						playback.noPan = true;
+						playback.noKeys = true;
 
 						// AXIS
 						// TO DO: Make local axisHelper
@@ -93,7 +102,7 @@
 						scope.view.settings.particles.count = particles.geometry.vertices.length;
 						scope.view.settings.chromatin.segments = scope.view.settings.particles.count * scope.view.settings.chromatin.particleSegments;
 						// change radius to be proportional to chromosome length
-						scope.view.settings.genomeLength = scope.settings.currentEndCoord; // eg. 816394 nucelotides
+						scope.view.settings.genomeLength = scope.settings.currentChromEnd; // eg. 816394 nucelotides
 
 						//GEOMETRY: CHROMATIN
 						chromatin = new Chromatin( scope.data, scope.overlay.colors, scope.view.settings.chromatin );
@@ -153,7 +162,8 @@
 					// FIX: NOT REDRAWING SCENE IF THE ONLY VISBLE OBJECT IS TOGGLED OFF
 						scope.$watch('view.controls.autoRotate', function( newValue, oldValue ) {
 							if ( newValue !== oldValue ) {
-								controls.autoRotate = !controls.autoRotate;
+								// playback.autoRotate = !playback.autoRotate;
+								playback.autoRotate = scope.view.controls.autoRotate;
 							}
 						});
 						scope.$watch('view.settings.axis.visible', function( newValue, oldValue ) {
@@ -200,9 +210,9 @@
 						scope.$watch('settings.position', function( newValue, oldValue ) { // deep watch as change direct and changes all?
 							if ( newValue !== oldValue ) {
 
-								var oldInRange = oldValue - scope.view.viewpoint.startCoord;
-								var newInRange = newValue - scope.view.viewpoint.startCoord;
-								var rangeLength = scope.view.viewpoint.endCoord - scope.view.viewpoint.startCoord;
+								var oldInRange = oldValue - scope.view.viewpoint.chromStart;
+								var newInRange = newValue - scope.view.viewpoint.chromStart;
+								var rangeLength = scope.view.viewpoint.chromEnd - scope.view.viewpoint.chromStart;
 
 								// SET PARTICLE CURSOR COLOR
 								var particlePrevious =  Math.floor(oldInRange * (scope.view.settings.particles.count-1) / rangeLength);
@@ -281,6 +291,7 @@
 					// -----------------------------------
 					scope.animate = function () {
 						requestAnimationFrame( scope.animate );
+						playback.update();
 						controls.update();
 						scope.render();
 					};

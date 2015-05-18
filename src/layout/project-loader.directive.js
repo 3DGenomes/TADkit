@@ -4,24 +4,23 @@
 		.module('TADkit')
 		.directive('tkProjectLoader', tkProjectLoader);
 
-	function tkProjectLoader($parse) {		
+	function tkProjectLoader($state, $parse) {		
 		return {
 			restrict: 'A',
 			scope: false,
 			link: function(scope, element, attrs) {
-			var fn = $parse(attrs.tkProjectLoader);
-
+				var fn = $parse(attrs.tkProjectLoader);
 				element.on('change', function(onChangeEvent) {
 					var reader = new FileReader();
 					reader.onload = function(onLoadEvent) {
 						console.log("Data Loaded");
 						scope.$apply(function() {
+       					// HERE: call the parsed function correctly (with scope AND params object)
 							fn(scope, {$fileContent:onLoadEvent.target.result});
+							// $state.go('dataset');
 						});
 					};
-
 					reader.readAsText((onChangeEvent.srcElement || onChangeEvent.target).files[0]);
-					// srcElement??					
 				});
 			}
 		};

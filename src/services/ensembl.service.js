@@ -26,8 +26,8 @@
 				var species = datasetObject.species;
 				var speciesUrl = datasetObject.speciesUrl;
 				var chromosome = datasetObject.chromosome;
-				var start = datasetObject.startCoord;
-				var end = datasetObject.endCoord;
+				var start = datasetObject.chromStart;
+				var end = datasetObject.chromEnd;
 				var self = this;
 				if (online) {
 					source = overlay.object.url[0] + speciesUrl + overlay.object.url[2] + chromosome + overlay.object.url[4] + start + overlay.object.url[6] + end + overlay.object.url[8];

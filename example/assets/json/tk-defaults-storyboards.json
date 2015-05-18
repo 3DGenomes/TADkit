@@ -33,8 +33,8 @@
 				},
 				"view" : {
 					"viewpoint" : {
-						"startCoord" : 0,
-						"endCoord" : 4999999,
+						"chromStart" : 0,
+						"chromEnd" : 4999999,
 						"scale" : 1,
 						"camera" : [ 5000, 5000, 5000 ],
 						"target" : [ 0, 0, 0 ],
@@ -114,8 +114,8 @@
 				},
 				"view" : {
 					"viewpoint" : {
-						"startCoord" : 1,
-						"endCoord" : 10,
+						"chromStart" : 1,
+						"chromEnd" : 10,
 						"scale" : 1
 					},
 					"viewtype" : "list",
@@ -147,8 +147,8 @@
 				},
 				"view" : {
 					"viewpoint" : {
-						"startCoord" : 0,
-						"endCoord" : 4999999,
+						"chromStart" : 0,
+						"chromEnd" : 4999999,
 						"scale" : 1
 					},
 					"viewtype" : "linear",
@@ -181,8 +181,8 @@
 				},
 				"view" : {
 					"viewpoint" : {
-						"startCoord" : 0,
-						"endCoord" : 4999999,
+						"chromStart" : 0,
+						"chromEnd" : 4999999,
 						"scale" : 1
 					},
 					"viewtype" : "linear",

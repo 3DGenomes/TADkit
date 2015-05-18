@@ -25,7 +25,8 @@
 				} else {
 					$http.get(source)
 					.success( function(data) {
-						datasets.loaded = data;
+						var dataset = data;
+						datasets.loaded.push(dataset);
 						// console.log(data[0].models);
 						// angular.forEach(data[0].models, function(model, key) {
 						// 	model = JSON.stringify(model).replace("####",key+1);
@@ -43,13 +44,14 @@
 			add: function(data) { // rename import?
 				/* CHECK DATASET IS VALID */
 				var dataset = JSON.parse(data);
+				// console.log(dataset); // NOT AN ARRAY - A SINGLE DATASET
 				// var uuid = dataObj.uuid || uuid4.generate(),
 				// if (!projects.default.datasets[uuid]) {
-					datasets.loaded.push(dataset[0]);
+					datasets.loaded.push(dataset);
 					datasets.current.index = datasets.loaded.length - 1;
 					console.log("Dataset \"" + datasets.loaded[datasets.current.index].object.title + "\" loaded from file.");
 				// }
-				console.log(datasets.loaded[datasets.current.index]);
+				// console.log(datasets.loaded);
 				return datasets;
 			},
 			// add: function(title) {
@@ -129,7 +131,7 @@
 			},
 			getRegion: function(index) {
 				if (index === undefined || index === false) index = datasets.current.index;
-				var region = datasets.loaded[index].object.chromosome + ":" + datasets.loaded[index].object.startCoord + "-" + datasets.loaded[index].object.endCoord;
+				var region = datasets.loaded[index].object.chromosome + ":" + datasets.loaded[index].object.chromStart + "-" + datasets.loaded[index].object.chromEnd;
 				return region;
 			},
 			getComponents: function(index) {

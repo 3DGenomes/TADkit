@@ -14,8 +14,8 @@
 		var particlesCount = $scope.currentModel.length / $scope.currentDataset.object.components;
 		var particleSegments = $scope.currentStoryboard.components[defaultIndex].view.settings.chromatin.particleSegments;
 		var segmentsCount = particlesCount * particleSegments;
-		var dataStart = $scope.currentDataset.object.startCoord;
-		var dataEnd = $scope.currentDataset.object.endCoord;
+		var dataStart = $scope.currentDataset.object.chromStart;
+		var dataEnd = $scope.currentDataset.object.chromEnd;
 		var segmentLength = $scope.currentStoryboard.components[defaultIndex].view.settings.chromatin.segmentLength = $scope.currentDataset.object.resolution / particleSegments; // base pairs
 
 		// SET INITIAL position
@@ -26,8 +26,8 @@
 		$scope.settings.segmentLower = $scope.settings.position - ($scope.settings.segment * 0.5);
 		$scope.settings.segmentUpper = $scope.settings.position + ($scope.settings.segment * 0.5);
 
-		$scope.currentModel = Datasets.getModel();
-		$scope.currentOverlays = Overlays.get();
+		// $scope.currentModel = Datasets.getDataset(); // already set in Main
+		$scope.currentOverlays = Overlays.get(); // CHANGE TO USE $scope.overlays
 		// $scope.currentOverlayIndex = $scope.currentOverlays.current.index;
 
 		$scope.proximityMatrix = Resources.getProximityMatrix($scope.currentModel.data);

@@ -6,7 +6,7 @@
 		</h2>
 		<h3>3D genome browser <br class="hide-for-small">and TADbit front-end.</h3>
 	</div>
-	<div layout="column" layout-align="space-around left">
+	<div layout="column">
 		<!--md-input-container layout-padding ng-show="$state.includes('disabled')"-->
 			<input type="file" accept=".json" nv‐file‐select uploader="uploader"/>
 			<br/>
@@ -18,9 +18,9 @@
 				</li>
 			</ul>
 		<!--/md-input-container-->
-		<md-button layout-padding ui-sref="dataset" class="md-raised">
+		<md-button ui-sref="dataset" class="md-raised">
 			<md-icon class="icon-file-upload"></md-icon> TADkit Online</md-button>
-		<md-button layout-padding ui-sref="download" class="md-raised">
+		<md-button ui-sref="download" class="md-raised">
 			<md-icon class="icon-cloud-download"></md-icon> View @GitHub</md-button>
 	</div>
 </md-content>

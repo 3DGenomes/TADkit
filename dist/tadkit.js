@@ -18,6 +18,10 @@
 			.accentPalette('grey')
 			.warnPalette('red')
 			.backgroundPalette('grey');
+
+		$mdThemingProvider.theme('darkKit')
+			.primaryPalette('green')
+			.dark();
 	}
 })();
 (function() {
@@ -40,7 +44,7 @@
 		.config(config);
 
 	function config($stateProvider, $urlRouterProvider) {
-		$urlRouterProvider.otherwise("/home");
+		$urlRouterProvider.otherwise("/project/loader");
 		
 		$stateProvider
 		.state('home', {
@@ -104,7 +108,7 @@
 				},
 				'content@main': {
 					templateUrl: 'assets/templates/project-loader.html',
-					controller: 'ProjectController'
+					controller: 'ProjectLoaderController'
 				},
 				'sidebar-right@main': {
 					templateUrl: 'assets/templates/sidebar.user.html',
@@ -112,27 +116,26 @@
 				}
 			}
 		})
-		.state('upload', {
-			parent: 'project',
-			url: '/upload',
-			views: {
-				'topbar@main': {
-					templateUrl: 'assets/templates/topbar.html',
-					controller: 'TopbarController'
-				},
-				'content@main': {
-					templateUrl: 'assets/templates/project-upload.html',
-					controller: 'ProjectUploadController'
-				},
-				'sidebar-right@main': {
-					templateUrl: 'assets/templates/sidebar.user.html',
-					controller: 'SidebarUserController'
-				}
-			}
-		})
+		// .state('upload', {
+		// 	parent: 'project',
+		// 	url: '/upload',
+		// 	views: {
+		// 		'topbar@main': {
+		// 			templateUrl: 'assets/templates/topbar.html',
+		// 			controller: 'TopbarController'
+		// 		},
+		// 		'content@main': {
+		// 			templateUrl: 'assets/templates/project-upload.html',
+		// 			controller: 'ProjectUploadController'
+		// 		},
+		// 		'sidebar-right@main': {
+		// 			templateUrl: 'assets/templates/sidebar.user.html',
+		// 			controller: 'SidebarUserController'
+		// 		}
+		// 	}
+		// })
 		.state('dataset', {
 			parent: 'project',
-			controller: 'ProjectDatasetController',
 			url: '/dataset',
 			views: {
 				'content@main': {
@@ -143,7 +146,6 @@
 		})
 		.state('overlay', {
 			parent: 'project',
-			controller: 'ProjectOverlayController',
 			url: '/overlay',
 			views: {
 				'content@main': {
@@ -154,7 +156,6 @@
 		})
 		.state('storyboard', {
 			parent: 'project',
-			controller: 'ProjectStoryboardController',
 			url: '/storyboard',
 			views: {
 				'content@main': {
@@ -165,7 +166,6 @@
 		})
 		.state('browser', {
 			parent: 'project',
-			// controller: 'BrowserController',
 			url: '/browser',
 			views: {
 				'sidebar-left@main': {
@@ -340,6 +340,15 @@
 			}
 		};
 		
+		$scope.featureTitle = function(feature) {
+			if (!feature.external_name) {
+				return feature.id;
+			} else {
+				return feature.external_name;
+			}
+		};
+
+
 		$scope.getDetails = function(item, event) {
 			$mdDialog.show(
 				$mdDialog.alert()
@@ -579,20 +588,20 @@
 			pathControls.push(midCoord);
 			// if (i == totalParticles - 2) {
 			// //	pathControls.push(foreParticle);
-			// 	var endCoord = new THREE.Vector3(0,0,0);
-			// 	endCoord.copy(foreParticle).add(midOffset);
-			// 	pathControls.push(endCoord);
+			// 	var chromEnd = new THREE.Vector3(0,0,0);
+			// 	chromEnd.copy(foreParticle).add(midOffset);
+			// 	pathControls.push(chromEnd);
 			// };
 			if (i == totalParticles - 2 && division != "EnsemblBacteria") {
 			//	pathControls.push(foreParticle);
-				var endCoord;
+				var chromEnd;
 				// if (division == "EnsemblBacteria") {
-				// 	endCoord = vertices[0];
+				// 	chromEnd = vertices[0];
 				// } else {
-					endCoord = new THREE.Vector3(0,0,0);
+					chromEnd = new THREE.Vector3(0,0,0);
 				// }
-				endCoord.copy(foreParticle).add(midOffset);
-				pathControls.push(endCoord);
+				chromEnd.copy(foreParticle).add(midOffset);
+				pathControls.push(chromEnd);
 			}
 		}
 		return pathControls;
@@ -1120,6 +1129,16 @@
 
 					geometry = new THREE.TorusKnotGeometry( 100, 30, 100, 16 );
 
+					// GENERATE TEST GEOMETRY
+					// var torusgeom = new THREE.TorusKnotGeometry( 100, 10, 36, 1 );
+					// var testgeom = torusgeom.vertices;
+					// for (var i = testgeom.length - 1; i >= 0; i--) {
+					// 	testgeom[i].x = parseInt(testgeom[i].x.toFixed(2));
+					// 	testgeom[i].y = parseInt(testgeom[i].y.toFixed(2));
+					// 	testgeom[i].z = parseInt(testgeom[i].z.toFixed(2));
+					// };
+					// console.log(JSON.stringify(testgeom));
+
 					material = new THREE.MeshDepthMaterial({
 						color: 0x666666,
 						wireframe: true,
@@ -1323,6 +1342,7 @@
 
 		$scope.toggle = function(bool) {
 			bool = !bool;
+			console.log(bool);
 		};
 
 		// $scope.keyControls = function (e, component) {
@@ -1360,7 +1380,8 @@
 					var scene, viewport, stats;
 					var camera, cameraPosition, cameraTarget, cameraTranslate;
 					var ambientLight, pointLight;
-					var controls, renderer, particles, chromatin, contacts;
+					var playback, controls, renderer;
+					var particles, chromatin, contacts;
 					var width, height, contW, contH, windowHalfX, windowHalfY;
 
 					var particleOriginalColor = new THREE.Color();
@@ -1401,9 +1422,17 @@
 						scene.add(camera);
 	
 						// CONTROLS
+						// Use TrackballControls for interaction
 						controls = new THREE.TrackballControls( camera, renderer.domElement );
-						controls.autoRotate = scope.view.controls.autoRotate;
-						controls.autoRotateSpeed = scope.view.controls.autoRotateSpeed;
+						// Use OrbitControls for autoRotate
+						playback = new THREE.OrbitControls( camera, renderer.domElement );
+						playback.autoRotate = scope.view.controls.autoRotate;
+						playback.autoRotateSpeed = scope.view.controls.autoRotateSpeed;
+						// interaction FALSE so as not to conflict with controls
+						playback.noZoom = true;
+						playback.noRotate = true;
+						playback.noPan = true;
+						playback.noKeys = true;
 
 						// AXIS
 						// TO DO: Make local axisHelper
@@ -1428,7 +1457,7 @@
 						scope.view.settings.particles.count = particles.geometry.vertices.length;
 						scope.view.settings.chromatin.segments = scope.view.settings.particles.count * scope.view.settings.chromatin.particleSegments;
 						// change radius to be proportional to chromosome length
-						scope.view.settings.genomeLength = scope.settings.currentEndCoord; // eg. 816394 nucelotides
+						scope.view.settings.genomeLength = scope.settings.currentChromEnd; // eg. 816394 nucelotides
 
 						//GEOMETRY: CHROMATIN
 						chromatin = new Chromatin( scope.data, scope.overlay.colors, scope.view.settings.chromatin );
@@ -1488,7 +1517,8 @@
 					// FIX: NOT REDRAWING SCENE IF THE ONLY VISBLE OBJECT IS TOGGLED OFF
 						scope.$watch('view.controls.autoRotate', function( newValue, oldValue ) {
 							if ( newValue !== oldValue ) {
-								controls.autoRotate = !controls.autoRotate;
+								// playback.autoRotate = !playback.autoRotate;
+								playback.autoRotate = scope.view.controls.autoRotate;
 							}
 						});
 						scope.$watch('view.settings.axis.visible', function( newValue, oldValue ) {
@@ -1535,9 +1565,9 @@
 						scope.$watch('settings.position', function( newValue, oldValue ) { // deep watch as change direct and changes all?
 							if ( newValue !== oldValue ) {
 
-								var oldInRange = oldValue - scope.view.viewpoint.startCoord;
-								var newInRange = newValue - scope.view.viewpoint.startCoord;
-								var rangeLength = scope.view.viewpoint.endCoord - scope.view.viewpoint.startCoord;
+								var oldInRange = oldValue - scope.view.viewpoint.chromStart;
+								var newInRange = newValue - scope.view.viewpoint.chromStart;
+								var rangeLength = scope.view.viewpoint.chromEnd - scope.view.viewpoint.chromStart;
 
 								// SET PARTICLE CURSOR COLOR
 								var particlePrevious =  Math.floor(oldInRange * (scope.view.settings.particles.count-1) / rangeLength);
@@ -1616,6 +1646,7 @@
 					// -----------------------------------
 					scope.animate = function () {
 						requestAnimationFrame( scope.animate );
+						playback.update();
 						controls.update();
 						scope.render();
 					};
@@ -1693,8 +1724,8 @@
 					var target = scope.id;
 					if (!scope.settings.position) scope.settings.position = assemblyLength / 2;
 					var positions = 100; //scope.positions; // == ?
-					var focusStart = scope.view.viewpoint.startCoord;
-					var focusEnd = scope.view.viewpoint.endCoord;
+					var focusStart = scope.view.viewpoint.chromStart;
+					var focusEnd = scope.view.viewpoint.chromEnd;
 					var chrStart = 0;
 					var chrEnd = assemblyLength;
 					var focusLength = focusEnd - focusStart;
@@ -1927,8 +1958,8 @@
 
 					// SVG GENERATION
 					var data = scope.data;
-					var focusStart = scope.view.viewpoint.startCoord;
-					var focusEnd = scope.view.viewpoint.endCoord;
+					var focusStart = scope.view.viewpoint.chromStart;
+					var focusEnd = scope.view.viewpoint.chromEnd;
 					var segments = scope.view.settings.segments;
 					var componentMargin = parseInt(scope.object.state.margin);
 					/* Rebuild margin Object to maintain D3 standard */
@@ -2099,8 +2130,8 @@
 					// if (!scope.settings.position) scope.settings.position = assemblyLength / 2;
 					var step = scope.view.settings.step;
 					var stepWidth;
-					var focusStart = scope.view.viewpoint.startCoord;
-					var focusEnd = scope.view.viewpoint.endCoord;
+					var focusStart = scope.view.viewpoint.chromStart;
+					var focusEnd = scope.view.viewpoint.chromEnd;
 					// var chrStart = 0;
 					// var chrEnd = assemblyLength;
 					var focusLength = focusEnd - focusStart;
@@ -2342,7 +2373,7 @@
 		.controller('BrowserController', BrowserController);
 
 	function BrowserController ($scope, initialData){
-		console.log(initialData);
+		console.log("initialData");
 	}
 })();
 (function() {
@@ -2415,20 +2446,20 @@
 		$scope.currentStoryboard = $scope.storyboards.loaded[$scope.storyboards.current.index];
 
 		// Set coords to default Storyboard views from dataset
-		$scope.settings.currentStartCoord = $scope.currentDataset.object.startCoord;
-		$scope.settings.currentEndCoord = $scope.currentDataset.object.endCoord;
+		$scope.settings.currentChromStart = $scope.currentDataset.object.chromStart;
+		$scope.settings.currentChromEnd = $scope.currentDataset.object.chromEnd;
 		$scope.settings.currentScale = 1; //$scope.currentDataset.object.scale;
-		Storyboards.setViewpoint($scope.settings.currentStartCoord,$scope.settings.currentEndCoord,$scope.settings.currentScale);
-		Components.setViewpoint($scope.settings.currentStartCoord,$scope.settings.currentEndCoord,$scope.settings.currentScale);
+		Storyboards.setViewpoint($scope.settings.currentChromStart,$scope.settings.currentChromEnd,$scope.settings.currentScale);
+		Components.setViewpoint($scope.settings.currentChromStart,$scope.settings.currentChromEnd,$scope.settings.currentScale);
 		// $scope.storyboards = $scope.projects.loaded[$scope.projects.current.index].storyboards;
 
 
-		$scope.addDataset = function($fileContent) {
-			console.log("adding...");
-			Datasets.addDataset($fileContent);
-			$scope.currentDataset = $scope.datasets.loaded[$scope.datasets.current.index];
-			$state.go('dataset');
-		};
+		// $scope.addDataset = function($fileContent) {
+		// 	console.log("adding...");
+		// 	Datasets.addDataset($fileContent);
+		// 	$scope.currentDataset = $scope.datasets.loaded[$scope.datasets.current.index];
+		// 	$state.go('dataset');
+		// };
 
 
 	}
@@ -2510,8 +2541,8 @@
 						newComponent.view.settings.step = overlay.object.step;
 						newComponent.view.settings.color = overlay.object.color;
 						newComponent.view.settings.segments = settings.segmentsCount;
-						newComponent.view.viewpoint.startCoord = settings.currentStartCoord;
-						newComponent.view.viewpoint.endCoord = settings.currentEndCoord;
+						newComponent.view.viewpoint.chromStart = settings.currentChromStart;
+						newComponent.view.viewpoint.chromEnd = settings.currentChromEnd;
 						newComponent.view.viewpoint.scale = settings.currentScale;
 						newComponent.view.viewtype = overlay.object.type + "-" + overlay.object.stepType;
 						newComponent.data = overlay.data;
@@ -2525,11 +2556,11 @@
 				// Add newOverlays to Overlays
 				overlays.loaded = overlays.loaded.concat(newOverlays);
 				// Generate overlay colors
-				var startCoord = Settings.get().startCoord;
+				var chromStart = Settings.get().chromStart;
 				var segmentsCount = Settings.get().segmentsCount;
 				var segmentLength = Settings.get().segmentLength;
 				var featureTypes = Settings.get().featureTypes;
-				Overlays.segmentOverlays(startCoord, segmentsCount, segmentLength, featureTypes);
+				Overlays.segmentOverlays(chromStart, segmentsCount, segmentLength, featureTypes);
 
 				// Add new overlays as Components to Storyboard
 				for (var i = newComponents.length - 1; i >= 0; i--) {
@@ -2596,6 +2627,7 @@
 		.controller('ProjectDatasetController', ProjectDatasetController);
 
 	function ProjectDatasetController ($state, $scope, Datasets, Overlays, Components){
+		// console.log($scope);
 
 		// Get dataset scene icon component
 		$scope.clusterComponent = Components.getComponentById("datasets-scene-icon");
@@ -2657,26 +2689,130 @@
 	'use strict';
 	angular
 		.module('TADkit')
+		.directive('tkProjectDropzone', tkProjectDropzone);
+
+	function tkProjectDropzone($state, $parse) {    
+		return {
+	        restrict: 'A',
+	        // template: '<div>tkProjectDropzone is functioning</div>', // uncomment to test if directive is functioning
+	        link: function (scope, element, attrs) {
+
+            var expression = attrs.dropzone;
+            var accesor = $parse(expression);
+
+            var onDragOver = function (e) {
+                e.preventDefault();
+                element.addClass("dragOver");
+            };
+ 
+            var onDragEnd = function (e) {
+               e.preventDefault();
+                element.removeClass("dragOver");
+            };
+
+           var loadFile = function (file) {
+				var reader = new FileReader();
+				reader.onload = function(onLoadEvent) {
+					scope.$apply(function() {
+   						// HERE: call the parsed function correctly (with scope AND params object)
+						accesor(scope, {$fileContent:onLoadEvent.target.result});
+						scope.addDataset(onLoadEvent.target.result);
+						// $state.go('dataset');
+					});
+				};
+				reader.readAsText(file);
+				console.log("File loaded...");
+           };
+ 
+            element.bind("dragover", onDragOver)
+                   .bind("dragleave", onDragEnd)
+                   .bind("drop", function (e) {
+                       onDragEnd(e);
+                       loadFile(e.dataTransfer.files[0]);
+                   });
+ 
+            scope.$watch(expression, function () {
+                element.attr("src", accesor(scope));
+            });
+  
+	            // element.bind('drop', function(evt) {
+	            //     evt.stopPropagation();
+	            //     evt.preventDefault();
+
+	            //     var files = evt.dataTransfer.files;
+	            //     for (var i = 0; i <= files.length; i++) {
+	            //     		var f = files[i];
+	            //         var reader = new FileReader();
+	            //         reader.readAsArrayBuffer(f);
+
+	            //         reader.onload = (function(theFile) {
+	            //             return function(e) {
+	            //                 var newFile = { name : theFile.name,
+	            //                     type : theFile.type,
+	            //                     size : theFile.size,
+	            //                     lastModifiedDate : theFile.lastModifiedDate
+	            //                 };
+
+	            //                 scope.addfile(newFile);
+	            //             };
+	            //         })(f);
+	            //     }
+	            // });
+
+	        }
+	    };
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.controller('ProjectLoaderController', ProjectLoaderController);
+
+	function ProjectLoaderController($state, $scope, $timeout, Datasets) {
+			// console.log($scope);
+
+		$scope.addDataset = function($fileContent) {
+			console.log("Adding dataset...");
+			Datasets.add($fileContent);
+			// console.log($scope.currentDataset.object.title);
+			$scope.$parent.currentDataset = Datasets.getDataset(); //$scope.datasets.loaded[$scope.datasets.current.index];
+			$scope.$parent.currentModel = Datasets.getModel(); //$scope.datasets.loaded[$scope.datasets.current.index];
+			// console.log($scope.currentDataset.object.title);
+			$state.go('dataset');
+		};
+
+		// $scope.openInput = function() {
+		// 	$timeout(function() {
+		// 		angular.element("file-input").trigger('click');
+		// 	}, 0);
+		// };
+
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
 		.directive('tkProjectLoader', tkProjectLoader);
 
-	function tkProjectLoader($parse) {		
+	function tkProjectLoader($state, $parse) {		
 		return {
 			restrict: 'A',
 			scope: false,
 			link: function(scope, element, attrs) {
-			var fn = $parse(attrs.tkProjectLoader);
-
+				var fn = $parse(attrs.tkProjectLoader);
 				element.on('change', function(onChangeEvent) {
 					var reader = new FileReader();
 					reader.onload = function(onLoadEvent) {
 						console.log("Data Loaded");
 						scope.$apply(function() {
+       					// HERE: call the parsed function correctly (with scope AND params object)
 							fn(scope, {$fileContent:onLoadEvent.target.result});
+							// $state.go('dataset');
 						});
 					};
-
 					reader.readAsText((onChangeEvent.srcElement || onChangeEvent.target).files[0]);
-					// srcElement??					
 				});
 			}
 		};
@@ -2712,20 +2848,6 @@
 		$scope.uploader = new FileUploader();
 		
 		// console.log($scope.uploader);
-	}
-})();
-(function() {
-	'use strict';
-	angular
-		.module('TADkit')
-		.controller('ProjectController', ProjectController);
-
-	function ProjectController ($scope, Datasets){
-
-		$scope.addDataset = function($fileContent) {
-			Datasets.add($fileContent);
-		};
-
 	}
 })();
 (function() {
@@ -2805,8 +2927,8 @@
 		var particlesCount = $scope.currentModel.length / $scope.currentDataset.object.components;
 		var particleSegments = $scope.currentStoryboard.components[defaultIndex].view.settings.chromatin.particleSegments;
 		var segmentsCount = particlesCount * particleSegments;
-		var dataStart = $scope.currentDataset.object.startCoord;
-		var dataEnd = $scope.currentDataset.object.endCoord;
+		var dataStart = $scope.currentDataset.object.chromStart;
+		var dataEnd = $scope.currentDataset.object.chromEnd;
 		var segmentLength = $scope.currentStoryboard.components[defaultIndex].view.settings.chromatin.segmentLength = $scope.currentDataset.object.resolution / particleSegments; // base pairs
 
 		// SET INITIAL position
@@ -2817,8 +2939,8 @@
 		$scope.settings.segmentLower = $scope.settings.position - ($scope.settings.segment * 0.5);
 		$scope.settings.segmentUpper = $scope.settings.position + ($scope.settings.segment * 0.5);
 
-		$scope.currentModel = Datasets.getModel();
-		$scope.currentOverlays = Overlays.get();
+		// $scope.currentModel = Datasets.getDataset(); // already set in Main
+		$scope.currentOverlays = Overlays.get(); // CHANGE TO USE $scope.overlays
 		// $scope.currentOverlayIndex = $scope.currentOverlays.current.index;
 
 		$scope.proximityMatrix = Resources.getProximityMatrix($scope.currentModel.data);
@@ -3368,15 +3490,15 @@
 				var component = components.loaded[components.current.index];
 				return component;
 			},
-			setViewpoint: function(startCoord, endCoord, scaleOrig) {
-				startCoord = startCoord || 0;
-				endCoord = endCoord || 4999999;
+			setViewpoint: function(chromStart, chromEnd, scaleOrig) {
+				chromStart = chromStart || 0;
+				chromEnd = chromEnd || 4999999;
 				var currentComponents = components.loaded;
 				// console.log(currentComponents);
 				angular.forEach( currentComponents, function(component, index) {
 					var scale = scaleOrig || 1;
-					component.view.viewpoint.startCoord = startCoord;
-					component.view.viewpoint.endCoord = endCoord;
+					component.view.viewpoint.chromStart = chromStart;
+					component.view.viewpoint.chromEnd = chromEnd;
 					if (component.object.type === "scene" || component.object.type === "scene-icon") {
 						var angle = component.view.viewpoint.fov / 2;
 						var margin = 0.6;
@@ -3498,7 +3620,8 @@
 				} else {
 					$http.get(source)
 					.success( function(data) {
-						datasets.loaded = data;
+						var dataset = data;
+						datasets.loaded.push(dataset);
 						// console.log(data[0].models);
 						// angular.forEach(data[0].models, function(model, key) {
 						// 	model = JSON.stringify(model).replace("####",key+1);
@@ -3516,13 +3639,14 @@
 			add: function(data) { // rename import?
 				/* CHECK DATASET IS VALID */
 				var dataset = JSON.parse(data);
+				// console.log(dataset); // NOT AN ARRAY - A SINGLE DATASET
 				// var uuid = dataObj.uuid || uuid4.generate(),
 				// if (!projects.default.datasets[uuid]) {
-					datasets.loaded.push(dataset[0]);
+					datasets.loaded.push(dataset);
 					datasets.current.index = datasets.loaded.length - 1;
 					console.log("Dataset \"" + datasets.loaded[datasets.current.index].object.title + "\" loaded from file.");
 				// }
-				console.log(datasets.loaded[datasets.current.index]);
+				// console.log(datasets.loaded);
 				return datasets;
 			},
 			// add: function(title) {
@@ -3602,7 +3726,7 @@
 			},
 			getRegion: function(index) {
 				if (index === undefined || index === false) index = datasets.current.index;
-				var region = datasets.loaded[index].object.chromosome + ":" + datasets.loaded[index].object.startCoord + "-" + datasets.loaded[index].object.endCoord;
+				var region = datasets.loaded[index].object.chromosome + ":" + datasets.loaded[index].object.chromStart + "-" + datasets.loaded[index].object.chromEnd;
 				return region;
 			},
 			getComponents: function(index) {
@@ -3641,8 +3765,8 @@
 				var species = datasetObject.species;
 				var speciesUrl = datasetObject.speciesUrl;
 				var chromosome = datasetObject.chromosome;
-				var start = datasetObject.startCoord;
-				var end = datasetObject.endCoord;
+				var start = datasetObject.chromStart;
+				var end = datasetObject.chromEnd;
 				var self = this;
 				if (online) {
 					source = overlay.object.url[0] + speciesUrl + overlay.object.url[2] + chromosome + overlay.object.url[4] + start + overlay.object.url[6] + end + overlay.object.url[8];
@@ -3762,15 +3886,15 @@
 				var segmentLength = currentDataset.object.resolution / particleSegments; // base pairs
 				return $q.all([settings, currentDataset, currentStoryboards, particleSegments, particlesCount, segmentsCount, segmentLength])
 				.then(function() {
-					var startCoord = currentDataset.object.startCoord;
+					var chromStart = currentDataset.object.chromStart;
 					var featureColors = results[7];
 					var featureTypes = featureColors;
-					settings.startCoord = startCoord;
+					settings.chromStart = chromStart;
 					settings.particlesCount = particlesCount;
 					settings.particleSegments = particleSegments;
 					settings.segmentsCount = segmentsCount;
 					settings.segmentLength = segmentLength;
-					Overlays.segmentOverlays(startCoord, segmentsCount, segmentLength, featureTypes);
+					Overlays.segmentOverlays(chromStart, segmentsCount, segmentLength, featureTypes);
 					return results;
 				});
 			})
@@ -3943,7 +4067,7 @@
 			// 	overlays.current = overlays.loaded.length - 1;
 			// 	return overlays.loaded[overlays.current];
 			// },
-			segmentOverlays: function(startCoord, segmentsCount, segmentLength, featureTypes) {
+			segmentOverlays: function(chromStart, segmentsCount, segmentLength, featureTypes) {
 				featureTypes = featureTypes || [];
 				var self = this; // SYNChronous functions...
 				angular.forEach(overlays.loaded, function(overlay, key) {
@@ -3961,14 +4085,14 @@
 							// colors derived from BigWig color and altColor
 							// featureTypes == single hex for use as color
 							var featureColor = overlay.object.color;
-							colors = self.segmentLinear(overlay.data, startCoord, segmentsCount, segmentLength, featureColor);
+							colors = self.segmentLinear(overlay.data, chromStart, segmentsCount, segmentLength, featureColor);
 						} else if (type == "linear" && format == "seq") {
 							// data must contain array of indexs
-							colors = self.segmentLinear(overlay.data, startCoord, segmentsCount, segmentLength);
+							colors = self.segmentLinear(overlay.data, chromStart, segmentsCount, segmentLength);
 						} else if (type == "ensembl" && format == "json") {
 							// data must have .start and .end
 							featureTypes = featureTypes.gene; // TO DO: MAKE FUNCTION MORE GENERIC... ie. not just "gene"
-							colors = self.segmentFeatures(overlay.data, startCoord, segmentsCount, segmentLength, featureTypes);
+							colors = self.segmentFeatures(overlay.data, chromStart, segmentsCount, segmentLength, featureTypes);
 						}
 						overlay.colors = colors;
 					} else {					// already segmented --> ADD REsegement option...
@@ -4025,7 +4149,7 @@
 				}
 				return gradient;
 			},
-			segmentLinear: function(overlayData, startCoord, segmentsCount, segmentLength, featureColor) {
+			segmentLinear: function(overlayData, chromStart, segmentsCount, segmentLength, featureColor) {
 				var defaultColor = "#cccccc";
 				var colors = [];
 				for(var i=0; i<segmentsCount; i++){
@@ -4039,13 +4163,13 @@
 				}
 				return colors;
 			},
-			segmentFeatures: function(features, startCoord, segmentsCount, segmentLength, featureTypes) {
+			segmentFeatures: function(features, chromStart, segmentsCount, segmentLength, featureTypes) {
 				var colors = [];
 
 				for(var i=0; i<segmentsCount; i++){
 
 					var featuresPresent = [];
-					var segmentLower = startCoord + (segmentLength * i);
+					var segmentLower = chromStart + (segmentLength * i);
 					var segmentUpper = segmentLower + segmentLength;
 					var genesCount = features.length;
 					var hex = "cccccc"; // Base color - ie if none found
@@ -4511,15 +4635,15 @@
 				var storyboard = storyboards.loaded[storyboards.current.index];
 				return storyboard;
 			},
-			setViewpoint: function(startCoord, endCoord, scaleOrig) {
-				startCoord = startCoord || 0;
-				endCoord = endCoord || 4999999;
+			setViewpoint: function(chromStart, chromEnd, scaleOrig) {
+				chromStart = chromStart || 0;
+				chromEnd = chromEnd || 4999999;
 				var currentComponents = storyboards.loaded[storyboards.current.index].components;
 				// console.log(currentComponents);
 				angular.forEach( currentComponents, function(component, index) {
 					var scale = scaleOrig || 1;
-					component.view.viewpoint.startCoord = startCoord;
-					component.view.viewpoint.endCoord = endCoord;
+					component.view.viewpoint.chromStart = chromStart;
+					component.view.viewpoint.chromEnd = chromEnd;
 					if (component.object.type === "scene" || component.object.type === "scene-icon") {
 						var angle = component.view.viewpoint.fov / 2;
 						var margin = 0.6;

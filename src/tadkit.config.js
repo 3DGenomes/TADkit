@@ -11,5 +11,9 @@
 			.accentPalette('grey')
 			.warnPalette('red')
 			.backgroundPalette('grey');
+
+		$mdThemingProvider.theme('darkKit')
+			.primaryPalette('green')
+			.dark();
 	}
 })();

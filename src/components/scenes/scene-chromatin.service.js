@@ -202,20 +202,20 @@
 			pathControls.push(midCoord);
 			// if (i == totalParticles - 2) {
 			// //	pathControls.push(foreParticle);
-			// 	var endCoord = new THREE.Vector3(0,0,0);
-			// 	endCoord.copy(foreParticle).add(midOffset);
-			// 	pathControls.push(endCoord);
+			// 	var chromEnd = new THREE.Vector3(0,0,0);
+			// 	chromEnd.copy(foreParticle).add(midOffset);
+			// 	pathControls.push(chromEnd);
 			// };
 			if (i == totalParticles - 2 && division != "EnsemblBacteria") {
 			//	pathControls.push(foreParticle);
-				var endCoord;
+				var chromEnd;
 				// if (division == "EnsemblBacteria") {
-				// 	endCoord = vertices[0];
+				// 	chromEnd = vertices[0];
 				// } else {
-					endCoord = new THREE.Vector3(0,0,0);
+					chromEnd = new THREE.Vector3(0,0,0);
 				// }
-				endCoord.copy(foreParticle).add(midOffset);
-				pathControls.push(endCoord);
+				chromEnd.copy(foreParticle).add(midOffset);
+				pathControls.push(chromEnd);
 			}
 		}
 		return pathControls;

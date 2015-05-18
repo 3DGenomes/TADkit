@@ -27,8 +27,8 @@
 					// if (!scope.settings.position) scope.settings.position = assemblyLength / 2;
 					var step = scope.view.settings.step;
 					var stepWidth;
-					var focusStart = scope.view.viewpoint.startCoord;
-					var focusEnd = scope.view.viewpoint.endCoord;
+					var focusStart = scope.view.viewpoint.chromStart;
+					var focusEnd = scope.view.viewpoint.chromEnd;
 					// var chrStart = 0;
 					// var chrEnd = assemblyLength;
 					var focusLength = focusEnd - focusStart;

@@ -13,6 +13,7 @@
 
 		$scope.toggle = function(bool) {
 			bool = !bool;
+			console.log(bool);
 		};
 
 		// $scope.keyControls = function (e, component) {

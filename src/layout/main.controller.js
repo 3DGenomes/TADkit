@@ -49,20 +49,20 @@
 		$scope.currentStoryboard = $scope.storyboards.loaded[$scope.storyboards.current.index];
 
 		// Set coords to default Storyboard views from dataset
-		$scope.settings.currentStartCoord = $scope.currentDataset.object.startCoord;
-		$scope.settings.currentEndCoord = $scope.currentDataset.object.endCoord;
+		$scope.settings.currentChromStart = $scope.currentDataset.object.chromStart;
+		$scope.settings.currentChromEnd = $scope.currentDataset.object.chromEnd;
 		$scope.settings.currentScale = 1; //$scope.currentDataset.object.scale;
-		Storyboards.setViewpoint($scope.settings.currentStartCoord,$scope.settings.currentEndCoord,$scope.settings.currentScale);
-		Components.setViewpoint($scope.settings.currentStartCoord,$scope.settings.currentEndCoord,$scope.settings.currentScale);
+		Storyboards.setViewpoint($scope.settings.currentChromStart,$scope.settings.currentChromEnd,$scope.settings.currentScale);
+		Components.setViewpoint($scope.settings.currentChromStart,$scope.settings.currentChromEnd,$scope.settings.currentScale);
 		// $scope.storyboards = $scope.projects.loaded[$scope.projects.current.index].storyboards;
 
 
-		$scope.addDataset = function($fileContent) {
-			console.log("adding...");
-			Datasets.addDataset($fileContent);
-			$scope.currentDataset = $scope.datasets.loaded[$scope.datasets.current.index];
-			$state.go('dataset');
-		};
+		// $scope.addDataset = function($fileContent) {
+		// 	console.log("adding...");
+		// 	Datasets.addDataset($fileContent);
+		// 	$scope.currentDataset = $scope.datasets.loaded[$scope.datasets.current.index];
+		// 	$state.go('dataset');
+		// };
 
 
 	}

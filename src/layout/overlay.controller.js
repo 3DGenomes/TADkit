@@ -48,8 +48,8 @@
 						newComponent.view.settings.step = overlay.object.step;
 						newComponent.view.settings.color = overlay.object.color;
 						newComponent.view.settings.segments = settings.segmentsCount;
-						newComponent.view.viewpoint.startCoord = settings.currentStartCoord;
-						newComponent.view.viewpoint.endCoord = settings.currentEndCoord;
+						newComponent.view.viewpoint.chromStart = settings.currentChromStart;
+						newComponent.view.viewpoint.chromEnd = settings.currentChromEnd;
 						newComponent.view.viewpoint.scale = settings.currentScale;
 						newComponent.view.viewtype = overlay.object.type + "-" + overlay.object.stepType;
 						newComponent.data = overlay.data;
@@ -63,11 +63,11 @@
 				// Add newOverlays to Overlays
 				overlays.loaded = overlays.loaded.concat(newOverlays);
 				// Generate overlay colors
-				var startCoord = Settings.get().startCoord;
+				var chromStart = Settings.get().chromStart;
 				var segmentsCount = Settings.get().segmentsCount;
 				var segmentLength = Settings.get().segmentLength;
 				var featureTypes = Settings.get().featureTypes;
-				Overlays.segmentOverlays(startCoord, segmentsCount, segmentLength, featureTypes);
+				Overlays.segmentOverlays(chromStart, segmentsCount, segmentLength, featureTypes);
 
 				// Add new overlays as Components to Storyboard
 				for (var i = newComponents.length - 1; i >= 0; i--) {

@@ -5,6 +5,7 @@
 		.controller('ProjectDatasetController', ProjectDatasetController);
 
 	function ProjectDatasetController ($state, $scope, Datasets, Overlays, Components){
+		// console.log($scope);
 
 		// Get dataset scene icon component
 		$scope.clusterComponent = Components.getComponentById("datasets-scene-icon");

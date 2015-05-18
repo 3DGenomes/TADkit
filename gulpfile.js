@@ -80,6 +80,7 @@ gulp.task('assets-libs', function() {
 		'bower_components/d3/d3.min.js',
 		'bower_components/threejs/build/three.min.js',
 		'src/assets/libs-unused/TrackballControls.js',
+		'src/assets/libs-unused/OrbitControls.js',
 		'src/assets/libs-unused/stats.min.js'
 		])
 		.pipe(gulp.dest('src/assets/libs'))
@@ -139,6 +140,7 @@ gulp.task('assets-json', function() {
 		'src/assets/json/ensembl-webcode-COLOUR.ini',
 		'src/assets/json/tk-defaults-*.json',
 		'src/assets/json/mycoplasma_pneumoniae-*.json',
+		'src/assets/json/testdata_torusknot-tadbit.json'
 		])
 		.pipe(gulp.dest('example/assets/json'));
 });
@@ -178,13 +180,13 @@ gulp.task('watch', function() {
 		'lint',
 		'sass',
 		'scripts',
+		'assets-libs',
 		'assets-html',
 		'assets-css',
 		'assets-fonts',
 		'assets-favicon',
 		'assets-img',
-		'assets-json',
-		'assets-libs'
+		'assets-json'
 	]);
 	// gulp.watch('src/assets/scss/*.scss', ['sass']);
 });
@@ -194,13 +196,13 @@ gulp.task('default', [
 	'lint',
 	'sass',
 	'scripts',
+	'assets-libs',
 	'assets-html',
 	'assets-css',
 	'assets-fonts',
 	'assets-favicon',
 	'assets-img',
 	'assets-json',
-	'assets-libs',
 	'webserver',
 	'openbrowser',
 	'watch'
