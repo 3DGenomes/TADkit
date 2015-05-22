@@ -112,7 +112,7 @@
 				chromatinGeometry.merge(segment);
 
 				var chromatinSegment = new THREE.Mesh(segment, segmentMaterial);
-				chromatinSegment.name = "segment-"+i;
+				chromatinSegment.name = "segment-" + (i + 1);
 				chromatinFiber.add(chromatinSegment);
 			}
 

@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.directive('tkComponentTrackSlider', tkComponentTrackSlider);
 
-	function tkComponentTrackSlider(d3Service) {
+	function tkComponentTrackSlider(d3Service, Resources) {
 		return {
 			restrict: 'EA',
 			scope: {
@@ -32,7 +32,7 @@
 					var data = scope.data;
 					var focusStart = scope.view.viewpoint.chromStart;
 					var focusEnd = scope.view.viewpoint.chromEnd;
-					var segments = scope.view.settings.segments;
+					var segmentsCount = scope.view.settings.segmentsCount;
 					var componentMargin = parseInt(scope.object.state.margin);
 					/* Rebuild margin Object to maintain D3 standard */
 					var margin = {
@@ -84,10 +84,7 @@
 							prime5Axis = d3.svg.axis().orient("right");
 								// .outerTickSize([0]);
 
-						var sliderStart = 0;
-						var sliderEnd = segments-1;
-
-						handleWidth = Math.max( (width / sliderEnd), 4 );
+						handleWidth = Math.max( (width / segmentsCount), 4 );
 						handleHeight = trackHeight;
 
 						brush = d3.svg.brush()
@@ -135,6 +132,7 @@
 							.attr("cx", xScale(scope.settings.position) - (handleWidth * 0.5))
 							.attr("cy", height)
 							.attr("r", handleWidth * 1.6);
+
 							// handle.append("text")
 							// 	.attr("x", xScale(scope.settings.position) - (handleWidth * 0.5))
 							// 	.attr("y", height)
@@ -161,6 +159,8 @@
 
 								// UPDATE position
 								scope.settings.position = value;
+								var currentParticle = Resources.getParticle(scope.settings.position, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.settings.particlesCount);
+								scope.settings.currentParticle = currentParticle;
 								scope.settings.segmentLower = scope.settings.position - (scope.settings.segment * 5); // * 0.5???
 								scope.settings.segmentUpper = scope.settings.position + (scope.settings.segment * 5); // * 0.5???
 

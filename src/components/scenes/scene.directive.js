@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.directive('tkComponentScene', tkComponentScene);
 
-	function tkComponentScene(Particles, Chromatin, Overlays, Contacts) {
+	function tkComponentScene(Particles, Chromatin, Overlays, Contacts, Resources) {
 		return {
 			restrict: 'EA',
 			scope: { 
@@ -108,6 +108,7 @@
 						chromatin = new Chromatin( scope.data, scope.overlay.colors, scope.view.settings.chromatin );
 						chromatin.visible = scope.view.settings.chromatin.visible;
 						scene.add(chromatin);
+						scope.view.settings.chromatin.radius = chromatin.boundingSphere.radius;
 						// scope.view.settings.chromatin.count = 1; // UNUSED
 
 						// GEOMETRY: CONTACTS
@@ -193,7 +194,6 @@
 						// /* Watch for Chromatin colors */
 						scope.$watch('overlayindex', function( newValue, oldValue ) { // cant deep watch as change through set on service
 							if ( newValue !== oldValue ) {
-								// console.log(newValue);
 								var meshes = chromatinObj.children.length;
 								var newOverlay = Overlays.getOverlay(newValue);
 								// console.log(newValue);
@@ -207,25 +207,22 @@
 						});
 
 						/* Watch for Browser-wide Position updates */
-						scope.$watch('settings.position', function( newValue, oldValue ) { // deep watch as change direct and changes all?
-							if ( newValue !== oldValue ) {
+						scope.$watch('settings.position', function( newPosition, oldPosition ) { // deep watch as change direct and changes all?
+							if ( newPosition !== oldPosition ) {
 
-								var oldInRange = oldValue - scope.view.viewpoint.chromStart;
-								var newInRange = newValue - scope.view.viewpoint.chromStart;
-								var rangeLength = scope.view.viewpoint.chromEnd - scope.view.viewpoint.chromStart;
+								// FIND CURRENT PARTICLE
+								var particlePrevious = Resources.getParticle(oldPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.particles.count); // Math.floor(oldInRange * (scope.view.settings.particles.count-1) / rangeLength);
+								var particleCurrent = Resources.getParticle(newPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.particles.count); // Math.floor(newInRange * (scope.view.settings.particles.count-1) / rangeLength);
 
 								// SET PARTICLE CURSOR COLOR
-								var particlePrevious =  Math.floor(oldInRange * (scope.view.settings.particles.count-1) / rangeLength);
-								var particleCurrent = Math.floor(newInRange * (scope.view.settings.particles.count-1) / rangeLength);
-
-								if (particleOriginalColor) particlesObj.geometry.colors[particlePrevious] = particleOriginalColor;
-								particleOriginalColor = particlesObj.geometry.colors[particleCurrent];
-								particlesObj.geometry.colors[particleCurrent] = highlightColor;
+								if (particleOriginalColor) particlesObj.geometry.colors[(particlePrevious - 1)] = particleOriginalColor;
+								particleOriginalColor = particlesObj.geometry.colors[(particleCurrent - 1)];
+								particlesObj.geometry.colors[(particleCurrent - 1)] = highlightColor;
 								particlesObj.geometry.colorsNeedUpdate = true;
 
 								// SET CHROMATIN CURSOR COLOR
-								var positionPrevious =  Math.floor(oldInRange * (scope.view.settings.chromatin.segments-1) / rangeLength);
-								var positionCurrent = Math.floor(newInRange * (scope.view.settings.chromatin.segments-1) / rangeLength);
+								var positionPrevious = Resources.getPosition(oldPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.chromatin.segments); // Math.floor(oldInRange * (scope.view.settings.chromatin.segments-1) / rangeLength);
+								var positionCurrent = Resources.getPosition(newPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.chromatin.segments); // Math.floor(newInRange * (scope.view.settings.chromatin.segments-1) / rangeLength);
 
 								var segmentPrevious = chromatinObj.getObjectByName( "segment-" + positionPrevious );
 								if (positionOriginalColor) {

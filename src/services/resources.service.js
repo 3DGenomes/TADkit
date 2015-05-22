@@ -6,7 +6,7 @@
 
 	function Resources($q, $http, Color, uuid4) {
 		var resources = {};
-		var ensemblRoot = "http://rest.ensembl.org/";
+		var ensemblRoot = "http://rest.ensemblgenomes.org/";
 		resources.assembly = {};
 		resources.featureColors = {};
 		return {
@@ -104,7 +104,7 @@
 				console.log("Total Biotypes: %s", totalbiotypes);
 			},
 			getProximityMatrix: function (vertices, settings) {
-				// generate a matrix of proximity between points
+				// Generate a matrix of proximity between points
 				// from vertices = array of point coordinates components
 				// to minDistance = threshold for proximity
 				// eg. [x,y,z,x,y,z,x,y,z,...]
@@ -114,11 +114,29 @@
 
 				var defaults = {
 					minDistance: 150,
+					maxDistance: 400,
 					limitConnections: true,
 					maxConnections: 200
 				};
 				settings = settings || {};
 				angular.extend(this, angular.copy(defaults), settings);
+
+				// maxDistance is the max diameter of the cluster of vertices
+				// Calculation is of distance from center to each vertex.
+				var maxDistCalc = 0;
+				var clusterGeometry = new THREE.BufferGeometry();
+				clusterGeometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+				clusterGeometry.computeBoundingSphere();
+				var clusterDiameter = Math.ceil(clusterGeometry.boundingSphere.radius * 2.0);
+				settings.maxDistance = clusterDiameter;
+
+				// for (var i = vertices.length - 1; i >= 0; i--) {
+				// 	var testVertex = 
+				// 	if (testVertex > maxDistCalc)
+				// 		max = ;
+				// };
+
+				settings.maxDistance = maxDistCalc;
 
 				var proximityMatrix = {};
 
@@ -127,9 +145,10 @@
 
 				var pointsCount = vertices.length / 3; // components of vertices
 				var contacts = pointsCount * pointsCount;
+				var contactPairs = contacts * 2;
 
-				var positions = new Float32Array( contacts * 3 );
-				var distances = new Float32Array( contacts * 3 );
+				var positions = new Float32Array( contactPairs * 3 );
+				var distances = new Float32Array( contacts );
 				
 				for (var i = pointsCount - 1; i >= 0; i--) {
 
@@ -143,25 +162,27 @@
 
 						// if ( dist < this.minDistance ) {
 
-							var distance = (1.0 - dist / this.minDistance).toFixed(2);
+							// FROM PARTICLE
+							positions[ vertexpos++ ] = vertices[ i * 3     ]; // from u
+							positions[ vertexpos++ ] = vertices[ i * 3 + 1 ]; // from v
+							positions[ vertexpos++ ] = vertices[ i * 3 + 2 ]; // from w
+							// TO PARTICLE
+							positions[ vertexpos++ ] = vertices[ j * 3     ]; // to x
+							positions[ vertexpos++ ] = vertices[ j * 3 + 1 ]; // to y
+							positions[ vertexpos++ ] = vertices[ j * 3 + 2 ]; // to z
 
-							positions[ vertexpos++ ] = vertices[ i * 3     ]; // from x
-							positions[ vertexpos++ ] = vertices[ i * 3 + 1 ]; // from y
-							positions[ vertexpos++ ] = vertices[ i * 3 + 2 ]; // from z
+							// Distance as value (0.00-1.00) between (u,v,w) and (x,y,z)
+							// is stored as RGB 0.00-1.00 (equal RGB ie greyscale)
+							// for each position, start == end ie. not a gradient.
+							// Can be added as 'color' to THREE.BufferGeometry
+							// using THREE.BufferAttribute to store the array
+							// but would need *6 to give RGB for each position.
 
-							positions[ vertexpos++ ] = vertices[ j * 3     ]; // to p
-							positions[ vertexpos++ ] = vertices[ j * 3 + 1 ]; // to q
-							positions[ vertexpos++ ] = vertices[ j * 3 + 2 ]; // to r
-
-							// distance as value (0-1) between (x,y,z) and (p,q,r)
-							// but matrix structure repeated for ease of iteration
+							// var distance = (1.0 - dist / this.minDistance); // .toFixed(2)
+							var distance = (1.0 - (dist / this.maxDistance)); // .toFixed(2)
 							distances[ distancepos++ ] = distance;
-							distances[ distancepos++ ] = distance;
-							distances[ distancepos++ ] = distance;
-
-							distances[ distancepos++ ] = distance;
-							distances[ distancepos++ ] = distance;
-							distances[ distancepos++ ] = distance;
+							// console.log(dist);
+							// console.log(distance);
 						// }
 
 					}
@@ -169,6 +190,27 @@
 				proximityMatrix.positions = positions;
 				proximityMatrix.distances = distances;
 				return proximityMatrix;
+			},
+			getPosition: function (chromPosition, chromStart, chromEnd, segmentsCount) {
+				var self = this;
+				var chromOffset = self.range(chromStart, chromPosition);
+				var chromRange = self.range(chromStart, chromEnd);
+				var position = Math.ceil((chromOffset * segmentsCount) / chromRange);
+				return position;
+			},
+			getParticle: function (chromPosition, chromStart, chromEnd, particlesCount) {
+				var self = this;
+				var chromOffset = self.range(chromStart, chromPosition);
+				var chromRange = self.range(chromStart, chromEnd);
+				var particle = Math.ceil((chromOffset * particlesCount) / chromRange);
+				return particle;
+			},
+			range: function (start, end) {
+				var range = 0;
+				for (var i = start; i <= end; i++) {
+					range++;
+				}
+				return range;
 			}
 		};
 	}

@@ -14,6 +14,9 @@
 
 		$mdThemingProvider.theme('darkKit')
 			.primaryPalette('green')
+			.accentPalette('teal')
+			.warnPalette('red')
+			.backgroundPalette('grey')
 			.dark();
 	}
 })();

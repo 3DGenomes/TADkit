@@ -21,8 +21,8 @@
 		},
 		"view" : {
 			"viewpoint" : {
-				"chromStart" : 0,
-				"chromEnd" : 4999999,
+				"chromStart" : 1,
+				"chromEnd" : 999999,
 				"scale" : 1,
 				"camera" : [ 5000, 5000, 5000 ],
 				"target" : [ 0, 0, 0 ],
@@ -98,8 +98,8 @@
 		},
 		"view" : {
 			"viewpoint" : {
-				"chromStart" : 0,
-				"chromEnd" : 4999999,
+				"chromStart" : 1,
+				"chromEnd" : 999999,
 				"scale" : 1,
 				"camera" : [ 5000, 5000, 5000 ],
 				"target" : [ 0, 0, 0 ],
@@ -199,8 +199,8 @@
 		},
 		"view" : {
 			"viewpoint" : {
-				"chromStart" : 4730996,
-				"chromEnd" : 5729937,
+				"chromStart" : 1,
+				"chromEnd" : 999999,
 				"scale" : 1
 			},
 			"viewtype" : "linear",
@@ -233,8 +233,8 @@
 		},
 		"view" : {
 			"viewpoint" : {
-				"chromStart" : 4730996,
-				"chromEnd" : 5729937,
+				"chromStart" : 1,
+				"chromEnd" : 999999,
 				"scale" : 1
 			},
 			"viewtype" : "step-variable",
@@ -267,8 +267,8 @@
 		},
 		"view" : {
 			"viewpoint" : {
-				"chromStart" : 4730996,
-				"chromEnd" : 5729937,
+				"chromStart" : 1,
+				"chromEnd" : 999999,
 				"scale" : 1
 			},
 			"viewtype" : "step-fixed",

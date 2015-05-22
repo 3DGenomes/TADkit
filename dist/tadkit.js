@@ -21,6 +21,9 @@
 
 		$mdThemingProvider.theme('darkKit')
 			.primaryPalette('green')
+			.accentPalette('teal')
+			.warnPalette('red')
+			.backgroundPalette('grey')
 			.dark();
 	}
 })();
@@ -498,7 +501,7 @@
 				chromatinGeometry.merge(segment);
 
 				var chromatinSegment = new THREE.Mesh(segment, segmentMaterial);
-				chromatinSegment.name = "segment-"+i;
+				chromatinSegment.name = "segment-" + (i + 1);
 				chromatinFiber.add(chromatinSegment);
 			}
 
@@ -1082,12 +1085,21 @@
 			angular.extend(this, angular.copy(defaults), settings);
 
 			var contacts;
-			// var positions = new Float32Array( positions.length * 3 );
-			// var colors = new Float32Array( positions.length * 3 );
+			// Distances stored as one per contact-position-pair
+			// so the array needs an RGB (*3) for each pair (*2)
+			// ie. each distance needs to be replicated 6 times.
+			var colors = new Float32Array( distances.length * 6 );
+			for (var i = distances.length - 1; i >= 0; i--) {
+				for (var j = 0; j < 6; j++) {
+					var pos = (i*6)+j;
+					colors[pos] = distances[i];
+				};
+			};
+
 			var geometry = new THREE.BufferGeometry();
 
 			geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
-			geometry.addAttribute( 'color', new THREE.BufferAttribute( distances, 3 ) );
+			geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
 
 			geometry.computeBoundingSphere();
 
@@ -1359,7 +1371,7 @@
 		.module('TADkit')
 		.directive('tkComponentScene', tkComponentScene);
 
-	function tkComponentScene(Particles, Chromatin, Overlays, Contacts) {
+	function tkComponentScene(Particles, Chromatin, Overlays, Contacts, Resources) {
 		return {
 			restrict: 'EA',
 			scope: { 
@@ -1463,6 +1475,7 @@
 						chromatin = new Chromatin( scope.data, scope.overlay.colors, scope.view.settings.chromatin );
 						chromatin.visible = scope.view.settings.chromatin.visible;
 						scene.add(chromatin);
+						scope.view.settings.chromatin.radius = chromatin.boundingSphere.radius;
 						// scope.view.settings.chromatin.count = 1; // UNUSED
 
 						// GEOMETRY: CONTACTS
@@ -1548,7 +1561,6 @@
 						// /* Watch for Chromatin colors */
 						scope.$watch('overlayindex', function( newValue, oldValue ) { // cant deep watch as change through set on service
 							if ( newValue !== oldValue ) {
-								// console.log(newValue);
 								var meshes = chromatinObj.children.length;
 								var newOverlay = Overlays.getOverlay(newValue);
 								// console.log(newValue);
@@ -1562,25 +1574,22 @@
 						});
 
 						/* Watch for Browser-wide Position updates */
-						scope.$watch('settings.position', function( newValue, oldValue ) { // deep watch as change direct and changes all?
-							if ( newValue !== oldValue ) {
+						scope.$watch('settings.position', function( newPosition, oldPosition ) { // deep watch as change direct and changes all?
+							if ( newPosition !== oldPosition ) {
 
-								var oldInRange = oldValue - scope.view.viewpoint.chromStart;
-								var newInRange = newValue - scope.view.viewpoint.chromStart;
-								var rangeLength = scope.view.viewpoint.chromEnd - scope.view.viewpoint.chromStart;
+								// FIND CURRENT PARTICLE
+								var particlePrevious = Resources.getParticle(oldPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.particles.count); // Math.floor(oldInRange * (scope.view.settings.particles.count-1) / rangeLength);
+								var particleCurrent = Resources.getParticle(newPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.particles.count); // Math.floor(newInRange * (scope.view.settings.particles.count-1) / rangeLength);
 
 								// SET PARTICLE CURSOR COLOR
-								var particlePrevious =  Math.floor(oldInRange * (scope.view.settings.particles.count-1) / rangeLength);
-								var particleCurrent = Math.floor(newInRange * (scope.view.settings.particles.count-1) / rangeLength);
-
-								if (particleOriginalColor) particlesObj.geometry.colors[particlePrevious] = particleOriginalColor;
-								particleOriginalColor = particlesObj.geometry.colors[particleCurrent];
-								particlesObj.geometry.colors[particleCurrent] = highlightColor;
+								if (particleOriginalColor) particlesObj.geometry.colors[(particlePrevious - 1)] = particleOriginalColor;
+								particleOriginalColor = particlesObj.geometry.colors[(particleCurrent - 1)];
+								particlesObj.geometry.colors[(particleCurrent - 1)] = highlightColor;
 								particlesObj.geometry.colorsNeedUpdate = true;
 
 								// SET CHROMATIN CURSOR COLOR
-								var positionPrevious =  Math.floor(oldInRange * (scope.view.settings.chromatin.segments-1) / rangeLength);
-								var positionCurrent = Math.floor(newInRange * (scope.view.settings.chromatin.segments-1) / rangeLength);
+								var positionPrevious = Resources.getPosition(oldPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.chromatin.segments); // Math.floor(oldInRange * (scope.view.settings.chromatin.segments-1) / rangeLength);
+								var positionCurrent = Resources.getPosition(newPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.chromatin.segments); // Math.floor(newInRange * (scope.view.settings.chromatin.segments-1) / rangeLength);
 
 								var segmentPrevious = chromatinObj.getObjectByName( "segment-" + positionPrevious );
 								if (positionOriginalColor) {
@@ -1685,12 +1694,186 @@
 			link: function(scope, element, attrs) {
 				d3Service.d3().then(function(d3) {
 					// console.log(scope);
+					// save data matrix for re-slicing as position changes
+					scope.dataMatrix = scope.data;
 
-					var data = scope.data;
+					// FYI: data == distances
+					// eg. particles a=rst,b=uvw,c=xyz
+					// give matrix [aa,ab,ac,ba,bb,bc,ca,cb,cc]
+					// can be filtered by no. of particles
+					// totalMatrixVertices / (totalParticeles * 3)
+ 					var data = scope.data;
+					var focusStart = scope.view.viewpoint.chromStart;
+					var focusEnd = scope.view.viewpoint.chromEnd;
+					var focusLength = focusEnd - focusStart + 1; // Resrouces.range...
+					var particlesCount = scope.settings.particlesCount;
+
+					/* Note: focusLength may not be exactly particlesCount (N) * resolution
+					 * BUT for now the last bin resolution is taken as equal to the others
+					 * In the future TADbit may output variable bin resolutions
+					 * eg. as an array of resolutions corresponding to the bins/particles
+					 * Then the code commented below can be developed/completed
+					 * to assess and assign the last index of data
+					 * This may be better done externally to the track modules
+					 * and the results accessed through, for example, view.settings.resolutions
+					 */
+					// var resolution = scope.view.resolution;
+					// var particlesCount = focusLength / resolution;
+					// var exactCount = function(particlesCount) { return parseInt(particlesCount) === particlesCount };
+					// var resolutionParticleN = exactCount;
+					// if (!exactCount) resolutionParticleN = focusLength - (resolution * (n-1));
+					// var particles = Math.ceil(particlesCount);
+
+					// SVG GENERATION
+					var componentMargin = parseInt(scope.object.state.margin);
+					/* Rebuild margin Object to maintain D3 standard */
+					var margin = {
+							top: parseInt(scope.object.state.padding.top),
+							right: parseInt(scope.object.state.padding.right),
+							bottom: parseInt(scope.object.state.padding.bottom),
+							left: parseInt(scope.object.state.padding.left)
+						},
+						scale = 4,
+						trackHeight = parseInt(scope.object.state.heightInner),
+						nodeHeight = trackHeight * 0.5,
+						verticalOffset = (trackHeight - nodeHeight) * 0.5,
+						nodePadding = 0,
+						nodeColor = scope.view.settings.color;
+
+					// VIEWPORT
+					/* component-controller == children[0]
+					 * - component-header == children[0]
+					 * - component-body == children[3]
+					 */
+					var component = element[0].parentNode;
+					var viewport = element[0].children[0].children[3];
+					var svg = d3.select(viewport).append('svg');
+					var chart, defs;
+					var xAxis, prime3Axis, prime5Axis;
+					var focus, container, xScale;
+
+					// // RESIZE
+					// scope.$watch(function(){
+					// 	var w = component.clientWidth;
+					// 	var h = component.clientHeight;
+					// 	return w + h;
+					// }, function() {
+					// 	scope.render(scope.data);
+					// });
+
+					// REDRAW
+					scope.$watch('data', function(newData) {
+						scope.render(newData);
+					});
+ 					
+					// /* Watch for Browser-wide Position updates */
+					scope.$watch('settings.position', function(newPosition, oldPosition) { // deep watch as change direct and changes all?
+						if ( newPosition !== oldPosition ) {
+							// console.log(scope.settings.position);
+							scope.getData();
+							// scope.update();
+						}
+					});
 
 
-					scope.update = function() {
+ 				// 	// ZOOM
+					// var zoom = d3.behavior.zoom()
+					// 	.on("zoom",  function() {
+					// 	scope.update();
+					// });
+
+					scope.getData = function() {
+						// Filter if data is position dependednt matrix
+						scope.dataStart = (((scope.settings.currentParticle - 1) * scope.settings.particlesCount) + 1) - 1;
+						scope.dataEnd = (scope.settings.currentParticle * scope.settings.particlesCount) - 1;
+						scope.data = scope.dataMatrix.subarray(scope.dataStart, scope.dataEnd);
+						// console.log(scope.data);
 					};
+					scope.getData();
+
+					scope.render = function(data) {
+						svg.selectAll('*').remove();
+ 
+						if (!data) return;
+
+						var width = component.clientWidth - (2 * componentMargin) - margin.left - margin.right,
+							height = trackHeight - margin.top - margin.bottom;
+						var particleWidth = (1 * width) / particlesCount;
+						xScale = d3.scale.linear()
+								.range([0, width])
+								.clamp(true);
+
+						xScale.domain([focusStart, focusEnd]);
+				
+						xAxis = d3.svg.axis()
+								.scale(xScale)
+								.orient("top")
+								.ticks(0)
+								.outerTickSize(0);
+
+						var highlightWidth = 2;
+
+						chart = svg.attr('width', width + margin.left + margin.right)
+								.attr('height', height + margin.top + margin.bottom)
+								.append("g")
+								.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+								// .call(zoom);
+						
+						// clipping box to clip overflow
+						// solid rect as background also allow mouse events everywhere 
+						defs = chart.append("defs")
+							.append("clipPath")
+							.attr("id", "clip")
+							.append("rect")
+							.attr("width", width)
+							.attr("height", height)
+							.attr('fill', 'white');
+
+						focus = chart.append("g")
+							.attr("class", "focus");
+
+						var zoomArea = focus.append("g")
+							.attr("class", "zoom")
+							.append("rect")
+							.attr("width", width)
+							.attr("height", height)
+							.attr('fill', 'white');
+
+						container = focus.append("g")
+							.attr("class", "container")
+							.attr('clip-path', 'url(#clip)');
+
+						var labels  = chart.append("g")
+							.attr("class", "labels");
+
+						var focusGraph = container.selectAll("rect")
+							.data(data)
+							.enter().append("rect")
+							.attr("x", function(d, i) { return (i * particleWidth); } )
+							.attr("y", verticalOffset)
+							.attr("width", particleWidth)
+							.attr("height", nodeHeight)
+							.style("fill", nodeColor)
+							.style("fill-opacity", function(d) { return d; })
+							.style("stroke", nodeColor)
+							.style("stroke-width", 0)
+							.append("svg:title")
+							.text(function(d,i) { return i + ":" + d; });
+
+						var highlight = chart.append("rect")
+								.attr("id", "highlight")
+								.attr("x", function(d) { return xScale( scope.settings.position); } )
+								.attr("y", 0)
+								.attr("width", highlightWidth )
+								.attr("height", trackHeight)
+								.attr("class", "highlight-follow");
+					};
+
+					// scope.update = function() {
+					// 	svg.select("#highlight") //.style("visibility", "hidden");
+					// 	.attr("x", function(d) { return xScale( scope.settings.position - (step * 0.5)); } );
+					// };
+
 				});
 			}
 		};
@@ -1932,7 +2115,7 @@
 		.module('TADkit')
 		.directive('tkComponentTrackSlider', tkComponentTrackSlider);
 
-	function tkComponentTrackSlider(d3Service) {
+	function tkComponentTrackSlider(d3Service, Resources) {
 		return {
 			restrict: 'EA',
 			scope: {
@@ -1960,7 +2143,7 @@
 					var data = scope.data;
 					var focusStart = scope.view.viewpoint.chromStart;
 					var focusEnd = scope.view.viewpoint.chromEnd;
-					var segments = scope.view.settings.segments;
+					var segmentsCount = scope.view.settings.segmentsCount;
 					var componentMargin = parseInt(scope.object.state.margin);
 					/* Rebuild margin Object to maintain D3 standard */
 					var margin = {
@@ -2012,10 +2195,7 @@
 							prime5Axis = d3.svg.axis().orient("right");
 								// .outerTickSize([0]);
 
-						var sliderStart = 0;
-						var sliderEnd = segments-1;
-
-						handleWidth = Math.max( (width / sliderEnd), 4 );
+						handleWidth = Math.max( (width / segmentsCount), 4 );
 						handleHeight = trackHeight;
 
 						brush = d3.svg.brush()
@@ -2063,6 +2243,7 @@
 							.attr("cx", xScale(scope.settings.position) - (handleWidth * 0.5))
 							.attr("cy", height)
 							.attr("r", handleWidth * 1.6);
+
 							// handle.append("text")
 							// 	.attr("x", xScale(scope.settings.position) - (handleWidth * 0.5))
 							// 	.attr("y", height)
@@ -2089,6 +2270,8 @@
 
 								// UPDATE position
 								scope.settings.position = value;
+								var currentParticle = Resources.getParticle(scope.settings.position, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.settings.particlesCount);
+								scope.settings.currentParticle = currentParticle;
 								scope.settings.segmentLower = scope.settings.position - (scope.settings.segment * 5); // * 0.5???
 								scope.settings.segmentUpper = scope.settings.position + (scope.settings.segment * 5); // * 0.5???
 
@@ -2446,8 +2629,12 @@
 		$scope.currentStoryboard = $scope.storyboards.loaded[$scope.storyboards.current.index];
 
 		// Set coords to default Storyboard views from dataset
-		$scope.settings.currentChromStart = $scope.currentDataset.object.chromStart;
-		$scope.settings.currentChromEnd = $scope.currentDataset.object.chromEnd;
+		var chromosomeIndex = 0;
+		if ($scope.currentDataset.object.chromosomeIndex) {
+			chromosomeIndex = $scope.currentDataset.object.chromosomeIndex;	
+		}
+		$scope.settings.currentChromStart = $scope.currentDataset.object.chromStart[chromosomeIndex];
+		$scope.settings.currentChromEnd = $scope.currentDataset.object.chromEnd[chromosomeIndex];
 		$scope.settings.currentScale = 1; //$scope.currentDataset.object.scale;
 		Storyboards.setViewpoint($scope.settings.currentChromStart,$scope.settings.currentChromEnd,$scope.settings.currentScale);
 		Components.setViewpoint($scope.settings.currentChromStart,$scope.settings.currentChromEnd,$scope.settings.currentScale);
@@ -2540,7 +2727,7 @@
 						newComponent.object.dataset = overlay.object.id;
 						newComponent.view.settings.step = overlay.object.step;
 						newComponent.view.settings.color = overlay.object.color;
-						newComponent.view.settings.segments = settings.segmentsCount;
+						newComponent.view.settings.segmentsCount = settings.segmentsCount;
 						newComponent.view.viewpoint.chromStart = settings.currentChromStart;
 						newComponent.view.viewpoint.chromEnd = settings.currentChromEnd;
 						newComponent.view.viewpoint.scale = settings.currentScale;
@@ -2924,15 +3111,22 @@
 		// SET DERIVED DATA AND ATTRIBUTES ON COMPONENTS
 		var defaultIndex = 0; // ?? used in components and overlays OR use currentIndex?
 		
-		var particlesCount = $scope.currentModel.length / $scope.currentDataset.object.components;
+		var particlesCount = $scope.currentModel.data.length / $scope.currentDataset.object.components;
 		var particleSegments = $scope.currentStoryboard.components[defaultIndex].view.settings.chromatin.particleSegments;
 		var segmentsCount = particlesCount * particleSegments;
-		var dataStart = $scope.currentDataset.object.chromStart;
-		var dataEnd = $scope.currentDataset.object.chromEnd;
+		var chromosomeIndex = 0;
+		if ($scope.currentDataset.object.chromosomeIndex) {
+			chromosomeIndex = $scope.currentDataset.object.chromosomeIndex;	
+		}
+		var dataStart = $scope.currentDataset.object.chromStart[chromosomeIndex];
+		var dataEnd = $scope.currentDataset.object.chromEnd[chromosomeIndex];
 		var segmentLength = $scope.currentStoryboard.components[defaultIndex].view.settings.chromatin.segmentLength = $scope.currentDataset.object.resolution / particleSegments; // base pairs
 
 		// SET INITIAL position
-		$scope.settings.position = dataStart + parseInt((dataEnd - dataStart) * 0.5);
+		var position = dataStart + parseInt((dataEnd - dataStart) * 0.5);
+		$scope.settings.position = position;
+		var currentParticle = Resources.getParticle(position, dataStart, dataEnd, particlesCount);
+		$scope.settings.currentParticle = currentParticle; 
 
 		// AND SEGMENT IT LIES WITHIN
 		$scope.settings.segment = Math.floor( ($scope.settings.position - dataStart) / segmentLength);
@@ -2956,16 +3150,18 @@
 					value.overlay.state = {};
 					value.overlay.object.state.index = $scope.currentOverlays.current.index; // for track
 				} else if (value.object.type == "track-slider") {
-					value.view.viewpoint.segments = particlesCount * particleSegments;
+					value.view.viewpoint.segmentsCount = $scope.settings.segmentsCount;
 				} else if (value.object.type == "track-genes" || value.object.type == "panel-inspector") {
 					overlay = Overlays.getOverlayById("genes");
+					value.view.settings.segmentsCount = $scope.settings.segmentsCount;
 					value.data = overlay.data;
 					value.overlay = overlay;
 				} else if (value.object.type == "track-contacts") {
-					value.data = $scope.proximityMatrix.positions;
-					value.overlay = $scope.proximityMatrix.distances;
+					value.data = $scope.proximityMatrix.distances;
+					value.view.settings.segmentsCount = $scope.settings.segmentsCount;
 				} else if (value.object.type == "track-wiggle") {
 					overlay = Overlays.getOverlayById(value.object.dataset);
+					value.view.settings.segmentsCount = $scope.settings.segmentsCount;
 					value.data = overlay.data;
 					value.overlay = overlay;
 				} else {
@@ -3383,51 +3579,6 @@
 	'use strict';
 	angular
 		.module('TADkit')
-		.factory('colorsFromINI', colorsFromINI);
-
-	function colorsFromINI(colorConvert) {
-
-		return {
-			parse: function(data) {
-				var regex = {
-					section: /^\s*\[\s*([^\]]*)\s*\]\s*$/,
-					param: /^\s*([\w\.\-\_]+)\s*=\s*([\w\.\-\_]+)/,
-					comment: /^\s*#.*$/
-				};
-				var value = {};
-				var lines = data.split(/\r\n|\r|\n/);
-				var section = null;
-				lines.forEach(function(line){
-					if(regex.comment.test(line) || line === ""){
-						return;
-					}
-					var match;
-					if(regex.param.test(line)){
-						match = line.match(regex.param);
-						if(section){
-							var hexColor = colorConvert.nameToHex( match[2] );
-							value[section][match[1]] = hexColor;
-						}else{
-							value[match[1]] = match[2];
-						}
-					}else if(regex.section.test(line)){
-						match = line.match(regex.section);
-						value[match[1]] = {};
-						section = match[1];
-					}else if(line.length === 0 && section){
-						section = null;
-					}
-				});
-				return value;
-			}
-		};
-	}
-})();
-
-(function() {
-	'use strict';
-	angular
-		.module('TADkit')
 		.factory('Components', Components);
 
 	function Components($q, $http, uuid4) {
@@ -3726,7 +3877,11 @@
 			},
 			getRegion: function(index) {
 				if (index === undefined || index === false) index = datasets.current.index;
-				var region = datasets.loaded[index].object.chromosome + ":" + datasets.loaded[index].object.chromStart + "-" + datasets.loaded[index].object.chromEnd;
+				var chromosomeIndex = 0;
+				if (datasets.loaded[index].object.chromosomeIndex) {
+					chromosomeIndex = datasets.loaded[index].object.chromosomeIndex;	
+				}
+				var region = datasets.loaded[index].object.chromosome[chromosomeIndex] + ":" + datasets.loaded[index].object.chromStart[chromosomeIndex] + "-" + datasets.loaded[index].object.chromEnd[chromosomeIndex];
 				return region;
 			},
 			getComponents: function(index) {
@@ -3751,7 +3906,7 @@
 			ping: function() {
 				console.log("Pinging Ensembl RESTful genomic data server...");
 				var deferral = $q.defer();
-				var source = "http://rest.ensembl.org/info/ping?content-type=application/json";
+				var source = "http://rest.ensemblgenomes.org/info/ping?content-type=application/json";
 				$http.get(source)
 				.success(function(data){
 					ensembl.ping = data.ping;
@@ -3764,9 +3919,13 @@
 				var source;
 				var species = datasetObject.species;
 				var speciesUrl = datasetObject.speciesUrl;
-				var chromosome = datasetObject.chromosome;
-				var start = datasetObject.chromStart;
-				var end = datasetObject.chromEnd;
+				var chromosomeIndex = 0;
+				if (datasetObject.chromosomeIndex) {
+					chromosomeIndex = datasetObject.chromosomeIndex;	
+				}
+				var chromosome = datasetObject.chromosome[chromosomeIndex];
+				var start = datasetObject.chromStart[chromosomeIndex];
+				var end = datasetObject.chromEnd[chromosomeIndex];
 				var self = this;
 				if (online) {
 					source = overlay.object.url[0] + speciesUrl + overlay.object.url[2] + chromosome + overlay.object.url[4] + start + overlay.object.url[6] + end + overlay.object.url[8];
@@ -3803,31 +3962,6 @@
 	'use strict';
 	angular
 		.module('TADkit')
-		.service('initBrowser', initBrowser);
-
-	function initBrowser($q, Datasets, Resources) {
-		return function() {
-
-			var currentDataset = Datasets.getDataset();
-			console.log(currentDataset);
-			// var proximityMatrix = Resources.getProximityMatrix();
-
-			// return $q.all([proximityMatrix]);
-			// .then(function(results){
-			// 	console.log(results);
-			// })
-			// .then(function(results){
-			// 	return {
-			// 		proximityMatrix: results[0]
-			// 	};
-			// });
-		};
-	}
-})();
-(function() {
-	'use strict';
-	angular
-		.module('TADkit')
 		.service('initMain', initMain);
 
 	function initMain($q, Settings, Users, Projects, Datasets, Overlays, Components, Storyboards, Resources, Ensembl) {
@@ -3844,6 +3978,7 @@
 			return $q.all([settings, users, projects, datasets, overlays, components, storyboards, featureColors])
 			.then(function(results){
 
+				var online = true;
 				// var promise = Resources.loadInfoAssembly(Datasets.getSpeciesUrl());
 				// promise.then(function(data) {
 				// 	var settings = results[0];
@@ -3855,7 +3990,8 @@
 
 				var processList = [];
 
-				var infoAssembly = Resources.loadInfoAssembly(Datasets.getSpeciesUrl());
+				var speciesUrl = Datasets.getSpeciesUrl();
+				var infoAssembly = Resources.loadInfoAssembly(speciesUrl, online);
 				processList.push(infoAssembly);
 
 				var currentDataset = Datasets.getDataset();
@@ -3863,7 +3999,7 @@
 				angular.forEach(overlays.loaded, function(overlay, key) {
 					var ensembl;
 					if (overlay.object.type == "ensembl" && overlay.object.format == "json") {
-						ensembl = Ensembl.load(currentDataset.object, overlay);
+						ensembl = Ensembl.load(currentDataset.object, overlay, online);
 						 // ojo returning Overlays... cHANGE 
 						processList.push(ensembl);
 					}
@@ -3886,7 +4022,11 @@
 				var segmentLength = currentDataset.object.resolution / particleSegments; // base pairs
 				return $q.all([settings, currentDataset, currentStoryboards, particleSegments, particlesCount, segmentsCount, segmentLength])
 				.then(function() {
-					var chromStart = currentDataset.object.chromStart;
+					var chromosomeIndex = 0;
+					if (currentDataset.object.chromosomeIndex) {
+						chromosomeIndex = datasetObject.chromosomeIndex;	
+					}
+					var chromStart = currentDataset.object.chromStart[chromosomeIndex];
 					var featureColors = results[7];
 					var featureTypes = featureColors;
 					settings.chromStart = chromStart;
@@ -4166,23 +4306,23 @@
 			segmentFeatures: function(features, chromStart, segmentsCount, segmentLength, featureTypes) {
 				var colors = [];
 
-				for(var i=0; i<segmentsCount; i++){
+				for(var i=0; i < segmentsCount; i++){
 
 					var featuresPresent = [];
 					var segmentLower = chromStart + (segmentLength * i);
 					var segmentUpper = segmentLower + segmentLength;
-					var genesCount = features.length;
+					var featuresCount = features.length;
 					var hex = "cccccc"; // Base color - ie if none found
 					var color = "#" + hex; //parseInt(hex,16);
 
-					// For every gene [j]...
-					for(var j=0; j<genesCount; j++){
+					// For every feaeture [j]...
+					for(var j=0; j < featuresCount; j++){
 						var start = features[j].start;
 						var end = features[j].end;
 						var inSegments = [];
 						 // check if overlaps current fragment [i]
 						if ( Math.max(segmentLower, start) <= Math.min(segmentUpper,end) ) {
-							// console.log("Yes gene " + features[j].external_name + "("+j+") in fragment " + i );
+							// console.log("Yes feature " + features[j].external_name + "("+j+") in fragment " + i );
 							inSegments.push(i);
 							var featureTypeKey = "biotype";
 							var dominantFeatureType = "protein_coding";
@@ -4344,7 +4484,7 @@
 
 	function Resources($q, $http, Color, uuid4) {
 		var resources = {};
-		var ensemblRoot = "http://rest.ensembl.org/";
+		var ensemblRoot = "http://rest.ensemblgenomes.org/";
 		resources.assembly = {};
 		resources.featureColors = {};
 		return {
@@ -4442,7 +4582,7 @@
 				console.log("Total Biotypes: %s", totalbiotypes);
 			},
 			getProximityMatrix: function (vertices, settings) {
-				// generate a matrix of proximity between points
+				// Generate a matrix of proximity between points
 				// from vertices = array of point coordinates components
 				// to minDistance = threshold for proximity
 				// eg. [x,y,z,x,y,z,x,y,z,...]
@@ -4452,11 +4592,29 @@
 
 				var defaults = {
 					minDistance: 150,
+					maxDistance: 400,
 					limitConnections: true,
 					maxConnections: 200
 				};
 				settings = settings || {};
 				angular.extend(this, angular.copy(defaults), settings);
+
+				// maxDistance is the max diameter of the cluster of vertices
+				// Calculation is of distance from center to each vertex.
+				var maxDistCalc = 0;
+				var clusterGeometry = new THREE.BufferGeometry();
+				clusterGeometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+				clusterGeometry.computeBoundingSphere();
+				var clusterDiameter = Math.ceil(clusterGeometry.boundingSphere.radius * 2.0);
+				settings.maxDistance = clusterDiameter;
+
+				// for (var i = vertices.length - 1; i >= 0; i--) {
+				// 	var testVertex = 
+				// 	if (testVertex > maxDistCalc)
+				// 		max = ;
+				// };
+
+				settings.maxDistance = maxDistCalc;
 
 				var proximityMatrix = {};
 
@@ -4465,9 +4623,10 @@
 
 				var pointsCount = vertices.length / 3; // components of vertices
 				var contacts = pointsCount * pointsCount;
+				var contactPairs = contacts * 2;
 
-				var positions = new Float32Array( contacts * 3 );
-				var distances = new Float32Array( contacts * 3 );
+				var positions = new Float32Array( contactPairs * 3 );
+				var distances = new Float32Array( contacts );
 				
 				for (var i = pointsCount - 1; i >= 0; i--) {
 
@@ -4481,25 +4640,27 @@
 
 						// if ( dist < this.minDistance ) {
 
-							var distance = (1.0 - dist / this.minDistance).toFixed(2);
+							// FROM PARTICLE
+							positions[ vertexpos++ ] = vertices[ i * 3     ]; // from u
+							positions[ vertexpos++ ] = vertices[ i * 3 + 1 ]; // from v
+							positions[ vertexpos++ ] = vertices[ i * 3 + 2 ]; // from w
+							// TO PARTICLE
+							positions[ vertexpos++ ] = vertices[ j * 3     ]; // to x
+							positions[ vertexpos++ ] = vertices[ j * 3 + 1 ]; // to y
+							positions[ vertexpos++ ] = vertices[ j * 3 + 2 ]; // to z
 
-							positions[ vertexpos++ ] = vertices[ i * 3     ]; // from x
-							positions[ vertexpos++ ] = vertices[ i * 3 + 1 ]; // from y
-							positions[ vertexpos++ ] = vertices[ i * 3 + 2 ]; // from z
+							// Distance as value (0.00-1.00) between (u,v,w) and (x,y,z)
+							// is stored as RGB 0.00-1.00 (equal RGB ie greyscale)
+							// for each position, start == end ie. not a gradient.
+							// Can be added as 'color' to THREE.BufferGeometry
+							// using THREE.BufferAttribute to store the array
+							// but would need *6 to give RGB for each position.
 
-							positions[ vertexpos++ ] = vertices[ j * 3     ]; // to p
-							positions[ vertexpos++ ] = vertices[ j * 3 + 1 ]; // to q
-							positions[ vertexpos++ ] = vertices[ j * 3 + 2 ]; // to r
-
-							// distance as value (0-1) between (x,y,z) and (p,q,r)
-							// but matrix structure repeated for ease of iteration
+							// var distance = (1.0 - dist / this.minDistance); // .toFixed(2)
+							var distance = (1.0 - (dist / this.maxDistance)); // .toFixed(2)
 							distances[ distancepos++ ] = distance;
-							distances[ distancepos++ ] = distance;
-							distances[ distancepos++ ] = distance;
-
-							distances[ distancepos++ ] = distance;
-							distances[ distancepos++ ] = distance;
-							distances[ distancepos++ ] = distance;
+							// console.log(dist);
+							// console.log(distance);
 						// }
 
 					}
@@ -4507,6 +4668,27 @@
 				proximityMatrix.positions = positions;
 				proximityMatrix.distances = distances;
 				return proximityMatrix;
+			},
+			getPosition: function (chromPosition, chromStart, chromEnd, segmentsCount) {
+				var self = this;
+				var chromOffset = self.range(chromStart, chromPosition);
+				var chromRange = self.range(chromStart, chromEnd);
+				var position = Math.ceil((chromOffset * segmentsCount) / chromRange);
+				return position;
+			},
+			getParticle: function (chromPosition, chromStart, chromEnd, particlesCount) {
+				var self = this;
+				var chromOffset = self.range(chromStart, chromPosition);
+				var chromRange = self.range(chromStart, chromEnd);
+				var particle = Math.ceil((chromOffset * particlesCount) / chromRange);
+				return particle;
+			},
+			range: function (start, end) {
+				var range = 0;
+				for (var i = start; i <= end; i++) {
+					range++;
+				}
+				return range;
 			}
 		};
 	}

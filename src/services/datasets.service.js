@@ -131,7 +131,11 @@
 			},
 			getRegion: function(index) {
 				if (index === undefined || index === false) index = datasets.current.index;
-				var region = datasets.loaded[index].object.chromosome + ":" + datasets.loaded[index].object.chromStart + "-" + datasets.loaded[index].object.chromEnd;
+				var chromosomeIndex = 0;
+				if (datasets.loaded[index].object.chromosomeIndex) {
+					chromosomeIndex = datasets.loaded[index].object.chromosomeIndex;	
+				}
+				var region = datasets.loaded[index].object.chromosome[chromosomeIndex] + ":" + datasets.loaded[index].object.chromStart[chromosomeIndex] + "-" + datasets.loaded[index].object.chromEnd[chromosomeIndex];
 				return region;
 			},
 			getComponents: function(index) {

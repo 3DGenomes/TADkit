@@ -35,7 +35,7 @@
 			"id" : "genes",
 			"title" : "Genes Overlay",
 			"source" : "Ensembl RESTful API",
-			"url" : ["http://rest.ensembl.org/overlap/region/","species","/","chromosome",":","start","-","end","?feature=gene;content-type=application/json"],
+			"url" : ["http://rest.ensemblgenomes.org/overlap/region/","species","/","chromosome",":","start","-","end","?feature=gene;content-type=application/json"],
 			"description" : "Genes from Ensembl RESTful API",
 			"type" : "ensembl",
 			"format" : "json",

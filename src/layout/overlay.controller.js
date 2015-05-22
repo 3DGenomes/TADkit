@@ -47,7 +47,7 @@
 						newComponent.object.dataset = overlay.object.id;
 						newComponent.view.settings.step = overlay.object.step;
 						newComponent.view.settings.color = overlay.object.color;
-						newComponent.view.settings.segments = settings.segmentsCount;
+						newComponent.view.settings.segmentsCount = settings.segmentsCount;
 						newComponent.view.viewpoint.chromStart = settings.currentChromStart;
 						newComponent.view.viewpoint.chromEnd = settings.currentChromEnd;
 						newComponent.view.viewpoint.scale = settings.currentScale;

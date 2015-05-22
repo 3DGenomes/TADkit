@@ -18,6 +18,7 @@
 			return $q.all([settings, users, projects, datasets, overlays, components, storyboards, featureColors])
 			.then(function(results){
 
+				var online = true;
 				// var promise = Resources.loadInfoAssembly(Datasets.getSpeciesUrl());
 				// promise.then(function(data) {
 				// 	var settings = results[0];
@@ -29,7 +30,8 @@
 
 				var processList = [];
 
-				var infoAssembly = Resources.loadInfoAssembly(Datasets.getSpeciesUrl());
+				var speciesUrl = Datasets.getSpeciesUrl();
+				var infoAssembly = Resources.loadInfoAssembly(speciesUrl, online);
 				processList.push(infoAssembly);
 
 				var currentDataset = Datasets.getDataset();
@@ -37,7 +39,7 @@
 				angular.forEach(overlays.loaded, function(overlay, key) {
 					var ensembl;
 					if (overlay.object.type == "ensembl" && overlay.object.format == "json") {
-						ensembl = Ensembl.load(currentDataset.object, overlay);
+						ensembl = Ensembl.load(currentDataset.object, overlay, online);
 						 // ojo returning Overlays... cHANGE 
 						processList.push(ensembl);
 					}
@@ -60,7 +62,11 @@
 				var segmentLength = currentDataset.object.resolution / particleSegments; // base pairs
 				return $q.all([settings, currentDataset, currentStoryboards, particleSegments, particlesCount, segmentsCount, segmentLength])
 				.then(function() {
-					var chromStart = currentDataset.object.chromStart;
+					var chromosomeIndex = 0;
+					if (currentDataset.object.chromosomeIndex) {
+						chromosomeIndex = datasetObject.chromosomeIndex;	
+					}
+					var chromStart = currentDataset.object.chromStart[chromosomeIndex];
 					var featureColors = results[7];
 					var featureTypes = featureColors;
 					settings.chromStart = chromStart;

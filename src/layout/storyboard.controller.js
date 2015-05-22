@@ -11,15 +11,22 @@
 		// SET DERIVED DATA AND ATTRIBUTES ON COMPONENTS
 		var defaultIndex = 0; // ?? used in components and overlays OR use currentIndex?
 		
-		var particlesCount = $scope.currentModel.length / $scope.currentDataset.object.components;
+		var particlesCount = $scope.currentModel.data.length / $scope.currentDataset.object.components;
 		var particleSegments = $scope.currentStoryboard.components[defaultIndex].view.settings.chromatin.particleSegments;
 		var segmentsCount = particlesCount * particleSegments;
-		var dataStart = $scope.currentDataset.object.chromStart;
-		var dataEnd = $scope.currentDataset.object.chromEnd;
+		var chromosomeIndex = 0;
+		if ($scope.currentDataset.object.chromosomeIndex) {
+			chromosomeIndex = $scope.currentDataset.object.chromosomeIndex;	
+		}
+		var dataStart = $scope.currentDataset.object.chromStart[chromosomeIndex];
+		var dataEnd = $scope.currentDataset.object.chromEnd[chromosomeIndex];
 		var segmentLength = $scope.currentStoryboard.components[defaultIndex].view.settings.chromatin.segmentLength = $scope.currentDataset.object.resolution / particleSegments; // base pairs
 
 		// SET INITIAL position
-		$scope.settings.position = dataStart + parseInt((dataEnd - dataStart) * 0.5);
+		var position = dataStart + parseInt((dataEnd - dataStart) * 0.5);
+		$scope.settings.position = position;
+		var currentParticle = Resources.getParticle(position, dataStart, dataEnd, particlesCount);
+		$scope.settings.currentParticle = currentParticle; 
 
 		// AND SEGMENT IT LIES WITHIN
 		$scope.settings.segment = Math.floor( ($scope.settings.position - dataStart) / segmentLength);
@@ -43,16 +50,18 @@
 					value.overlay.state = {};
 					value.overlay.object.state.index = $scope.currentOverlays.current.index; // for track
 				} else if (value.object.type == "track-slider") {
-					value.view.viewpoint.segments = particlesCount * particleSegments;
+					value.view.viewpoint.segmentsCount = $scope.settings.segmentsCount;
 				} else if (value.object.type == "track-genes" || value.object.type == "panel-inspector") {
 					overlay = Overlays.getOverlayById("genes");
+					value.view.settings.segmentsCount = $scope.settings.segmentsCount;
 					value.data = overlay.data;
 					value.overlay = overlay;
 				} else if (value.object.type == "track-contacts") {
-					value.data = $scope.proximityMatrix.positions;
-					value.overlay = $scope.proximityMatrix.distances;
+					value.data = $scope.proximityMatrix.distances;
+					value.view.settings.segmentsCount = $scope.settings.segmentsCount;
 				} else if (value.object.type == "track-wiggle") {
 					overlay = Overlays.getOverlayById(value.object.dataset);
+					value.view.settings.segmentsCount = $scope.settings.segmentsCount;
 					value.data = overlay.data;
 					value.overlay = overlay;
 				} else {

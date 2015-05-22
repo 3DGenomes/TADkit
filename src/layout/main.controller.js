@@ -49,8 +49,12 @@
 		$scope.currentStoryboard = $scope.storyboards.loaded[$scope.storyboards.current.index];
 
 		// Set coords to default Storyboard views from dataset
-		$scope.settings.currentChromStart = $scope.currentDataset.object.chromStart;
-		$scope.settings.currentChromEnd = $scope.currentDataset.object.chromEnd;
+		var chromosomeIndex = 0;
+		if ($scope.currentDataset.object.chromosomeIndex) {
+			chromosomeIndex = $scope.currentDataset.object.chromosomeIndex;	
+		}
+		$scope.settings.currentChromStart = $scope.currentDataset.object.chromStart[chromosomeIndex];
+		$scope.settings.currentChromEnd = $scope.currentDataset.object.chromEnd[chromosomeIndex];
 		$scope.settings.currentScale = 1; //$scope.currentDataset.object.scale;
 		Storyboards.setViewpoint($scope.settings.currentChromStart,$scope.settings.currentChromEnd,$scope.settings.currentScale);
 		Components.setViewpoint($scope.settings.currentChromStart,$scope.settings.currentChromEnd,$scope.settings.currentScale);

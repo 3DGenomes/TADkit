@@ -16,12 +16,21 @@
 			angular.extend(this, angular.copy(defaults), settings);
 
 			var contacts;
-			// var positions = new Float32Array( positions.length * 3 );
-			// var colors = new Float32Array( positions.length * 3 );
+			// Distances stored as one per contact-position-pair
+			// so the array needs an RGB (*3) for each pair (*2)
+			// ie. each distance needs to be replicated 6 times.
+			var colors = new Float32Array( distances.length * 6 );
+			for (var i = distances.length - 1; i >= 0; i--) {
+				for (var j = 0; j < 6; j++) {
+					var pos = (i*6)+j;
+					colors[pos] = distances[i];
+				};
+			};
+
 			var geometry = new THREE.BufferGeometry();
 
 			geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
-			geometry.addAttribute( 'color', new THREE.BufferAttribute( distances, 3 ) );
+			geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
 
 			geometry.computeBoundingSphere();
 

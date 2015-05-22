@@ -13,22 +13,19 @@
 				Select TADbit JSON file to import...
 			</label>
 		</md-button>
- -->		<div tk-project-dropzone="addDataset">
-			<!-- <label for="file-input"> -->
+ -->
+ 		<div tk-project-dropzone="addDataset">
 				<md-icon class="icon-file-upload"></md-icon>
 				Drop a TADbit JSON file here...
-			<!-- </label> -->
 		</div>
-<!-- 			<div><label for="file-input-test">Press me</label></div>
-			<button>
-				<input id="file-input-test" type="file" accept=".json"/>
-				<label for="file-input-test">Press me</label>
-			</button> -->
 		<md-input-container>
-			<span>... or select TADbit JSON file to import.</span>
-			<!-- <input required name="description" ng-model="$fileContent"> -->
+			<span>... or select TADbit JSON file</span>
 			<md-input id="file-input" type="file" accept=".json" tk-project-loader="addDataset($fileContent)" />
 		</md-input-container>
+		<md-button ui-sref="browser" class="md-raised md-accent" md-theme="darkKit">
+				<md-icon class="icon-open-in-browser"></md-icon>
+				Browse sample TADbit data
+		</md-button>
 	</div>
 	<md-sidenav  ui-view="sidebaruser" class="md-sidenav-right md-whiteframe-z2" md-component-id="right"></md-sidenav>
 </md-content>

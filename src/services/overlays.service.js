@@ -251,23 +251,23 @@
 			segmentFeatures: function(features, chromStart, segmentsCount, segmentLength, featureTypes) {
 				var colors = [];
 
-				for(var i=0; i<segmentsCount; i++){
+				for(var i=0; i < segmentsCount; i++){
 
 					var featuresPresent = [];
 					var segmentLower = chromStart + (segmentLength * i);
 					var segmentUpper = segmentLower + segmentLength;
-					var genesCount = features.length;
+					var featuresCount = features.length;
 					var hex = "cccccc"; // Base color - ie if none found
 					var color = "#" + hex; //parseInt(hex,16);
 
-					// For every gene [j]...
-					for(var j=0; j<genesCount; j++){
+					// For every feaeture [j]...
+					for(var j=0; j < featuresCount; j++){
 						var start = features[j].start;
 						var end = features[j].end;
 						var inSegments = [];
 						 // check if overlaps current fragment [i]
 						if ( Math.max(segmentLower, start) <= Math.min(segmentUpper,end) ) {
-							// console.log("Yes gene " + features[j].external_name + "("+j+") in fragment " + i );
+							// console.log("Yes feature " + features[j].external_name + "("+j+") in fragment " + i );
 							inSegments.push(i);
 							var featureTypeKey = "biotype";
 							var dominantFeatureType = "protein_coding";

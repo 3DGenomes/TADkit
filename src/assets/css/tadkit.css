@@ -99,6 +99,7 @@ md-sidenav md-list-item {
 	position: absolute;
 	right: 120px;
 	top: 50px;
+	z-index: 0;
 }
 #home .logo {
 	padding: 80px 140px 20px;
