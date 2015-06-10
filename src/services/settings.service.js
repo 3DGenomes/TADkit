@@ -41,6 +41,27 @@
 			get: function() {
 				return settings;
 			},
+			getPosition: function (chromPosition, chromStart, chromEnd, segmentsCount) {
+				var self = this;
+				var chromOffset = self.getRange(chromStart, chromPosition);
+				var chromRange = self.getRange(chromStart, chromEnd);
+				var position = Math.ceil((chromOffset * segmentsCount) / chromRange);
+				return position;
+			},
+			getParticle: function (chromPosition, chromStart, chromEnd, particlesCount) {
+				var self = this;
+				var chromOffset = self.getRange(chromStart, chromPosition);
+				var chromRange = self.getRange(chromStart, chromEnd);
+				var particle = Math.ceil((chromOffset * particlesCount) / chromRange);
+				return particle;
+			},
+			getRange: function (start, end) {
+				var range = 0;
+				for (var i = start; i <= end; i++) {
+					range++;
+				}
+				return range;
+			},
 			toggle: function(selected) {
 				// settings = $filter('filter')(settings, {name: '!settingID'}) // USE THIS???
 				angular.forEach(settings, function(name, setting) {

@@ -1,0 +1,9 @@
+<div layout="column" class="fullheight">
+	<div ui-view="topbar"></div>
+	<section layout="row" flex class="fullheight">
+		<md-content flex >
+			<section ui-view="storyboard" id="storyboard"></section>
+		</md-content>
+		<md-sidenav  ui-view="sidebar" class="md-sidenav-right md-whiteframe-z2" md-component-id="right"></md-sidenav>
+	</section>
+</div>

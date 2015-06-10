@@ -4,29 +4,27 @@
 		.module('TADkit')
 		.directive('tkComponentScene', tkComponentScene);
 
-	function tkComponentScene(Particles, Chromatin, Overlays, Contacts, Resources) {
+	function tkComponentScene(Particles, Chromatin, Mesh, Overlays, Settings, Proximities) {
 		return {
 			restrict: 'EA',
 			scope: { 
-				id: '@',
+				title: '=',
 				state: '=',
+				settings: '=',
 				view: '=',
-				data: '=',
-				overlay: '=',
-				overlayindex: '=',
-				contacts: '=',
-				settings: '='
+				currentmodel: '=',
+				currentoverlay: '='
 			},
 			templateUrl: 'assets/templates/scene.html',
 			link: function postLink(scope, element, attrs) {
 				// threeService.three().then(function(THREE) {
-					// console.log(scope.overlayindex);
+					// console.log(scope);
 
-					var scene, viewport, stats;
+					var scene, component, viewport, stats;
 					var camera, cameraPosition, cameraTarget, cameraTranslate;
 					var ambientLight, pointLight;
 					var playback, controls, renderer;
-					var particles, chromatin, contacts;
+					var particles, chromatin, mesh;
 					var width, height, contW, contH, windowHalfX, windowHalfY;
 
 					var particleOriginalColor = new THREE.Color();
@@ -40,11 +38,17 @@
 						 * - component-header == children[0]
 						 * - component-body == children[3]
 						 */
-						viewport = element[0].children[0].children[3];
-						// width = viewport.clientWidth; // NEED TO WAIT UNTIL DOM LOADED
-						width = parseInt(scope.state.width);
-						// height = viewport.clientHeight;
-						height = parseInt(scope.state.height);
+						// component = element[0].parentNode;
+						// console.log(component.clientWidth);
+						viewport = element[0].children[3];
+						// console.log(viewport.clientWidth);
+						// if with controller use line below
+						// viewport = element[0].children[0].children[3];
+
+						// width = component.clientWidth; // NEED TO WAIT UNTIL DOM LOADED
+						width = parseInt(scope.state.width); // USE UNTIL DOM CHECK AVAILBLE
+						// height = component.clientHeight;
+						height = parseInt(scope.state.height); // USE UNTIL DOM CHECK AVAILBLE
 						// OJO! DOM NOT READY
 						// console.log(element[0].firstChild.children[2].clientWidth);
 
@@ -68,9 +72,9 @@
 	
 						// CONTROLS
 						// Use TrackballControls for interaction
-						controls = new THREE.TrackballControls( camera, renderer.domElement );
+						controls = new THREE.TrackballControls(camera, renderer.domElement);
 						// Use OrbitControls for autoRotate
-						playback = new THREE.OrbitControls( camera, renderer.domElement );
+						playback = new THREE.OrbitControls(camera, renderer.domElement);
 						playback.autoRotate = scope.view.controls.autoRotate;
 						playback.autoRotateSpeed = scope.view.controls.autoRotateSpeed;
 						// interaction FALSE so as not to conflict with controls
@@ -94,27 +98,28 @@
 						// scene.add(ambientLight);
 						
 						// GEOMETRY: PARTICLES
-						particles = new Particles( scope.data, scope.view.settings.particles );
+						particles = new Particles( scope.currentmodel.data, scope.currentoverlay.colors.particles, scope.view.settings.particles );
 						particles.visible = scope.view.settings.particles.visible;
 						scene.add(particles);
 
 						// Add particle count for later color changes
-						scope.view.settings.particles.count = particles.geometry.vertices.length;
+						scope.view.settings.particles.count = particles.geometry.vertices.length; // already known as particlesCount in Dataset???
 						scope.view.settings.chromatin.segments = scope.view.settings.particles.count * scope.view.settings.chromatin.particleSegments;
 						// change radius to be proportional to chromosome length
 						scope.view.settings.genomeLength = scope.settings.currentChromEnd; // eg. 816394 nucelotides
 
 						//GEOMETRY: CHROMATIN
-						chromatin = new Chromatin( scope.data, scope.overlay.colors, scope.view.settings.chromatin );
+						chromatin = new Chromatin( scope.currentmodel.data, scope.currentoverlay.colors.chromatin, scope.view.settings.chromatin );
 						chromatin.visible = scope.view.settings.chromatin.visible;
 						scene.add(chromatin);
 						scope.view.settings.chromatin.radius = chromatin.boundingSphere.radius;
 						// scope.view.settings.chromatin.count = 1; // UNUSED
 
-						// GEOMETRY: CONTACTS
-						contacts = new Contacts(scope.contacts.positions, scope.contacts.distances, scope.view.settings.contacts);
-						contacts.visible = scope.view.settings.contacts.visible;
-						scene.add(contacts);
+						// GEOMETRY: MESH
+						var proximities = Proximities.get();
+						mesh = new Mesh(proximities.positions, scope.currentoverlay.colors.mesh, scope.view.settings.mesh);
+						mesh.visible = scope.view.settings.mesh.visible;
+						scene.add(mesh);
 
 						// UPDATE CAMERA TARGET
 						cameraPosition = chromatin.boundingSphere.center;
@@ -182,27 +187,36 @@
 								chromatin.visible = !chromatin.visible;
 							}
 						});
-						scope.$watch('view.settings.contacts.visible', function( newValue, oldValue ) {
+						scope.$watch('view.settings.mesh.visible', function( newValue, oldValue ) {
 							if ( newValue !== oldValue ) {
-								contacts.visible = !contacts.visible;
+								mesh.visible = !mesh.visible;
 							}
 						});
 
 						var particlesObj = scene.getObjectByName( "Particles Cloud" );
 						var chromatinObj = scene.getObjectByName( "Chromatin Fiber" );
+						var meshObj = scene.getObjectByName( "Mesh Network" );
 						
 						// /* Watch for Chromatin colors */
-						scope.$watch('overlayindex', function( newValue, oldValue ) { // cant deep watch as change through set on service
-							if ( newValue !== oldValue ) {
-								var meshes = chromatinObj.children.length;
-								var newOverlay = Overlays.getOverlay(newValue);
-								// console.log(newValue);
-								for (var i = 0; i < meshes; i++) {
-									var newColor =  new THREE.Color(newOverlay.colors[i]);
-									chromatinObj.children[i].material.color = newColor;
-									chromatinObj.children[i].material.ambient = newColor;
-									chromatinObj.children[i].material.emissive = newColor;
+						scope.$watch('currentoverlay.colors.chromatin', function( newColors, oldColors ) { // cant deep watch as change through set on service
+							if ( newColors !== oldColors ) {
+								// var particleCount = particlesObj.children.length;
+								// for (var i = 0; i < particleCount; i++) {
+								// 	var newParticleColor =  new THREE.Color(newOverlay.colors.particles[i]);
+								// 	particlesObj.children[i].material.color = newParticleColor;
+								// }
+								var chromatinCount = chromatinObj.children.length;
+								for (var i = 0; i < chromatinCount; i++) {
+									var newChromatinColor =  new THREE.Color(newColors[i]);
+									chromatinObj.children[i].material.color = newChromatinColor;
+									chromatinObj.children[i].material.ambient = newChromatinColor;
+									chromatinObj.children[i].material.emissive = newChromatinColor;
 								}
+								// var meshCount = meshObj.children.length;
+								// for (var i = 0; i < meshCount; i++) {
+								// 	var newMeshColor =  new THREE.Color(newOverlay.colors.mesh[i]);
+								// 	meshObj.children[i].material.color = newMeshColor;
+								// }
 							}
 						});
 
@@ -211,8 +225,8 @@
 							if ( newPosition !== oldPosition ) {
 
 								// FIND CURRENT PARTICLE
-								var particlePrevious = Resources.getParticle(oldPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.particles.count); // Math.floor(oldInRange * (scope.view.settings.particles.count-1) / rangeLength);
-								var particleCurrent = Resources.getParticle(newPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.particles.count); // Math.floor(newInRange * (scope.view.settings.particles.count-1) / rangeLength);
+								var particlePrevious = Settings.getParticle(oldPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.particles.count);
+								var particleCurrent = Settings.getParticle(newPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.particles.count);
 
 								// SET PARTICLE CURSOR COLOR
 								if (particleOriginalColor) particlesObj.geometry.colors[(particlePrevious - 1)] = particleOriginalColor;
@@ -221,9 +235,11 @@
 								particlesObj.geometry.colorsNeedUpdate = true;
 
 								// SET CHROMATIN CURSOR COLOR
-								var positionPrevious = Resources.getPosition(oldPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.chromatin.segments); // Math.floor(oldInRange * (scope.view.settings.chromatin.segments-1) / rangeLength);
-								var positionCurrent = Resources.getPosition(newPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.chromatin.segments); // Math.floor(newInRange * (scope.view.settings.chromatin.segments-1) / rangeLength);
-
+								var positionPrevious = Settings.getPosition(oldPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.chromatin.segments);
+								var positionCurrent = Settings.getPosition(newPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.chromatin.segments);
+								// console.log(positionPrevious);
+								// console.log(positionCurrent);
+								
 								var segmentPrevious = chromatinObj.getObjectByName( "segment-" + positionPrevious );
 								if (positionOriginalColor) {
 									segmentPrevious.material.color = positionOriginalColor;

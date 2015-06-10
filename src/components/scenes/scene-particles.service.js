@@ -6,7 +6,7 @@
 
 	// constructor for chromatin model instances
 	function Particles() {
-		return function(data, settings) {
+		return function(data, colors, settings) {
 			var defaults = {
 				particles: 0,
 				visible: true,

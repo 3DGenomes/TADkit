@@ -1,11 +1,11 @@
-<div ng-controller='TrackController' class="component-controller">
+<!--div ng-controller='TrackController' class="component-controller"-->
 	<div class="component-header">
-		<h6>{{object.title}}</h6>
+		<h6>{{title}}</h6>
 	</div>
-	<div class="component-controls" data-ng-hide="object.type=='track-slider'">
-		<a ng-click='toggleOverlay(overlay.object.state.index)' class="options toggle-{{overlaid}}" >
-			<md-icon data-ng-hide="overlaid" class="toggle-right icon-check-box-outline-blank"></md-icon>
-			<md-icon data-ng-show="overlaid" class="toggle-right icon-check-box"></md-icon>
+	<div class="component-controls" data-ng-hide="type=='track-slider'">
+		<a ng-click='toggleoverlay({index:overlay.object.state.index})' class="options toggle-{{overlay.object.state.overlaid}}" >
+			<md-icon data-ng-hide="overlay.object.state.overlaid" class="toggle-right icon-check-box-outline-blank"></md-icon>
+			<md-icon data-ng-show="overlay.object.state.overlaid" class="toggle-right icon-check-box"></md-icon>
 		</a>
 		<a ng-click='toggleOptions()' class="options toggle-{{optionsState}}">
 			<md-icon class="icon-settings"></md-icon>
@@ -30,4 +30,4 @@
 		<label for="rotate">Option3</label>
 	</div>
 	<div class="component-body"></div>
-</div>
+<!--/div-->

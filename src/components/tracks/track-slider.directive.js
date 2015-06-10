@@ -4,14 +4,14 @@
 		.module('TADkit')
 		.directive('tkComponentTrackSlider', tkComponentTrackSlider);
 
-	function tkComponentTrackSlider(d3Service, Resources) {
+	function tkComponentTrackSlider(d3Service, Settings) {
 		return {
 			restrict: 'EA',
 			scope: {
-				id: '@',
-				object: '=',
-				view: '=',
-				settings: '='
+				type: '=',
+				title: '=',
+				settings: '=',
+				view: '='
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
@@ -32,16 +32,16 @@
 					var data = scope.data;
 					var focusStart = scope.view.viewpoint.chromStart;
 					var focusEnd = scope.view.viewpoint.chromEnd;
-					var segmentsCount = scope.view.settings.segmentsCount;
-					var componentMargin = parseInt(scope.object.state.margin);
-					/* Rebuild margin Object to maintain D3 standard */
+					var cursorWidth = scope.view.settings.cursorWidth;
+					var componentMargin = parseInt(scope.view.settings.margin);
+					/* Rebuild margin to maintain D3 standard */
 					var margin = {
-							top: parseInt(scope.object.state.padding.top),
-							right: parseInt(scope.object.state.padding.right),
-							bottom: parseInt(scope.object.state.padding.bottom),
-							left: parseInt(scope.object.state.padding.left)
+							top: parseInt(scope.view.settings.padding.top),
+							right: parseInt(scope.view.settings.padding.right),
+							bottom: parseInt(scope.view.settings.padding.bottom),
+							left: parseInt(scope.view.settings.padding.left)
 						},
-						trackHeight = parseInt(scope.object.state.heightInner);
+						trackHeight = parseInt(scope.view.settings.heightInner);
 
 					// VIEWPORT
 					/* component-controller == children[0]
@@ -49,7 +49,11 @@
 					 * - component-body == children[3]
 					 */
 					var component = element[0];
-					var viewport = element[0].children[0].children[3];
+						// console.log(component.clientWidth);
+					var viewport = element[0].children[3];
+						// console.log(viewport.clientWidth);
+					// if with controller use line below
+					// var viewport = element[0].children[0].children[3];
 					var svg = d3.select(viewport).append('svg');
 					var slider, xScale, prime3Axis, prime5Axis;
 					var handleWidth, handleHeight;
@@ -84,7 +88,7 @@
 							prime5Axis = d3.svg.axis().orient("right");
 								// .outerTickSize([0]);
 
-						handleWidth = Math.max( (width / segmentsCount), 4 );
+						handleWidth = height * 0.5;
 						handleHeight = trackHeight;
 
 						brush = d3.svg.brush()
@@ -127,11 +131,12 @@
 						slider.select(".background")
 							.attr("y", height/2)
 							.attr("height", height);
+							
 						handle = slider.append("circle")
 							.attr("class", "handle")
-							.attr("cx", xScale(scope.settings.position) - (handleWidth * 0.5))
+							.attr("cx", xScale(scope.settings.position))
 							.attr("cy", height)
-							.attr("r", handleWidth * 1.6);
+							.attr("r", handleWidth * 0.6);
 
 							// handle.append("text")
 							// 	.attr("x", xScale(scope.settings.position) - (handleWidth * 0.5))
@@ -155,11 +160,11 @@
 									value = parseInt(xScale.invert(d3.mouse(thisSlider)[0]));
 									brush.extent([value, value]);
 								}
-								handle.attr("cx", xScale(value) - (handleWidth * 0.5));
+								handle.attr("cx", xScale(value));
 
 								// UPDATE position
 								scope.settings.position = value;
-								var currentParticle = Resources.getParticle(scope.settings.position, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.settings.particlesCount);
+								var currentParticle = Settings.getParticle(scope.settings.position, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.settings.particlesCount);
 								scope.settings.currentParticle = currentParticle;
 								scope.settings.segmentLower = scope.settings.position - (scope.settings.segment * 5); // * 0.5???
 								scope.settings.segmentUpper = scope.settings.position + (scope.settings.segment * 5); // * 0.5???

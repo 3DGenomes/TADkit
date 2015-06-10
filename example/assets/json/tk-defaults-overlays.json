@@ -9,7 +9,7 @@
 			"uuid" : "00000000-0000-0000-0001-000000000000",
 			"id" : "gradient",
 			"title" : "Blue to Red",
-			"source" : "generated",
+			"source" : "TADkit",
 			"url" : "local",
 			"description" : "Simple gradient from blue to red.",
 			"type" : "gradient",
@@ -20,9 +20,9 @@
 				"overlaid" : false
 			}
 		},
-		"data" : ["#0000ff","#ff0000"],
-		"colors" : [],
-		"values" : []
+		"palette" : ["#0000ff","#ff0000"],
+		"data" : [],
+		"colors" : {}
 	},
 	{
 		"metadata" : {
@@ -41,12 +41,12 @@
 			"format" : "json",
 			"components" : 13,
 			"state" : {
-				"index" : 1,
+				"index" : 2,
 				"overlaid" : false
 			}
 		},
+		"palette" : [],
 		"data" : [],
-		"colors" : [],
-		"values" : []
+		"colors" : {}
 	}
 ]

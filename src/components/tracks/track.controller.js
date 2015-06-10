@@ -6,6 +6,8 @@
 
 	function TrackController($scope, Overlays) {
 		if ($scope.overlay) {
+			// console.log($scope.overlay.object.id);
+			// console.log($scope.overlay.object.state.overlaid);
 			$scope.overlaid = $scope.overlay.object.state.overlaid;
 			$scope.overlayOrig = Overlays.getOverlay(); // current overlay
 			$scope.toggleOverlay = function(index) {

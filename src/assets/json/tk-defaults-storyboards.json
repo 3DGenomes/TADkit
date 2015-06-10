@@ -27,7 +27,6 @@
 						"width" : "600px",
 						"height" : 	"400px",
 						"margin" : "4px",
-						"padding" : {"top": "20px", "right": "40px", "bottom": "20px", "left": "40px"},
 						"position" : 0
 					}
 				},
@@ -48,11 +47,13 @@
 						"fogFar" : 1.5		
 					},
 					"controls" : {
-						"autoRotate" : true,
+						"autoRotate" : false,
 						"autoRotateSpeed" : 2.0
 					},
 					"viewtype" : "cylinderSegments",
 					"settings" : {
+						"margin" : "4px",
+						"padding" : {"top": "20px", "right": "40px", "bottom": "20px", "left": "40px"},
 						"lighting": {
 							"ambient" : "#111111",
 							"color" : "#ffffff",
@@ -75,13 +76,13 @@
 						"chromatin" : {
 							"particleSegments" : 20,
 							"curveSegments" : 1,
-							"radius" : 15,
+							"radius" : 200,
 							"radiusSegments" : 16,
 							"endcap" : false,
-							"pathClosed" : true,
+							"pathClosed" : false,
 							"visible" : true
 						},
-						"contacts" : {
+						"mesh" : {
 							"transparent": false,
 							"visible" : false
 						},
@@ -105,10 +106,9 @@
 					"type" : "panel-inspector",
 					"dataset" : "genes",
 					"state" : {
-						"width" : "400px",
+						"width" : "300px",
 						"height" : "300px",
 						"margin" : "4px",
-						"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
 						"position" : 1
 					}
 				},
@@ -120,6 +120,8 @@
 					},
 					"viewtype" : "list",
 					"settings" : {
+						"margin" : "4px",
+						"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
 						"example" : 1
 					}
 				}
@@ -139,9 +141,7 @@
 					"state" : {
 						"width" : "100%",
 						"height" : "auto",
-						"heightInner" : "40px",
-						"margin" : "4px",
-						"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
+						"margin" : "0px",
 						"position" : 2
 					}
 				},
@@ -153,8 +153,10 @@
 					},
 					"viewtype" : "linear",
 					"settings" : {
-						"sense" : true,
-						"segmentsCount" : 1000
+						"heightInner" : "40px",
+						"margin" : "0px",
+						"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
+						"cursorWidth" : 1
 					}
 				}
 			},
@@ -173,9 +175,7 @@
 					"state" : {
 						"width" : "100%",
 						"height" : "auto",
-						"heightInner" : "40px",
 						"margin" : "0px",
-						"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
 						"position" : 3
 					}
 				},
@@ -187,42 +187,11 @@
 					},
 					"viewtype" : "linear",
 					"settings" : {
-						"sense" : true,
-						"segmentsCount" : 1000
-					}
-				}
-			},
-			{
-				"metadata" : {
-					"version" : 1.0,
-					"type" : "component",
-					"generator" : "TADkit"
-				},
-				"object" : {
-					"uuid" : "00000000-0000-0000-0000-000000000004",
-					"id" : "h-contacts-track",
-					"title" : "Contacts",
-					"type" : "track-contacts",
-					"dataset" : "distances",
-					"state" : {
-						"width" : "100%",
-						"height" : "auto",
 						"heightInner" : "40px",
 						"margin" : "0px",
 						"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
-						"position" : 3
-					}
-				},
-				"view" : {
-					"viewpoint" : {
-						"chromStart" : 1,
-						"chromEnd" : 999999,
-						"scale" : 1
-					},
-					"viewtype" : "linear",
-					"settings" : {
-						"color" : "#0000ff",
-						"segmentsCount" : 1000
+						"cursorWidth" : 1,
+						"sense" : true
 					}
 				}
 			}

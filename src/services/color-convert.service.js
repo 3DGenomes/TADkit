@@ -196,7 +196,7 @@
 
 					if (v.length == 3) {
 						// Three digit values seem to be padded by repeating the final digit.
-						// e.g. 10f becomes 10ff.
+						// eg. 10f becomes 10ff.
 						v = v + v.substr(2);
 					}
 

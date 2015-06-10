@@ -8,12 +8,12 @@
 		return {
 			restrict: 'EA',
 			scope: {
-				id: '@',
-				object: '=',
+				title: '=',
+				settings: '=',
 				view: '=',
 				data: '=',
-				overlay:'=',
-				settings: '='
+				overlay: '=', /* used in template */
+				toggleoverlay: '&' /* used in template */
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
@@ -23,7 +23,6 @@
  					// DATA MANIPULATION >>> MOVE TO CONTROLLER
 					var data = scope.data;
 					var assemblyLength = 3200000000; // CALCULATE
-					var target = scope.id;
 					if (!scope.settings.position) scope.settings.position = assemblyLength / 2;
 					var positions = 100; //scope.positions; // == ?
 					var focusStart = scope.view.viewpoint.chromStart;
@@ -43,16 +42,16 @@
 
 
 					// SVG GENERATION
-					var componentMargin = parseInt(scope.object.state.margin);
-					/* Rebuild margin Object to maintain D3 standard */
+					var componentMargin = parseInt(scope.view.settings.margin);
+					/* Rebuild margin to maintain D3 standard */
 					var margin = {
-							top: parseInt(scope.object.state.padding.top),
-							right: parseInt(scope.object.state.padding.right),
-							bottom: parseInt(scope.object.state.padding.bottom),
-							left: parseInt(scope.object.state.padding.left)
+							top: parseInt(scope.view.settings.padding.top),
+							right: parseInt(scope.view.settings.padding.right),
+							bottom: parseInt(scope.view.settings.padding.bottom),
+							left: parseInt(scope.view.settings.padding.left)
 						},
 						scale = 4,
-						trackHeight = parseInt(scope.object.state.heightInner),
+						trackHeight = parseInt(scope.view.settings.heightInner),
 						nodeHeight = 10,
 						nodePadding = 0;
 
@@ -62,7 +61,9 @@
 					 * - component-body == children[3]
 					 */
 					var component = element[0].parentNode;
-					var viewport = element[0].children[0].children[3];
+					var viewport = element[0].children[3];
+					// if with controller use line below
+					// var viewport = element[0].children[0].children[3];
 					var svg = d3.select(viewport).append('svg');
 					var chart, defs;
 					var xAxis, prime3Axis, prime5Axis;
@@ -83,9 +84,11 @@
 					}, true);
  					
 					// SLIDER
-					scope.$watch('settings.position', function(newData) {
-						scope.update();
-					}, true);
+					scope.$watch('settings.position', function(newPosition, oldPosition) {
+						if ( newPosition !== oldPosition ) {
+							scope.update();
+						}
+					});
 
  					// ZOOM
 					var zoom = d3.behavior.zoom()
@@ -158,18 +161,6 @@
 
 							var labels  = chart.append("g")
 								.attr("class", "labels");
-								// labels.append("text")
-								// 	.attr("x", -12)
-								// 	.attr("y", -3)
-								// 	.attr("text-anchor", "right")
-								// 	.style("font-size", "10px")
-								// 	.text("3'");
-								// labels.append("text")
-								// 	.attr("x", width + 8)
-								// 	.attr("y", -3)
-								// 	.attr("text-anchor", "left")
-								// 	.style("font-size", "10px")
-								// 	.text("5'");
 								labels.append("text")
 									.attr("x", -18)
 									.attr("y", 8)

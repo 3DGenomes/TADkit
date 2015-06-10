@@ -4,23 +4,22 @@
 		.module('TADkit')
 		.controller('MainController', MainController);
 
-	function MainController($state, $scope, initialData, Users, Projects, Datasets, Overlays, Storyboards, Components) {
-		// Set static settings from initalData
+	function MainController($state, $scope, initialData, Users, Projects, Datasets, Overlays, Storyboards) {
+		// SETTINGS FROM INITIAL-DATA
 		if (!$scope.settings) {
 			$scope.settings = initialData.settings;
 			$scope.settings.featureColors = initialData.featureColors;
 			$scope.settings.components = initialData.components;
 		}
-
 		$scope.settings.isProject = $state.is('project');
 		$scope.$on("$stateChangeSuccess", function updatePage() {
 			$scope.settings.isProject = $state.is('project');
 		});
 
-		// Bind dynamic data to service objects
+		// BUILD DEFAULT DATA HIERARCHY
+		// USERS >> PROJECTS >> DATASETS | OVERLAYS | STORYBOARDS
 		if (!$scope.users) {
 			$scope.users = Users.get();
-			// LOAD DEFAULT PROJECTS AND DATA
 			if (typeof $scope.users.loaded[0].projects !== "undefined" && $scope.users.loaded[0].projects.length === 0) {
 				$scope.users.loaded[0].projects = Projects.get();
 				if (typeof $scope.users.loaded[0].projects.loaded[0].datasets !== "undefined" &&  $scope.users.loaded[0].projects.loaded[0].datasets.length === 0)
@@ -32,42 +31,14 @@
 			}
 		}
 		
-		// Get current data to share between child views
-		$scope.projects = $scope.users.loaded[$scope.users.current.index].projects;
-		$scope.datasets = $scope.projects.loaded[$scope.projects.current.index].datasets;
-		$scope.overlays = $scope.projects.loaded[$scope.projects.current.index].overlays;
-		$scope.storyboards = $scope.projects.loaded[$scope.projects.current.index].storyboards;
-
-		$scope.currentUser = $scope.users.loaded[$scope.users.current.index];
-		$scope.currentProject = $scope.projects.loaded[$scope.projects.current.index];
-		$scope.currentDataset = $scope.datasets.loaded[$scope.datasets.current.index];
-		$scope.currentCluster = $scope.currentDataset.clusters[$scope.datasets.current.cluster - 1];
-		$scope.currentCentroid = $scope.currentDataset.centroids[$scope.datasets.current.cluster - 1];
-		$scope.currentModel = $scope.currentDataset.models[$scope.currentDataset.centroids[$scope.datasets.current.cluster - 1] - 1];
-
-		$scope.currentOverlay = $scope.overlays.loaded[$scope.overlays.current.index];
-		$scope.currentStoryboard = $scope.storyboards.loaded[$scope.storyboards.current.index];
-
-		// Set coords to default Storyboard views from dataset
-		var chromosomeIndex = 0;
-		if ($scope.currentDataset.object.chromosomeIndex) {
-			chromosomeIndex = $scope.currentDataset.object.chromosomeIndex;	
-		}
-		$scope.settings.currentChromStart = $scope.currentDataset.object.chromStart[chromosomeIndex];
-		$scope.settings.currentChromEnd = $scope.currentDataset.object.chromEnd[chromosomeIndex];
-		$scope.settings.currentScale = 1; //$scope.currentDataset.object.scale;
-		Storyboards.setViewpoint($scope.settings.currentChromStart,$scope.settings.currentChromEnd,$scope.settings.currentScale);
-		Components.setViewpoint($scope.settings.currentChromStart,$scope.settings.currentChromEnd,$scope.settings.currentScale);
-		// $scope.storyboards = $scope.projects.loaded[$scope.projects.current.index].storyboards;
-
-
-		// $scope.addDataset = function($fileContent) {
-		// 	console.log("adding...");
-		// 	Datasets.addDataset($fileContent);
-		// 	$scope.currentDataset = $scope.datasets.loaded[$scope.datasets.current.index];
-		// 	$state.go('dataset');
-		// };
-
+		// SET SHARED CURRENT PROJECT LEVEL DATA
+		$scope.currentUser = Users.getUser();
+		$scope.currentProject = Projects.getProject();
+		$scope.currentDataset = Datasets.getDataset();
+		$scope.currentModel = Datasets.getModel();
+		$scope.currentOverlay = Overlays.getOverlay();
+		$scope.currentOverlayIndex = Overlays.getCurrentIndex();
+		$scope.currentStoryboard = Storyboards.getStoryboard();
 
 	}
 })();

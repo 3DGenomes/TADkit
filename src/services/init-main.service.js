@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.service('initMain', initMain);
 
-	function initMain($q, Settings, Users, Projects, Datasets, Overlays, Components, Storyboards, Resources, Ensembl) {
+	function initMain($q, Settings, Users, Projects, Datasets, Overlays, Components, Storyboards, Resources, Ensembl, Proximities) {
 		return function() {
 			var settings = Settings.load();
 			var users = Users.load();
@@ -17,38 +17,36 @@
 
 			return $q.all([settings, users, projects, datasets, overlays, components, storyboards, featureColors])
 			.then(function(results){
+				var online = results[0].app.online; //false; // detect/set elsewhere?
 
-				var online = true;
-				// var promise = Resources.loadInfoAssembly(Datasets.getSpeciesUrl());
-				// promise.then(function(data) {
-				// 	var settings = results[0];
-				// 	settings.infoAssembly = data;
-				// }, function(reason) {
-				// 	console.log('Failed: ' + reason);
-				// });
-				// return results;
+				// Set (calculate) initial Proximities
+				var initialModel = Datasets.getModel();
+				var initialProximities = Proximities.set(initialModel.data);
 
-				var processList = [];
+				var processList = []; // push async functions into list for subsequent processing
 
-				var speciesUrl = Datasets.getSpeciesUrl();
-				var infoAssembly = Resources.loadInfoAssembly(speciesUrl, online);
-				processList.push(infoAssembly);
+				// var speciesUrl = Datasets.getSpeciesUrl();
+				// var infoAssembly = Resources.loadInfoAssembly(speciesUrl, online);
+				// processList.push(infoAssembly);
 
-				var currentDataset = Datasets.getDataset();
 				var overlays = Overlays.get();
+				var initialDataset = Datasets.getDataset();
 				angular.forEach(overlays.loaded, function(overlay, key) {
-					var ensembl;
+					if (overlay.object.type == "matrix") {
+						overlay.data = initialProximities.distances;
+					}
+					// For Overlays with Aync Ensembl Data eg. genes
 					if (overlay.object.type == "ensembl" && overlay.object.format == "json") {
-						ensembl = Ensembl.load(currentDataset.object, overlay, online);
-						 // ojo returning Overlays... cHANGE 
+						var ensembl = Ensembl.load(initialDataset.object, overlay, online);
 						processList.push(ensembl);
 					}
 				});
 
 				return $q.all(processList)
 				.then(function(data) {
-					var settings = results[0];
-					settings.infoAssembly = data;
+					var overlays = Overlays.get();
+					// var settings = results[0];
+					// settings.infoAssembly = data;
 					return results;
 				});
 			})
@@ -62,19 +60,20 @@
 				var segmentLength = currentDataset.object.resolution / particleSegments; // base pairs
 				return $q.all([settings, currentDataset, currentStoryboards, particleSegments, particlesCount, segmentsCount, segmentLength])
 				.then(function() {
+					// INITIAL SETTINGS --> check if not better in Storyboard
 					var chromosomeIndex = 0;
 					if (currentDataset.object.chromosomeIndex) {
 						chromosomeIndex = datasetObject.chromosomeIndex;	
 					}
 					var chromStart = currentDataset.object.chromStart[chromosomeIndex];
 					var featureColors = results[7];
-					var featureTypes = featureColors;
+					settings.featureTypes = featureColors;
 					settings.chromStart = chromStart;
 					settings.particlesCount = particlesCount;
 					settings.particleSegments = particleSegments;
 					settings.segmentsCount = segmentsCount;
 					settings.segmentLength = segmentLength;
-					Overlays.segmentOverlays(chromStart, segmentsCount, segmentLength, featureTypes);
+					Overlays.segment();
 					return results;
 				});
 			})

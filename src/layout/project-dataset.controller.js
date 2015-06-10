@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.controller('ProjectDatasetController', ProjectDatasetController);
 
-	function ProjectDatasetController ($state, $scope, Datasets, Overlays, Components){
+	function ProjectDatasetController ($state, $scope, Datasets, Overlays, Components, Segments){
 		// console.log($scope);
 
 		// Get dataset scene icon component
@@ -14,7 +14,7 @@
 		// Recalculate specifically for single segment per particle in cluster scene
 		var gradientOverlay = Overlays.getOverlayById("gradient");
 		var clusterLength = $scope.currentModel.data.length / $scope.currentDataset.object.components;
-		var gradientColors = Overlays.segmentGradientHCL(gradientOverlay.data, clusterLength);
+		var gradientColors = Segments.gradientHCL(gradientOverlay, clusterLength);
 		$scope.clusterComponent.overlay = gradientColors;
 
 		// Calculate consistent camera position (translation) from combined dataset models

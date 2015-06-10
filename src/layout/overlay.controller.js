@@ -25,9 +25,11 @@
 				var newComponents = [];
 				var currentOverlaysIndex = overlays.loaded.length - 1;
 				angular.forEach(importedOverlays, function(overlay, key) {
+
 					var componentTemplate = Components.getComponentByType(overlay.object.type);
 					var overlayExists = false;
 					var newComponent = angular.copy(componentTemplate);
+
 					for (var i = overlays.loaded.length - 1; i >= 0; i--) {
 						// console.log(overlays.loaded[i].object.uuid);
 						// console.log(overlay.object.uuid);
@@ -47,7 +49,7 @@
 						newComponent.object.dataset = overlay.object.id;
 						newComponent.view.settings.step = overlay.object.step;
 						newComponent.view.settings.color = overlay.object.color;
-						newComponent.view.settings.segmentsCount = settings.segmentsCount;
+						// newComponent.view.settings.segmentsCount = settings.segmentsCount;
 						newComponent.view.viewpoint.chromStart = settings.currentChromStart;
 						newComponent.view.viewpoint.chromEnd = settings.currentChromEnd;
 						newComponent.view.viewpoint.scale = settings.currentScale;
@@ -63,14 +65,10 @@
 				// Add newOverlays to Overlays
 				overlays.loaded = overlays.loaded.concat(newOverlays);
 				// Generate overlay colors
-				var chromStart = Settings.get().chromStart;
-				var segmentsCount = Settings.get().segmentsCount;
-				var segmentLength = Settings.get().segmentLength;
-				var featureTypes = Settings.get().featureTypes;
-				Overlays.segmentOverlays(chromStart, segmentsCount, segmentLength, featureTypes);
+				Overlays.segment();
 
 				// Add new overlays as Components to Storyboard
-				for (var i = newComponents.length - 1; i >= 0; i--) {
+				for (var i = 0; i < newComponents.length; i++) {
 					Storyboards.addComponent("default", newComponents[i]);
 				}
 
@@ -98,7 +96,7 @@
 
 		$scope.importOverlay = function($fileContent) {
 			$scope.dataParsed = Papa.parse($fileContent,{
-				delimiter: " ",
+				delimiter: "	", // " " for Marie's data
 				dynamicTyping: true,
 				fastMode: true
 			});

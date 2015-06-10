@@ -139,7 +139,8 @@ gulp.task('assets-json', function() {
 	return gulp.src([
 		'src/assets/json/ensembl-webcode-COLOUR.ini',
 		'src/assets/json/tk-defaults-*.json',
-		'src/assets/json/mycoplasma_pneumoniae-*.json',
+		'src/assets/json/drosophila_melanogaster-*.json',
+		'src/assets/json/mycoplasma_pneumoniae_m129-*.json',
 		'src/assets/json/testdata_torusknot-tadbit.json'
 		])
 		.pipe(gulp.dest('example/assets/json'));

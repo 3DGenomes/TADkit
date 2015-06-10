@@ -4,71 +4,117 @@
 		.module('TADkit')
 		.controller('StoryboardController', StoryboardController);
 
-	function StoryboardController($window, $scope, Settings, Datasets, Overlays, Resources) {
+	function StoryboardController($window, $scope, Settings, Storyboards, Components, Overlays, Proximities) {
 		// WATCH FOR WINDOW RESIZE
 		angular.element($window).on('resize', function(){ $scope.$apply(); });
 
-		// SET DERIVED DATA AND ATTRIBUTES ON COMPONENTS
-		var defaultIndex = 0; // ?? used in components and overlays OR use currentIndex?
-		
-		var particlesCount = $scope.currentModel.data.length / $scope.currentDataset.object.components;
-		var particleSegments = $scope.currentStoryboard.components[defaultIndex].view.settings.chromatin.particleSegments;
-		var segmentsCount = particlesCount * particleSegments;
+		$scope.currentStoryboard.components[0].view.settings.chromatin.segmentLength = $scope.settings.segmentLength;
+
+		// Set coords to default Storyboard views from dataset
 		var chromosomeIndex = 0;
 		if ($scope.currentDataset.object.chromosomeIndex) {
 			chromosomeIndex = $scope.currentDataset.object.chromosomeIndex;	
 		}
-		var dataStart = $scope.currentDataset.object.chromStart[chromosomeIndex];
-		var dataEnd = $scope.currentDataset.object.chromEnd[chromosomeIndex];
-		var segmentLength = $scope.currentStoryboard.components[defaultIndex].view.settings.chromatin.segmentLength = $scope.currentDataset.object.resolution / particleSegments; // base pairs
+		$scope.settings.currentChromStart = $scope.currentDataset.object.chromStart[chromosomeIndex];
+		$scope.settings.currentChromEnd = $scope.currentDataset.object.chromEnd[chromosomeIndex];
+		$scope.settings.currentScale = 1; //$scope.currentDataset.object.scale;
+		Storyboards.setViewpoint($scope.settings.currentChromStart,$scope.settings.currentChromEnd,$scope.settings.currentScale);
+		Components.setViewpoint($scope.settings.currentChromStart,$scope.settings.currentChromEnd,$scope.settings.currentScale);
 
 		// SET INITIAL position
-		var position = dataStart + parseInt((dataEnd - dataStart) * 0.5);
+		var position = $scope.settings.currentChromStart + parseInt(($scope.settings.currentChromEnd - $scope.settings.currentChromStart) * 0.5);
 		$scope.settings.position = position;
-		var currentParticle = Resources.getParticle(position, dataStart, dataEnd, particlesCount);
+		var currentParticle = Settings.getParticle(position, $scope.settings.currentChromStart, $scope.settings.currentChromEnd, $scope.settings.particlesCount);
 		$scope.settings.currentParticle = currentParticle; 
 
 		// AND SEGMENT IT LIES WITHIN
-		$scope.settings.segment = Math.floor( ($scope.settings.position - dataStart) / segmentLength);
+		$scope.settings.segment = Math.floor( ($scope.settings.position - $scope.settings.currentChromStart) / $scope.settings.segmentLength);
 		$scope.settings.segmentLower = $scope.settings.position - ($scope.settings.segment * 0.5);
 		$scope.settings.segmentUpper = $scope.settings.position + ($scope.settings.segment * 0.5);
 
-		// $scope.currentModel = Datasets.getDataset(); // already set in Main
-		$scope.currentOverlays = Overlays.get(); // CHANGE TO USE $scope.overlays
-		// $scope.currentOverlayIndex = $scope.currentOverlays.current.index;
+		// Calculating Initial Proximities
+		//NOTE in future if more than 1 currentModel need same number of currentProximities
+		$scope.currentProximities = Proximities.at($scope.settings.currentParticle); // for D3 tracks
+		Overlays.at($scope.settings.currentParticle);
 
-		$scope.proximityMatrix = Resources.getProximityMatrix($scope.currentModel.data);
-
-		angular.forEach( $scope.currentStoryboard.components, function(value, index) {
-			var overlay;
-			// if (value.object.dataset == "default") {
-				if (value.object.type == "scene") {
-					value.data = $scope.currentModel.data;
-					value.overlay = $scope.currentOverlays.loaded[$scope.currentOverlays.current.index];
-					// value.overlayIndex = $scope.currentOverlays.current.index;
-					value.contacts = $scope.proximityMatrix;
-					value.overlay.state = {};
-					value.overlay.object.state.index = $scope.currentOverlays.current.index; // for track
-				} else if (value.object.type == "track-slider") {
-					value.view.viewpoint.segmentsCount = $scope.settings.segmentsCount;
-				} else if (value.object.type == "track-genes" || value.object.type == "panel-inspector") {
+		// Assign data and overlays for each component by type
+		angular.forEach( $scope.currentStoryboard.components, function(component, index) {
+			// if (component.object.dataset == "default") {
+				var overlay, overlayProximities;
+				if (component.object.type == "scene") {
+					component.data = $scope.currentModel.data;
+					component.overlay = $scope.currentOverlay;
+					component.overlayIndex = $scope.currentOverlayIndex;
+					component.overlay.state = {};
+					component.overlay.object.state.index = $scope.currentOverlayIndex;
+				} else if (component.object.type == "track-genes" || component.object.type == "panel-inspector") {
 					overlay = Overlays.getOverlayById("genes");
-					value.view.settings.segmentsCount = $scope.settings.segmentsCount;
-					value.data = overlay.data;
-					value.overlay = overlay;
-				} else if (value.object.type == "track-contacts") {
-					value.data = $scope.proximityMatrix.distances;
-					value.view.settings.segmentsCount = $scope.settings.segmentsCount;
-				} else if (value.object.type == "track-wiggle") {
-					overlay = Overlays.getOverlayById(value.object.dataset);
-					value.view.settings.segmentsCount = $scope.settings.segmentsCount;
-					value.data = overlay.data;
-					value.overlay = overlay;
+					component.data = overlay.data;
+					component.overlay = overlay; // required for toggle
+				} else if (component.object.type == "track-proximities") {
+					// ie only one... see note above for Calculating Proximities
+					overlay = Overlays.getOverlayById("proximities");
+					component.data = $scope.currentProximities; // for Scenes: overlay.colors Saturation
+					component.overlay = overlay; // required for toggle and for Scenes: overlay.colors Hue
+				// } else if (component.object.type == "track-wiggle") {
+				// 	overlay = Overlays.getOverlayById(component.object.dataset);
+				// 	component.data = overlay.data;
+				// 	component.overlay = overlay; // required for toggle
 				} else {
-					// other types of component...
+					// slider and other types of component...
 				}
 			// }
 		});
-		// console.log($scope.currentStoryboard);
+
+		// Watch for Slider Position updates
+		$scope.$watch('settings.currentParticle', function(newParticle, oldParticle) { // deep watch as change direct and changes all?
+			if ( newParticle !== oldParticle ) {
+				$scope.currentProximities = Proximities.at(newParticle); // for D3 tracks
+				if ($scope.currentOverlay.object.type == "matrix") {
+					// console.log(JSON.stringify($scope.currentOverlay.colors.chromatin));
+					Overlays.at(newParticle);
+					$scope.currentOverlay = Overlays.getOverlay();
+					// console.log(JSON.stringify($scope.currentOverlay.colors.chromatin));
+				} 
+				// console.log($scope.currentProximities);
+			}
+		});
+
+		// save original overlaid
+		$scope.overlayOrig = $scope.currentOverlay;
+		$scope.toggleOverlay = function(index) {
+			$scope.overlaid = Overlays.getOverlay(index).object.state.overlaid;
+			if (!$scope.overlaid) {
+				Overlays.setOverlaid(index);
+				Overlays.set(index);
+				$scope.currentOverlay = Overlays.getOverlay();
+			} else {
+				Overlays.setOverlaid($scope.overlayOrig.object.state.index);
+				Overlays.set($scope.overlayOrig.object.state.index);
+				$scope.currentOverlay = Overlays.getOverlay();
+			}
+			// $scope.overlay.object.state.overlaid = !$scope.overlay.object.state.overlaid;
+		};
+
+		$scope.optionsState = false;
+		$scope.toggleOptions = function() {
+			$scope.optionsState = !$scope.optionsState;
+		};
+
+		$scope.toggle = function(bool) {
+			bool = !bool;
+			console.log(bool);
+		};
+
+		$scope.testfn = function() {
+			console.log("test worked");
+		};
+
+		// $scope.keyControls = function (e, component) {
+		// 	if (event.keyCode === 32 || event.charCode === 32) {
+		// 		component.view.controls.autoRotate = !component.view.controls.autoRotate; 
+		// 	}
+		// };
+
 	}
 })();

@@ -4,17 +4,26 @@
 		.module('TADkit')
 		.controller('ProjectLoaderController', ProjectLoaderController);
 
-	function ProjectLoaderController($state, $scope, $timeout, Datasets) {
+	function ProjectLoaderController($q, $state, $scope, $timeout, Datasets, Overlays, Ensembl) {
 			// console.log($scope);
 
 		$scope.addDataset = function($fileContent) {
-			console.log("Adding dataset...");
+
 			Datasets.add($fileContent);
-			// console.log($scope.currentDataset.object.title);
-			$scope.$parent.currentDataset = Datasets.getDataset(); //$scope.datasets.loaded[$scope.datasets.current.index];
-			$scope.$parent.currentModel = Datasets.getModel(); //$scope.datasets.loaded[$scope.datasets.current.index];
-			// console.log($scope.currentDataset.object.title);
-			$state.go('dataset');
+			var newDataset = Datasets.getDataset();
+			var overlay = Overlays.getOverlayById("genes");
+			var loadEnsembl = Ensembl.load(newDataset.object, overlay, $scope.$parent.settings.app.online);
+			return $q.all([newDataset, overlay, loadEnsembl])
+			.then(function(results) {
+				Overlays.segment();
+				return results;
+			})
+			.then(function(results) {
+				$scope.$parent.currentDataset = Datasets.getDataset();
+				$scope.$parent.currentModel = Datasets.getModel();
+				$scope.$parent.currentOverlay = Overlays.getOverlay();
+				$state.go('dataset');
+			});
 		};
 
 		// $scope.openInput = function() {

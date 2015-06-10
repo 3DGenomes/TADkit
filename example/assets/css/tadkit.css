@@ -97,7 +97,7 @@ md-sidenav md-list-item {
 	width: 400px;
 	height: 400px;
 	position: absolute;
-	right: 120px;
+	right: 60px;
 	top: 50px;
 	z-index: 0;
 }
@@ -289,7 +289,7 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
 	height: 400px;
 }
 .component-container .panel-inspector {
-	width: 400px;
+	width: 300px;
 	height: 324px;
 }
 .component-container .track-slider,
@@ -536,14 +536,14 @@ track {
 .snRNA {
 	fill: hsla(120,50%,50%,0.4);
 }
-/* track-contacts */ 
-data-tk-contacts path {
+/* track-proximities */ 
+data-tk-proximities path {
 	fill: none;
 	stroke: #ccc;
 	stroke-width: 1px;
 	shape-rendering: crispEdges;
 }
-#contacts line, #contacts .tick text {
+#proximities line, #proximities .tick text {
 	display: none;
 }
 .particle {
@@ -551,7 +551,7 @@ data-tk-contacts path {
 }
 
 /* track-filion */ 
-data-tk-proteins path {
+data-tk-component-bedgraph path {
 	fill: none;
 	stroke: #ccc;
 	stroke-width: 1px;
@@ -564,14 +564,21 @@ data-tk-proteins path {
 #PC .tick line, #PC .tick text {
 	display: none;
 }
+data-tk-component-bedgraph rect {
+	color: #fff;
+	fill: none;
+	stroke: #fff;
+	stroke-width: 0px;
+	shape-rendering: crispEdges;
+}
 .HP1 {
 	fill: hsla(130,58%,33%,0.4);
 }
 .BRM {
-	fill: hsla(80,100%,50%,0.4);
+	fill: hsla(360,81%,50%,0.4);
 }
 .MRG15 {
-	fill: hsla(360,81%,50%,0.4);
+	fill: hsla(80,100%,50%,0.4);
 }
 .PC {
 	fill: hsla(240,100%,70%,0.4);

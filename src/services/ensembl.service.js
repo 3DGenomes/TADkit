@@ -21,6 +21,8 @@
 				return deferral.promise;
 			},
 			load: function(datasetObject, overlay, online) {
+
+				online = online || false;
 				var deferral = $q.defer();
 				var source;
 				var species = datasetObject.species;
