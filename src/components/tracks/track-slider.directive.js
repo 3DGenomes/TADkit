@@ -134,19 +134,19 @@
 							
 						handle = slider.append("circle")
 							.attr("class", "handle")
-							.attr("cx", xScale(scope.settings.position))
+							.attr("cx", xScale(scope.settings.current.position))
 							.attr("cy", height)
 							.attr("r", handleWidth * 0.6);
 
 							// handle.append("text")
-							// 	.attr("x", xScale(scope.settings.position) - (handleWidth * 0.5))
+							// 	.attr("x", xScale(scope.settings.current.position) - (handleWidth * 0.5))
 							// 	.attr("y", height)
 							// 	.attr("text-anchor", "bottom")
 							// 	.style("font-size", "10px")
-							// 	.text(scope.settings.position);
+							// 	.text(scope.settings.current.position);
 
 						slider
-							.call(brush.extent([(scope.settings.position), 0]))
+							.call(brush.extent([(scope.settings.current.position), 0]))
 							.call(brush.event);
 					};
 
@@ -163,11 +163,11 @@
 								handle.attr("cx", xScale(value));
 
 								// UPDATE position
-								scope.settings.position = value;
-								var currentParticle = Settings.getParticle(scope.settings.position, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.settings.particlesCount);
-								scope.settings.currentParticle = currentParticle;
-								scope.settings.segmentLower = scope.settings.position - (scope.settings.segment * 5); // * 0.5???
-								scope.settings.segmentUpper = scope.settings.position + (scope.settings.segment * 5); // * 0.5???
+								scope.settings.current.position = value;
+								scope.settings.current.particle = Settings.getParticle();
+								scope.settings.current.segment = Settings.getSegment();
+								scope.settings.current.segmentLower = scope.settings.current.position - (scope.settings.current.segment * 5); // * 0.5???
+								scope.settings.current.segmentUpper = scope.settings.current.position + (scope.settings.current.segment * 5); // * 0.5???
 
 							});
 						// });

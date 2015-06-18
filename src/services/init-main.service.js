@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.service('initMain', initMain);
 
-	function initMain($q, Settings, Users, Projects, Datasets, Overlays, Components, Storyboards, Resources, Ensembl, Proximities) {
+	function initMain($q, Settings, Users, Projects, Datasets, Overlays, Components, Storyboards, Resources, Proximities) {
 		return function() {
 			var settings = Settings.load();
 			var users = Users.load();
@@ -17,63 +17,13 @@
 
 			return $q.all([settings, users, projects, datasets, overlays, components, storyboards, featureColors])
 			.then(function(results){
-				var online = results[0].app.online; //false; // detect/set elsewhere?
-
-				// Set (calculate) initial Proximities
-				var initialModel = Datasets.getModel();
-				var initialProximities = Proximities.set(initialModel.data);
-
-				var processList = []; // push async functions into list for subsequent processing
-
-				// var speciesUrl = Datasets.getSpeciesUrl();
-				// var infoAssembly = Resources.loadInfoAssembly(speciesUrl, online);
-				// processList.push(infoAssembly);
-
-				var overlays = Overlays.get();
-				var initialDataset = Datasets.getDataset();
-				angular.forEach(overlays.loaded, function(overlay, key) {
-					if (overlay.object.type == "matrix") {
-						overlay.data = initialProximities.distances;
-					}
-					// For Overlays with Aync Ensembl Data eg. genes
-					if (overlay.object.type == "ensembl" && overlay.object.format == "json") {
-						var ensembl = Ensembl.load(initialDataset.object, overlay, online);
-						processList.push(ensembl);
-					}
-				});
-
-				return $q.all(processList)
-				.then(function(data) {
-					var overlays = Overlays.get();
-					// var settings = results[0];
-					// settings.infoAssembly = data;
-					return results;
-				});
+				Settings.init(); // dependent on Storyboards and Datasets
+				Proximities.set(); // dependent on Datasets
 			})
 			.then(function(results){
-				var settings = Settings.get();
-				var currentDataset = Datasets.getDataset();
-				var currentStoryboards = Storyboards.getStoryboard();
-				var particlesCount = currentDataset.models[0].data.length / currentDataset.object.components;
-				var particleSegments = currentStoryboards.components[0].view.settings.chromatin.particleSegments;
-				var segmentsCount = particlesCount * particleSegments;
-				var segmentLength = currentDataset.object.resolution / particleSegments; // base pairs
-				return $q.all([settings, currentDataset, currentStoryboards, particleSegments, particlesCount, segmentsCount, segmentLength])
-				.then(function() {
-					// INITIAL SETTINGS --> check if not better in Storyboard
-					var chromosomeIndex = 0;
-					if (currentDataset.object.chromosomeIndex) {
-						chromosomeIndex = datasetObject.chromosomeIndex;	
-					}
-					var chromStart = currentDataset.object.chromStart[chromosomeIndex];
-					var featureColors = results[7];
-					settings.featureTypes = featureColors;
-					settings.chromStart = chromStart;
-					settings.particlesCount = particlesCount;
-					settings.particleSegments = particleSegments;
-					settings.segmentsCount = segmentsCount;
-					settings.segmentLength = segmentLength;
-					Overlays.segment();
+				var updateOverlays = Overlays.update(); // for Proximities
+				return $q.all([updateOverlays])
+				.then(function(results){
 					return results;
 				});
 			})

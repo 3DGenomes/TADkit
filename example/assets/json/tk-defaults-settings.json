@@ -8,6 +8,12 @@
 		"init" : false,
 		"online" : false
 	},
+	"import" : {
+		"delimiter" : " "
+	},
+	"current" : {
+
+	},
 	"views" : {
 		"strands" : true,
 		"margin" : "4px",

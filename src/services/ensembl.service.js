@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Ensembl', Ensembl);
 
-	function Ensembl($q, $http) {
+	function Ensembl($q, $http, Datasets) {
 		var ensembl = {
 			ping : 0
 		};
@@ -20,11 +20,12 @@
 				});
 				return deferral.promise;
 			},
-			load: function(datasetObject, overlay, online) {
+			load: function(overlay, online) {
 
 				online = online || false;
 				var deferral = $q.defer();
 				var source;
+				var datasetObject = Datasets.getDataset().object;
 				var species = datasetObject.species;
 				var speciesUrl = datasetObject.speciesUrl;
 				var chromosomeIndex = 0;

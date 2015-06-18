@@ -105,7 +105,6 @@
 
 						 // check if overlaps current fragment [i]
 						if ( Math.max(segmentLower, start) <= Math.min(segmentUpper,end) ) {
-							console.log()
 							if (features[j].read === 1) {
 								segmentColor = featureColor;
 							} else {
@@ -115,10 +114,11 @@
 					}
 					colors.push(segmentColor);
 				}
-				console.log(colors);
+				// console.log(colors);
 				return colors;
 			},
 			features: function(overlay, chromStart, segmentsCount, segmentLength, featureTypes) {
+
 				var features = overlay.data;
 				var colors = [];
 

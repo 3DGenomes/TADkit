@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Overlays', Overlays);
 
-	function Overlays($q, $http, uuid4, d3Service, Settings, Datasets, Storyboards, Segments) {
+	function Overlays($q, $http, uuid4, d3Service, Settings, Datasets, Storyboards, Proximities, Ensembl, Segments, Resources) {
 		var overlays = {
 			loaded : [],
 			current : {index:0}
@@ -43,9 +43,10 @@
 				return overlays;
 			},
 			aquire: function(data) {
+
 				// d3Service.d3().then(function(d3) {
 					// var colorRange = ["#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff"];
-					var filion = true;
+					var wiggle = false;
 					var colorFilion = ["#227c4f","#e71818","#8ece0d","#6666ff","#424242"];
 					var colorRange = d3.scale.category20();
 
@@ -59,9 +60,17 @@
 					// cycle through first lineto determine columns
 					// create as BedGraph
 					var headerRow = 0;
-					var firstDataRow = 1; // marie's data = 1
-					var startColumn = 2; // marie's data = 0
-					var endColumn = 3; // marie's data = 1
+					var firstDataRow, startColumn, endColumn;
+					if (wiggle) { // ie. fixed step eg. Filion's Data
+						console.log("wiggle");
+						firstDataRow = 1;
+						startColumn = 2;
+						endColumn = 3;
+					} else { // ie. variable / bedGraph eg. Marie's data
+						firstDataRow = 1;
+						startColumn = 0;
+						endColumn = 1;
+					}
 					var step = data[firstDataRow][endColumn] - data[firstDataRow][startColumn] + 1; // get step from chromEnd to chromStart
 					var step2 = data[firstDataRow+1][endColumn] - data[firstDataRow+1][startColumn] + 1; // check next row
 					var type, format, stepType;
@@ -76,7 +85,7 @@
 					}
 					for (var i = data[headerRow].length - 1; i >= 4; i--) { // i >= to skip, first columns
 						var colored;
-						if (filion) {
+						if (wiggle) {
 							colored = colorFilion[i-4];
 						} else {
 							colored = colorRange(i);
@@ -119,7 +128,7 @@
 						);
 						// convert column data to array
 						for (var j = data.length - 1; j >= 1; j--) { // j >= 1 to skip first row
-							if (filion) {
+							if (wiggle) {
 								acquiredOverlays[0].data.unshift({
 									"start" : data[j][startColumn],
 									"end" : data[j][endColumn],
@@ -133,60 +142,6 @@
 					return acquiredOverlays;
 				// }); // End d3 Service
 			},
-			// aquireOld: function(data) {
-			// 	// d3Service.d3().then(function(d3) {
-			// 		// var colorRange = ["#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff"];
-			// 		var colorRange = d3.scale.category20();
-			// 		// columns to overlays
-			// 		// skip row 1 = headers ie. length - 2
-			// 		// skip colums 1 and 2 = coords ie. length - 3
-			// 		var acquiredOverlays = [];
-			// 		var step = data[1][1] - data[1][0] + 1; // get step from chromEnd to chromStart
-			// 		for (var i = data[0].length - 1; i >= 2; i--) { // i >= 2 to skip 2 first columns
-			// 			acquiredOverlays.unshift(
-			// 				{
-			// 					"metadata": {
-			// 						"version" : 1.0,
-			// 						"type" : "overlay",
-			// 						"generator" : "TADkit"
-			// 					},
-			// 					"object" : {
-			// 						"uuid" : uuid4.generate(),
-			// 						"id" : data[0][i],
-			// 						"title" : data[0][i],
-			// 						"source" : "Research output",
-			// 						"url" : "local",
-			// 						"description" : "center_label", //also BigWig description (track title): "User Supplied Track"
-			// 						"type" : "wiggle_0", //also BigWig type
-			// 						"format" : "bigwig-fixed",
-			// 						"components" : 2,
-			// 						"name" : data[0][i], //BigWig: "User Track"
-			// 						"visibility" : "full", //BigWig: "full", "dense" or "hide"
-			// 						"color" : colorRange(i), // random from D3.js function. NOTE: convert to RGB for BigWig: eg. 255,255,255
-			// 						"altColor" : "#cccccc", // light grey gives best 3D render vis. NOTE: convert to RGB for BigWig: eg. 128,128,128
-			// 						"priority" : "100", //BigWig: 100
-			// 						"stepType" : "fixed", //BigWig: "variable" or "fixed"
-			// 						"chrom" : "", //BigWig: derive from dataset...???
-			// 						"start" : data[1][0], //BigWig
-			// 						"step" : step, //BigWig
-			// 						"state" : {
-			// 							"index" : 0, // make real index???
-			// 							"overlaid" : false
-			// 						}
-			// 					},
-			// 					"palette" : [colorRange(i),"#cccccc"],
-			// 					"data" : [],
-			// 					"colors" : {}
-			// 				}
-			// 			);
-			// 			// convert column data to array
-			// 			for (var j = data.length - 1; j >= 1; j--) { // j >= 1 to skip first row
-			// 				acquiredOverlays[0].data.unshift(data[j][i]);
-			// 			}
-			// 		}
-			// 		return acquiredOverlays;
-			// 	// }); // End d3 Service
-			// },
 			add: function(details) {
 				details = details || ["default","overlay","name","www","describe","json","0",[1]];
 				var overlay = {
@@ -234,6 +189,35 @@
 				});
 				return index;
 			},
+			update: function() {
+				// things that need updating for changes:
+				// - ext.data eg. Ensembl
+				// - proximities (derived from datsets)
+				// - segments (derived from datsets)
+				var self = this;
+				var overlaysAsync = []; // push async functions into list for subsequent processing
+				angular.forEach(overlays.loaded, function(overlay, key) {
+
+					// For Overlays with Aync Ensembl Data eg. genes
+					// check if changed...
+					if (overlay.object.type == "ensembl") {
+						var online = Settings.get().app.online;
+						var ensembl = Ensembl.load(overlay, online);
+						overlaysAsync.push(ensembl);
+					}
+
+					if (overlay.object.type == "matrix") {
+						overlay.data = Proximities.get().distances;
+					}
+
+				});
+				return $q.all(overlaysAsync)
+				.then(function(results) {
+					self.segment();
+					return results;
+				});
+
+			},
 			segment: function() {
 				var settings = Settings.get();
 				var currentDataset = Datasets.getDataset();
@@ -243,6 +227,8 @@
 					}
 				var chromStart = currentDataset.object.chromStart[chromosomeIndex];
 				var currentStoryboards = Storyboards.getStoryboard();
+
+				// GET FROM SETTINGS service...
 				var particlesCount = currentDataset.models[0].data.length / currentDataset.object.components;
 				var particleSegments = currentStoryboards.components[0].view.settings.chromatin.particleSegments;
 				var segmentsCount = particlesCount * particleSegments;
@@ -252,8 +238,8 @@
 				var self = this; // SYNChronous functions...
 				angular.forEach(overlays.loaded, function(overlay, key) {
 
-					// check if colors already exist (for chromatin as principal set)
-					if (!overlay.colors.chromatin || (overlay.colors.chromatin && segmentsCount != settings.segmentsCount) ) {
+					// check if colors already exist (for chromatin as principal set) or number of segments have changed
+					if (!overlay.colors.chromatin || (overlay.colors.chromatin && segmentsCount != settings.current.segmentsCount) ) {
 
 						// run function based on object type
 						var type = overlay.object.type;
@@ -284,8 +270,10 @@
 							self.at(1, particlesCount, particleSegments);
 						} else if (type == "ensembl" && format == "json") {
 							// data must have .start and .end
-							overlay.colors.particles = Segments.features(overlay, chromStart, particlesCount, 1, settings.featureTypes.gene);
-							overlay.colors.chromatin = Segments.features(overlay, chromStart, segmentsCount, segmentLength, settings.featureTypes.gene);
+							var features = Resources.get().biotypes;
+							var singleSegment = 1;
+							overlay.colors.particles = Segments.features(overlay, chromStart, particlesCount, singleSegment, features);
+							overlay.colors.chromatin = Segments.features(overlay, chromStart, segmentsCount, segmentLength, features);
 							overlay.colors.mesh = []; // relevance???
 						}
 
@@ -293,7 +281,6 @@
 						// already segmented
 						console.log("Overlay '" + overlay.object.title + "' already segmented as color array matching current dataset length");
 					}
-
 
 				});
 				return overlays;
@@ -303,10 +290,10 @@
 				angular.forEach(overlays.loaded, function(overlay, key) {
 					var type = overlay.object.type;
 					if (type == "matrix") {
-						var particleStart = (currentParticle - 1) * settings.particlesCount;
-						var particleEnd = currentParticle * settings.particlesCount;
-						var chromatinStart = particleStart * settings.particleSegments;
-						var chromatinEnd = particleEnd * settings.particleSegments;
+						var particleStart = (currentParticle - 1) * settings.current.particlesCount;
+						var particleEnd = currentParticle * settings.current.particlesCount;
+						var chromatinStart = particleStart * settings.current.particleSegments;
+						var chromatinEnd = particleEnd * settings.current.particleSegments;
 						// console.log(overlay);
 						overlay.colors.particles = overlay.colors.particlesMatrix.slice(particleStart, particleEnd);
 						overlay.colors.chromatin = overlay.colors.chromatinMatrix.slice(chromatinStart, chromatinEnd);

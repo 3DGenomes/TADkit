@@ -23,7 +23,7 @@
  					// DATA MANIPULATION >>> MOVE TO CONTROLLER
 					var data = scope.data;
 					var assemblyLength = 3200000000; // CALCULATE
-					if (!scope.settings.position) scope.settings.position = assemblyLength / 2;
+					if (!scope.settings.current.position) scope.settings.current.position = assemblyLength / 2;
 					var positions = 100; //scope.positions; // == ?
 					var focusStart = scope.view.viewpoint.chromStart;
 					var focusEnd = scope.view.viewpoint.chromEnd;
@@ -31,7 +31,7 @@
 					var chrEnd = assemblyLength;
 					var focusLength = focusEnd - focusStart;
 					var positionWidth = 1000; //focusLength / positions; // derive from...?
-					// var highlightPosition = focusStart + (positionWidth * scope.settings.position);
+					// var highlightPosition = focusStart + (positionWidth * scope.settings.current.position);
 
 					var focusScale = assemblyLength / focusLength;
 					var focusMargin = focusScale * 0.05;
@@ -84,7 +84,7 @@
 					}, true);
  					
 					// SLIDER
-					scope.$watch('settings.position', function(newPosition, oldPosition) {
+					scope.$watch('settings.current.position', function(newPosition, oldPosition) {
 						if ( newPosition !== oldPosition ) {
 							scope.update();
 						}
@@ -173,7 +173,7 @@
 									.attr("text-anchor", "right")
 									.style("font-size", "10px")
 									.text(">>");
-// TO DO: Use FontAwesome/IcoMoon...
+// TODO: Use FontAwesome/IcoMoon...
 // node.append('text')
 //     .attr('font-family', 'FontAwesome')
 //     .attr('font-size', function(d) { return d.size+'em'} )
@@ -196,7 +196,7 @@
 
 							var highlight = chart.append("rect")
 									.attr("id", "highlight")
-									.attr("x", function(d) { return xScale( scope.settings.position - (positionWidth * 0.5)); } )
+									.attr("x", function(d) { return xScale( scope.settings.current.position - (positionWidth * 0.5)); } )
 									.attr("y", 0)
 									.attr("width", highlightWidth )
 									.attr("height", trackHeight)
@@ -212,7 +212,7 @@
 						.attr("height", function(d) { if (scope.view.settings.sense) {return (nodeHeight);} else {return (nodeHeight * 2);} }  );
 
 						svg.select("#highlight") //.style("visibility", "hidden");
-						.attr("x", function(d) { return xScale( scope.settings.position - (positionWidth * 0.5)); } );
+						.attr("x", function(d) { return xScale( scope.settings.current.position - (positionWidth * 0.5)); } );
 					};
 				});
 			}

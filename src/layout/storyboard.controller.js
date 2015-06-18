@@ -5,37 +5,41 @@
 		.controller('StoryboardController', StoryboardController);
 
 	function StoryboardController($window, $scope, Settings, Storyboards, Components, Overlays, Proximities) {
+
 		// WATCH FOR WINDOW RESIZE
 		angular.element($window).on('resize', function(){ $scope.$apply(); });
 
-		$scope.currentStoryboard.components[0].view.settings.chromatin.segmentLength = $scope.settings.segmentLength;
+		$scope.currentStoryboard.components[0].view.settings.chromatin.segmentLength = $scope.settings.current.segmentLength;
 
+		// TODO: PLACE FOLLOWING INSIDE SETTINGS SERVICE... and refine $scope setup
+		// TODO: CHECK FOR DYNAMIC SETTINGS WHICH SHOULD BE IN SCOPE...
 		// Set coords to default Storyboard views from dataset
 		var chromosomeIndex = 0;
 		if ($scope.currentDataset.object.chromosomeIndex) {
 			chromosomeIndex = $scope.currentDataset.object.chromosomeIndex;	
 		}
-		$scope.settings.currentChromStart = $scope.currentDataset.object.chromStart[chromosomeIndex];
-		$scope.settings.currentChromEnd = $scope.currentDataset.object.chromEnd[chromosomeIndex];
-		$scope.settings.currentScale = 1; //$scope.currentDataset.object.scale;
-		Storyboards.setViewpoint($scope.settings.currentChromStart,$scope.settings.currentChromEnd,$scope.settings.currentScale);
-		Components.setViewpoint($scope.settings.currentChromStart,$scope.settings.currentChromEnd,$scope.settings.currentScale);
+		$scope.settings.current.chromStart = $scope.currentDataset.object.chromStart[chromosomeIndex];
+		$scope.settings.current.chromEnd = $scope.currentDataset.object.chromEnd[chromosomeIndex];
+		$scope.settings.views.scale = 1; //$scope.currentDataset.object.scale;
+		Storyboards.setViewpoint($scope.settings.current.chromStart,$scope.settings.current.chromEnd,$scope.settings.views.scale);
+		Components.setViewpoint($scope.settings.current.chromStart,$scope.settings.current.chromEnd,$scope.settings.views.scale);
+		$scope.settings.current.particlesCount = Settings.get().current.particlesCount;
 
-		// SET INITIAL position
-		var position = $scope.settings.currentChromStart + parseInt(($scope.settings.currentChromEnd - $scope.settings.currentChromStart) * 0.5);
-		$scope.settings.position = position;
-		var currentParticle = Settings.getParticle(position, $scope.settings.currentChromStart, $scope.settings.currentChromEnd, $scope.settings.particlesCount);
-		$scope.settings.currentParticle = currentParticle; 
+		// SET INITIAL position at midpoint
+		var position = $scope.settings.current.chromStart + parseInt(($scope.settings.current.chromEnd - $scope.settings.current.chromStart) * 0.5);
+		$scope.settings.current.position = position;
+		var currentParticle = Settings.getParticle();
+		$scope.settings.current.particle = currentParticle; 
 
 		// AND SEGMENT IT LIES WITHIN
-		$scope.settings.segment = Math.floor( ($scope.settings.position - $scope.settings.currentChromStart) / $scope.settings.segmentLength);
-		$scope.settings.segmentLower = $scope.settings.position - ($scope.settings.segment * 0.5);
-		$scope.settings.segmentUpper = $scope.settings.position + ($scope.settings.segment * 0.5);
+		$scope.settings.current.segment = Settings.getSegment($scope.settings.current.position);
+		$scope.settings.current.segmentLower = $scope.settings.current.position - ($scope.settings.current.segment * 0.5);
+		$scope.settings.current.segmentUpper = $scope.settings.current.position + ($scope.settings.current.segment * 0.5);
 
 		// Calculating Initial Proximities
 		//NOTE in future if more than 1 currentModel need same number of currentProximities
-		$scope.currentProximities = Proximities.at($scope.settings.currentParticle); // for D3 tracks
-		Overlays.at($scope.settings.currentParticle);
+		$scope.currentProximities = Proximities.at($scope.settings.current.particle); // for D3 tracks
+		Overlays.at($scope.settings.current.particle);
 
 		// Assign data and overlays for each component by type
 		angular.forEach( $scope.currentStoryboard.components, function(component, index) {
@@ -43,10 +47,10 @@
 				var overlay, overlayProximities;
 				if (component.object.type == "scene") {
 					component.data = $scope.currentModel.data;
+					component.proximities = $scope.currentProximities; // for Scenes: overlay.colors Saturation
 					component.overlay = $scope.currentOverlay;
-					component.overlayIndex = $scope.currentOverlayIndex;
 					component.overlay.state = {};
-					component.overlay.object.state.index = $scope.currentOverlayIndex;
+					component.overlay.object.state.index = Overlays.getCurrentIndex();
 				} else if (component.object.type == "track-genes" || component.object.type == "panel-inspector") {
 					overlay = Overlays.getOverlayById("genes");
 					component.data = overlay.data;
@@ -67,7 +71,7 @@
 		});
 
 		// Watch for Slider Position updates
-		$scope.$watch('settings.currentParticle', function(newParticle, oldParticle) { // deep watch as change direct and changes all?
+		$scope.$watch('settings.current.particle', function(newParticle, oldParticle) { // deep watch as change direct and changes all?
 			if ( newParticle !== oldParticle ) {
 				$scope.currentProximities = Proximities.at(newParticle); // for D3 tracks
 				if ($scope.currentOverlay.object.type == "matrix") {

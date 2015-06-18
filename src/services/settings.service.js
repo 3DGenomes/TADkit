@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Settings', Settings);
 
-	function Settings($q, $http, uuid4) {
+	function Settings($q, $http, uuid4, Storyboards, Datasets) {
 		var settings = {};
 
 		return {
@@ -23,6 +23,21 @@
 				}
 				return deferral.promise;
 			},
+			init: function() {
+				// INITIAL STATE
+				var storyboard = Storyboards.getStoryboard();
+				var dataset = Datasets.getDataset();
+				// TODO: component/model = 0  - change to default/current
+				settings.current.particleSegments = storyboard.components[0].view.settings.chromatin.particleSegments;
+				settings.current.particlesCount = dataset.models[0].data.length / dataset.object.components;
+				settings.current.segmentsCount = settings.current.particlesCount * settings.current.particleSegments;
+				// NOTE: segmentLength can be calculated in 2 ways:
+				// 1. particleResolution (TADbit data) / particleSegments (TADkit setting)
+				// 2. modelResolution (TADbit chromEnd - TADbit chromStart) / segmentsCount (see above)
+				// Method 1. is used as it is simpler to calculate and the data is already loaded.
+				// Also focus on particles and does not address rounding off of sequence length.
+				settings.current.segmentLength = dataset.object.resolution / settings.current.particleSegments; // base pairs
+ 			},
 			add: function(setting) {
 				// // rewrite for Object
 				// settings.push(settingID);
@@ -41,18 +56,20 @@
 			get: function() {
 				return settings;
 			},
-			getPosition: function (chromPosition, chromStart, chromEnd, segmentsCount) {
+			getSegment: function (chromPosition) {
+				chromPosition = chromPosition || settings.current.position;
 				var self = this;
-				var chromOffset = self.getRange(chromStart, chromPosition);
-				var chromRange = self.getRange(chromStart, chromEnd);
-				var position = Math.ceil((chromOffset * segmentsCount) / chromRange);
-				return position;
+				var chromOffset = self.getRange(settings.current.chromStart, chromPosition);
+				var chromRange = self.getRange(settings.current.chromStart, settings.current.chromEnd);
+				var segment = Math.ceil((chromOffset * settings.current.segmentsCount) / chromRange);
+				return segment;
 			},
-			getParticle: function (chromPosition, chromStart, chromEnd, particlesCount) {
+			getParticle: function (chromPosition) {
+				chromPosition = chromPosition || settings.current.position;
 				var self = this;
-				var chromOffset = self.getRange(chromStart, chromPosition);
-				var chromRange = self.getRange(chromStart, chromEnd);
-				var particle = Math.ceil((chromOffset * particlesCount) / chromRange);
+				var chromOffset = self.getRange(settings.current.chromStart, chromPosition);
+				var chromRange = self.getRange(settings.current.chromStart, settings.current.chromEnd);
+				var particle = Math.ceil((chromOffset * settings.current.particlesCount) / chromRange);
 				return particle;
 			},
 			getRange: function (start, end) {

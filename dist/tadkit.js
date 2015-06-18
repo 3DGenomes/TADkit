@@ -263,6 +263,7 @@
 					'currentmodel="currentModel" ' +
 					'currentoverlay="currentOverlay" ' +
 					'data="component.data" ' +
+					'proximities="component.proximities" ' +
 					'overlay="component.overlay"' +
 					'toggleoverlay="toggleOverlay(index)" ' +
 					'style="margin: {{component.object.state.margin}}" ' +
@@ -325,7 +326,7 @@
 		$scope.height = parseInt($scope.state.height); // strip PX units
 
 		$scope.atPosition = function(gene) {
-			if ($scope.$parent.settings.segmentUpper >= gene.start && $scope.$parent.settings.segmentLower <= gene.end) return true;
+			if ($scope.$parent.settings.current.segmentUpper >= gene.start && $scope.$parent.settings.current.segmentLower <= gene.end) return true;
 			return false;
 		};
 
@@ -377,6 +378,7 @@
 			},
 			templateUrl: 'assets/templates/panel-inspector.html',
 			link:function(scope, element, attrs){
+				// console.log(scope.data);
 			}
 		};
 	}
@@ -431,7 +433,7 @@
 			var pathSegments = this.particles * this.particleSegments; // same as segmentsCount...
 			this.pathSegments = pathSegments;
 
-			/*** TO DO: Calculate PathSegments based on number of base pairs in the model ***/
+			/*** TODO: Calculate PathSegments based on number of base pairs in the model ***/
 			var cubicPath = Paths.cubicBezier(pathControls.vertices, pathSegments, this.pathClosed);
 			var cubicGeom = cubicPath.createPointsGeometry(pathSegments);
 			for (var j = cubicGeom.vertices.length - 1; j >= 0; j--) {
@@ -1075,7 +1077,7 @@
 		.module('TADkit')
 		.directive('tkComponentScene', tkComponentScene);
 
-	function tkComponentScene(Particles, Chromatin, Mesh, Overlays, Settings, Proximities) {
+	function tkComponentScene(Particles, Chromatin, Mesh, Settings) {
 		return {
 			restrict: 'EA',
 			scope: { 
@@ -1084,6 +1086,7 @@
 				settings: '=',
 				view: '=',
 				currentmodel: '=',
+				proximities: '=',
 				currentoverlay: '='
 			},
 			templateUrl: 'assets/templates/scene.html',
@@ -1155,7 +1158,7 @@
 						playback.noKeys = true;
 
 						// AXIS
-						// TO DO: Make local axisHelper
+						// TODO: Make local axisHelper
 						var axisHelper = new THREE.AxisHelper( scope.view.settings.axis.size );
 						axisHelper.visible = scope.view.settings.axis.visible;
 						axisHelper.name = "Axis";
@@ -1177,7 +1180,7 @@
 						scope.view.settings.particles.count = particles.geometry.vertices.length; // already known as particlesCount in Dataset???
 						scope.view.settings.chromatin.segments = scope.view.settings.particles.count * scope.view.settings.chromatin.particleSegments;
 						// change radius to be proportional to chromosome length
-						scope.view.settings.genomeLength = scope.settings.currentChromEnd; // eg. 816394 nucelotides
+						scope.view.settings.genomeLength = scope.settings.current.chromEnd; // eg. 816394 nucelotides
 
 						//GEOMETRY: CHROMATIN
 						chromatin = new Chromatin( scope.currentmodel.data, scope.currentoverlay.colors.chromatin, scope.view.settings.chromatin );
@@ -1187,8 +1190,7 @@
 						// scope.view.settings.chromatin.count = 1; // UNUSED
 
 						// GEOMETRY: MESH
-						var proximities = Proximities.get();
-						mesh = new Mesh(proximities.positions, scope.currentoverlay.colors.mesh, scope.view.settings.mesh);
+						mesh = new Mesh(scope.proximities.positions, scope.currentoverlay.colors.mesh, scope.view.settings.mesh);
 						mesh.visible = scope.view.settings.mesh.visible;
 						scene.add(mesh);
 
@@ -1292,33 +1294,30 @@
 						});
 
 						/* Watch for Browser-wide Position updates */
-						scope.$watch('settings.position', function( newPosition, oldPosition ) { // deep watch as change direct and changes all?
-							if ( newPosition !== oldPosition ) {
-
-								// FIND CURRENT PARTICLE
-								var particlePrevious = Settings.getParticle(oldPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.particles.count);
-								var particleCurrent = Settings.getParticle(newPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.particles.count);
+						scope.$watch('settings.current.particle', function( newParticle, oldParticle ) {
+							if ( newParticle !== oldParticle ) {
 
 								// SET PARTICLE CURSOR COLOR
-								if (particleOriginalColor) particlesObj.geometry.colors[(particlePrevious - 1)] = particleOriginalColor;
-								particleOriginalColor = particlesObj.geometry.colors[(particleCurrent - 1)];
-								particlesObj.geometry.colors[(particleCurrent - 1)] = highlightColor;
+								if (particleOriginalColor) particlesObj.geometry.colors[(oldParticle - 1)] = particleOriginalColor;
+								particleOriginalColor = particlesObj.geometry.colors[(newParticle - 1)];
+								particlesObj.geometry.colors[(newParticle - 1)] = highlightColor;
 								particlesObj.geometry.colorsNeedUpdate = true;
+							}
+						});
 
-								// SET CHROMATIN CURSOR COLOR
-								var positionPrevious = Settings.getPosition(oldPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.chromatin.segments);
-								var positionCurrent = Settings.getPosition(newPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.chromatin.segments);
-								// console.log(positionPrevious);
-								// console.log(positionCurrent);
-								
-								var segmentPrevious = chromatinObj.getObjectByName( "segment-" + positionPrevious );
+						/* Watch for Browser-wide Position updates */
+						scope.$watch('settings.current.segment', function( newSegment, oldSegment ) {
+							if ( newSegment !== oldSegment ) {
+
+								// SET CHROMATIN CURSOR COLOR								
+								var segmentPrevious = chromatinObj.getObjectByName( "segment-" + oldSegment );
 								if (positionOriginalColor) {
 									segmentPrevious.material.color = positionOriginalColor;
 									segmentPrevious.material.ambient = positionOriginalColor;
 									segmentPrevious.material.emissive = positionOriginalColor;
 								}
 
-								var segmentCurrent = chromatinObj.getObjectByName( "segment-" + positionCurrent );
+								var segmentCurrent = chromatinObj.getObjectByName( "segment-" + newSegment );
 								positionOriginalColor = segmentCurrent.material.color;
 
 								segmentCurrent.material.color = highlightColor;
@@ -1418,7 +1417,7 @@
  					// DATA MANIPULATION >>> MOVE TO CONTROLLER
 					var data = scope.data;
 					// var assemblyLength = 3200000000; // CALCULATE
-					// if (!scope.settings.position) scope.settings.position = assemblyLength / 2;
+					// if (!scope.settings.current.position) scope.settings.current.position = assemblyLength / 2;
 					var step = scope.view.settings.step;
 					var stepWidth;
 					var focusStart = scope.view.viewpoint.chromStart;
@@ -1426,7 +1425,7 @@
 					// var chrStart = 0;
 					// var chrEnd = assemblyLength;
 					var focusLength = focusEnd - focusStart;
-					// var highlightPosition = focusStart + (stepWidth * scope.settings.position);
+					// var highlightPosition = focusStart + (stepWidth * scope.settings.current.position);
 
 					// var focusScale = assemblyLength / focusLength;
 					// var focusMargin = focusScale * 0.05;
@@ -1481,7 +1480,7 @@
 					// }, true);
  					
 					// SLIDER
-					scope.$watch('settings.position', function(newData) {
+					scope.$watch('settings.current.position', function(newData) {
 						scope.update();
 					}, true);
 
@@ -1557,7 +1556,7 @@
 							var labels  = chart.append("g")
 								.attr("class", "labels");
 
-							// TO DO: Use FontAwesome/IcoMoon...
+							// TODO: Use FontAwesome/IcoMoon...
 							// node.append('text')
 							//     .attr('font-family', 'FontAwesome')
 							//     .attr('font-size', function(d) { return d.size+'em'} )
@@ -1580,7 +1579,7 @@
 
 							var highlight = chart.append("rect")
 									.attr("id", "highlight")
-									.attr("x", function(d) { return xScale( scope.settings.position - (step * 0.5)); } )
+									.attr("x", function(d) { return xScale( scope.settings.current.position - (step * 0.5)); } )
 									.attr("y", 0)
 									.attr("width", highlightWidth )
 									.attr("height", trackHeight)
@@ -1600,7 +1599,7 @@
 						// .attr("height", nodeHeight);
 
 						svg.select("#highlight") //.style("visibility", "hidden");
-						.attr("x", function(d) { return xScale( scope.settings.position - (step * 0.5)); } );
+						.attr("x", function(d) { return xScale( scope.settings.current.position - (step * 0.5)); } );
 					};
 				});
 			}
@@ -1632,7 +1631,7 @@
  					// DATA MANIPULATION >>> MOVE TO CONTROLLER
 					var data = scope.data;
 					var assemblyLength = 3200000000; // CALCULATE
-					if (!scope.settings.position) scope.settings.position = assemblyLength / 2;
+					if (!scope.settings.current.position) scope.settings.current.position = assemblyLength / 2;
 					var positions = 100; //scope.positions; // == ?
 					var focusStart = scope.view.viewpoint.chromStart;
 					var focusEnd = scope.view.viewpoint.chromEnd;
@@ -1640,7 +1639,7 @@
 					var chrEnd = assemblyLength;
 					var focusLength = focusEnd - focusStart;
 					var positionWidth = 1000; //focusLength / positions; // derive from...?
-					// var highlightPosition = focusStart + (positionWidth * scope.settings.position);
+					// var highlightPosition = focusStart + (positionWidth * scope.settings.current.position);
 
 					var focusScale = assemblyLength / focusLength;
 					var focusMargin = focusScale * 0.05;
@@ -1693,7 +1692,7 @@
 					}, true);
  					
 					// SLIDER
-					scope.$watch('settings.position', function(newPosition, oldPosition) {
+					scope.$watch('settings.current.position', function(newPosition, oldPosition) {
 						if ( newPosition !== oldPosition ) {
 							scope.update();
 						}
@@ -1782,7 +1781,7 @@
 									.attr("text-anchor", "right")
 									.style("font-size", "10px")
 									.text(">>");
-// TO DO: Use FontAwesome/IcoMoon...
+// TODO: Use FontAwesome/IcoMoon...
 // node.append('text')
 //     .attr('font-family', 'FontAwesome')
 //     .attr('font-size', function(d) { return d.size+'em'} )
@@ -1805,7 +1804,7 @@
 
 							var highlight = chart.append("rect")
 									.attr("id", "highlight")
-									.attr("x", function(d) { return xScale( scope.settings.position - (positionWidth * 0.5)); } )
+									.attr("x", function(d) { return xScale( scope.settings.current.position - (positionWidth * 0.5)); } )
 									.attr("y", 0)
 									.attr("width", highlightWidth )
 									.attr("height", trackHeight)
@@ -1821,7 +1820,7 @@
 						.attr("height", function(d) { if (scope.view.settings.sense) {return (nodeHeight);} else {return (nodeHeight * 2);} }  );
 
 						svg.select("#highlight") //.style("visibility", "hidden");
-						.attr("x", function(d) { return xScale( scope.settings.position - (positionWidth * 0.5)); } );
+						.attr("x", function(d) { return xScale( scope.settings.current.position - (positionWidth * 0.5)); } );
 					};
 				});
 			}
@@ -1872,7 +1871,7 @@
 					var focusStart = scope.view.viewpoint.chromStart;
 					var focusEnd = scope.view.viewpoint.chromEnd;
 					var focusLength = focusEnd - focusStart + 1; // Resrouces.range...
-					var particlesCount = scope.settings.particlesCount;
+					var particlesCount = scope.settings.current.particlesCount;
 
 					/* Note: focusLength may not be exactly particlesCount (N) * resolution
 					 * BUT for now the last bin resolution is taken as equal to the others
@@ -1937,7 +1936,7 @@
 					});
 
 					// UPDATE
-					scope.$watch('settings.position', function(newPosition, oldPosition) {
+					scope.$watch('settings.current.position', function(newPosition, oldPosition) {
 						if ( newPosition !== oldPosition ) {
 							scope.update();
 						}
@@ -2031,20 +2030,20 @@
 
 						highlight = chart.append("rect")
 								.attr("id", "highlight")
-								.attr("x", function(d) { return xScale( scope.settings.position); } )
+								.attr("x", function(d) { return xScale( scope.settings.current.position); } )
 								.attr("y", 0)
 								.attr("width", highlightWidth )
 								.attr("height", trackHeight)
 								.attr("class", "highlight-follow");
 						highlight
-							.call(brush.extent([(scope.settings.position), 0]))
+							.call(brush.extent([(scope.settings.current.position), 0]))
 							.call(brush.event);
 					};
 
 					// UPDATE
 					scope.update = function() {
 						svg.select("#highlight") //.style("visibility", "hidden");
-						.attr("x", function(d) { return xScale( scope.settings.position ); } );
+						.attr("x", function(d) { return xScale( scope.settings.current.position ); } );
 					};
 
 					// BRUSH
@@ -2061,11 +2060,10 @@
 								highlight.attr("x", xScale(value));
 
 								// UPDATE position
-								scope.settings.position = value;
-								var currentParticle = Settings.getParticle(scope.settings.position, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.settings.particlesCount);
-								scope.settings.currentParticle = currentParticle;
-								scope.settings.segmentLower = scope.settings.position - (scope.settings.segment * 5); // * 0.5???
-								scope.settings.segmentUpper = scope.settings.position + (scope.settings.segment * 5); // * 0.5???
+								scope.settings.current.position = value;
+								scope.settings.current.particle = Settings.getParticle();
+								scope.settings.current.segmentLower = scope.settings.current.position - (scope.settings.current.segment * 5); // * 0.5???
+								scope.settings.current.segmentUpper = scope.settings.current.position + (scope.settings.current.segment * 5); // * 0.5???
 
 							});
 						// });
@@ -2214,19 +2212,19 @@
 							
 						handle = slider.append("circle")
 							.attr("class", "handle")
-							.attr("cx", xScale(scope.settings.position))
+							.attr("cx", xScale(scope.settings.current.position))
 							.attr("cy", height)
 							.attr("r", handleWidth * 0.6);
 
 							// handle.append("text")
-							// 	.attr("x", xScale(scope.settings.position) - (handleWidth * 0.5))
+							// 	.attr("x", xScale(scope.settings.current.position) - (handleWidth * 0.5))
 							// 	.attr("y", height)
 							// 	.attr("text-anchor", "bottom")
 							// 	.style("font-size", "10px")
-							// 	.text(scope.settings.position);
+							// 	.text(scope.settings.current.position);
 
 						slider
-							.call(brush.extent([(scope.settings.position), 0]))
+							.call(brush.extent([(scope.settings.current.position), 0]))
 							.call(brush.event);
 					};
 
@@ -2243,11 +2241,11 @@
 								handle.attr("cx", xScale(value));
 
 								// UPDATE position
-								scope.settings.position = value;
-								var currentParticle = Settings.getParticle(scope.settings.position, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.settings.particlesCount);
-								scope.settings.currentParticle = currentParticle;
-								scope.settings.segmentLower = scope.settings.position - (scope.settings.segment * 5); // * 0.5???
-								scope.settings.segmentUpper = scope.settings.position + (scope.settings.segment * 5); // * 0.5???
+								scope.settings.current.position = value;
+								scope.settings.current.particle = Settings.getParticle();
+								scope.settings.current.segment = Settings.getSegment();
+								scope.settings.current.segmentLower = scope.settings.current.position - (scope.settings.current.segment * 5); // * 0.5???
+								scope.settings.current.segmentUpper = scope.settings.current.position + (scope.settings.current.segment * 5); // * 0.5???
 
 							});
 						// });
@@ -2283,7 +2281,7 @@
  					// DATA MANIPULATION >>> MOVE TO CONTROLLER
 					var data = scope.data;
 					// var assemblyLength = 3200000000; // CALCULATE
-					// if (!scope.settings.position) scope.settings.position = assemblyLength / 2;
+					// if (!scope.settings.current.position) scope.settings.current.position = assemblyLength / 2;
 					var step = scope.view.settings.step;
 					var stepWidth;
 					var focusStart = scope.view.viewpoint.chromStart;
@@ -2291,7 +2289,7 @@
 					// var chrStart = 0;
 					// var chrEnd = assemblyLength;
 					var focusLength = focusEnd - focusStart;
-					// var highlightPosition = focusStart + (stepWidth * scope.settings.position);
+					// var highlightPosition = focusStart + (stepWidth * scope.settings.current.position);
 
 					// var focusScale = assemblyLength / focusLength;
 					// var focusMargin = focusScale * 0.05;
@@ -2346,7 +2344,7 @@
 					// }, true);
  					
 					// SLIDER
-					scope.$watch('settings.position', function(newData) {
+					scope.$watch('settings.current.position', function(newData) {
 						scope.update();
 					}, true);
 
@@ -2422,7 +2420,7 @@
 							var labels  = chart.append("g")
 								.attr("class", "labels");
 
-							// TO DO: Use FontAwesome/IcoMoon...
+							// TODO: Use FontAwesome/IcoMoon...
 							// node.append('text')
 							//     .attr('font-family', 'FontAwesome')
 							//     .attr('font-size', function(d) { return d.size+'em'} )
@@ -2444,7 +2442,7 @@
 
 							var highlight = chart.append("rect")
 									.attr("id", "highlight")
-									.attr("x", function(d) { return xScale( scope.settings.position - (step * 0.5)); } )
+									.attr("x", function(d) { return xScale( scope.settings.current.position - (step * 0.5)); } )
 									.attr("y", 0)
 									.attr("width", highlightWidth )
 									.attr("height", trackHeight)
@@ -2464,7 +2462,7 @@
 						// .attr("height", nodeHeight);
 
 						svg.select("#highlight") //.style("visibility", "hidden");
-						.attr("x", function(d) { return xScale( scope.settings.position - (step * 0.5)); } );
+						.attr("x", function(d) { return xScale( scope.settings.current.position - (step * 0.5)); } );
 					};
 				});
 			}
@@ -2538,16 +2536,14 @@
 		.module('TADkit')
 		.controller('MainController', MainController);
 
-	function MainController($state, $scope, initialData, Users, Projects, Datasets, Overlays, Storyboards) {
-		// SETTINGS FROM INITIAL-DATA
+	function MainController($state, $scope, Settings, Users, Projects, Datasets, Overlays, Storyboards) {
+
 		if (!$scope.settings) {
-			$scope.settings = initialData.settings;
-			$scope.settings.featureColors = initialData.featureColors;
-			$scope.settings.components = initialData.components;
+			$scope.settings = Settings.get();
 		}
-		$scope.settings.isProject = $state.is('project');
+		$scope.settings.app.isProject = $state.is('project');
 		$scope.$on("$stateChangeSuccess", function updatePage() {
-			$scope.settings.isProject = $state.is('project');
+			$scope.settings.app.isProject = $state.is('project');
 		});
 
 		// BUILD DEFAULT DATA HIERARCHY
@@ -2571,7 +2567,6 @@
 		$scope.currentDataset = Datasets.getDataset();
 		$scope.currentModel = Datasets.getModel();
 		$scope.currentOverlay = Overlays.getOverlay();
-		$scope.currentOverlayIndex = Overlays.getCurrentIndex();
 		$scope.currentStoryboard = Storyboards.getStoryboard();
 
 	}
@@ -2654,10 +2649,9 @@
 						newComponent.object.dataset = overlay.object.id;
 						newComponent.view.settings.step = overlay.object.step;
 						newComponent.view.settings.color = overlay.object.color;
-						// newComponent.view.settings.segmentsCount = settings.segmentsCount;
-						newComponent.view.viewpoint.chromStart = settings.currentChromStart;
-						newComponent.view.viewpoint.chromEnd = settings.currentChromEnd;
-						newComponent.view.viewpoint.scale = settings.currentScale;
+						newComponent.view.viewpoint.chromStart = settings.current.chromStart;
+						newComponent.view.viewpoint.chromEnd = settings.current.chromEnd;
+						newComponent.view.viewpoint.scale = settings.views.scale;
 						newComponent.view.viewtype = overlay.object.type + "-" + overlay.object.stepType;
 						newComponent.data = overlay.data;
 						newComponent.overlay = overlay;
@@ -2700,8 +2694,10 @@
 		});
 
 		$scope.importOverlay = function($fileContent) {
+			// var delimiter = Settings.get().import.delimiter;
+			Papa.DefaultDelimiter = " ";
 			$scope.dataParsed = Papa.parse($fileContent,{
-				delimiter: "	", // " " for Marie's data
+				// delimiter: delimiter,
 				dynamicTyping: true,
 				fastMode: true
 			});
@@ -2879,16 +2875,15 @@
 		.module('TADkit')
 		.controller('ProjectLoaderController', ProjectLoaderController);
 
-	function ProjectLoaderController($q, $state, $scope, $timeout, Datasets, Overlays, Ensembl) {
+	function ProjectLoaderController($q, $state, $scope, $timeout, Settings, Datasets, Overlays, Ensembl) {
 			// console.log($scope);
 
 		$scope.addDataset = function($fileContent) {
 
 			Datasets.add($fileContent);
-			var newDataset = Datasets.getDataset();
 			var overlay = Overlays.getOverlayById("genes");
-			var loadEnsembl = Ensembl.load(newDataset.object, overlay, $scope.$parent.settings.app.online);
-			return $q.all([newDataset, overlay, loadEnsembl])
+			var loadEnsembl = Ensembl.load(overlay, Settings.get().app.online);
+			return $q.all([overlay, loadEnsembl])
 			.then(function(results) {
 				Overlays.segment();
 				return results;
@@ -3053,37 +3048,41 @@
 		.controller('StoryboardController', StoryboardController);
 
 	function StoryboardController($window, $scope, Settings, Storyboards, Components, Overlays, Proximities) {
+
 		// WATCH FOR WINDOW RESIZE
 		angular.element($window).on('resize', function(){ $scope.$apply(); });
 
-		$scope.currentStoryboard.components[0].view.settings.chromatin.segmentLength = $scope.settings.segmentLength;
+		$scope.currentStoryboard.components[0].view.settings.chromatin.segmentLength = $scope.settings.current.segmentLength;
 
+		// TODO: PLACE FOLLOWING INSIDE SETTINGS SERVICE... and refine $scope setup
+		// TODO: CHECK FOR DYNAMIC SETTINGS WHICH SHOULD BE IN SCOPE...
 		// Set coords to default Storyboard views from dataset
 		var chromosomeIndex = 0;
 		if ($scope.currentDataset.object.chromosomeIndex) {
 			chromosomeIndex = $scope.currentDataset.object.chromosomeIndex;	
 		}
-		$scope.settings.currentChromStart = $scope.currentDataset.object.chromStart[chromosomeIndex];
-		$scope.settings.currentChromEnd = $scope.currentDataset.object.chromEnd[chromosomeIndex];
-		$scope.settings.currentScale = 1; //$scope.currentDataset.object.scale;
-		Storyboards.setViewpoint($scope.settings.currentChromStart,$scope.settings.currentChromEnd,$scope.settings.currentScale);
-		Components.setViewpoint($scope.settings.currentChromStart,$scope.settings.currentChromEnd,$scope.settings.currentScale);
+		$scope.settings.current.chromStart = $scope.currentDataset.object.chromStart[chromosomeIndex];
+		$scope.settings.current.chromEnd = $scope.currentDataset.object.chromEnd[chromosomeIndex];
+		$scope.settings.views.scale = 1; //$scope.currentDataset.object.scale;
+		Storyboards.setViewpoint($scope.settings.current.chromStart,$scope.settings.current.chromEnd,$scope.settings.views.scale);
+		Components.setViewpoint($scope.settings.current.chromStart,$scope.settings.current.chromEnd,$scope.settings.views.scale);
+		$scope.settings.current.particlesCount = Settings.get().current.particlesCount;
 
-		// SET INITIAL position
-		var position = $scope.settings.currentChromStart + parseInt(($scope.settings.currentChromEnd - $scope.settings.currentChromStart) * 0.5);
-		$scope.settings.position = position;
-		var currentParticle = Settings.getParticle(position, $scope.settings.currentChromStart, $scope.settings.currentChromEnd, $scope.settings.particlesCount);
-		$scope.settings.currentParticle = currentParticle; 
+		// SET INITIAL position at midpoint
+		var position = $scope.settings.current.chromStart + parseInt(($scope.settings.current.chromEnd - $scope.settings.current.chromStart) * 0.5);
+		$scope.settings.current.position = position;
+		var currentParticle = Settings.getParticle();
+		$scope.settings.current.particle = currentParticle; 
 
 		// AND SEGMENT IT LIES WITHIN
-		$scope.settings.segment = Math.floor( ($scope.settings.position - $scope.settings.currentChromStart) / $scope.settings.segmentLength);
-		$scope.settings.segmentLower = $scope.settings.position - ($scope.settings.segment * 0.5);
-		$scope.settings.segmentUpper = $scope.settings.position + ($scope.settings.segment * 0.5);
+		$scope.settings.current.segment = Settings.getSegment($scope.settings.current.position);
+		$scope.settings.current.segmentLower = $scope.settings.current.position - ($scope.settings.current.segment * 0.5);
+		$scope.settings.current.segmentUpper = $scope.settings.current.position + ($scope.settings.current.segment * 0.5);
 
 		// Calculating Initial Proximities
 		//NOTE in future if more than 1 currentModel need same number of currentProximities
-		$scope.currentProximities = Proximities.at($scope.settings.currentParticle); // for D3 tracks
-		Overlays.at($scope.settings.currentParticle);
+		$scope.currentProximities = Proximities.at($scope.settings.current.particle); // for D3 tracks
+		Overlays.at($scope.settings.current.particle);
 
 		// Assign data and overlays for each component by type
 		angular.forEach( $scope.currentStoryboard.components, function(component, index) {
@@ -3091,10 +3090,10 @@
 				var overlay, overlayProximities;
 				if (component.object.type == "scene") {
 					component.data = $scope.currentModel.data;
+					component.proximities = $scope.currentProximities; // for Scenes: overlay.colors Saturation
 					component.overlay = $scope.currentOverlay;
-					component.overlayIndex = $scope.currentOverlayIndex;
 					component.overlay.state = {};
-					component.overlay.object.state.index = $scope.currentOverlayIndex;
+					component.overlay.object.state.index = Overlays.getCurrentIndex();
 				} else if (component.object.type == "track-genes" || component.object.type == "panel-inspector") {
 					overlay = Overlays.getOverlayById("genes");
 					component.data = overlay.data;
@@ -3115,7 +3114,7 @@
 		});
 
 		// Watch for Slider Position updates
-		$scope.$watch('settings.currentParticle', function(newParticle, oldParticle) { // deep watch as change direct and changes all?
+		$scope.$watch('settings.current.particle', function(newParticle, oldParticle) { // deep watch as change direct and changes all?
 			if ( newParticle !== oldParticle ) {
 				$scope.currentProximities = Proximities.at(newParticle); // for D3 tracks
 				if ($scope.currentOverlay.object.type == "matrix") {
@@ -3873,7 +3872,7 @@
 		.module('TADkit')
 		.factory('Ensembl', Ensembl);
 
-	function Ensembl($q, $http) {
+	function Ensembl($q, $http, Datasets) {
 		var ensembl = {
 			ping : 0
 		};
@@ -3889,11 +3888,12 @@
 				});
 				return deferral.promise;
 			},
-			load: function(datasetObject, overlay, online) {
+			load: function(overlay, online) {
 
 				online = online || false;
 				var deferral = $q.defer();
 				var source;
+				var datasetObject = Datasets.getDataset().object;
 				var species = datasetObject.species;
 				var speciesUrl = datasetObject.speciesUrl;
 				var chromosomeIndex = 0;
@@ -3941,7 +3941,7 @@
 		.module('TADkit')
 		.service('initMain', initMain);
 
-	function initMain($q, Settings, Users, Projects, Datasets, Overlays, Components, Storyboards, Resources, Ensembl, Proximities) {
+	function initMain($q, Settings, Users, Projects, Datasets, Overlays, Components, Storyboards, Resources, Proximities) {
 		return function() {
 			var settings = Settings.load();
 			var users = Users.load();
@@ -3954,63 +3954,13 @@
 
 			return $q.all([settings, users, projects, datasets, overlays, components, storyboards, featureColors])
 			.then(function(results){
-				var online = results[0].app.online; //false; // detect/set elsewhere?
-
-				// Set (calculate) initial Proximities
-				var initialModel = Datasets.getModel();
-				var initialProximities = Proximities.set(initialModel.data);
-
-				var processList = []; // push async functions into list for subsequent processing
-
-				// var speciesUrl = Datasets.getSpeciesUrl();
-				// var infoAssembly = Resources.loadInfoAssembly(speciesUrl, online);
-				// processList.push(infoAssembly);
-
-				var overlays = Overlays.get();
-				var initialDataset = Datasets.getDataset();
-				angular.forEach(overlays.loaded, function(overlay, key) {
-					if (overlay.object.type == "matrix") {
-						overlay.data = initialProximities.distances;
-					}
-					// For Overlays with Aync Ensembl Data eg. genes
-					if (overlay.object.type == "ensembl" && overlay.object.format == "json") {
-						var ensembl = Ensembl.load(initialDataset.object, overlay, online);
-						processList.push(ensembl);
-					}
-				});
-
-				return $q.all(processList)
-				.then(function(data) {
-					var overlays = Overlays.get();
-					// var settings = results[0];
-					// settings.infoAssembly = data;
-					return results;
-				});
+				Settings.init(); // dependent on Storyboards and Datasets
+				Proximities.set(); // dependent on Datasets
 			})
 			.then(function(results){
-				var settings = Settings.get();
-				var currentDataset = Datasets.getDataset();
-				var currentStoryboards = Storyboards.getStoryboard();
-				var particlesCount = currentDataset.models[0].data.length / currentDataset.object.components;
-				var particleSegments = currentStoryboards.components[0].view.settings.chromatin.particleSegments;
-				var segmentsCount = particlesCount * particleSegments;
-				var segmentLength = currentDataset.object.resolution / particleSegments; // base pairs
-				return $q.all([settings, currentDataset, currentStoryboards, particleSegments, particlesCount, segmentsCount, segmentLength])
-				.then(function() {
-					// INITIAL SETTINGS --> check if not better in Storyboard
-					var chromosomeIndex = 0;
-					if (currentDataset.object.chromosomeIndex) {
-						chromosomeIndex = datasetObject.chromosomeIndex;	
-					}
-					var chromStart = currentDataset.object.chromStart[chromosomeIndex];
-					var featureColors = results[7];
-					settings.featureTypes = featureColors;
-					settings.chromStart = chromStart;
-					settings.particlesCount = particlesCount;
-					settings.particleSegments = particleSegments;
-					settings.segmentsCount = segmentsCount;
-					settings.segmentLength = segmentLength;
-					Overlays.segment();
+				var updateOverlays = Overlays.update(); // for Proximities
+				return $q.all([updateOverlays])
+				.then(function(results){
 					return results;
 				});
 			})
@@ -4035,7 +3985,7 @@
 		.module('TADkit')
 		.factory('Overlays', Overlays);
 
-	function Overlays($q, $http, uuid4, d3Service, Settings, Datasets, Storyboards, Segments) {
+	function Overlays($q, $http, uuid4, d3Service, Settings, Datasets, Storyboards, Proximities, Ensembl, Segments, Resources) {
 		var overlays = {
 			loaded : [],
 			current : {index:0}
@@ -4074,9 +4024,10 @@
 				return overlays;
 			},
 			aquire: function(data) {
+
 				// d3Service.d3().then(function(d3) {
 					// var colorRange = ["#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff"];
-					var filion = true;
+					var wiggle = false;
 					var colorFilion = ["#227c4f","#e71818","#8ece0d","#6666ff","#424242"];
 					var colorRange = d3.scale.category20();
 
@@ -4090,9 +4041,17 @@
 					// cycle through first lineto determine columns
 					// create as BedGraph
 					var headerRow = 0;
-					var firstDataRow = 1; // marie's data = 1
-					var startColumn = 2; // marie's data = 0
-					var endColumn = 3; // marie's data = 1
+					var firstDataRow, startColumn, endColumn;
+					if (wiggle) { // ie. fixed step eg. Filion's Data
+						console.log("wiggle");
+						firstDataRow = 1;
+						startColumn = 2;
+						endColumn = 3;
+					} else { // ie. variable / bedGraph eg. Marie's data
+						firstDataRow = 1;
+						startColumn = 0;
+						endColumn = 1;
+					}
 					var step = data[firstDataRow][endColumn] - data[firstDataRow][startColumn] + 1; // get step from chromEnd to chromStart
 					var step2 = data[firstDataRow+1][endColumn] - data[firstDataRow+1][startColumn] + 1; // check next row
 					var type, format, stepType;
@@ -4107,7 +4066,7 @@
 					}
 					for (var i = data[headerRow].length - 1; i >= 4; i--) { // i >= to skip, first columns
 						var colored;
-						if (filion) {
+						if (wiggle) {
 							colored = colorFilion[i-4];
 						} else {
 							colored = colorRange(i);
@@ -4150,7 +4109,7 @@
 						);
 						// convert column data to array
 						for (var j = data.length - 1; j >= 1; j--) { // j >= 1 to skip first row
-							if (filion) {
+							if (wiggle) {
 								acquiredOverlays[0].data.unshift({
 									"start" : data[j][startColumn],
 									"end" : data[j][endColumn],
@@ -4164,60 +4123,6 @@
 					return acquiredOverlays;
 				// }); // End d3 Service
 			},
-			// aquireOld: function(data) {
-			// 	// d3Service.d3().then(function(d3) {
-			// 		// var colorRange = ["#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff"];
-			// 		var colorRange = d3.scale.category20();
-			// 		// columns to overlays
-			// 		// skip row 1 = headers ie. length - 2
-			// 		// skip colums 1 and 2 = coords ie. length - 3
-			// 		var acquiredOverlays = [];
-			// 		var step = data[1][1] - data[1][0] + 1; // get step from chromEnd to chromStart
-			// 		for (var i = data[0].length - 1; i >= 2; i--) { // i >= 2 to skip 2 first columns
-			// 			acquiredOverlays.unshift(
-			// 				{
-			// 					"metadata": {
-			// 						"version" : 1.0,
-			// 						"type" : "overlay",
-			// 						"generator" : "TADkit"
-			// 					},
-			// 					"object" : {
-			// 						"uuid" : uuid4.generate(),
-			// 						"id" : data[0][i],
-			// 						"title" : data[0][i],
-			// 						"source" : "Research output",
-			// 						"url" : "local",
-			// 						"description" : "center_label", //also BigWig description (track title): "User Supplied Track"
-			// 						"type" : "wiggle_0", //also BigWig type
-			// 						"format" : "bigwig-fixed",
-			// 						"components" : 2,
-			// 						"name" : data[0][i], //BigWig: "User Track"
-			// 						"visibility" : "full", //BigWig: "full", "dense" or "hide"
-			// 						"color" : colorRange(i), // random from D3.js function. NOTE: convert to RGB for BigWig: eg. 255,255,255
-			// 						"altColor" : "#cccccc", // light grey gives best 3D render vis. NOTE: convert to RGB for BigWig: eg. 128,128,128
-			// 						"priority" : "100", //BigWig: 100
-			// 						"stepType" : "fixed", //BigWig: "variable" or "fixed"
-			// 						"chrom" : "", //BigWig: derive from dataset...???
-			// 						"start" : data[1][0], //BigWig
-			// 						"step" : step, //BigWig
-			// 						"state" : {
-			// 							"index" : 0, // make real index???
-			// 							"overlaid" : false
-			// 						}
-			// 					},
-			// 					"palette" : [colorRange(i),"#cccccc"],
-			// 					"data" : [],
-			// 					"colors" : {}
-			// 				}
-			// 			);
-			// 			// convert column data to array
-			// 			for (var j = data.length - 1; j >= 1; j--) { // j >= 1 to skip first row
-			// 				acquiredOverlays[0].data.unshift(data[j][i]);
-			// 			}
-			// 		}
-			// 		return acquiredOverlays;
-			// 	// }); // End d3 Service
-			// },
 			add: function(details) {
 				details = details || ["default","overlay","name","www","describe","json","0",[1]];
 				var overlay = {
@@ -4265,6 +4170,35 @@
 				});
 				return index;
 			},
+			update: function() {
+				// things that need updating for changes:
+				// - ext.data eg. Ensembl
+				// - proximities (derived from datsets)
+				// - segments (derived from datsets)
+				var self = this;
+				var overlaysAsync = []; // push async functions into list for subsequent processing
+				angular.forEach(overlays.loaded, function(overlay, key) {
+
+					// For Overlays with Aync Ensembl Data eg. genes
+					// check if changed...
+					if (overlay.object.type == "ensembl") {
+						var online = Settings.get().app.online;
+						var ensembl = Ensembl.load(overlay, online);
+						overlaysAsync.push(ensembl);
+					}
+
+					if (overlay.object.type == "matrix") {
+						overlay.data = Proximities.get().distances;
+					}
+
+				});
+				return $q.all(overlaysAsync)
+				.then(function(results) {
+					self.segment();
+					return results;
+				});
+
+			},
 			segment: function() {
 				var settings = Settings.get();
 				var currentDataset = Datasets.getDataset();
@@ -4274,6 +4208,8 @@
 					}
 				var chromStart = currentDataset.object.chromStart[chromosomeIndex];
 				var currentStoryboards = Storyboards.getStoryboard();
+
+				// GET FROM SETTINGS service...
 				var particlesCount = currentDataset.models[0].data.length / currentDataset.object.components;
 				var particleSegments = currentStoryboards.components[0].view.settings.chromatin.particleSegments;
 				var segmentsCount = particlesCount * particleSegments;
@@ -4283,8 +4219,8 @@
 				var self = this; // SYNChronous functions...
 				angular.forEach(overlays.loaded, function(overlay, key) {
 
-					// check if colors already exist (for chromatin as principal set)
-					if (!overlay.colors.chromatin || (overlay.colors.chromatin && segmentsCount != settings.segmentsCount) ) {
+					// check if colors already exist (for chromatin as principal set) or number of segments have changed
+					if (!overlay.colors.chromatin || (overlay.colors.chromatin && segmentsCount != settings.current.segmentsCount) ) {
 
 						// run function based on object type
 						var type = overlay.object.type;
@@ -4315,8 +4251,10 @@
 							self.at(1, particlesCount, particleSegments);
 						} else if (type == "ensembl" && format == "json") {
 							// data must have .start and .end
-							overlay.colors.particles = Segments.features(overlay, chromStart, particlesCount, 1, settings.featureTypes.gene);
-							overlay.colors.chromatin = Segments.features(overlay, chromStart, segmentsCount, segmentLength, settings.featureTypes.gene);
+							var features = Resources.get().biotypes;
+							var singleSegment = 1;
+							overlay.colors.particles = Segments.features(overlay, chromStart, particlesCount, singleSegment, features);
+							overlay.colors.chromatin = Segments.features(overlay, chromStart, segmentsCount, segmentLength, features);
 							overlay.colors.mesh = []; // relevance???
 						}
 
@@ -4324,7 +4262,6 @@
 						// already segmented
 						console.log("Overlay '" + overlay.object.title + "' already segmented as color array matching current dataset length");
 					}
-
 
 				});
 				return overlays;
@@ -4334,10 +4271,10 @@
 				angular.forEach(overlays.loaded, function(overlay, key) {
 					var type = overlay.object.type;
 					if (type == "matrix") {
-						var particleStart = (currentParticle - 1) * settings.particlesCount;
-						var particleEnd = currentParticle * settings.particlesCount;
-						var chromatinStart = particleStart * settings.particleSegments;
-						var chromatinEnd = particleEnd * settings.particleSegments;
+						var particleStart = (currentParticle - 1) * settings.current.particlesCount;
+						var particleEnd = currentParticle * settings.current.particlesCount;
+						var chromatinStart = particleStart * settings.current.particleSegments;
+						var chromatinEnd = particleEnd * settings.current.particleSegments;
 						// console.log(overlay);
 						overlay.colors.particles = overlay.colors.particlesMatrix.slice(particleStart, particleEnd);
 						overlay.colors.chromatin = overlay.colors.chromatinMatrix.slice(chromatinStart, chromatinEnd);
@@ -4753,7 +4690,7 @@
 		.module('TADkit')
 		.factory('Proximities', Proximities);
 
-	function Proximities() {
+	function Proximities(Datasets) {
 		// Matrix - n x m dimensions == particleCount */
 		var proximities = {
 			dimension: 0,
@@ -4767,8 +4704,7 @@
 			distances: []
 		};
 		return {
-			set: function (vertices, settings) {
-
+			set: function (settings) {
 				// Generate a matrix of proximity between points
 				// from vertices = array of point coordinates components
 				// up to minDistance = threshold for proximity
@@ -4792,6 +4728,8 @@
 				};
 				settings = settings || {};
 				angular.extend(this, angular.copy(defaults), settings);
+
+				var vertices = Datasets.getModel().data;
 				settings.maxDistance = this.getMaxDistance(vertices);
 
 				var vertexpos = 0;
@@ -5089,7 +5027,6 @@
 
 						 // check if overlaps current fragment [i]
 						if ( Math.max(segmentLower, start) <= Math.min(segmentUpper,end) ) {
-							console.log()
 							if (features[j].read === 1) {
 								segmentColor = featureColor;
 							} else {
@@ -5099,10 +5036,11 @@
 					}
 					colors.push(segmentColor);
 				}
-				console.log(colors);
+				// console.log(colors);
 				return colors;
 			},
 			features: function(overlay, chromStart, segmentsCount, segmentLength, featureTypes) {
+
 				var features = overlay.data;
 				var colors = [];
 
@@ -5168,7 +5106,7 @@
 		.module('TADkit')
 		.factory('Settings', Settings);
 
-	function Settings($q, $http, uuid4) {
+	function Settings($q, $http, uuid4, Storyboards, Datasets) {
 		var settings = {};
 
 		return {
@@ -5187,6 +5125,21 @@
 				}
 				return deferral.promise;
 			},
+			init: function() {
+				// INITIAL STATE
+				var storyboard = Storyboards.getStoryboard();
+				var dataset = Datasets.getDataset();
+				// TODO: component/model = 0  - change to default/current
+				settings.current.particleSegments = storyboard.components[0].view.settings.chromatin.particleSegments;
+				settings.current.particlesCount = dataset.models[0].data.length / dataset.object.components;
+				settings.current.segmentsCount = settings.current.particlesCount * settings.current.particleSegments;
+				// NOTE: segmentLength can be calculated in 2 ways:
+				// 1. particleResolution (TADbit data) / particleSegments (TADkit setting)
+				// 2. modelResolution (TADbit chromEnd - TADbit chromStart) / segmentsCount (see above)
+				// Method 1. is used as it is simpler to calculate and the data is already loaded.
+				// Also focus on particles and does not address rounding off of sequence length.
+				settings.current.segmentLength = dataset.object.resolution / settings.current.particleSegments; // base pairs
+ 			},
 			add: function(setting) {
 				// // rewrite for Object
 				// settings.push(settingID);
@@ -5205,18 +5158,20 @@
 			get: function() {
 				return settings;
 			},
-			getPosition: function (chromPosition, chromStart, chromEnd, segmentsCount) {
+			getSegment: function (chromPosition) {
+				chromPosition = chromPosition || settings.current.position;
 				var self = this;
-				var chromOffset = self.getRange(chromStart, chromPosition);
-				var chromRange = self.getRange(chromStart, chromEnd);
-				var position = Math.ceil((chromOffset * segmentsCount) / chromRange);
-				return position;
+				var chromOffset = self.getRange(settings.current.chromStart, chromPosition);
+				var chromRange = self.getRange(settings.current.chromStart, settings.current.chromEnd);
+				var segment = Math.ceil((chromOffset * settings.current.segmentsCount) / chromRange);
+				return segment;
 			},
-			getParticle: function (chromPosition, chromStart, chromEnd, particlesCount) {
+			getParticle: function (chromPosition) {
+				chromPosition = chromPosition || settings.current.position;
 				var self = this;
-				var chromOffset = self.getRange(chromStart, chromPosition);
-				var chromRange = self.getRange(chromStart, chromEnd);
-				var particle = Math.ceil((chromOffset * particlesCount) / chromRange);
+				var chromOffset = self.getRange(settings.current.chromStart, chromPosition);
+				var chromRange = self.getRange(settings.current.chromStart, settings.current.chromEnd);
+				var particle = Math.ceil((chromOffset * settings.current.particlesCount) / chromRange);
 				return particle;
 			},
 			getRange: function (start, end) {

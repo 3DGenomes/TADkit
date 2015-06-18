@@ -23,7 +23,7 @@
  					// DATA MANIPULATION >>> MOVE TO CONTROLLER
 					var data = scope.data;
 					// var assemblyLength = 3200000000; // CALCULATE
-					// if (!scope.settings.position) scope.settings.position = assemblyLength / 2;
+					// if (!scope.settings.current.position) scope.settings.current.position = assemblyLength / 2;
 					var step = scope.view.settings.step;
 					var stepWidth;
 					var focusStart = scope.view.viewpoint.chromStart;
@@ -31,7 +31,7 @@
 					// var chrStart = 0;
 					// var chrEnd = assemblyLength;
 					var focusLength = focusEnd - focusStart;
-					// var highlightPosition = focusStart + (stepWidth * scope.settings.position);
+					// var highlightPosition = focusStart + (stepWidth * scope.settings.current.position);
 
 					// var focusScale = assemblyLength / focusLength;
 					// var focusMargin = focusScale * 0.05;
@@ -86,7 +86,7 @@
 					// }, true);
  					
 					// SLIDER
-					scope.$watch('settings.position', function(newData) {
+					scope.$watch('settings.current.position', function(newData) {
 						scope.update();
 					}, true);
 
@@ -162,7 +162,7 @@
 							var labels  = chart.append("g")
 								.attr("class", "labels");
 
-							// TO DO: Use FontAwesome/IcoMoon...
+							// TODO: Use FontAwesome/IcoMoon...
 							// node.append('text')
 							//     .attr('font-family', 'FontAwesome')
 							//     .attr('font-size', function(d) { return d.size+'em'} )
@@ -185,7 +185,7 @@
 
 							var highlight = chart.append("rect")
 									.attr("id", "highlight")
-									.attr("x", function(d) { return xScale( scope.settings.position - (step * 0.5)); } )
+									.attr("x", function(d) { return xScale( scope.settings.current.position - (step * 0.5)); } )
 									.attr("y", 0)
 									.attr("width", highlightWidth )
 									.attr("height", trackHeight)
@@ -205,7 +205,7 @@
 						// .attr("height", nodeHeight);
 
 						svg.select("#highlight") //.style("visibility", "hidden");
-						.attr("x", function(d) { return xScale( scope.settings.position - (step * 0.5)); } );
+						.attr("x", function(d) { return xScale( scope.settings.current.position - (step * 0.5)); } );
 					};
 				});
 			}

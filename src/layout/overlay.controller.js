@@ -49,10 +49,9 @@
 						newComponent.object.dataset = overlay.object.id;
 						newComponent.view.settings.step = overlay.object.step;
 						newComponent.view.settings.color = overlay.object.color;
-						// newComponent.view.settings.segmentsCount = settings.segmentsCount;
-						newComponent.view.viewpoint.chromStart = settings.currentChromStart;
-						newComponent.view.viewpoint.chromEnd = settings.currentChromEnd;
-						newComponent.view.viewpoint.scale = settings.currentScale;
+						newComponent.view.viewpoint.chromStart = settings.current.chromStart;
+						newComponent.view.viewpoint.chromEnd = settings.current.chromEnd;
+						newComponent.view.viewpoint.scale = settings.views.scale;
 						newComponent.view.viewtype = overlay.object.type + "-" + overlay.object.stepType;
 						newComponent.data = overlay.data;
 						newComponent.overlay = overlay;
@@ -95,8 +94,10 @@
 		});
 
 		$scope.importOverlay = function($fileContent) {
+			// var delimiter = Settings.get().import.delimiter;
+			Papa.DefaultDelimiter = " ";
 			$scope.dataParsed = Papa.parse($fileContent,{
-				delimiter: "	", // " " for Marie's data
+				// delimiter: delimiter,
 				dynamicTyping: true,
 				fastMode: true
 			});

@@ -19,7 +19,7 @@
 		$scope.height = parseInt($scope.state.height); // strip PX units
 
 		$scope.atPosition = function(gene) {
-			if ($scope.$parent.settings.segmentUpper >= gene.start && $scope.$parent.settings.segmentLower <= gene.end) return true;
+			if ($scope.$parent.settings.current.segmentUpper >= gene.start && $scope.$parent.settings.current.segmentLower <= gene.end) return true;
 			return false;
 		};
 

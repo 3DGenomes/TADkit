@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Proximities', Proximities);
 
-	function Proximities() {
+	function Proximities(Datasets) {
 		// Matrix - n x m dimensions == particleCount */
 		var proximities = {
 			dimension: 0,
@@ -18,8 +18,7 @@
 			distances: []
 		};
 		return {
-			set: function (vertices, settings) {
-
+			set: function (settings) {
 				// Generate a matrix of proximity between points
 				// from vertices = array of point coordinates components
 				// up to minDistance = threshold for proximity
@@ -43,6 +42,8 @@
 				};
 				settings = settings || {};
 				angular.extend(this, angular.copy(defaults), settings);
+
+				var vertices = Datasets.getModel().data;
 				settings.maxDistance = this.getMaxDistance(vertices);
 
 				var vertexpos = 0;

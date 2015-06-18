@@ -23,6 +23,7 @@
 					'currentmodel="currentModel" ' +
 					'currentoverlay="currentOverlay" ' +
 					'data="component.data" ' +
+					'proximities="component.proximities" ' +
 					'overlay="component.overlay"' +
 					'toggleoverlay="toggleOverlay(index)" ' +
 					'style="margin: {{component.object.state.margin}}" ' +

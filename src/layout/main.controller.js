@@ -4,16 +4,14 @@
 		.module('TADkit')
 		.controller('MainController', MainController);
 
-	function MainController($state, $scope, initialData, Users, Projects, Datasets, Overlays, Storyboards) {
-		// SETTINGS FROM INITIAL-DATA
+	function MainController($state, $scope, Settings, Users, Projects, Datasets, Overlays, Storyboards) {
+
 		if (!$scope.settings) {
-			$scope.settings = initialData.settings;
-			$scope.settings.featureColors = initialData.featureColors;
-			$scope.settings.components = initialData.components;
+			$scope.settings = Settings.get();
 		}
-		$scope.settings.isProject = $state.is('project');
+		$scope.settings.app.isProject = $state.is('project');
 		$scope.$on("$stateChangeSuccess", function updatePage() {
-			$scope.settings.isProject = $state.is('project');
+			$scope.settings.app.isProject = $state.is('project');
 		});
 
 		// BUILD DEFAULT DATA HIERARCHY
@@ -37,7 +35,6 @@
 		$scope.currentDataset = Datasets.getDataset();
 		$scope.currentModel = Datasets.getModel();
 		$scope.currentOverlay = Overlays.getOverlay();
-		$scope.currentOverlayIndex = Overlays.getCurrentIndex();
 		$scope.currentStoryboard = Storyboards.getStoryboard();
 
 	}

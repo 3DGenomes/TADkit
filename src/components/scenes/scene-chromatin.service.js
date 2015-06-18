@@ -48,7 +48,7 @@
 			var pathSegments = this.particles * this.particleSegments; // same as segmentsCount...
 			this.pathSegments = pathSegments;
 
-			/*** TO DO: Calculate PathSegments based on number of base pairs in the model ***/
+			/*** TODO: Calculate PathSegments based on number of base pairs in the model ***/
 			var cubicPath = Paths.cubicBezier(pathControls.vertices, pathSegments, this.pathClosed);
 			var cubicGeom = cubicPath.createPointsGeometry(pathSegments);
 			for (var j = cubicGeom.vertices.length - 1; j >= 0; j--) {

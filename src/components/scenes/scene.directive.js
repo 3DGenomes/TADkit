@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.directive('tkComponentScene', tkComponentScene);
 
-	function tkComponentScene(Particles, Chromatin, Mesh, Overlays, Settings, Proximities) {
+	function tkComponentScene(Particles, Chromatin, Mesh, Settings) {
 		return {
 			restrict: 'EA',
 			scope: { 
@@ -13,6 +13,7 @@
 				settings: '=',
 				view: '=',
 				currentmodel: '=',
+				proximities: '=',
 				currentoverlay: '='
 			},
 			templateUrl: 'assets/templates/scene.html',
@@ -84,7 +85,7 @@
 						playback.noKeys = true;
 
 						// AXIS
-						// TO DO: Make local axisHelper
+						// TODO: Make local axisHelper
 						var axisHelper = new THREE.AxisHelper( scope.view.settings.axis.size );
 						axisHelper.visible = scope.view.settings.axis.visible;
 						axisHelper.name = "Axis";
@@ -106,7 +107,7 @@
 						scope.view.settings.particles.count = particles.geometry.vertices.length; // already known as particlesCount in Dataset???
 						scope.view.settings.chromatin.segments = scope.view.settings.particles.count * scope.view.settings.chromatin.particleSegments;
 						// change radius to be proportional to chromosome length
-						scope.view.settings.genomeLength = scope.settings.currentChromEnd; // eg. 816394 nucelotides
+						scope.view.settings.genomeLength = scope.settings.current.chromEnd; // eg. 816394 nucelotides
 
 						//GEOMETRY: CHROMATIN
 						chromatin = new Chromatin( scope.currentmodel.data, scope.currentoverlay.colors.chromatin, scope.view.settings.chromatin );
@@ -116,8 +117,7 @@
 						// scope.view.settings.chromatin.count = 1; // UNUSED
 
 						// GEOMETRY: MESH
-						var proximities = Proximities.get();
-						mesh = new Mesh(proximities.positions, scope.currentoverlay.colors.mesh, scope.view.settings.mesh);
+						mesh = new Mesh(scope.proximities.positions, scope.currentoverlay.colors.mesh, scope.view.settings.mesh);
 						mesh.visible = scope.view.settings.mesh.visible;
 						scene.add(mesh);
 
@@ -221,33 +221,30 @@
 						});
 
 						/* Watch for Browser-wide Position updates */
-						scope.$watch('settings.position', function( newPosition, oldPosition ) { // deep watch as change direct and changes all?
-							if ( newPosition !== oldPosition ) {
-
-								// FIND CURRENT PARTICLE
-								var particlePrevious = Settings.getParticle(oldPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.particles.count);
-								var particleCurrent = Settings.getParticle(newPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.particles.count);
+						scope.$watch('settings.current.particle', function( newParticle, oldParticle ) {
+							if ( newParticle !== oldParticle ) {
 
 								// SET PARTICLE CURSOR COLOR
-								if (particleOriginalColor) particlesObj.geometry.colors[(particlePrevious - 1)] = particleOriginalColor;
-								particleOriginalColor = particlesObj.geometry.colors[(particleCurrent - 1)];
-								particlesObj.geometry.colors[(particleCurrent - 1)] = highlightColor;
+								if (particleOriginalColor) particlesObj.geometry.colors[(oldParticle - 1)] = particleOriginalColor;
+								particleOriginalColor = particlesObj.geometry.colors[(newParticle - 1)];
+								particlesObj.geometry.colors[(newParticle - 1)] = highlightColor;
 								particlesObj.geometry.colorsNeedUpdate = true;
+							}
+						});
 
-								// SET CHROMATIN CURSOR COLOR
-								var positionPrevious = Settings.getPosition(oldPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.chromatin.segments);
-								var positionCurrent = Settings.getPosition(newPosition, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.view.settings.chromatin.segments);
-								// console.log(positionPrevious);
-								// console.log(positionCurrent);
-								
-								var segmentPrevious = chromatinObj.getObjectByName( "segment-" + positionPrevious );
+						/* Watch for Browser-wide Position updates */
+						scope.$watch('settings.current.segment', function( newSegment, oldSegment ) {
+							if ( newSegment !== oldSegment ) {
+
+								// SET CHROMATIN CURSOR COLOR								
+								var segmentPrevious = chromatinObj.getObjectByName( "segment-" + oldSegment );
 								if (positionOriginalColor) {
 									segmentPrevious.material.color = positionOriginalColor;
 									segmentPrevious.material.ambient = positionOriginalColor;
 									segmentPrevious.material.emissive = positionOriginalColor;
 								}
 
-								var segmentCurrent = chromatinObj.getObjectByName( "segment-" + positionCurrent );
+								var segmentCurrent = chromatinObj.getObjectByName( "segment-" + newSegment );
 								positionOriginalColor = segmentCurrent.material.color;
 
 								segmentCurrent.material.color = highlightColor;

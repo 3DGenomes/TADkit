@@ -42,7 +42,7 @@
 					var focusStart = scope.view.viewpoint.chromStart;
 					var focusEnd = scope.view.viewpoint.chromEnd;
 					var focusLength = focusEnd - focusStart + 1; // Resrouces.range...
-					var particlesCount = scope.settings.particlesCount;
+					var particlesCount = scope.settings.current.particlesCount;
 
 					/* Note: focusLength may not be exactly particlesCount (N) * resolution
 					 * BUT for now the last bin resolution is taken as equal to the others
@@ -107,7 +107,7 @@
 					});
 
 					// UPDATE
-					scope.$watch('settings.position', function(newPosition, oldPosition) {
+					scope.$watch('settings.current.position', function(newPosition, oldPosition) {
 						if ( newPosition !== oldPosition ) {
 							scope.update();
 						}
@@ -201,20 +201,20 @@
 
 						highlight = chart.append("rect")
 								.attr("id", "highlight")
-								.attr("x", function(d) { return xScale( scope.settings.position); } )
+								.attr("x", function(d) { return xScale( scope.settings.current.position); } )
 								.attr("y", 0)
 								.attr("width", highlightWidth )
 								.attr("height", trackHeight)
 								.attr("class", "highlight-follow");
 						highlight
-							.call(brush.extent([(scope.settings.position), 0]))
+							.call(brush.extent([(scope.settings.current.position), 0]))
 							.call(brush.event);
 					};
 
 					// UPDATE
 					scope.update = function() {
 						svg.select("#highlight") //.style("visibility", "hidden");
-						.attr("x", function(d) { return xScale( scope.settings.position ); } );
+						.attr("x", function(d) { return xScale( scope.settings.current.position ); } );
 					};
 
 					// BRUSH
@@ -231,11 +231,10 @@
 								highlight.attr("x", xScale(value));
 
 								// UPDATE position
-								scope.settings.position = value;
-								var currentParticle = Settings.getParticle(scope.settings.position, scope.view.viewpoint.chromStart, scope.view.viewpoint.chromEnd, scope.settings.particlesCount);
-								scope.settings.currentParticle = currentParticle;
-								scope.settings.segmentLower = scope.settings.position - (scope.settings.segment * 5); // * 0.5???
-								scope.settings.segmentUpper = scope.settings.position + (scope.settings.segment * 5); // * 0.5???
+								scope.settings.current.position = value;
+								scope.settings.current.particle = Settings.getParticle();
+								scope.settings.current.segmentLower = scope.settings.current.position - (scope.settings.current.segment * 5); // * 0.5???
+								scope.settings.current.segmentUpper = scope.settings.current.position + (scope.settings.current.segment * 5); // * 0.5???
 
 							});
 						// });

@@ -4,16 +4,15 @@
 		.module('TADkit')
 		.controller('ProjectLoaderController', ProjectLoaderController);
 
-	function ProjectLoaderController($q, $state, $scope, $timeout, Datasets, Overlays, Ensembl) {
+	function ProjectLoaderController($q, $state, $scope, $timeout, Settings, Datasets, Overlays, Ensembl) {
 			// console.log($scope);
 
 		$scope.addDataset = function($fileContent) {
 
 			Datasets.add($fileContent);
-			var newDataset = Datasets.getDataset();
 			var overlay = Overlays.getOverlayById("genes");
-			var loadEnsembl = Ensembl.load(newDataset.object, overlay, $scope.$parent.settings.app.online);
-			return $q.all([newDataset, overlay, loadEnsembl])
+			var loadEnsembl = Ensembl.load(overlay, Settings.get().app.online);
+			return $q.all([overlay, loadEnsembl])
 			.then(function(results) {
 				Overlays.segment();
 				return results;
