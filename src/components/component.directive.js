@@ -20,8 +20,8 @@
 					'view="component.view" ' +
 					'currentparticle="currentParticle"' +
 					'currentposition="currentPosition"' +
-					'currentmodel="currentModel" ' +
-					'currentoverlay="currentOverlay" ' +
+					'currentmodel="current.model" ' +
+					'currentoverlay="current.overlay" ' +
 					'data="component.data" ' +
 					'proximities="component.proximities" ' +
 					'overlay="component.overlay"' +

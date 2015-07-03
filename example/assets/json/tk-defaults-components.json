@@ -318,5 +318,40 @@
 				"segments" : 1000
 			}
 		}
+	},
+	{
+		"metadata" : {
+			"version" : 1.0,
+			"type" : "component",
+			"generator" : "TADkit"
+		},
+		"object" : {
+			"uuid" : "00000000-0000-0000-0000-000000000004",
+			"id" : "h-restraints-track",
+			"title" : "Restraints",
+			"type" : "track-restraints",
+			"dataset" : "restraints",
+			"state" : {
+				"width" : "100%",
+				"height" : "auto",
+				"margin" : "0px",
+				"position" : 4
+			}
+		},
+		"view" : {
+			"viewpoint" : {
+				"chromStart" : 1,
+				"chromEnd" : 999999,
+				"scale" : 1
+			},
+			"viewtype" : "linear",
+			"settings" : {
+				"heightInner" : "80px",
+				"margin" : "0px",
+				"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
+				"color" : "#0000ff",
+				"cursorWidth" : 1
+			}
+		}
 	}
 ]

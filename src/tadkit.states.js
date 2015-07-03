@@ -144,51 +144,43 @@
 			// 	}
 			// }
 		})
-			.state('overlay-acquire', {
-				parent: 'browser',
-				url: '/overlay/acquire',
-				views: {
-					'modal@main': {
-						templateUrl: 'assets/templates/overlay-acquire.html',
-						controller: 'OverlayController'
-					}
-				},
-				// resolve: {
-				// 	'initialData': function(initBrowser) {
-				// 		return initBrowser();
-				// 	}
-				// }
-			})
-			.state('overlay-filter', {
-				parent: 'browser',
-				url: '/overlay/filter',
-				views: {
-					'modal@main': {
-						templateUrl: 'assets/templates/overlay-filter.html',
-						controller: 'OverlayController'
-					}
-				},
-				// resolve: {
-				// 	'initialData': function(initBrowser) {
-				// 		return initBrowser();
-				// 	}
-				// }
-			})
-			.state('overlay-represent', {
-				parent: 'browser',
-				url: '/overlay/represent',
-				views: {
-					'modal@main': {
-						templateUrl: 'assets/templates/overlay-represent.html',
-						controller: 'OverlayController'
-					}
-				},
-				// resolve: {
-				// 	'initialData': function(initBrowser) {
-				// 		return initBrowser();
-				// 	}
-				// }
-			})
+		.state('overlay-import', {
+			parent: 'browser',
+			url: '/overlay/import',
+			views: {
+				'modal@main': {
+					templateUrl: 'assets/templates/overlay-import.html',
+					controller: 'OverlayImportController'
+				}
+			},
+		})
+			// .state('overlay-import-acquire', {
+			// 	parent: 'overlay-import',
+			// 	url: '/acquire',
+			// 	views: {
+			// 		'steps@modal': {
+			// 			templateUrl: 'assets/templates/overlay-import-acquire.html',
+			// 		}
+			// 	},
+			// })
+			// .state('overlay-import-filter', {
+			// 	parent: 'overlay-import',
+			// 	url: '/filter',
+			// 	views: {
+			// 		'steps@modal': {
+			// 			templateUrl: 'assets/templates/overlay-import-filter.html',
+			// 		}
+			// 	},
+			// })
+			// .state('overlay-import-represent', {
+			// 	parent: 'overlay-import',
+			// 	url: '/represent',
+			// 	views: {
+			// 		'steps@modal': {
+			// 			templateUrl: 'assets/templates/overlay-import-represent.html',
+			// 		}
+			// 	},
+			// })
 		.state('404', {
 			url: '/404',
 			templateUrl: 'assets/templates/404.tpl.html',

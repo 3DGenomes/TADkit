@@ -30,12 +30,13 @@
 		}
 		
 		// SET SHARED CURRENT PROJECT LEVEL DATA
-		$scope.currentUser = Users.getUser();
-		$scope.currentProject = Projects.getProject();
-		$scope.currentDataset = Datasets.getDataset();
-		$scope.currentModel = Datasets.getModel();
-		$scope.currentOverlay = Overlays.getOverlay();
-		$scope.currentStoryboard = Storyboards.getStoryboard();
+		$scope.current = {};
+		$scope.current.user = Users.getUser();
+		$scope.current.project = Projects.getProject();
+		$scope.current.dataset = Datasets.getDataset();
+		$scope.current.model = Datasets.getModel();
+		$scope.current.overlay = Overlays.getOverlay();
+		$scope.current.storyboard = Storyboards.getStoryboard();
 
 	}
 })();

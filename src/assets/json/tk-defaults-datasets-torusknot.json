@@ -1,0 +1,35 @@
+[
+	{
+		"metadata" : {
+			"version"  : 1.0,
+			"type"     : "dataset",
+			"generator": "TADbit"
+		},
+		"object": {
+			"uuid": "00000000-0000-0000-0000-00000000000000000000",
+			"title": "Test Data - Torus Knot",
+			"restriction_enzyme" : "None",
+			"end" : 10000,
+			"chromEnd" : [816394],
+			"experiment_type" : "topos",
+			"cell_type" : "None",
+			"start" : 0,
+			"chromStart" : [1],
+			"assembly" : "RAND321",
+			"identifier" : "None",
+			"resolution" : 1000,
+			"species" : "mycoplasma_pneumoniae_m129",
+			"chromosome" : ["Chromosome"],
+			"source": "TADbit 0.1_alpha.205",
+			"datatype": "xyz",
+			"components": "3",
+			"dependencies": {"IMP": "2.0.1 (random seed indexed at 1 = 89400484)", "TADbit": "0.1_alpha.227", "MCL": "12-135"}
+		},
+		"models": [
+			{"ref":"1","data":[140,0,0,126,44,22,91,72,38,51,78,44,18,66,39,-3,48,25,-20,34,0,-40,27,-25,-67,16,-39,-93,-5,-44,-108,-42,-38,-101,-86,-22,-70,-121,0,-24,-131,22,17,-115,38,42,-83,44,48,-49,39,43,-21,25,40,0,0,43,21,-25,48,49,-39,42,83,-44,17,115,-38,-24,131,-22,-69,121,0,-101,87,22,-108,42,38,-93,5,44,-67,-16,39,-40,-27,25,-19,-34,0,-3,-48,-25,18,-66,-39,50,-78,-44,91,-72,-38,126,-44,-22]}
+		],
+		"clusters": [[1]],
+		"centroids": [1],
+		"restraints": []
+	}
+]

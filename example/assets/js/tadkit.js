@@ -13,18 +13,24 @@
 
 	function config($locationProvider, $mdThemingProvider) {
 		// $locationProvider.html5Mode(true);
+
+		// Material Design Themes
+
 		$mdThemingProvider.theme('default')
 			.primaryPalette('green')
-			.accentPalette('grey')
-			.warnPalette('red')
+			.accentPalette('lime', {
+				'default': '500' // use shade 200 for default, and keep all other shades the same
+			})
+   			.warnPalette('red')
 			.backgroundPalette('grey');
 
 		$mdThemingProvider.theme('darkKit')
-			.primaryPalette('green')
-			.accentPalette('teal')
-			.warnPalette('red')
-			.backgroundPalette('grey')
+			// .primaryPalette('green')
+			// .accentPalette('lime')
+			// .warnPalette('red')
+			// .backgroundPalette('grey')
 			.dark();
+
 	}
 })();
 (function() {
@@ -186,51 +192,43 @@
 			// 	}
 			// }
 		})
-			.state('overlay-acquire', {
-				parent: 'browser',
-				url: '/overlay/acquire',
-				views: {
-					'modal@main': {
-						templateUrl: 'assets/templates/overlay-acquire.html',
-						controller: 'OverlayController'
-					}
-				},
-				// resolve: {
-				// 	'initialData': function(initBrowser) {
-				// 		return initBrowser();
-				// 	}
-				// }
-			})
-			.state('overlay-filter', {
-				parent: 'browser',
-				url: '/overlay/filter',
-				views: {
-					'modal@main': {
-						templateUrl: 'assets/templates/overlay-filter.html',
-						controller: 'OverlayController'
-					}
-				},
-				// resolve: {
-				// 	'initialData': function(initBrowser) {
-				// 		return initBrowser();
-				// 	}
-				// }
-			})
-			.state('overlay-represent', {
-				parent: 'browser',
-				url: '/overlay/represent',
-				views: {
-					'modal@main': {
-						templateUrl: 'assets/templates/overlay-represent.html',
-						controller: 'OverlayController'
-					}
-				},
-				// resolve: {
-				// 	'initialData': function(initBrowser) {
-				// 		return initBrowser();
-				// 	}
-				// }
-			})
+		.state('overlay-import', {
+			parent: 'browser',
+			url: '/overlay/import',
+			views: {
+				'modal@main': {
+					templateUrl: 'assets/templates/overlay-import.html',
+					controller: 'OverlayImportController'
+				}
+			},
+		})
+			// .state('overlay-import-acquire', {
+			// 	parent: 'overlay-import',
+			// 	url: '/acquire',
+			// 	views: {
+			// 		'steps@modal': {
+			// 			templateUrl: 'assets/templates/overlay-import-acquire.html',
+			// 		}
+			// 	},
+			// })
+			// .state('overlay-import-filter', {
+			// 	parent: 'overlay-import',
+			// 	url: '/filter',
+			// 	views: {
+			// 		'steps@modal': {
+			// 			templateUrl: 'assets/templates/overlay-import-filter.html',
+			// 		}
+			// 	},
+			// })
+			// .state('overlay-import-represent', {
+			// 	parent: 'overlay-import',
+			// 	url: '/represent',
+			// 	views: {
+			// 		'steps@modal': {
+			// 			templateUrl: 'assets/templates/overlay-import-represent.html',
+			// 		}
+			// 	},
+			// })
 		.state('404', {
 			url: '/404',
 			templateUrl: 'assets/templates/404.tpl.html',
@@ -260,8 +258,8 @@
 					'view="component.view" ' +
 					'currentparticle="currentParticle"' +
 					'currentposition="currentPosition"' +
-					'currentmodel="currentModel" ' +
-					'currentoverlay="currentOverlay" ' +
+					'currentmodel="current.model" ' +
+					'currentoverlay="current.overlay" ' +
 					'data="component.data" ' +
 					'proximities="component.proximities" ' +
 					'overlay="component.overlay"' +
@@ -2080,6 +2078,245 @@
 	'use strict';
 	angular
 		.module('TADkit')
+		.directive('tkComponentTrackRestraints', tkComponentTrackRestraints);
+
+	function tkComponentTrackRestraints(d3Service, Settings) {    
+		return {
+			restrict: 'EA',
+			scope: {
+				title: '=',
+				settings: '=',
+				view: '=',
+				data: '=',
+				overlay: '=', /* used in template */
+				toggleoverlay: '&' /* used in template */
+			},
+			templateUrl: 'assets/templates/track.html',
+			link: function(scope, element, attrs) {
+				// console.log(scope);
+
+				d3Service.d3().then(function(d3) {
+
+					scope.safeApply = function(fn) {
+						var phase = this.$root.$$phase;
+						if(phase == '$apply' || phase == '$digest') {
+							if(fn && (typeof(fn) === 'function')) { fn(); }
+						} else {
+						this.$apply(fn);
+						}
+					};
+
+ 					var data = scope.data;
+					var focusStart = scope.view.viewpoint.chromStart;
+					var focusEnd = scope.view.viewpoint.chromEnd;
+					var focusLength = focusEnd - focusStart + 1; // Resrouces.range...
+					var particlesCount = scope.settings.current.particlesCount;
+
+					// SVG GENERATION
+					var componentMargin = parseInt(scope.view.settings.margin);
+					/* Rebuild margin to maintain D3 standard */
+					var margin = {
+							top: parseInt(scope.view.settings.padding.top),
+							right: parseInt(scope.view.settings.padding.right),
+							bottom: parseInt(scope.view.settings.padding.bottom),
+							left: parseInt(scope.view.settings.padding.left)
+						},
+						scale = 4,
+						trackHeight = parseInt(scope.view.settings.heightInner),
+						nodeHeight = trackHeight * 0.5,
+						verticalOffset = (trackHeight - nodeHeight) * 0.5,
+						nodePadding = 0,
+						nodeColor = scope.view.settings.color,
+						harmonicsColor = scope.overlay.palette[0],
+						lowerBoundsColor = scope.overlay.palette[1];
+
+					// VIEWPORT
+					/* component-controller == children[0]
+					 * - component-header == children[0]
+					 * - component-body == children[3]
+					 */
+					var component = element[0].parentNode;
+					var viewport = element[0].children[3];
+					// if with controller use line below
+					// var viewport = element[0].children[0].children[3];
+					var svg = d3.select(viewport).append('svg');
+					var xScale, xAxis, brush, chart;
+					var defs, focus, zoomArea, container, labels, harmonics, lowerBounds, highlight;
+
+					// // RESIZE
+					// scope.$watch(function(){
+					// 	var w = component.clientWidth;
+					// 	var h = component.clientHeight;
+					// 	return w + h;
+					// }, function() {
+					// 	scope.render(scope.data);
+					// });
+
+					// REDRAW
+					scope.$watch('data.dimension', function(newData, oldData) {
+						if (newData !== oldData ) {
+							data = scope.data;
+							scope.render(data);
+						}
+					});
+
+					// UPDATE
+					scope.$watch('settings.current.position', function(newPosition, oldPosition) {
+						if ( newPosition !== oldPosition ) {
+							scope.update();
+						}
+					});
+					
+ 				// 	// ZOOM
+					// var zoom = d3.behavior.zoom()
+					// 	.on("zoom",  function() {
+					// 	scope.update();
+					// });
+
+
+					scope.render = function(data) {
+						svg.selectAll('*').remove();
+ 
+						if (!data) return;
+
+						var width = component.clientWidth - (2 * componentMargin) - margin.left - margin.right,
+							height = trackHeight - margin.top - margin.bottom;
+						var particleWidth = (1 * width) / particlesCount;
+						xScale = d3.scale.linear()
+								.range([0, width])
+								.clamp(true);
+
+						xScale.domain([focusStart, focusEnd]);
+				
+						xAxis = d3.svg.axis()
+								.scale(xScale)
+								.orient("top")
+								.ticks(0)
+								.outerTickSize(0);
+
+						var highlightWidth = 2;
+
+						brush = d3.svg.brush()
+							.x(xScale)
+							.extent([0, 0])
+							.on("brush", scope.brushed);
+
+						chart = svg.attr('width', width + margin.left + margin.right)
+								.attr('height', height + margin.top + margin.bottom)
+								.append("g")
+								.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+								.call(brush);
+								// .call(zoom);
+						
+						chart.select(".background")
+							.attr("y", height/2)
+							.attr("height", height);
+
+						// clipping box to clip overflow
+						// solid rect as background also allow mouse events everywhere 
+						defs = chart.append("defs")
+							.append("clipPath")
+							.attr("id", "clip")
+							.append("rect")
+							.attr("width", width)
+							.attr("height", height)
+							.attr('fill', 'white');
+
+						focus = chart.append("g")
+							.attr("class", "focus");
+
+						zoomArea = focus.append("g")
+							.attr("class", "zoom")
+							.append("rect")
+							.attr("width", width)
+							.attr("height", height)
+							.attr('fill', 'white');
+
+						container = focus.append("g")
+							.attr("class", "container")
+							.attr('clip-path', 'url(#clip)');
+
+						labels  = chart.append("g")
+							.attr("class", "labels");
+	
+						harmonics = container.selectAll("line")
+							.data(data.harmonics)
+							.enter()
+							.append("line")
+							.attr("x1", function(d) { return (data.dimension * particleWidth); } )
+							.attr("y1", verticalOffset)
+							.attr("x2", function(d) { return (d[1] * particleWidth); } )
+							.attr("y2", nodeHeight)
+							.attr("stroke-width", function(d) { return (d[3]); } )
+							.attr("stroke", harmonicsColor)
+							.append("svg:title")
+							.text(function(d,i) { return i + ":" + d; });
+
+						lowerBounds = container.selectAll("line")
+							.data(data.lowerBounds)
+							.enter()
+							.append("line")
+							.attr("x1", function(d) { return (data.dimension * particleWidth); } )
+							.attr("y1", nodeHeight)
+							.attr("x2", function(d) { return (d[1] * particleWidth); } )
+							.attr("y2", verticalOffset)
+							.attr("stroke-width", function(d) { return (d[3]); } )
+							.attr("stroke", lowerBoundsColor)
+							.append("svg:title")
+							.text(function(d,i) { return i + ":" + d; });
+
+						highlight = chart.append("rect")
+								.attr("id", "highlight")
+								.attr("x", function(d) { return xScale( scope.settings.current.position); } )
+								.attr("y", 0)
+								.attr("width", highlightWidth )
+								.attr("height", trackHeight)
+								.attr("class", "highlight-follow");
+						// highlight
+						// 	.call(brush.extent([(scope.settings.current.position), 0]))
+						// 	.call(brush.event);
+					};
+
+					// UPDATE
+					scope.update = function(data) {
+						svg.select("#highlight") //.style("visibility", "hidden");
+						.attr("x", function(d) { return xScale( scope.settings.current.position ); } );
+					};
+
+					// BRUSH
+					scope.brushed = function() {
+
+						// scope.safeApply( function() {
+							var thisTrack = this;
+							scope.safeApply( function() {
+								var value = brush.extent()[0];
+								if (d3.event.sourceEvent) {
+									value = parseInt(xScale.invert(d3.mouse(thisTrack)[0]));
+									brush.extent([value, value]);
+								}
+								highlight.attr("x", xScale(value));
+
+								// UPDATE position
+								scope.settings.current.position = value;
+								scope.settings.current.particle = Settings.getParticle();
+								scope.settings.current.segmentLower = scope.settings.current.position - (scope.settings.current.segment * 5); // * 0.5???
+								scope.settings.current.segmentUpper = scope.settings.current.position + (scope.settings.current.segment * 5); // * 0.5???
+
+							});
+						// });
+					};
+
+					// Initial render
+					scope.render(data);
+				});
+			}
+		};
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
 		.directive('tkComponentTrackSlider', tkComponentTrackSlider);
 
 	function tkComponentTrackSlider(d3Service, Settings) {
@@ -2562,12 +2799,13 @@
 		}
 		
 		// SET SHARED CURRENT PROJECT LEVEL DATA
-		$scope.currentUser = Users.getUser();
-		$scope.currentProject = Projects.getProject();
-		$scope.currentDataset = Datasets.getDataset();
-		$scope.currentModel = Datasets.getModel();
-		$scope.currentOverlay = Overlays.getOverlay();
-		$scope.currentStoryboard = Storyboards.getStoryboard();
+		$scope.current = {};
+		$scope.current.user = Users.getUser();
+		$scope.current.project = Projects.getProject();
+		$scope.current.dataset = Datasets.getDataset();
+		$scope.current.model = Datasets.getModel();
+		$scope.current.overlay = Overlays.getOverlay();
+		$scope.current.storyboard = Storyboards.getStoryboard();
 
 	}
 })();
@@ -2575,38 +2813,13 @@
 	'use strict';
 	angular
 		.module('TADkit')
-		.directive('tkOverlayImport', tkOverlayImport);
+		.controller('OverlayImportController', OverlayImportController);
 
-	function tkOverlayImport($parse) {		
-		return {
-			restrict: 'A',
-			scope: {
-				tkOverlayImport : "&"
-			},
-			link: function(scope, element, attrs) {
-				element.on('change', function(e) {
-					var reader = new FileReader();
-					reader.onload = function(e) {
-						scope.$apply(function() {
-							// console.log("here in apply");
-							scope.tkOverlayImport({$fileContent:e.target.result});
-						});
-					};
-					reader.readAsText((e.srcElement || e.target).files[0]);
-				});
-			}
-		};
-	}
-})();
-(function() {
-	'use strict';
-	angular
-		.module('TADkit')
-		.controller('OverlayController', OverlayController);
-
-	function OverlayController ($state, $scope, $mdDialog, $mdToast, Settings, Overlays, Components, Storyboards, uuid4) {
+	function OverlayImportController ($state, $scope, $mdDialog, $mdToast, Settings, Overlays, Components, Storyboards, uuid4) {
+		$scope.fileTitle = "No file loaded";
 
 		$scope.$on('$viewContentLoaded', function() {
+
 			var parentElement = angular.element(document.body);
 			var stateTemplate = "assets/templates/" + $state.current.name + ".html";
 			
@@ -2614,12 +2827,14 @@
 			$mdDialog.show({
 				parent: parentElement,
 				templateUrl: stateTemplate,
-				controller: OverlayController,
+				controller: OverlayImportController,
 				locals: {
 					overlays: $scope.$parent.overlays,
 				},
 				onComplete: afterShowAnimation
 			}).then(function(importedOverlays) {
+
+				// convert to function in Overlays service
 				var overlays = Overlays.get();
 				var newOverlays = [];
 				var newComponents = [];
@@ -2675,8 +2890,10 @@
 					$mdToast.simple()
 					.content("Overlays (" + newOverlays.length + "/" + importedOverlays.length + ") added")
 				);
-	 			// $state.go('overlay-filter');	
-	 			$state.go('browser');	
+	 			// $state.go('overlay-import-filter');	
+	 			// $state.go('browser');
+
+
 			}, function() {
 				$mdToast.show(
 					$mdToast.simple()
@@ -2691,9 +2908,11 @@
 				// console.log(scope);
 				console.log("showing dialog");
 			}
+
 		});
 
-		$scope.importOverlay = function($fileContent) {
+		$scope.parseFile = function($fileContent) {
+			// Parse File for Data
 			// var delimiter = Settings.get().import.delimiter;
 			Papa.DefaultDelimiter = " ";
 			$scope.dataParsed = Papa.parse($fileContent,{
@@ -2701,9 +2920,31 @@
 				dynamicTyping: true,
 				fastMode: true
 			});
-			$scope.overlaysAcquired = Overlays.aquire($scope.dataParsed.data);
-			console.log("Overlays acquired!");
-			// $state.go('overlay-filter');	
+			$scope.fileData = $scope.dataParsed.data;
+
+			// Selected Rows in File Data
+			// Controlled by checkboxes in overlay-import.html
+			$scope.selectedRows = [];
+			var rows = $scope.fileData.length;
+			while (--rows >= 0) {$scope.selectedRows[rows] = true;}
+
+			// Selected Columns in File Data
+			// Controlled by checkboxes in overlay-import.html
+			$scope.selectedCols = [];
+			var cols = $scope.fileData[0].length;
+			while (--cols >= 0) {$scope.selectedCols[cols] = true;}
+
+			console.log("File Opened...");
+		};
+
+		$scope.importData = function(parsedData) {
+			// remove unwanted rows and cols
+			// var filteredData = parsedData;
+			var filteredData = Overlays.filter(parsedData, $scope.selectedRows, $scope.selectedCols);
+			$scope.overlaysAcquired = Overlays.aquire(filteredData);
+			console.log("Data Imported");
+			$mdDialog.hide($scope.overlaysAcquired);
+			$state.go('browser');
 		};
 
 		$scope.hide = function() {
@@ -2712,6 +2953,35 @@
 
 		$scope.cancel = function() {
 			$mdDialog.cancel();
+		};
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.directive('tkOverlayImport', tkOverlayImport);
+
+	function tkOverlayImport($parse) {		
+		return {
+			restrict: 'A',
+			scope: {
+				tkOverlayImport : "&",
+				filetitle : "="
+			},
+			link: function(scope, element, attrs) {
+				element.on('change', function(e) {
+					var reader = new FileReader();
+					reader.onload = function(e) {
+						scope.$apply(function() {
+							// console.log("here in apply");
+							scope.tkOverlayImport({$fileContent:e.target.result});
+						});
+					};
+					reader.readAsText((e.srcElement || e.target).files[0]);
+					scope.filetitle = (e.srcElement || e.target).files[0].name;
+				});
+			}
 		};
 	}
 })();
@@ -2741,22 +3011,22 @@
 		// Set cluster color to gradient
 		// Recalculate specifically for single segment per particle in cluster scene
 		var gradientOverlay = Overlays.getOverlayById("gradient");
-		var clusterLength = $scope.currentModel.data.length / $scope.currentDataset.object.components;
+		var clusterLength = $scope.current.model.data.length / $scope.current.dataset.object.components;
 		var gradientColors = Segments.gradientHCL(gradientOverlay, clusterLength);
 		$scope.clusterComponent.overlay = gradientColors;
 
 		// Calculate consistent camera position (translation) from combined dataset models
 		var datasetModels = new THREE.BufferGeometry();
-		for (var h = $scope.currentDataset.models.length - 1; h >= 0; h--) {
-			datasetModels.addAttribute( 'position', new THREE.BufferAttribute( $scope.currentDataset.models[i], 3 ) );
+		for (var h = $scope.current.dataset.models.length - 1; h >= 0; h--) {
+			datasetModels.addAttribute( 'position', new THREE.BufferAttribute( $scope.current.dataset.models[i], 3 ) );
 		}
 		datasetModels.computeBoundingSphere();
 		$scope.clusterComponent.view.viewpoint.translate = datasetModels.boundingSphere.radius;
 
 		// Create collection of cluster models
 		$scope.clusters = [];
-		var clusterLists = $scope.currentDataset.clusters;
-		var models = $scope.currentDataset.models;
+		var clusterLists = $scope.current.dataset.clusters;
+		var models = $scope.current.dataset.models;
 		for (var i = clusterLists.length - 1; i >= 0; i--) {
 			var cluster = {};
 			cluster.number = i + 1;
@@ -2875,7 +3145,7 @@
 		.module('TADkit')
 		.controller('ProjectLoaderController', ProjectLoaderController);
 
-	function ProjectLoaderController($q, $state, $scope, $timeout, Settings, Datasets, Overlays, Ensembl) {
+	function ProjectLoaderController($q, $state, $scope, $timeout, Settings, Datasets, Overlays, Ensembl, Proximities, Restraints) {
 			// console.log($scope);
 
 		$scope.addDataset = function($fileContent) {
@@ -2885,12 +3155,18 @@
 			var loadEnsembl = Ensembl.load(overlay, Settings.get().app.online);
 			return $q.all([overlay, loadEnsembl])
 			.then(function(results) {
-				Overlays.segment();
+				// Recalc all related to new Dataset...
+				// Settings.init(); // dependent on Storyboards and Datasets
+				// Proximities.set(); // dependent on Datasets
+				// Restraints.set(); // dependent on Datasets
+				// Overlays.segment();
+
+				Overlays.update();
 				return results;
 			})
 			.then(function(results) {
-				$scope.$parent.currentDataset = Datasets.getDataset();
-				$scope.$parent.currentModel = Datasets.getModel();
+				$scope.$parent.current.dataset = Datasets.getDataset();
+				$scope.$parent.current.model = Datasets.getModel();
 				$scope.$parent.currentOverlay = Overlays.getOverlay();
 				$state.go('dataset');
 			});
@@ -3047,23 +3323,23 @@
 		.module('TADkit')
 		.controller('StoryboardController', StoryboardController);
 
-	function StoryboardController($window, $scope, Settings, Storyboards, Components, Overlays, Proximities) {
+	function StoryboardController($window, $scope, Settings, Storyboards, Components, Overlays, Proximities, Restraints) {
 
 		// WATCH FOR WINDOW RESIZE
 		angular.element($window).on('resize', function(){ $scope.$apply(); });
 
-		$scope.currentStoryboard.components[0].view.settings.chromatin.segmentLength = $scope.settings.current.segmentLength;
+		$scope.current.storyboard.components[0].view.settings.chromatin.segmentLength = $scope.settings.current.segmentLength;
 
 		// TODO: PLACE FOLLOWING INSIDE SETTINGS SERVICE... and refine $scope setup
 		// TODO: CHECK FOR DYNAMIC SETTINGS WHICH SHOULD BE IN SCOPE...
 		// Set coords to default Storyboard views from dataset
 		var chromosomeIndex = 0;
-		if ($scope.currentDataset.object.chromosomeIndex) {
-			chromosomeIndex = $scope.currentDataset.object.chromosomeIndex;	
+		if ($scope.current.dataset.object.chromosomeIndex) {
+			chromosomeIndex = $scope.current.dataset.object.chromosomeIndex;	
 		}
-		$scope.settings.current.chromStart = $scope.currentDataset.object.chromStart[chromosomeIndex];
-		$scope.settings.current.chromEnd = $scope.currentDataset.object.chromEnd[chromosomeIndex];
-		$scope.settings.views.scale = 1; //$scope.currentDataset.object.scale;
+		$scope.settings.current.chromStart = $scope.current.dataset.object.chromStart[chromosomeIndex];
+		$scope.settings.current.chromEnd = $scope.current.dataset.object.chromEnd[chromosomeIndex];
+		$scope.settings.views.scale = 1; //$scope.current.dataset.object.scale;
 		Storyboards.setViewpoint($scope.settings.current.chromStart,$scope.settings.current.chromEnd,$scope.settings.views.scale);
 		Components.setViewpoint($scope.settings.current.chromStart,$scope.settings.current.chromEnd,$scope.settings.views.scale);
 		$scope.settings.current.particlesCount = Settings.get().current.particlesCount;
@@ -3082,34 +3358,55 @@
 		// Calculating Initial Proximities
 		//NOTE in future if more than 1 currentModel need same number of currentProximities
 		$scope.currentProximities = Proximities.at($scope.settings.current.particle); // for D3 tracks
+
+		// Calculating Initial Restraints
+		//NOTE in future if more than 1 currentModel need same number of currentRestraints
+		$scope.currentRestraints = Restraints.at($scope.settings.current.particle); // for D3 tracks
+
+		// Slice Matrix Overlays
 		Overlays.at($scope.settings.current.particle);
 
 		// Assign data and overlays for each component by type
-		angular.forEach( $scope.currentStoryboard.components, function(component, index) {
+		angular.forEach( $scope.current.storyboard.components, function(component, index) {
+
 			// if (component.object.dataset == "default") {
 				var overlay, overlayProximities;
 				if (component.object.type == "scene") {
-					component.data = $scope.currentModel.data;
-					component.proximities = $scope.currentProximities; // for Scenes: overlay.colors Saturation
-					component.overlay = $scope.currentOverlay;
+					component.data = $scope.current.model.data;
+					 // component.proximities required for Scenes: overlay.colors Saturation
+					component.proximities = $scope.currentProximities;
+					component.overlay = $scope.current.overlay;
 					component.overlay.state = {};
 					component.overlay.object.state.index = Overlays.getCurrentIndex();
 				} else if (component.object.type == "track-genes" || component.object.type == "panel-inspector") {
 					overlay = Overlays.getOverlayById("genes");
 					component.data = overlay.data;
-					component.overlay = overlay; // required for toggle
+					// component.overlay required for toggle
+					component.overlay = overlay;
 				} else if (component.object.type == "track-proximities") {
 					// ie only one... see note above for Calculating Proximities
+					// component.data for Scenes: overlay.colors Saturation
+					component.data = $scope.currentProximities;
+					// component.overlay required for toggle
+					//   and for Scenes: overlay.colors Hue
 					overlay = Overlays.getOverlayById("proximities");
-					component.data = $scope.currentProximities; // for Scenes: overlay.colors Saturation
-					component.overlay = overlay; // required for toggle and for Scenes: overlay.colors Hue
+					component.overlay = overlay;
+				} else if (component.object.type == "track-restraints") {
+					// ie only one... see note above for Calculating Restraints
+					// component.data for Scenes: overlay.colors Saturation
+					component.data = $scope.currentRestraints;
+					// component.overlay required for toggle
+					//   and for Scenes: overlay.colors Hue
+					overlay = Overlays.getOverlayById("restraints");
+					component.overlay = overlay;
+				}
 				// } else if (component.object.type == "track-wiggle") {
 				// 	overlay = Overlays.getOverlayById(component.object.dataset);
 				// 	component.data = overlay.data;
 				// 	component.overlay = overlay; // required for toggle
-				} else {
-					// slider and other types of component...
-				}
+				// } else {
+				// 	// slider and other types of component...
+				// }
 			// }
 		});
 
@@ -3117,28 +3414,27 @@
 		$scope.$watch('settings.current.particle', function(newParticle, oldParticle) { // deep watch as change direct and changes all?
 			if ( newParticle !== oldParticle ) {
 				$scope.currentProximities = Proximities.at(newParticle); // for D3 tracks
-				if ($scope.currentOverlay.object.type == "matrix") {
-					// console.log(JSON.stringify($scope.currentOverlay.colors.chromatin));
+				$scope.currentProximities = Restraints.at(newParticle); // for D3 tracks
+				if ($scope.current.overlay.object.type == "matrix") {
 					Overlays.at(newParticle);
-					$scope.currentOverlay = Overlays.getOverlay();
-					// console.log(JSON.stringify($scope.currentOverlay.colors.chromatin));
+					$scope.current.overlay = Overlays.getOverlay();
 				} 
 				// console.log($scope.currentProximities);
 			}
 		});
 
 		// save original overlaid
-		$scope.overlayOrig = $scope.currentOverlay;
+		$scope.overlayOrig = $scope.current.overlay;
 		$scope.toggleOverlay = function(index) {
 			$scope.overlaid = Overlays.getOverlay(index).object.state.overlaid;
 			if (!$scope.overlaid) {
 				Overlays.setOverlaid(index);
 				Overlays.set(index);
-				$scope.currentOverlay = Overlays.getOverlay();
+				$scope.current.overlay = Overlays.getOverlay();
 			} else {
 				Overlays.setOverlaid($scope.overlayOrig.object.state.index);
 				Overlays.set($scope.overlayOrig.object.state.index);
-				$scope.currentOverlay = Overlays.getOverlay();
+				$scope.current.overlay = Overlays.getOverlay();
 			}
 			// $scope.overlay.object.state.overlaid = !$scope.overlay.object.state.overlaid;
 		};
@@ -3193,7 +3489,8 @@
 		.service('colorConvert', colorConvert);
 
 	function colorConvert() {
-		var rootObj = this;
+		// var rootObj = this;
+		var rootObj = {};
 		rootObj.re_ = {
 		  // An X11 "rgb:ddd/ddd/ddd" value.
 		  x11rgb: /^\s*rgb:([a-f0-9]{1,4})\/([a-f0-9]{1,4})\/([a-f0-9]{1,4})\s*$/i,
@@ -3941,7 +4238,7 @@
 		.module('TADkit')
 		.service('initMain', initMain);
 
-	function initMain($q, Settings, Users, Projects, Datasets, Overlays, Components, Storyboards, Resources, Proximities) {
+	function initMain($q, Settings, Users, Projects, Datasets, Overlays, Components, Storyboards, Resources, Proximities, Restraints) {
 		return function() {
 			var settings = Settings.load();
 			var users = Users.load();
@@ -3956,6 +4253,7 @@
 			.then(function(results){
 				Settings.init(); // dependent on Storyboards and Datasets
 				Proximities.set(); // dependent on Datasets
+				Restraints.set(); // dependent on Datasets
 			})
 			.then(function(results){
 				var updateOverlays = Overlays.update(); // for Proximities
@@ -4008,26 +4306,42 @@
 				}
 				return deferral.promise;
 			},
-			import: function(data) {
-				/* CHECK IMPORT IS VALID */
-				var rawdata = JSON.parse(data);
-				// var uuid = dataObj.uuid || uuid4.generate(),
-				// if (!projects.default.overlays[uuid]) {
-					// determine format eg table rows of items, columns of properties
-					// user select colmns to use - which rows: title, (meta,) start, end, data
-					// test all
-					var newOverlay = rawdata;
-					this.add(newOverlay);
-					console.log("New overlay \"" + overlays.loaded[datasets.current.index].object.title + "\" created from imported data.");
-				// }
-				console.log(overlays.loaded[overlays.current.index]);
-				return overlays;
+			// import: function(data) {
+			// 	/* CHECK IMPORT IS VALID */
+			// 	var rawdata = JSON.parse(data);
+			// 	// var uuid = dataObj.uuid || uuid4.generate(),
+			// 	// if (!projects.default.overlays[uuid]) {
+			// 		// determine format eg table rows of items, columns of properties
+			// 		// user select colmns to use - which rows: title, (meta,) start, end, data
+			// 		// test all
+			// 		var newOverlay = rawdata;
+			// 		this.add(newOverlay);
+			// 		console.log("New overlay \"" + overlays.loaded[datasets.current.index].object.title + "\" created from imported data.");
+			// 	// }
+			// 	console.log(overlays.loaded[overlays.current.index]);
+			// 	return overlays;
+			// },
+			filter: function(dataTable, selectedRows, selectedCols) {
+				// dataTable [[row1col1,row1col2...],[row2col1,row2col2...]...]
+				// Remove rows/cols marked false in selectedRows/Cols arrays
+				var filteredData = [];
+				var rows = selectedRows.length;
+				var cols = selectedCols.length;
+				for (var i = 0; i < rows; i++) {
+					var newRow = [];
+					if (selectedRows[i]) {
+						for (var j = 0; j < cols; j++) {
+							if (selectedCols[j]) newRow.push(dataTable[i][j]); // else column not added
+						}
+						filteredData.push(newRow);
+					} // else row not added
+				}
+				return filteredData;
 			},
 			aquire: function(data) {
 
 				// d3Service.d3().then(function(d3) {
 					// var colorRange = ["#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff"];
-					var wiggle = false;
 					var colorFilion = ["#227c4f","#e71818","#8ece0d","#6666ff","#424242"];
 					var colorRange = d3.scale.category20();
 
@@ -4041,17 +4355,12 @@
 					// cycle through first lineto determine columns
 					// create as BedGraph
 					var headerRow = 0;
-					var firstDataRow, startColumn, endColumn;
-					if (wiggle) { // ie. fixed step eg. Filion's Data
-						console.log("wiggle");
-						firstDataRow = 1;
-						startColumn = 2;
-						endColumn = 3;
-					} else { // ie. variable / bedGraph eg. Marie's data
-						firstDataRow = 1;
-						startColumn = 0;
-						endColumn = 1;
-					}
+					var firstDataRow = 1;
+					var startColumn = 0;
+					var endColumn = 1;
+					var colsCount = data[headerRow].length;
+
+					// Check if fixed steps
 					var step = data[firstDataRow][endColumn] - data[firstDataRow][startColumn] + 1; // get step from chromEnd to chromStart
 					var step2 = data[firstDataRow+1][endColumn] - data[firstDataRow+1][startColumn] + 1; // check next row
 					var type, format, stepType;
@@ -4064,10 +4373,22 @@
 						format = "variable";
 						stepType = "variable";
 					}
-					for (var i = data[headerRow].length - 1; i >= 4; i--) { // i >= to skip, first columns
+
+					// Check if Filion proteins ie. chromatin colors
+					var filion = false;
+					if (colsCount == 7){
+						var filionProteins = 0;
+						for (var h = 2; h < colsCount; h++) { // h=2 to skip start and end cols
+							var header = data[headerRow][h].toLowerCase();
+							if (header=="hp1" || header=="brm" || header=="mrg15" || header=="pc" || header=="h1") filionProteins++;
+						}
+						if (filionProteins == 5) filion = true;
+					}
+
+					for (var i = colsCount - 1; i >= 2; i--) { // i >= 2 to skip, start and end columns
 						var colored;
-						if (wiggle) {
-							colored = colorFilion[i-4];
+						if (filion) {
+							colored = colorFilion[i-2];
 						} else {
 							colored = colorRange(i);
 						}				
@@ -4108,8 +4429,8 @@
 							}
 						);
 						// convert column data to array
-						for (var j = data.length - 1; j >= 1; j--) { // j >= 1 to skip first row
-							if (wiggle) {
+						for (var j = data.length - 1; j >= 1; j--) { // j >= 1 to skip first header row
+							if (format == "variable") {
 								acquiredOverlays[0].data.unshift({
 									"start" : data[j][startColumn],
 									"end" : data[j][endColumn],
@@ -4207,11 +4528,11 @@
 						chromosomeIndex = datasetObject.chromosomeIndex;	
 					}
 				var chromStart = currentDataset.object.chromStart[chromosomeIndex];
-				var currentStoryboards = Storyboards.getStoryboard();
+				var currentStoryboard = Storyboards.getStoryboard();
 
 				// GET FROM SETTINGS service...
 				var particlesCount = currentDataset.models[0].data.length / currentDataset.object.components;
-				var particleSegments = currentStoryboards.components[0].view.settings.chromatin.particleSegments;
+				var particleSegments = currentStoryboard.components[0].view.settings.chromatin.particleSegments;
 				var segmentsCount = particlesCount * particleSegments;
 				var segmentLength = currentDataset.object.resolution / particleSegments; // base pairs
 
@@ -4239,7 +4560,6 @@
 						} else if (type == "wiggle_0" && format == "variable") {
 							// To Do...
 						} else if (type == "bedgraph") {
-							console.log(overlay);
 							overlay.colors.particles = Segments.bicolorVariable(overlay, chromStart, particlesCount, 1);
 							overlay.colors.chromatin = Segments.bicolorVariable(overlay, chromStart, segmentsCount, segmentLength);
 							overlay.colors.mesh = []; // relevance???
@@ -4249,6 +4569,10 @@
 							overlay.colors.chromatinMatrix = Segments.matrix(overlay, particleSegments);
 							overlay.colors.meshMatrix = overlay.colors.particlesMatrix; // ie. also color mesh edges by matrix
 							self.at(1, particlesCount, particleSegments);
+						} else if (type == "misc" && format == "variable") {
+							overlay.colors.particles = [];
+							overlay.colors.chromatin = [];
+							overlay.colors.mesh = [];
 						} else if (type == "ensembl" && format == "json") {
 							// data must have .start and .end
 							var features = Resources.get().biotypes;
@@ -4916,6 +5240,85 @@
 				console.log(biotypes);
 				var totalbiotypes = biotypes.length;
 				console.log("Total Biotypes: %s", totalbiotypes);
+			}
+		};
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.factory('Restraints', Restraints);
+
+	function Restraints(Datasets) {
+		// Matrix - n x m dimensions == particleCount */
+		var restraints = {
+			dimension: 0,
+			harmonics: [],
+			lowerBounds: [],
+			upperBounds: [],
+			neighbours: []
+		};
+		// Single Matrix row at current Particle/Position
+		var current = {
+			dimension: 0,
+			harmonics: [],
+			lowerBounds: [],
+			upperBounds: [],
+			neighbours: []
+		};
+		return {
+			set: function (settings) {
+				// Generate a matrix of proximity between points
+
+				var defaults = {
+					setting: true
+				};
+				settings = settings || {};
+				angular.extend(this, angular.copy(defaults), settings);
+
+				var vertices = Datasets.getModel().data;
+				restraints.dimension = vertices.length / 3; // 3 == xyz components of vertices
+
+				var datasetRestraints = Datasets.getDataset().restraints;
+				for (var i = 0; i < datasetRestraints.length; i++) {
+					if (datasetRestraints[i][2] == "H") restraints.harmonics.push(datasetRestraints[i]);
+					if (datasetRestraints[i][2] == "L") restraints.lowerBounds.push(datasetRestraints[i]);
+					if (datasetRestraints[i][2] == "U") restraints.upperBounds.push(datasetRestraints[i]);
+					if (datasetRestraints[i][2] == "C") restraints.neighbours.push(datasetRestraints[i]);
+				}
+				return restraints;
+			},
+			at: function(currentParticle) {
+				current.dimension = currentParticle;
+				current.harmonics = [];
+				current.lowerBounds = [];
+				current.upperBounds = [];
+				current.neighbours = [];
+				angular.forEach(restraints, function(restraint, name) {
+					if (name != "dimension") {
+						for (var j = restraint.length - 1; j >= 0; j--) {
+							if (restraint[j][0] == currentParticle) {
+								current[name].push(restraint[j]);
+							}
+							if (restraint[j][1] == currentParticle) {
+								var reorderedRestraint = [];
+								reorderedRestraint.push(restraint[j][1]);
+								reorderedRestraint.push(restraint[j][0]);
+								reorderedRestraint.push(restraint[j][2]);
+								reorderedRestraint.push(restraint[j][3]);
+								current[name].push(reorderedRestraint);
+							}
+						}
+					}
+				});
+				return current;
+			},
+			get: function() {
+				return restraints;
+			},
+			getCurrent: function() {
+				return current;
 			}
 		};
 	}

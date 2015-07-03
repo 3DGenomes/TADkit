@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.service('initMain', initMain);
 
-	function initMain($q, Settings, Users, Projects, Datasets, Overlays, Components, Storyboards, Resources, Proximities) {
+	function initMain($q, Settings, Users, Projects, Datasets, Overlays, Components, Storyboards, Resources, Proximities, Restraints) {
 		return function() {
 			var settings = Settings.load();
 			var users = Users.load();
@@ -19,6 +19,7 @@
 			.then(function(results){
 				Settings.init(); // dependent on Storyboards and Datasets
 				Proximities.set(); // dependent on Datasets
+				Restraints.set(); // dependent on Datasets
 			})
 			.then(function(results){
 				var updateOverlays = Overlays.update(); // for Proximities

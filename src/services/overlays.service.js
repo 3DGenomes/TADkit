@@ -27,26 +27,42 @@
 				}
 				return deferral.promise;
 			},
-			import: function(data) {
-				/* CHECK IMPORT IS VALID */
-				var rawdata = JSON.parse(data);
-				// var uuid = dataObj.uuid || uuid4.generate(),
-				// if (!projects.default.overlays[uuid]) {
-					// determine format eg table rows of items, columns of properties
-					// user select colmns to use - which rows: title, (meta,) start, end, data
-					// test all
-					var newOverlay = rawdata;
-					this.add(newOverlay);
-					console.log("New overlay \"" + overlays.loaded[datasets.current.index].object.title + "\" created from imported data.");
-				// }
-				console.log(overlays.loaded[overlays.current.index]);
-				return overlays;
+			// import: function(data) {
+			// 	/* CHECK IMPORT IS VALID */
+			// 	var rawdata = JSON.parse(data);
+			// 	// var uuid = dataObj.uuid || uuid4.generate(),
+			// 	// if (!projects.default.overlays[uuid]) {
+			// 		// determine format eg table rows of items, columns of properties
+			// 		// user select colmns to use - which rows: title, (meta,) start, end, data
+			// 		// test all
+			// 		var newOverlay = rawdata;
+			// 		this.add(newOverlay);
+			// 		console.log("New overlay \"" + overlays.loaded[datasets.current.index].object.title + "\" created from imported data.");
+			// 	// }
+			// 	console.log(overlays.loaded[overlays.current.index]);
+			// 	return overlays;
+			// },
+			filter: function(dataTable, selectedRows, selectedCols) {
+				// dataTable [[row1col1,row1col2...],[row2col1,row2col2...]...]
+				// Remove rows/cols marked false in selectedRows/Cols arrays
+				var filteredData = [];
+				var rows = selectedRows.length;
+				var cols = selectedCols.length;
+				for (var i = 0; i < rows; i++) {
+					var newRow = [];
+					if (selectedRows[i]) {
+						for (var j = 0; j < cols; j++) {
+							if (selectedCols[j]) newRow.push(dataTable[i][j]); // else column not added
+						}
+						filteredData.push(newRow);
+					} // else row not added
+				}
+				return filteredData;
 			},
 			aquire: function(data) {
 
 				// d3Service.d3().then(function(d3) {
 					// var colorRange = ["#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff"];
-					var wiggle = false;
 					var colorFilion = ["#227c4f","#e71818","#8ece0d","#6666ff","#424242"];
 					var colorRange = d3.scale.category20();
 
@@ -60,17 +76,12 @@
 					// cycle through first lineto determine columns
 					// create as BedGraph
 					var headerRow = 0;
-					var firstDataRow, startColumn, endColumn;
-					if (wiggle) { // ie. fixed step eg. Filion's Data
-						console.log("wiggle");
-						firstDataRow = 1;
-						startColumn = 2;
-						endColumn = 3;
-					} else { // ie. variable / bedGraph eg. Marie's data
-						firstDataRow = 1;
-						startColumn = 0;
-						endColumn = 1;
-					}
+					var firstDataRow = 1;
+					var startColumn = 0;
+					var endColumn = 1;
+					var colsCount = data[headerRow].length;
+
+					// Check if fixed steps
 					var step = data[firstDataRow][endColumn] - data[firstDataRow][startColumn] + 1; // get step from chromEnd to chromStart
 					var step2 = data[firstDataRow+1][endColumn] - data[firstDataRow+1][startColumn] + 1; // check next row
 					var type, format, stepType;
@@ -83,10 +94,22 @@
 						format = "variable";
 						stepType = "variable";
 					}
-					for (var i = data[headerRow].length - 1; i >= 4; i--) { // i >= to skip, first columns
+
+					// Check if Filion proteins ie. chromatin colors
+					var filion = false;
+					if (colsCount == 7){
+						var filionProteins = 0;
+						for (var h = 2; h < colsCount; h++) { // h=2 to skip start and end cols
+							var header = data[headerRow][h].toLowerCase();
+							if (header=="hp1" || header=="brm" || header=="mrg15" || header=="pc" || header=="h1") filionProteins++;
+						}
+						if (filionProteins == 5) filion = true;
+					}
+
+					for (var i = colsCount - 1; i >= 2; i--) { // i >= 2 to skip, start and end columns
 						var colored;
-						if (wiggle) {
-							colored = colorFilion[i-4];
+						if (filion) {
+							colored = colorFilion[i-2];
 						} else {
 							colored = colorRange(i);
 						}				
@@ -127,8 +150,8 @@
 							}
 						);
 						// convert column data to array
-						for (var j = data.length - 1; j >= 1; j--) { // j >= 1 to skip first row
-							if (wiggle) {
+						for (var j = data.length - 1; j >= 1; j--) { // j >= 1 to skip first header row
+							if (format == "variable") {
 								acquiredOverlays[0].data.unshift({
 									"start" : data[j][startColumn],
 									"end" : data[j][endColumn],
@@ -226,11 +249,11 @@
 						chromosomeIndex = datasetObject.chromosomeIndex;	
 					}
 				var chromStart = currentDataset.object.chromStart[chromosomeIndex];
-				var currentStoryboards = Storyboards.getStoryboard();
+				var currentStoryboard = Storyboards.getStoryboard();
 
 				// GET FROM SETTINGS service...
 				var particlesCount = currentDataset.models[0].data.length / currentDataset.object.components;
-				var particleSegments = currentStoryboards.components[0].view.settings.chromatin.particleSegments;
+				var particleSegments = currentStoryboard.components[0].view.settings.chromatin.particleSegments;
 				var segmentsCount = particlesCount * particleSegments;
 				var segmentLength = currentDataset.object.resolution / particleSegments; // base pairs
 
@@ -258,7 +281,6 @@
 						} else if (type == "wiggle_0" && format == "variable") {
 							// To Do...
 						} else if (type == "bedgraph") {
-							console.log(overlay);
 							overlay.colors.particles = Segments.bicolorVariable(overlay, chromStart, particlesCount, 1);
 							overlay.colors.chromatin = Segments.bicolorVariable(overlay, chromStart, segmentsCount, segmentLength);
 							overlay.colors.mesh = []; // relevance???
@@ -268,6 +290,10 @@
 							overlay.colors.chromatinMatrix = Segments.matrix(overlay, particleSegments);
 							overlay.colors.meshMatrix = overlay.colors.particlesMatrix; // ie. also color mesh edges by matrix
 							self.at(1, particlesCount, particleSegments);
+						} else if (type == "misc" && format == "variable") {
+							overlay.colors.particles = [];
+							overlay.colors.chromatin = [];
+							overlay.colors.mesh = [];
 						} else if (type == "ensembl" && format == "json") {
 							// data must have .start and .end
 							var features = Resources.get().biotypes;

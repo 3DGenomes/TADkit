@@ -56,6 +56,31 @@
 			"generator" : "TADkit"
 		},
 		"object" : {
+			"uuid" : "00000000-0000-0000-0001-000000000000",
+			"id" : "restraints",
+			"title" : "Restraints Overlay",
+			"source" : "TADkit",
+			"url" : "local",
+			"description" : "Single color for dynamic data.",
+			"type" : "misc",
+			"format" : "variable",
+			"components" : 2,
+			"state" : {
+				"index" : 1,
+				"overlaid" : false
+			}
+		},
+		"palette" : ["#ff0000","#0000ff"],
+		"data" : [],
+		"colors" : {}
+	},
+	{
+		"metadata" : {
+			"version" : 1.0,
+			"type" : "overlay",
+			"generator" : "TADkit"
+		},
+		"object" : {
 			"uuid" : "00000000-0000-0000-0002-000000000000",
 			"id" : "genes",
 			"title" : "Genes Overlay",

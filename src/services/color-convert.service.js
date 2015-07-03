@@ -5,7 +5,8 @@
 		.service('colorConvert', colorConvert);
 
 	function colorConvert() {
-		var rootObj = this;
+		// var rootObj = this;
+		var rootObj = {};
 		rootObj.re_ = {
 		  // An X11 "rgb:ddd/ddd/ddd" value.
 		  x11rgb: /^\s*rgb:([a-f0-9]{1,4})\/([a-f0-9]{1,4})\/([a-f0-9]{1,4})\s*$/i,
