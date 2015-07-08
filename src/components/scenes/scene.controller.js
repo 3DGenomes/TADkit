@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.controller('SceneController', SceneController);
 
-	function SceneController( $scope ){
+	function SceneController($scope) {
 
 		$scope.optionsState = false;
 		$scope.toggleOptions = function() {

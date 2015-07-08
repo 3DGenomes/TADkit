@@ -311,7 +311,7 @@
 			},
 			"viewtype" : "step-fixed",
 			"settings" : {
-				"heightInner" : "20px",
+				"heightInner" : "40px",
 				"margin" : "4px",
 				"padding" : {"top": "0px", "right": "100px", "bottom": "0px", "left": "100px"},
 				"sense" : false,
@@ -329,7 +329,7 @@
 			"uuid" : "00000000-0000-0000-0000-000000000004",
 			"id" : "h-restraints-track",
 			"title" : "Restraints",
-			"type" : "track-restraints",
+			"type" : "track-barchart",
 			"dataset" : "restraints",
 			"state" : {
 				"width" : "100%",

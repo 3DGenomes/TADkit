@@ -45,7 +45,7 @@
 				"overlaid" : false
 			}
 		},
-		"palette" : ["#0000ff","#ffffff"],
+		"palette" : ["#0000ff","#cccccc"],
 		"data" : [],
 		"colors" : {}
 	},

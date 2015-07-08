@@ -23,8 +23,16 @@
 		<md-button ui-sref="browser" aria-label="View Select Cluster in Browser" class="md-icon-button md-accent" ng-show="$state.includes('dataset')"><md-icon class="icon-view-carousel"></md-icon></md-button>
 		<!-- Browser Icons -->
 		<!--md-button ui-sref="overlay-acquire" aria-label="Add Track" class="md-icon-button md-accent" ng-show="$state.includes('browser')"><md-icon class="icon-add"></md-icon></md-button-->
-		<md-button ui-sref="overlay-import" aria-label="Add Track" class="md-icon-button md-accent" ng-show="$state.includes('browser')"><md-icon class="icon-add"></md-icon></md-button>
-		<md-button ng-click="searchGenome()" aria-label="Search for Genome coordinates" class="md-icon-button md-accent" ng-show="$state.includes('browser')"><md-icon class="icon-search"></md-icon></md-button>
-		<md-button ui-sref-active="active-sidebar" aria-label="Open Settings panel" class="md-icon-button md-accent" ng-show="$state.includes('browser')"><md-icon class="icon-settings"></md-icon></md-button>
+		<md-button ui-sref="overlay-import" aria-label="Add Tracks" class="md-icon-button md-accent" ng-show="$state.includes('browser')">
+			<md-icon class="icon-add"></md-icon>
+			Add Tracks
+		</md-button>
+		<md-input-container layout-padding aria-label="Search for Genome coordinates" class="md-icon-float md-icon-button md-accent" ng-show="$state.includes('browser')">
+			<md-icon class="icon-search"></md-icon>
+			<input ng-model="settings.current.position" />
+		</md-input-container>
+		<!--md-button ui-sref-active="active-sidebar" aria-label="Open Settings panel" class="md-icon-button md-accent" ng-show="$state.includes('browser')">
+			<md-icon class="icon-settings"></md-icon>
+		</md-button-->
 	</div>	
 </md-toolbar>

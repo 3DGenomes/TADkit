@@ -11,7 +11,10 @@
 				type: '=',
 				title: '=',
 				settings: '=',
-				view: '='
+				view: '=',
+				data: '=',
+				overlay: '=', /* used in template */
+				toggleoverlay: '&' /* used in template */
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
@@ -50,7 +53,7 @@
 					 */
 					var component = element[0];
 						// console.log(component.clientWidth);
-					var viewport = element[0].children[3];
+					var viewport = element[0].children[0].children[3];
 						// console.log(viewport.clientWidth);
 					// if with controller use line below
 					// var viewport = element[0].children[0].children[3];
@@ -67,6 +70,19 @@
 					}, function() {
 						scope.render();
 					});
+
+					// UPDATE
+					scope.$watch('settings.current.position', function(newPosition, oldPosition) {
+						if ( newPosition !== oldPosition ) {
+							scope.update();
+						}
+					});
+					
+ 				// 	// ZOOM
+					// var zoom = d3.behavior.zoom()
+					// 	.on("zoom",  function() {
+					// 	scope.update();
+					// });
 
 					scope.render = function() {
 						svg.selectAll('*').remove();
@@ -133,6 +149,7 @@
 							.attr("height", height);
 							
 						handle = slider.append("circle")
+							.attr("id", "handle")
 							.attr("class", "handle")
 							.attr("cx", xScale(scope.settings.current.position))
 							.attr("cy", height)
@@ -148,6 +165,12 @@
 						slider
 							.call(brush.extent([(scope.settings.current.position), 0]))
 							.call(brush.event);
+					};
+
+					// UPDATE
+					scope.update = function(data) {
+						svg.select("#handle") //.style("visibility", "hidden");
+						.attr("cx", function(d) { return xScale( scope.settings.current.position ); } );
 					};
 
 					// BRUSH

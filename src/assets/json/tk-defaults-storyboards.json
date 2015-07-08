@@ -24,7 +24,7 @@
 					"type" : "scene",
 					"dataset" : "default",
 					"state" : {
-						"width" : "600px",
+						"width" : "800px",
 						"height" : 	"400px",
 						"margin" : "4px",
 						"position" : 0
@@ -74,6 +74,7 @@
 							"visible" : false
 						},
 						"chromatin" : {
+							"color" : "#cccccc",
 							"particleSegments" : 20,
 							"curveSegments" : 1,
 							"radius" : 200,
@@ -106,7 +107,7 @@
 					"type" : "panel-inspector",
 					"dataset" : "genes",
 					"state" : {
-						"width" : "300px",
+						"width" : "200px",
 						"height" : "300px",
 						"margin" : "4px",
 						"position" : 1
@@ -246,7 +247,7 @@
 						"width" : "100%",
 						"height" : "auto",
 						"margin" : "0px",
-						"position" : 4
+						"position" : 5
 					}
 				},
 				"view" : {

@@ -1,4 +1,4 @@
-<!--div ng-controller='TrackController' class="component-controller"-->
+<div ng-controller='TrackController' class="component-controller">
 	<div class="component-header">
 		<h6>{{title}}</h6>
 	</div>
@@ -7,11 +7,11 @@
 			<md-icon data-ng-hide="overlay.object.state.overlaid" class="toggle-right icon-check-box-outline-blank"></md-icon>
 			<md-icon data-ng-show="overlay.object.state.overlaid" class="toggle-right icon-check-box"></md-icon>
 		</a>
-		<a ng-click='toggleOptions()' class="options toggle-{{optionsState}}">
+		<!--a ng-click='toggleOptions()' class="options toggle-{{optionsState}}">
 			<md-icon class="icon-settings"></md-icon>
-		</a>
+		</a-->
 	</div>
-	<div class="component-options track" ng-show='optionsState'>
+	<div class="component-options track" data-ng-show='optionsState'>
 		<!-- TODO: ENABLE AUTO-GENERATION
 		<ul>
 	 		<li data-ng-repeat='option in options'>
@@ -30,4 +30,4 @@
 		<label for="rotate">Option3</label>
 	</div>
 	<div class="component-body"></div>
-<!--/div-->
+</div>

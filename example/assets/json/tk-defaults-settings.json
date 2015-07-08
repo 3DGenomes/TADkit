@@ -12,7 +12,16 @@
 		"delimiter" : " "
 	},
 	"current" : {
-
+		"chromStart" : 0,
+		"chromEnd" : 0,
+		"particle" : 0,
+		"particleSegments" : 0,
+		"particlesCount" : 0,
+		"position" : 0,
+		"segment" : 0,
+		"segmentLength" : 0,
+		"segmentUpper" : 0,
+		"segmentCount" : 0
 	},
 	"views" : {
 		"strands" : true,

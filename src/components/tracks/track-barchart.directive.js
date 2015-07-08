@@ -2,9 +2,9 @@
 	'use strict';
 	angular
 		.module('TADkit')
-		.directive('tkComponentTrackProximities', tkComponentTrackProximities);
+		.directive('tkComponentTrackBarchart', tkComponentTrackBarchart);
 
-	function tkComponentTrackProximities(d3Service, Settings) {    
+	function tkComponentTrackBarchart(d3Service, Settings) {    
 		return {
 			restrict: 'EA',
 			scope: {
@@ -31,35 +31,11 @@
 						}
 					};
 
-					// save data matrix for re-slicing as position changes
-					// scope.dataMatrix = scope.data;
-
-					// FYI: data == distances
-					// eg. particles a=rst,b=uvw,c=xyz
-					// give matrix [aa,ab,ac,ba,bb,bc,ca,cb,cc]
-					// can be filtered by no. of particles
-					// totalMatrixVertices / (totalParticeles * 3)
- 					var data = scope.data.distances;
+ 					var data = scope.data;
 					var focusStart = scope.view.viewpoint.chromStart;
 					var focusEnd = scope.view.viewpoint.chromEnd;
 					var focusLength = focusEnd - focusStart + 1; // Resrouces.range...
 					var particlesCount = scope.settings.current.particlesCount;
-
-					/* Note: focusLength may not be exactly particlesCount (N) * resolution
-					 * BUT for now the last bin resolution is taken as equal to the others
-					 * In the future TADbit may output variable bin resolutions
-					 * eg. as an array of resolutions corresponding to the bins/particles
-					 * Then the code commented below can be developed/completed
-					 * to assess and assign the last index of data
-					 * This may be better done externally to the track modules
-					 * and the results accessed through, for example, view.settings.resolutions
-					 */
-					// var resolution = scope.view.resolution;
-					// var particlesCount = focusLength / resolution;
-					// var exactCount = function(particlesCount) { return parseInt(particlesCount) === particlesCount };
-					// var resolutionParticleN = exactCount;
-					// if (!exactCount) resolutionParticleN = focusLength - (resolution * (n-1));
-					// var particles = Math.ceil(particlesCount);
 
 					// SVG GENERATION
 					var componentMargin = parseInt(scope.view.settings.margin);
@@ -72,10 +48,11 @@
 						},
 						scale = 4,
 						trackHeight = parseInt(scope.view.settings.heightInner),
-						nodeHeight = trackHeight * 0.5,
-						verticalOffset = (trackHeight - nodeHeight) * 0.5,
+						nodeHeight = 10,
 						nodePadding = 0,
-						nodeColor = scope.view.settings.color;
+						nodeColor = scope.view.settings.color,
+						harmonicsColor = scope.overlay.palette[0],
+						lowerBoundsColor = scope.overlay.palette[1];
 
 					// VIEWPORT
 					/* component-controller == children[0]
@@ -87,8 +64,8 @@
 					// if with controller use line below
 					// var viewport = element[0].children[0].children[3];
 					var svg = d3.select(viewport).append('svg');
-					var xScale, xAxis, brush, chart;
-					var defs, focus, zoomArea, container, labels, focusGraph, highlight;
+					var xScale, yScale, axisX, axisY, brush, chart;
+					var defs, focus, zoomArea, container, axis, labels, harmonics, lowerBounds, highlight;
 
 					// RESIZE
 					scope.$watch(function(){
@@ -102,7 +79,7 @@
 					// REDRAW
 					scope.$watch('data.dimension', function(newData, oldData) {
 						if (newData !== oldData ) {
-							data = scope.data.distances;
+							data = scope.data;
 							scope.render(data);
 						}
 					});
@@ -120,6 +97,35 @@
 					// 	scope.update();
 					// });
 
+					scope.getColor = function(code) {
+						var colorCodes = [
+											{"type":"harmonic","code":"H","color":"#4CAF50"},
+											{"type":"upperBound","code":"L","color":"#0000ff"},
+											{"type":"lowerBound","code":"U","color":"#ff00ff"},
+											{"type":"contact","code":"C","color":"#00ff00"}
+										];
+						var color = "#ccc";
+						for (var i = colorCodes.length - 1; i >= 0; i--) {
+							if (code == colorCodes[i].code) {
+								color = colorCodes[i].color;
+							}
+						}
+						return color;
+					};
+
+					scope.getOpacity = function(value) {
+						var opacity;
+						var scaled = value / 5; // 5 being the limit...
+						opacity = scaled * scaled;
+						return opacity;
+					};
+
+					scope.getStrokeWidth = function(value) {
+						var strokeWidth = 10;
+						var scaled = value / 5; // 5 being the limit...
+						strokeWidth = strokeWidth * scaled;
+						return strokeWidth;
+					};
 
 					scope.render = function(data) {
 						svg.selectAll('*').remove();
@@ -128,18 +134,26 @@
 
 						var width = component.clientWidth - (2 * componentMargin) - margin.left - margin.right,
 							height = trackHeight - margin.top - margin.bottom;
+						var verticalOffset = height * 0.5;
 						var particleWidth = (1 * width) / particlesCount;
+						var barWidth = particleWidth;
+
+						// var y0 = Math.max(Math.abs(d3.min(data)), Math.abs(d3.max(data)));
+
 						xScale = d3.scale.linear()
 								.range([0, width])
+								.domain([focusStart, focusEnd])
 								.clamp(true);
 
-						xScale.domain([focusStart, focusEnd]);
-				
-						xAxis = d3.svg.axis()
-								.scale(xScale)
-								.orient("top")
-								.ticks(0)
-								.outerTickSize(0);
+						yScale = d3.scale.linear()
+								.domain([-5, 5])
+								.range([0, height]);
+
+						axisY = d3.svg.axis()
+								.scale(yScale)
+								.orient("left")
+								.ticks(6)
+								.outerTickSize(1);
 
 						var highlightWidth = 2;
 
@@ -155,6 +169,15 @@
 								.call(brush);
 								// .call(zoom);
 						
+						chart.append("g")
+							.attr("class", "y axis")
+							.append("line")
+							.attr("y1", yScale(0))
+							.attr("y2", yScale(0))
+							.attr("x1", 0)
+							.attr("x2", width);
+
+
 						chart.select(".background")
 							.attr("y", height/2)
 							.attr("height", height);
@@ -182,23 +205,48 @@
 						container = focus.append("g")
 							.attr("class", "container")
 							.attr('clip-path', 'url(#clip)');
+						harmonics  = container.append("g")
+							.attr("class", "harmonics");
+						lowerBounds  = container.append("g")
+							.attr("class", "lowerbounds");
+
+						axis = focus.append("g")
+							.attr("class", "axis y")
+							.call(axisY);
 
 						labels  = chart.append("g")
 							.attr("class", "labels");
-	
-						focusGraph = container.selectAll("rect")
-							.data(data)
-							.enter().append("rect")
-							.attr("x", function(d, i) { return (i * particleWidth); } )
-							.attr("y", verticalOffset)
-							.attr("width", particleWidth)
-							.attr("height", nodeHeight)
-							.style("fill", nodeColor)
-							.style("fill-opacity", function(d) { return d; })
-							.style("stroke", nodeColor)
-							.style("stroke-width", 0)
-							.append("svg:title")
-							.text(function(d,i) { return i + ":" + d; });
+
+						// if (scope.view.viewtype == "default") {
+							harmonics.selectAll("rect") // RED
+								.data(data.harmonics)
+								.enter().append("rect")
+								.attr("x", function(d) { return (d[1] * barWidth); } )
+								.attr("y", function(d) { return yScale( d[3] ); } )
+								.attr("width", barWidth)
+								.attr("height", function(d) { return yScale( d[3] ); })
+								.style("fill", harmonicsColor)
+								// .style("fill-opacity", function(d) { return scope.getOpacity(d[3]); })
+								.style("stroke", harmonicsColor)
+								.style("stroke-width", 0)
+								.append("svg:title")
+								.text(function(d,i) { return i + ":" + d; });
+
+							lowerBounds.selectAll("rect") // BLUE
+								.data(data.lowerBounds)
+								.enter().append("rect")
+								.attr("x", function(d) { return (d[1] * barWidth); } )
+								.attr("y", function(d) { return yScale( Math.max(0, (d[3] * -1.0))); } )
+								.attr("width", barWidth)
+								.attr("height", function(d) { return yScale( d[3] ); })
+								.style("fill", lowerBoundsColor)
+								// .style("fill-opacity", function(d) { return scope.getOpacity(d[3]); })
+								.style("stroke", lowerBoundsColor)
+								.style("stroke-width", 0)
+								.append("svg:title")
+								.text(function(d,i) { return i + ":" + d; });
+
+						// }
 
 						highlight = chart.append("rect")
 								.attr("id", "highlight")
@@ -207,13 +255,13 @@
 								.attr("width", highlightWidth )
 								.attr("height", trackHeight)
 								.attr("class", "highlight-follow");
-						highlight
-							.call(brush.extent([(scope.settings.current.position), 0]))
-							.call(brush.event);
+						// highlight
+						// 	.call(brush.extent([(scope.settings.current.position), 0]))
+						// 	.call(brush.event);
 					};
 
 					// UPDATE
-					scope.update = function() {
+					scope.update = function(data) {
 						svg.select("#highlight") //.style("visibility", "hidden");
 						.attr("x", function(d) { return xScale( scope.settings.current.position ); } );
 					};

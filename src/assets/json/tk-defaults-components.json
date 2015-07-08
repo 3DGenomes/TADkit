@@ -329,7 +329,7 @@
 			"uuid" : "00000000-0000-0000-0000-000000000004",
 			"id" : "h-restraints-track",
 			"title" : "Restraints",
-			"type" : "track-restraints",
+			"type" : "track-barchart",
 			"dataset" : "restraints",
 			"state" : {
 				"width" : "100%",

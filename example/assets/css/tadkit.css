@@ -46,8 +46,30 @@ md-checkbox.md-default-theme:not([disabled]).md-primary .md-icon {
 md-toolbar {
 	min-height: 48px;
 }
+.md-toolbar-tools .md-button {
+  font-size: 1em;
+}
+md-input-container {
+	width: 220px;
+}
+.md-button.md-default-theme.md-accent,
 md-toolbar md-icon {
 	color: #fff;
+}
+md-input-container.md-default-theme .md-input {
+	text-align: end;
+	color: #fff;
+	border-color: rgba(255,255,255,0.37);
+	/*width: 180px;*/
+}
+md-input-container.md-default-theme .md-input:focus {
+	color: #333;
+	background-color: rgba(255,255,255,0.67);
+}
+md-input-container.md-icon-float>md-icon {
+	position: absolute;
+	top: 14px;
+	left: 24px;
 }
 .md-toolbar-tools {
 	height: 48px;
@@ -465,7 +487,8 @@ track {
 #track-controls a {
 	color: #999;
 }
-.axis path {
+.axis path,
+.axis line {
 	fill: none;
 	stroke: #ccc;
 	stroke-width: 2px;
@@ -651,6 +674,7 @@ md-icon {
 .md-icon-sm {
   font-size: 12px;
 }
+
 /* IcoMoon code <md-icon> classes */
 
 .icon-exit-to-app:before {

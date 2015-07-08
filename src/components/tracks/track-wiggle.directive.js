@@ -8,6 +8,7 @@
 		return {
 			restrict: 'EA',
 			scope: {
+				type: '=',
 				title: '=',
 				settings: '=',
 				view: '=',
@@ -63,7 +64,7 @@
 					 * - component-body == children[3]
 					 */
 					var component = element[0].parentNode;
-					var viewport = element[0].children[3];
+					var viewport = element[0].children[0].children[3];
 					// if with controller use line below
 					// var viewport = element[0].children[0].children[3];
 					var svg = d3.select(viewport).append('svg');
@@ -77,7 +78,7 @@
 						var h = component.clientHeight;
 						return w + h;
 					}, function() {
-						scope.render(scope.data);
+						scope.render(data);
 					});
 
 					// REDRAW on new data
@@ -141,12 +142,12 @@
 							focus = chart.append("g")
 								.attr("class", "focus");
 
-							var zoomArea = focus.append("g")
-								.attr("class", "zoom")
-								.append("rect")
-								.attr("width", width)
-								.attr("height", height)
-								.attr('fill', 'white');
+							// var zoomArea = focus.append("g")
+							// 	.attr("class", "zoom")
+							// 	.append("rect")
+							// 	.attr("width", width)
+							// 	.attr("height", height)
+							// 	.attr('fill', 'white');
 
 							container = focus.append("g")
 								.attr("class", "container")

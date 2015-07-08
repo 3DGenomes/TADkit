@@ -41,7 +41,7 @@
 						 */
 						// component = element[0].parentNode;
 						// console.log(component.clientWidth);
-						viewport = element[0].children[3];
+						viewport = element[0].children[0].children[3];
 						// console.log(viewport.clientWidth);
 						// if with controller use line below
 						// viewport = element[0].children[0].children[3];

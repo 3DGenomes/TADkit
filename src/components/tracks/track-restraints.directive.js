@@ -8,6 +8,7 @@
 		return {
 			restrict: 'EA',
 			scope: {
+				type: '=',
 				title: '=',
 				settings: '=',
 				view: '=',
@@ -60,21 +61,21 @@
 					 * - component-body == children[3]
 					 */
 					var component = element[0].parentNode;
-					var viewport = element[0].children[3];
+					var viewport = element[0].children[0].children[3];
 					// if with controller use line below
 					// var viewport = element[0].children[0].children[3];
 					var svg = d3.select(viewport).append('svg');
-					var xScale, xAxis, brush, chart;
+					var xScale, axisUpper, axisLower, brush, chart;
 					var defs, focus, zoomArea, container, labels, harmonics, lowerBounds, highlight;
 
-					// // RESIZE
-					// scope.$watch(function(){
-					// 	var w = component.clientWidth;
-					// 	var h = component.clientHeight;
-					// 	return w + h;
-					// }, function() {
-					// 	scope.render(scope.data);
-					// });
+					// RESIZE
+					scope.$watch(function(){
+						var w = component.clientWidth;
+						var h = component.clientHeight;
+						return w + h;
+					}, function() {
+						scope.render(scope.data);
+					});
 
 					// REDRAW
 					scope.$watch('data.dimension', function(newData, oldData) {
@@ -97,6 +98,35 @@
 					// 	scope.update();
 					// });
 
+					scope.getColor = function(code) {
+						var colorCodes = [
+											{"type":"harmonic","code":"H","color":"#4CAF50"},
+											{"type":"upperBound","code":"L","color":"#0000ff"},
+											{"type":"lowerBound","code":"U","color":"#ff00ff"},
+											{"type":"contact","code":"C","color":"#00ff00"}
+										];
+						var color = "#ccc";
+						for (var i = colorCodes.length - 1; i >= 0; i--) {
+							if (code == colorCodes[i].code) {
+								color = colorCodes[i].color;
+							}
+						}
+						return color;
+					};
+
+					scope.getOpacity = function(value) {
+						var opacity;
+						var scaled = value / 5; // 5 being the limit...
+						opacity = scaled ;
+						return opacity;
+					};
+
+					scope.getStrokeWidth = function(value) {
+						var strokeWidth = 10;
+						var scaled = value / 5; // 5 being the limit...
+						strokeWidth = strokeWidth * scaled;
+						return strokeWidth;
+					};
 
 					scope.render = function(data) {
 						svg.selectAll('*').remove();
@@ -112,9 +142,15 @@
 
 						xScale.domain([focusStart, focusEnd]);
 				
-						xAxis = d3.svg.axis()
+						axisUpper = d3.svg.axis()
 								.scale(xScale)
 								.orient("top")
+								.ticks(0)
+								.outerTickSize(0);
+
+						axisLower = d3.svg.axis()
+								.scale(xScale)
+								.orient("bottom")
 								.ticks(0)
 								.outerTickSize(0);
 
@@ -149,45 +185,85 @@
 						focus = chart.append("g")
 							.attr("class", "focus");
 
-						zoomArea = focus.append("g")
-							.attr("class", "zoom")
-							.append("rect")
-							.attr("width", width)
-							.attr("height", height)
-							.attr('fill', 'white');
+						// zoomArea = focus.append("g")
+						// 	.attr("class", "zoom")
+						// 	.append("rect")
+						// 	.attr("width", width)
+						// 	.attr("height", height)
+						// 	.attr('fill', 'white');
 
 						container = focus.append("g")
 							.attr("class", "container")
 							.attr('clip-path', 'url(#clip)');
 
+						var axisH = focus.append("g")
+							.attr("class", "axis upper")
+							.attr("transform", "translate(0," + nodeHeight + ")")
+							.call(axisUpper);
+
+						var axisL = focus.append("g")
+							.attr("class", "axis lower")
+							.attr("transform", "translate(0," + 0 + ")")
+							.call(axisLower);
+
 						labels  = chart.append("g")
 							.attr("class", "labels");
-	
-						harmonics = container.selectAll("line")
-							.data(data.harmonics)
-							.enter()
-							.append("line")
-							.attr("x1", function(d) { return (data.dimension * particleWidth); } )
-							.attr("y1", verticalOffset)
-							.attr("x2", function(d) { return (d[1] * particleWidth); } )
-							.attr("y2", nodeHeight)
-							.attr("stroke-width", function(d) { return (d[3]); } )
-							.attr("stroke", harmonicsColor)
-							.append("svg:title")
-							.text(function(d,i) { return i + ":" + d; });
 
-						lowerBounds = container.selectAll("line")
-							.data(data.lowerBounds)
-							.enter()
-							.append("line")
-							.attr("x1", function(d) { return (data.dimension * particleWidth); } )
-							.attr("y1", nodeHeight)
-							.attr("x2", function(d) { return (d[1] * particleWidth); } )
-							.attr("y2", verticalOffset)
-							.attr("stroke-width", function(d) { return (d[3]); } )
-							.attr("stroke", lowerBoundsColor)
-							.append("svg:title")
-							.text(function(d,i) { return i + ":" + d; });
+						if (scope.view.viewtype == "arcs") {
+							harmonics = container.selectAll("line")
+								.data(data.harmonics)
+								.enter()
+								.append("line")
+								.attr("x1", function(d) { return (data.dimension * particleWidth); } )
+								.attr("y1", verticalOffset)
+								.attr("x2", function(d) { return (d[1] * particleWidth); } )
+								.attr("y2", nodeHeight)
+								.attr("stroke-width", function(d) { return (d[3]); } )
+								.attr("stroke", harmonicsColor)
+								.append("svg:title")
+								.text(function(d,i) { return i + ":" + d; });
+
+								lowerBounds = container.selectAll("line")
+									.data(data.lowerBounds)
+									.enter()
+									.append("line")
+								.attr("x1", function(d) { return (data.dimension * particleWidth); } )
+								.attr("y1", nodeHeight)
+								.attr("x2", function(d) { return (d[1] * particleWidth); } )
+								.attr("y2", verticalOffset)
+								.attr("stroke-width", function(d) { return (d[3]); } )
+								.attr("stroke", lowerBoundsColor)
+								.append("svg:title")
+								.text(function(d,i) { return i + ":" + d; });
+						} else { // "linear" ie. lines between two edges
+							harmonics = container.selectAll("line")
+								.data(data.harmonics)
+								.enter()
+								.append("line")
+								.attr("x1", function(d) { return (data.dimension * particleWidth); } )
+								.attr("y1", verticalOffset)
+								.attr("x2", function(d) { return (d[1] * particleWidth); } )
+								.attr("y2", nodeHeight)
+								.attr("stroke", harmonicsColor)
+								.attr("opacity", function(d) { return scope.getOpacity(d[3]); } )
+								.attr("stroke-width", function(d) { return scope.getStrokeWidth(d[3]); } )
+								.append("svg:title")
+								.text(function(d,i) { return i + ":" + d; });
+
+							lowerBounds = container.selectAll("line")
+								.data(data.lowerBounds)
+								.enter()
+								.append("line")
+								.attr("x1", function(d) { return (data.dimension * particleWidth); } )
+								.attr("y1", nodeHeight)
+								.attr("x2", function(d) { return (d[1] * particleWidth); } )
+								.attr("y2", verticalOffset)
+								.attr("stroke", lowerBoundsColor)
+								.attr("opacity", function(d) { return scope.getOpacity(d[3]); } )
+								.attr("stroke-width", function(d) { return scope.getStrokeWidth(d[3]); } )
+								.append("svg:title")
+								.text(function(d,i) { return i + ":" + d; });
+						}
 
 						highlight = chart.append("rect")
 								.attr("id", "highlight")
