@@ -77,24 +77,24 @@
 				}
 			}
 		})
-		// .state('upload', {
-		// 	parent: 'project',
-		// 	url: '/upload',
-		// 	views: {
-		// 		'topbar@main': {
-		// 			templateUrl: 'assets/templates/topbar.html',
-		// 			controller: 'TopbarController'
-		// 		},
-		// 		'content@main': {
-		// 			templateUrl: 'assets/templates/project-upload.html',
-		// 			controller: 'ProjectUploadController'
-		// 		},
-		// 		'sidebar-right@main': {
-		// 			templateUrl: 'assets/templates/sidebar.user.html',
-		// 			controller: 'SidebarUserController'
-		// 		}
-		// 	}
-		// })
+		.state('example', {
+			parent: 'project',
+			url: '/example',
+			views: {
+				'topbar@main': {
+					templateUrl: 'assets/templates/topbar.html',
+					controller: 'TopbarController'
+				},
+				'content@main': {
+					templateUrl: 'assets/templates/project-example.html',
+					controller: 'ProjectLoaderController'
+				},
+				'sidebar-right@main': {
+					templateUrl: 'assets/templates/sidebar.user.html',
+					controller: 'SidebarUserController'
+				}
+			}
+		})
 		.state('dataset', {
 			parent: 'project',
 			url: '/dataset',
@@ -154,33 +154,6 @@
 				}
 			},
 		})
-			// .state('overlay-import-acquire', {
-			// 	parent: 'overlay-import',
-			// 	url: '/acquire',
-			// 	views: {
-			// 		'steps@modal': {
-			// 			templateUrl: 'assets/templates/overlay-import-acquire.html',
-			// 		}
-			// 	},
-			// })
-			// .state('overlay-import-filter', {
-			// 	parent: 'overlay-import',
-			// 	url: '/filter',
-			// 	views: {
-			// 		'steps@modal': {
-			// 			templateUrl: 'assets/templates/overlay-import-filter.html',
-			// 		}
-			// 	},
-			// })
-			// .state('overlay-import-represent', {
-			// 	parent: 'overlay-import',
-			// 	url: '/represent',
-			// 	views: {
-			// 		'steps@modal': {
-			// 			templateUrl: 'assets/templates/overlay-import-represent.html',
-			// 		}
-			// 	},
-			// })
 		.state('404', {
 			url: '/404',
 			templateUrl: 'assets/templates/404.tpl.html',

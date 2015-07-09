@@ -47,8 +47,8 @@
 						"fogFar" : 1.5		
 					},
 					"controls" : {
-						"autoRotate" : false,
-						"autoRotateSpeed" : 2.0
+						"autoRotate" : true,
+						"autoRotateSpeed" : 4
 					},
 					"viewtype" : "cylinderSegments",
 					"settings" : {
@@ -107,7 +107,7 @@
 					"type" : "panel-inspector",
 					"dataset" : "genes",
 					"state" : {
-						"width" : "300px",
+						"width" : "200px",
 						"height" : "300px",
 						"margin" : "4px",
 						"position" : 1

@@ -47,8 +47,8 @@
 						"fogFar" : 1.5		
 					},
 					"controls" : {
-						"autoRotate" : false,
-						"autoRotateSpeed" : 2.0
+						"autoRotate" : true,
+						"autoRotateSpeed" : 4
 					},
 					"viewtype" : "cylinderSegments",
 					"settings" : {

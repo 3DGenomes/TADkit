@@ -44,6 +44,8 @@
 					var focusEnd = scope.view.viewpoint.chromEnd;
 					var focusLength = focusEnd - focusStart + 1; // Resrouces.range...
 					var particlesCount = scope.settings.current.particlesCount;
+					var clipPathUrl = "clip" + scope.title;
+					var clipPath = "url(#" + clipPathUrl + ")";
 
 					/* Note: focusLength may not be exactly particlesCount (N) * resolution
 					 * BUT for now the last bin resolution is taken as equal to the others
@@ -128,6 +130,7 @@
 
 						var width = component.clientWidth - (2 * componentMargin) - margin.left - margin.right,
 							height = trackHeight - margin.top - margin.bottom;
+							console.log(height);
 						var particleWidth = (1 * width) / particlesCount;
 						xScale = d3.scale.linear()
 								.range([0, width])
@@ -163,7 +166,7 @@
 						// solid rect as background also allow mouse events everywhere 
 						defs = chart.append("defs")
 							.append("clipPath")
-							.attr("id", "clip")
+							.attr("id", clipPathUrl)
 							.append("rect")
 							.attr("width", width)
 							.attr("height", height)
@@ -181,7 +184,7 @@
 
 						container = focus.append("g")
 							.attr("class", "container")
-							.attr('clip-path', 'url(#clip)');
+							.attr('clip-path', clipPath);
 
 						labels  = chart.append("g")
 							.attr("class", "labels");

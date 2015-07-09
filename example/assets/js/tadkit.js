@@ -125,24 +125,24 @@
 				}
 			}
 		})
-		// .state('upload', {
-		// 	parent: 'project',
-		// 	url: '/upload',
-		// 	views: {
-		// 		'topbar@main': {
-		// 			templateUrl: 'assets/templates/topbar.html',
-		// 			controller: 'TopbarController'
-		// 		},
-		// 		'content@main': {
-		// 			templateUrl: 'assets/templates/project-upload.html',
-		// 			controller: 'ProjectUploadController'
-		// 		},
-		// 		'sidebar-right@main': {
-		// 			templateUrl: 'assets/templates/sidebar.user.html',
-		// 			controller: 'SidebarUserController'
-		// 		}
-		// 	}
-		// })
+		.state('example', {
+			parent: 'project',
+			url: '/example',
+			views: {
+				'topbar@main': {
+					templateUrl: 'assets/templates/topbar.html',
+					controller: 'TopbarController'
+				},
+				'content@main': {
+					templateUrl: 'assets/templates/project-example.html',
+					controller: 'ProjectLoaderController'
+				},
+				'sidebar-right@main': {
+					templateUrl: 'assets/templates/sidebar.user.html',
+					controller: 'SidebarUserController'
+				}
+			}
+		})
 		.state('dataset', {
 			parent: 'project',
 			url: '/dataset',
@@ -202,33 +202,6 @@
 				}
 			},
 		})
-			// .state('overlay-import-acquire', {
-			// 	parent: 'overlay-import',
-			// 	url: '/acquire',
-			// 	views: {
-			// 		'steps@modal': {
-			// 			templateUrl: 'assets/templates/overlay-import-acquire.html',
-			// 		}
-			// 	},
-			// })
-			// .state('overlay-import-filter', {
-			// 	parent: 'overlay-import',
-			// 	url: '/filter',
-			// 	views: {
-			// 		'steps@modal': {
-			// 			templateUrl: 'assets/templates/overlay-import-filter.html',
-			// 		}
-			// 	},
-			// })
-			// .state('overlay-import-represent', {
-			// 	parent: 'overlay-import',
-			// 	url: '/represent',
-			// 	views: {
-			// 		'steps@modal': {
-			// 			templateUrl: 'assets/templates/overlay-import-represent.html',
-			// 		}
-			// 	},
-			// })
 		.state('404', {
 			url: '/404',
 			templateUrl: 'assets/templates/404.tpl.html',
@@ -2171,6 +2144,8 @@
 					var focusEnd = scope.view.viewpoint.chromEnd;
 					var focusLength = focusEnd - focusStart + 1; // Resrouces.range...
 					var particlesCount = scope.settings.current.particlesCount;
+					var clipPathUrl = "clip" + scope.title;
+					var clipPath = "url(#" + clipPathUrl + ")";
 
 					/* Note: focusLength may not be exactly particlesCount (N) * resolution
 					 * BUT for now the last bin resolution is taken as equal to the others
@@ -2255,6 +2230,7 @@
 
 						var width = component.clientWidth - (2 * componentMargin) - margin.left - margin.right,
 							height = trackHeight - margin.top - margin.bottom;
+							console.log(height);
 						var particleWidth = (1 * width) / particlesCount;
 						xScale = d3.scale.linear()
 								.range([0, width])
@@ -2290,7 +2266,7 @@
 						// solid rect as background also allow mouse events everywhere 
 						defs = chart.append("defs")
 							.append("clipPath")
-							.attr("id", "clip")
+							.attr("id", clipPathUrl)
 							.append("rect")
 							.attr("width", width)
 							.attr("height", height)
@@ -2308,7 +2284,7 @@
 
 						container = focus.append("g")
 							.attr("class", "container")
-							.attr('clip-path', 'url(#clip)');
+							.attr('clip-path', clipPath);
 
 						labels  = chart.append("g")
 							.attr("class", "labels");
@@ -2413,6 +2389,8 @@
 					var focusEnd = scope.view.viewpoint.chromEnd;
 					var focusLength = focusEnd - focusStart + 1; // Resrouces.range...
 					var particlesCount = scope.settings.current.particlesCount;
+					var clipPathUrl = "clip" + scope.title;
+					var clipPath = "url(#" + clipPathUrl + ")";
 
 					// SVG GENERATION
 					var componentMargin = parseInt(scope.view.settings.margin);
@@ -2425,8 +2403,6 @@
 						},
 						scale = 4,
 						trackHeight = parseInt(scope.view.settings.heightInner),
-						nodeHeight = trackHeight * 0.5,
-						verticalOffset = (trackHeight - nodeHeight) * 0.5,
 						nodePadding = 0,
 						nodeColor = scope.view.settings.color,
 						harmonicsColor = scope.overlay.palette[0],
@@ -2511,7 +2487,9 @@
 						if (!data) return;
 
 						var width = component.clientWidth - (2 * componentMargin) - margin.left - margin.right,
-							height = trackHeight - margin.top - margin.bottom;
+							height = trackHeight - margin.top - margin.bottom,
+							nodeHeight = height,// - margin.top - margin.bottom,
+							verticalOffset = margin.top;//(trackHeight - nodeHeight) * 0.5,
 						var particleWidth = (1 * width) / particlesCount;
 						xScale = d3.scale.linear()
 								.range([0, width])
@@ -2553,7 +2531,7 @@
 						// solid rect as background also allow mouse events everywhere 
 						defs = chart.append("defs")
 							.append("clipPath")
-							.attr("id", "clip")
+							.attr("id", clipPathUrl)
 							.append("rect")
 							.attr("width", width)
 							.attr("height", height)
@@ -2571,76 +2549,53 @@
 
 						container = focus.append("g")
 							.attr("class", "container")
-							.attr('clip-path', 'url(#clip)');
+							.attr('clip-path', clipPath);
 
-						var axisH = focus.append("g")
-							.attr("class", "axis upper")
-							.attr("transform", "translate(0," + nodeHeight + ")")
-							.call(axisUpper);
+						// var axisH = focus.append("g")
+						// 	.attr("class", "axis upper")
+						// 	.attr("transform", "translate(0," + nodeHeight + ")")
+						// 	.call(axisUpper);
 
-						var axisL = focus.append("g")
-							.attr("class", "axis lower")
-							.attr("transform", "translate(0," + 0 + ")")
-							.call(axisLower);
+						// var axisL = focus.append("g")
+						// 	.attr("class", "axis lower")
+						// 	.attr("transform", "translate(0," + 0 + ")")
+						// 	.call(axisLower);
 
 						labels  = chart.append("g")
 							.attr("class", "labels");
 
-						if (scope.view.viewtype == "arcs") {
 							harmonics = container.selectAll("line")
 								.data(data.harmonics)
 								.enter()
 								.append("line")
-								.attr("x1", function(d) { return (data.dimension * particleWidth); } )
-								.attr("y1", verticalOffset)
-								.attr("x2", function(d) { return (d[1] * particleWidth); } )
-								.attr("y2", nodeHeight)
-								.attr("stroke-width", function(d) { return (d[3]); } )
-								.attr("stroke", harmonicsColor)
+									.attr("x1", function(d) { return (data.dimension * particleWidth - (particleWidth * 0.5) ); } )
+									.attr("y1", verticalOffset)
+									.attr("x2", function(d) { return (d[1] * particleWidth - (particleWidth * 0.5) ); } )
+									.attr("y2", nodeHeight)
+									.attr("stroke", harmonicsColor)
+									.attr("opacity", function(d) { return scope.getOpacity(d[3]); } )
+									.attr("stroke-width", function(d) { return scope.getStrokeWidth(d[3]); } )
+								// .append("circle")
+								// 	.attr("cx", 0)//function(d) { return (d[1] * particleWidth - (particleWidth * 0.5) ); } )
+								// 	.attr("cy", 0)//nodeHeight)
+								// 	.attr("r", 4)
+								// 	.style("fill", harmonicsColor)
 								.append("svg:title")
-								.text(function(d,i) { return i + ":" + d; });
-
-								lowerBounds = container.selectAll("line")
-									.data(data.lowerBounds)
-									.enter()
-									.append("line")
-								.attr("x1", function(d) { return (data.dimension * particleWidth); } )
-								.attr("y1", nodeHeight)
-								.attr("x2", function(d) { return (d[1] * particleWidth); } )
-								.attr("y2", verticalOffset)
-								.attr("stroke-width", function(d) { return (d[3]); } )
-								.attr("stroke", lowerBoundsColor)
-								.append("svg:title")
-								.text(function(d,i) { return i + ":" + d; });
-						} else { // "linear" ie. lines between two edges
-							harmonics = container.selectAll("line")
-								.data(data.harmonics)
-								.enter()
-								.append("line")
-								.attr("x1", function(d) { return (data.dimension * particleWidth); } )
-								.attr("y1", verticalOffset)
-								.attr("x2", function(d) { return (d[1] * particleWidth); } )
-								.attr("y2", nodeHeight)
-								.attr("stroke", harmonicsColor)
-								.attr("opacity", function(d) { return scope.getOpacity(d[3]); } )
-								.attr("stroke-width", function(d) { return scope.getStrokeWidth(d[3]); } )
-								.append("svg:title")
-								.text(function(d,i) { return i + ":" + d; });
+									.text(function(d,i) { return i + ":" + d; });
 
 							lowerBounds = container.selectAll("line")
 								.data(data.lowerBounds)
 								.enter()
 								.append("line")
-								.attr("x1", function(d) { return (data.dimension * particleWidth); } )
-								.attr("y1", nodeHeight)
-								.attr("x2", function(d) { return (d[1] * particleWidth); } )
-								.attr("y2", verticalOffset)
-								.attr("stroke", lowerBoundsColor)
-								.attr("opacity", function(d) { return scope.getOpacity(d[3]); } )
-								.attr("stroke-width", function(d) { return scope.getStrokeWidth(d[3]); } )
+									.attr("x1", function(d) { return (data.dimension * particleWidth - (particleWidth * 0.5) ); } )
+									.attr("y1", nodeHeight)
+									.attr("x2", function(d) { return (d[1] * particleWidth - (particleWidth * 0.5) ); } )
+									.attr("y2", verticalOffset)
+									.attr("stroke", lowerBoundsColor)
+									.attr("opacity", function(d) { return scope.getOpacity(d[3]); } )
+									.attr("stroke-width", function(d) { return scope.getStrokeWidth(d[3]); } )
 								.append("svg:title")
-								.text(function(d,i) { return i + ":" + d; });
-						}
+									.text(function(d,i) { return i + ":" + d; });
 
 						highlight = chart.append("rect")
 								.attr("id", "highlight")
