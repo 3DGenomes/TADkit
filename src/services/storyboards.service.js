@@ -67,15 +67,15 @@
 				var storyboard = storyboards.loaded[storyboards.current.index];
 				return storyboard;
 			},
-			setViewpoint: function(startCoord, endCoord, scaleOrig) {
-				startCoord = startCoord || 0;
-				endCoord = endCoord || 4999999;
+			setViewpoint: function(chromStart, chromEnd, scaleOrig) {
+				chromStart = chromStart || 0;
+				chromEnd = chromEnd || 4999999;
 				var currentComponents = storyboards.loaded[storyboards.current.index].components;
 				// console.log(currentComponents);
 				angular.forEach( currentComponents, function(component, index) {
 					var scale = scaleOrig || 1;
-					component.view.viewpoint.startCoord = startCoord;
-					component.view.viewpoint.endCoord = endCoord;
+					component.view.viewpoint.chromStart = chromStart;
+					component.view.viewpoint.chromEnd = chromEnd;
 					if (component.object.type === "scene" || component.object.type === "scene-icon") {
 						var angle = component.view.viewpoint.fov / 2;
 						var margin = 0.6;

@@ -15,11 +15,11 @@
 			bool = !bool;
 		};
 
-		$scope.width = parseInt($scope.state.width);
-		$scope.height = parseInt($scope.state.height);
+		$scope.width = parseInt($scope.state.width); // strip PX units
+		$scope.height = parseInt($scope.state.height); // strip PX units
 
 		$scope.atPosition = function(gene) {
-			if ($scope.$parent.settings.segmentUpper >= gene.start && $scope.$parent.settings.segmentLower <= gene.end) return true;
+			if ($scope.$parent.settings.current.segmentUpper >= gene.start && $scope.$parent.settings.current.segmentLower <= gene.end) return true;
 			return false;
 		};
 
@@ -31,6 +31,15 @@
 			}
 		};
 		
+		$scope.featureTitle = function(feature) {
+			if (!feature.external_name) {
+				return feature.id;
+			} else {
+				return feature.external_name;
+			}
+		};
+
+
 		$scope.getDetails = function(item, event) {
 			$mdDialog.show(
 				$mdDialog.alert()

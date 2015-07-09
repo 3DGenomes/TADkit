@@ -5,7 +5,7 @@
 		.config(config);
 
 	function config($stateProvider, $urlRouterProvider) {
-		$urlRouterProvider.otherwise("/home");
+		$urlRouterProvider.otherwise("/project/loader");
 		
 		$stateProvider
 		.state('home', {
@@ -69,7 +69,7 @@
 				},
 				'content@main': {
 					templateUrl: 'assets/templates/project-loader.html',
-					controller: 'ProjectController'
+					controller: 'ProjectLoaderController'
 				},
 				'sidebar-right@main': {
 					templateUrl: 'assets/templates/sidebar.user.html',
@@ -77,17 +77,17 @@
 				}
 			}
 		})
-		.state('upload', {
+		.state('example', {
 			parent: 'project',
-			url: '/upload',
+			url: '/example',
 			views: {
 				'topbar@main': {
 					templateUrl: 'assets/templates/topbar.html',
 					controller: 'TopbarController'
 				},
 				'content@main': {
-					templateUrl: 'assets/templates/project-upload.html',
-					controller: 'ProjectUploadController'
+					templateUrl: 'assets/templates/project-example.html',
+					controller: 'ProjectLoaderController'
 				},
 				'sidebar-right@main': {
 					templateUrl: 'assets/templates/sidebar.user.html',
@@ -97,7 +97,6 @@
 		})
 		.state('dataset', {
 			parent: 'project',
-			controller: 'ProjectDatasetController',
 			url: '/dataset',
 			views: {
 				'content@main': {
@@ -108,7 +107,6 @@
 		})
 		.state('overlay', {
 			parent: 'project',
-			controller: 'ProjectOverlayController',
 			url: '/overlay',
 			views: {
 				'content@main': {
@@ -119,7 +117,6 @@
 		})
 		.state('storyboard', {
 			parent: 'project',
-			controller: 'ProjectStoryboardController',
 			url: '/storyboard',
 			views: {
 				'content@main': {
@@ -130,7 +127,6 @@
 		})
 		.state('browser', {
 			parent: 'project',
-			// controller: 'BrowserController',
 			url: '/browser',
 			views: {
 				'sidebar-left@main': {
@@ -148,51 +144,16 @@
 			// 	}
 			// }
 		})
-			.state('overlay-acquire', {
-				parent: 'browser',
-				url: '/overlay/acquire',
-				views: {
-					'modal@main': {
-						templateUrl: 'assets/templates/overlay-acquire.html',
-						controller: 'OverlayController'
-					}
-				},
-				// resolve: {
-				// 	'initialData': function(initBrowser) {
-				// 		return initBrowser();
-				// 	}
-				// }
-			})
-			.state('overlay-filter', {
-				parent: 'browser',
-				url: '/overlay/filter',
-				views: {
-					'modal@main': {
-						templateUrl: 'assets/templates/overlay-filter.html',
-						controller: 'OverlayController'
-					}
-				},
-				// resolve: {
-				// 	'initialData': function(initBrowser) {
-				// 		return initBrowser();
-				// 	}
-				// }
-			})
-			.state('overlay-represent', {
-				parent: 'browser',
-				url: '/overlay/represent',
-				views: {
-					'modal@main': {
-						templateUrl: 'assets/templates/overlay-represent.html',
-						controller: 'OverlayController'
-					}
-				},
-				// resolve: {
-				// 	'initialData': function(initBrowser) {
-				// 		return initBrowser();
-				// 	}
-				// }
-			})
+		.state('overlay-import', {
+			parent: 'browser',
+			url: '/overlay/import',
+			views: {
+				'modal@main': {
+					templateUrl: 'assets/templates/overlay-import.html',
+					controller: 'OverlayImportController'
+				}
+			},
+		})
 		.state('404', {
 			url: '/404',
 			templateUrl: 'assets/templates/404.tpl.html',

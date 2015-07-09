@@ -8,12 +8,13 @@
 		return {
 			restrict: 'EA',
 			scope: {
-				id: '@',
-				object: '=',
+				type: '=',
+				title: '=',
+				settings: '=',
 				view: '=',
 				data: '=',
-				overlay:'=',
-				settings: '='
+				overlay: '=', /* used in template */
+				toggleoverlay: '&' /* used in template */
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
@@ -22,17 +23,16 @@
 
  					// DATA MANIPULATION >>> MOVE TO CONTROLLER
 					var data = scope.data;
-					var target = scope.id;
 					// var assemblyLength = 3200000000; // CALCULATE
-					// if (!scope.settings.position) scope.settings.position = assemblyLength / 2;
+					// if (!scope.settings.current.position) scope.settings.current.position = assemblyLength / 2;
 					var step = scope.view.settings.step;
 					var stepWidth;
-					var focusStart = scope.view.viewpoint.startCoord;
-					var focusEnd = scope.view.viewpoint.endCoord;
+					var focusStart = scope.view.viewpoint.chromStart;
+					var focusEnd = scope.view.viewpoint.chromEnd;
 					// var chrStart = 0;
 					// var chrEnd = assemblyLength;
 					var focusLength = focusEnd - focusStart;
-					// var highlightPosition = focusStart + (stepWidth * scope.settings.position);
+					// var highlightPosition = focusStart + (stepWidth * scope.settings.current.position);
 
 					// var focusScale = assemblyLength / focusLength;
 					// var focusMargin = focusScale * 0.05;
@@ -43,16 +43,16 @@
 
 
 					// SVG GENERATION
-					var componentMargin = parseInt(scope.object.state.margin);
-					/* Rebuild margin Object to maintain D3 standard */
+					var componentMargin = parseInt(scope.view.settings.margin);
+					/* Rebuild margin to maintain D3 standard */
 					var margin = {
-							top: parseInt(scope.object.state.padding.top),
-							right: parseInt(scope.object.state.padding.right),
-							bottom: parseInt(scope.object.state.padding.bottom),
-							left: parseInt(scope.object.state.padding.left)
+							top: parseInt(scope.view.settings.padding.top),
+							right: parseInt(scope.view.settings.padding.right),
+							bottom: parseInt(scope.view.settings.padding.bottom),
+							left: parseInt(scope.view.settings.padding.left)
 						},
 						scale = 4,
-						trackHeight = parseInt(scope.object.state.heightInner),
+						trackHeight = parseInt(scope.view.settings.heightInner),
 						nodeHeight = trackHeight * 0.5,
 						verticalOffset = (trackHeight - nodeHeight) * 0.5,
 						nodePadding = 0,
@@ -65,27 +65,29 @@
 					 */
 					var component = element[0].parentNode;
 					var viewport = element[0].children[0].children[3];
+					// if with controller use line below
+					// var viewport = element[0].children[0].children[3];
 					var svg = d3.select(viewport).append('svg');
 					var chart, defs;
 					var xAxis, prime3Axis, prime5Axis;
 					var focus, container, xScale;
 
-					// RESIZE
+					// RESIZE implies complete redraw
 					scope.$watch(function(){
 						var w = component.clientWidth;
 						var h = component.clientHeight;
 						return w + h;
 					}, function() {
-						scope.render(scope.data);
+						scope.render(data);
 					});
 
-					// REDRAW
-					scope.$watch('data', function(newData) {
-						scope.render(newData);
-					}, true);
+					// REDRAW on new data
+					// scope.$watch('data', function(newData) {
+					// 	scope.render(newData);
+					// }, true);
  					
 					// SLIDER
-					scope.$watch('settings.position', function(newData) {
+					scope.$watch('settings.current.position', function(newData) {
 						scope.update();
 					}, true);
 
@@ -140,12 +142,12 @@
 							focus = chart.append("g")
 								.attr("class", "focus");
 
-							var zoomArea = focus.append("g")
-								.attr("class", "zoom")
-								.append("rect")
-								.attr("width", width)
-								.attr("height", height)
-								.attr('fill', 'white');
+							// var zoomArea = focus.append("g")
+							// 	.attr("class", "zoom")
+							// 	.append("rect")
+							// 	.attr("width", width)
+							// 	.attr("height", height)
+							// 	.attr('fill', 'white');
 
 							container = focus.append("g")
 								.attr("class", "container")
@@ -160,35 +162,12 @@
 
 							var labels  = chart.append("g")
 								.attr("class", "labels");
-								// labels.append("text")
-								// 	.attr("x", -12)
-								// 	.attr("y", -3)
-								// 	.attr("text-anchor", "right")
-								// 	.style("font-size", "10px")
-								// 	.text("3'");
-								// labels.append("text")
-								// 	.attr("x", width + 8)
-								// 	.attr("y", -3)
-								// 	.attr("text-anchor", "left")
-								// 	.style("font-size", "10px")
-								// 	.text("5'");
-								// labels.append("text")
-								// 	.attr("x", -18)
-								// 	.attr("y", 8)
-								// 	.attr("text-anchor", "right")
-								// 	.style("font-size", "10px")
-								// 	.text("<<");
-								// labels.append("text")
-								// 	.attr("x", -18)
-								// 	.attr("y", 18)
-								// 	.attr("text-anchor", "right")
-								// 	.style("font-size", "10px")
-								// 	.text(">>");
-// TO DO: Use FontAwesome/IcoMoon...
-// node.append('text')
-//     .attr('font-family', 'FontAwesome')
-//     .attr('font-size', function(d) { return d.size+'em'} )
-//     .text(function(d) { return '\uf118' }); 
+
+							// TODO: Use FontAwesome/IcoMoon...
+							// node.append('text')
+							//     .attr('font-family', 'FontAwesome')
+							//     .attr('font-size', function(d) { return d.size+'em'} )
+							//     .text(function(d) { return '\uf118' }); 
 
 							var focusGraph = container.selectAll("rect")
 								.data(data)
@@ -206,7 +185,7 @@
 
 							var highlight = chart.append("rect")
 									.attr("id", "highlight")
-									.attr("x", function(d) { return xScale( scope.settings.position - (step * 0.5)); } )
+									.attr("x", function(d) { return xScale( scope.settings.current.position - (step * 0.5)); } )
 									.attr("y", 0)
 									.attr("width", highlightWidth )
 									.attr("height", trackHeight)
@@ -226,7 +205,7 @@
 						// .attr("height", nodeHeight);
 
 						svg.select("#highlight") //.style("visibility", "hidden");
-						.attr("x", function(d) { return xScale( scope.settings.position - (step * 0.5)); } );
+						.attr("x", function(d) { return xScale( scope.settings.current.position - (step * 0.5)); } );
 					};
 				});
 			}

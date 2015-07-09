@@ -24,17 +24,16 @@
 					"type" : "scene",
 					"dataset" : "default",
 					"state" : {
-						"width" : "600px",
+						"width" : "800px",
 						"height" : 	"400px",
 						"margin" : "4px",
-						"padding" : {"top": "20px", "right": "40px", "bottom": "20px", "left": "40px"},
 						"position" : 0
 					}
 				},
 				"view" : {
 					"viewpoint" : {
-						"startCoord" : 0,
-						"endCoord" : 4999999,
+						"chromStart" : 1,
+						"chromEnd" : 999999,
 						"scale" : 1,
 						"camera" : [ 5000, 5000, 5000 ],
 						"target" : [ 0, 0, 0 ],
@@ -49,10 +48,12 @@
 					},
 					"controls" : {
 						"autoRotate" : true,
-						"autoRotateSpeed" : 2.0
+						"autoRotateSpeed" : 4
 					},
 					"viewtype" : "cylinderSegments",
 					"settings" : {
+						"margin" : "4px",
+						"padding" : {"top": "20px", "right": "40px", "bottom": "20px", "left": "40px"},
 						"lighting": {
 							"ambient" : "#111111",
 							"color" : "#ffffff",
@@ -73,15 +74,16 @@
 							"visible" : false
 						},
 						"chromatin" : {
+							"color" : "#cccccc",
 							"particleSegments" : 20,
 							"curveSegments" : 1,
-							"radius" : 15,
+							"radius" : 200,
 							"radiusSegments" : 16,
 							"endcap" : false,
-							"pathClosed" : true,
+							"pathClosed" : false,
 							"visible" : true
 						},
-						"contacts" : {
+						"mesh" : {
 							"transparent": false,
 							"visible" : false
 						},
@@ -105,21 +107,22 @@
 					"type" : "panel-inspector",
 					"dataset" : "genes",
 					"state" : {
-						"width" : "400px",
+						"width" : "200px",
 						"height" : "300px",
 						"margin" : "4px",
-						"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
 						"position" : 1
 					}
 				},
 				"view" : {
 					"viewpoint" : {
-						"startCoord" : 1,
-						"endCoord" : 10,
+						"chromStart" : 1,
+						"chromEnd" : 10,
 						"scale" : 1
 					},
 					"viewtype" : "list",
 					"settings" : {
+						"margin" : "4px",
+						"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
 						"example" : 1
 					}
 				}
@@ -139,22 +142,22 @@
 					"state" : {
 						"width" : "100%",
 						"height" : "auto",
-						"heightInner" : "40px",
-						"margin" : "4px",
-						"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
+						"margin" : "0px",
 						"position" : 2
 					}
 				},
 				"view" : {
 					"viewpoint" : {
-						"startCoord" : 0,
-						"endCoord" : 4999999,
+						"chromStart" : 1,
+						"chromEnd" : 999999,
 						"scale" : 1
 					},
 					"viewtype" : "linear",
 					"settings" : {
-						"sense" : true,
-						"segments" : 1000
+						"heightInner" : "40px",
+						"margin" : "0px",
+						"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
+						"cursorWidth" : 1
 					}
 				}
 			},
@@ -173,22 +176,93 @@
 					"state" : {
 						"width" : "100%",
 						"height" : "auto",
-						"heightInner" : "40px",
 						"margin" : "0px",
-						"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
 						"position" : 3
 					}
 				},
 				"view" : {
 					"viewpoint" : {
-						"startCoord" : 0,
-						"endCoord" : 4999999,
+						"chromStart" : 1,
+						"chromEnd" : 999999,
 						"scale" : 1
 					},
 					"viewtype" : "linear",
 					"settings" : {
-						"sense" : true,
-						"segments" : 1000
+						"heightInner" : "40px",
+						"margin" : "0px",
+						"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
+						"cursorWidth" : 1,
+						"sense" : true
+					}
+				}
+			},
+			{
+				"metadata" : {
+					"version" : 1.0,
+					"type" : "component",
+					"generator" : "TADkit"
+				},
+				"object" : {
+					"uuid" : "00000000-0000-0000-0000-000000000004",
+					"id" : "h-proximities-track",
+					"title" : "Proximity",
+					"type" : "track-proximities",
+					"dataset" : "distances",
+					"state" : {
+						"width" : "100%",
+						"height" : "auto",
+						"margin" : "0px",
+						"position" : 4
+					}
+				},
+				"view" : {
+					"viewpoint" : {
+						"chromStart" : 1,
+						"chromEnd" : 999999,
+						"scale" : 1
+					},
+					"viewtype" : "linear",
+					"settings" : {
+						"heightInner" : "40px",
+						"margin" : "0px",
+						"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
+						"color" : "#0000ff",
+						"cursorWidth" : 1
+					}
+				}
+			},
+			{
+				"metadata" : {
+					"version" : 1.0,
+					"type" : "component",
+					"generator" : "TADkit"
+				},
+				"object" : {
+					"uuid" : "00000000-0000-0000-0000-000000000004",
+					"id" : "h-restraints-track",
+					"title" : "Restraints",
+					"type" : "track-restraints",
+					"dataset" : "restraints",
+					"state" : {
+						"width" : "100%",
+						"height" : "auto",
+						"margin" : "0px",
+						"position" : 5
+					}
+				},
+				"view" : {
+					"viewpoint" : {
+						"chromStart" : 1,
+						"chromEnd" : 999999,
+						"scale" : 1
+					},
+					"viewtype" : "linear",
+					"settings" : {
+						"heightInner" : "80px",
+						"margin" : "0px",
+						"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
+						"color" : "#0000ff",
+						"cursorWidth" : 1
 					}
 				}
 			}

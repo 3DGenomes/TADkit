@@ -5,6 +5,6 @@
 		.controller('BrowserController', BrowserController);
 
 	function BrowserController ($scope, initialData){
-		console.log(initialData);
+		console.log("initialData");
 	}
 })();

@@ -4,14 +4,17 @@
 		.module('TADkit')
 		.directive('tkComponentTrackSlider', tkComponentTrackSlider);
 
-	function tkComponentTrackSlider(d3Service) {
+	function tkComponentTrackSlider(d3Service, Settings) {
 		return {
 			restrict: 'EA',
 			scope: {
-				id: '@',
-				object: '=',
+				type: '=',
+				title: '=',
+				settings: '=',
 				view: '=',
-				settings: '='
+				data: '=',
+				overlay: '=', /* used in template */
+				toggleoverlay: '&' /* used in template */
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
@@ -30,18 +33,18 @@
 
 					// SVG GENERATION
 					var data = scope.data;
-					var focusStart = scope.view.viewpoint.startCoord;
-					var focusEnd = scope.view.viewpoint.endCoord;
-					var segments = scope.view.settings.segments;
-					var componentMargin = parseInt(scope.object.state.margin);
-					/* Rebuild margin Object to maintain D3 standard */
+					var focusStart = scope.view.viewpoint.chromStart;
+					var focusEnd = scope.view.viewpoint.chromEnd;
+					var cursorWidth = scope.view.settings.cursorWidth;
+					var componentMargin = parseInt(scope.view.settings.margin);
+					/* Rebuild margin to maintain D3 standard */
 					var margin = {
-							top: parseInt(scope.object.state.padding.top),
-							right: parseInt(scope.object.state.padding.right),
-							bottom: parseInt(scope.object.state.padding.bottom),
-							left: parseInt(scope.object.state.padding.left)
+							top: parseInt(scope.view.settings.padding.top),
+							right: parseInt(scope.view.settings.padding.right),
+							bottom: parseInt(scope.view.settings.padding.bottom),
+							left: parseInt(scope.view.settings.padding.left)
 						},
-						trackHeight = parseInt(scope.object.state.heightInner);
+						trackHeight = parseInt(scope.view.settings.heightInner);
 
 					// VIEWPORT
 					/* component-controller == children[0]
@@ -49,7 +52,11 @@
 					 * - component-body == children[3]
 					 */
 					var component = element[0];
+						// console.log(component.clientWidth);
 					var viewport = element[0].children[0].children[3];
+						// console.log(viewport.clientWidth);
+					// if with controller use line below
+					// var viewport = element[0].children[0].children[3];
 					var svg = d3.select(viewport).append('svg');
 					var slider, xScale, prime3Axis, prime5Axis;
 					var handleWidth, handleHeight;
@@ -63,6 +70,19 @@
 					}, function() {
 						scope.render();
 					});
+
+					// UPDATE
+					scope.$watch('settings.current.position', function(newPosition, oldPosition) {
+						if ( newPosition !== oldPosition ) {
+							scope.update();
+						}
+					});
+					
+ 				// 	// ZOOM
+					// var zoom = d3.behavior.zoom()
+					// 	.on("zoom",  function() {
+					// 	scope.update();
+					// });
 
 					scope.render = function() {
 						svg.selectAll('*').remove();
@@ -84,10 +104,7 @@
 							prime5Axis = d3.svg.axis().orient("right");
 								// .outerTickSize([0]);
 
-						var sliderStart = 0;
-						var sliderEnd = segments-1;
-
-						handleWidth = Math.max( (width / sliderEnd), 4 );
+						handleWidth = height * 0.5;
 						handleHeight = trackHeight;
 
 						brush = d3.svg.brush()
@@ -130,21 +147,30 @@
 						slider.select(".background")
 							.attr("y", height/2)
 							.attr("height", height);
+							
 						handle = slider.append("circle")
+							.attr("id", "handle")
 							.attr("class", "handle")
-							.attr("cx", xScale(scope.settings.position) - (handleWidth * 0.5))
+							.attr("cx", xScale(scope.settings.current.position))
 							.attr("cy", height)
-							.attr("r", handleWidth * 1.6);
+							.attr("r", handleWidth * 0.6);
+
 							// handle.append("text")
-							// 	.attr("x", xScale(scope.settings.position) - (handleWidth * 0.5))
+							// 	.attr("x", xScale(scope.settings.current.position) - (handleWidth * 0.5))
 							// 	.attr("y", height)
 							// 	.attr("text-anchor", "bottom")
 							// 	.style("font-size", "10px")
-							// 	.text(scope.settings.position);
+							// 	.text(scope.settings.current.position);
 
 						slider
-							.call(brush.extent([(scope.settings.position), 0]))
+							.call(brush.extent([(scope.settings.current.position), 0]))
 							.call(brush.event);
+					};
+
+					// UPDATE
+					scope.update = function(data) {
+						svg.select("#handle") //.style("visibility", "hidden");
+						.attr("cx", function(d) { return xScale( scope.settings.current.position ); } );
 					};
 
 					// BRUSH
@@ -157,12 +183,14 @@
 									value = parseInt(xScale.invert(d3.mouse(thisSlider)[0]));
 									brush.extent([value, value]);
 								}
-								handle.attr("cx", xScale(value) - (handleWidth * 0.5));
+								handle.attr("cx", xScale(value));
 
 								// UPDATE position
-								scope.settings.position = value;
-								scope.settings.segmentLower = scope.settings.position - (scope.settings.segment * 5); // * 0.5???
-								scope.settings.segmentUpper = scope.settings.position + (scope.settings.segment * 5); // * 0.5???
+								scope.settings.current.position = value;
+								scope.settings.current.particle = Settings.getParticle();
+								scope.settings.current.segment = Settings.getSegment();
+								scope.settings.current.segmentLower = scope.settings.current.position - (scope.settings.current.segment * 5); // * 0.5???
+								scope.settings.current.segmentUpper = scope.settings.current.position + (scope.settings.current.segment * 5); // * 0.5???
 
 							});
 						// });

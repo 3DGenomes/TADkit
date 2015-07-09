@@ -7,15 +7,15 @@
 			<md-icon data-ng-hide="view.controls.autoRotate" class="icon-play-arrow"></md-icon>
 			<md-icon data-ng-show="view.controls.autoRotate" class="icon-pause"></md-icon>
 		</a>
-		<a ng-click='toggleOptions()' class="options toggle-{{optionsState}}">
+		<!--a ng-click='toggleOptions()' class="options toggle-{{optionsState}}">
 			<md-icon class="icon-settings"></md-icon>
-		</a>
+		</a-->
 	</div>
-	<div class="component-options" ng-show='optionsState'>
-		<!-- TO DO: ENABLE AUTO-GENERATION -->
+	<div class="component-options" data-ng-show='optionsState'>
+		<!-- TODO: ENABLE AUTO-GENERATION --> SHOWING?
 		 <md-checkbox ng-model="view.settings.particles.visible">Particles</md-checkbox>
 		 <md-checkbox ng-model="view.settings.chromatin.visible">Chromatin</md-checkbox>
-		 <md-checkbox ng-model="view.settings.contacts.visible">Contacts</md-checkbox>
+		 <md-checkbox ng-model="view.settings.mesh.visible">Mesh</md-checkbox>
 	</div>
 	<div class="component-body"></div>
 </div>

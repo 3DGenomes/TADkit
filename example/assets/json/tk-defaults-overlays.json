@@ -9,7 +9,7 @@
 			"uuid" : "00000000-0000-0000-0001-000000000000",
 			"id" : "gradient",
 			"title" : "Blue to Red",
-			"source" : "generated",
+			"source" : "TADkit",
 			"url" : "local",
 			"description" : "Simple gradient from blue to red.",
 			"type" : "gradient",
@@ -20,9 +20,59 @@
 				"overlaid" : false
 			}
 		},
-		"data" : ["#0000ff","#ff0000"],
-		"colors" : [],
-		"values" : []
+		"palette" : ["#0000ff","#ff0000"],
+		"data" : [],
+		"colors" : {}
+	},
+	{
+		"metadata" : {
+			"version" : 1.0,
+			"type" : "overlay",
+			"generator" : "TADkit"
+		},
+		"object" : {
+			"uuid" : "00000000-0000-0000-0001-000000000000",
+			"id" : "proximities",
+			"title" : "Proximity Overlay",
+			"source" : "TADkit",
+			"url" : "local",
+			"description" : "Single color for dynamic data.",
+			"type" : "matrix",
+			"format" : "fixed",
+			"components" : 2,
+			"state" : {
+				"index" : 1,
+				"overlaid" : false
+			}
+		},
+		"palette" : ["#0000ff","#cccccc"],
+		"data" : [],
+		"colors" : {}
+	},
+	{
+		"metadata" : {
+			"version" : 1.0,
+			"type" : "overlay",
+			"generator" : "TADkit"
+		},
+		"object" : {
+			"uuid" : "00000000-0000-0000-0001-000000000000",
+			"id" : "restraints",
+			"title" : "Restraints Overlay",
+			"source" : "TADkit",
+			"url" : "local",
+			"description" : "Single color for dynamic data.",
+			"type" : "misc",
+			"format" : "variable",
+			"components" : 2,
+			"state" : {
+				"index" : 1,
+				"overlaid" : false
+			}
+		},
+		"palette" : ["#ff0000","#0000ff"],
+		"data" : [],
+		"colors" : {}
 	},
 	{
 		"metadata" : {
@@ -35,18 +85,18 @@
 			"id" : "genes",
 			"title" : "Genes Overlay",
 			"source" : "Ensembl RESTful API",
-			"url" : ["http://rest.ensembl.org/overlap/region/","species","/","chromosome",":","start","-","end","?feature=gene;content-type=application/json"],
+			"url" : ["http://rest.ensemblgenomes.org/overlap/region/","species","/","chromosome",":","start","-","end","?feature=gene;content-type=application/json"],
 			"description" : "Genes from Ensembl RESTful API",
 			"type" : "ensembl",
 			"format" : "json",
 			"components" : 13,
 			"state" : {
-				"index" : 1,
+				"index" : 2,
 				"overlaid" : false
 			}
 		},
+		"palette" : [],
 		"data" : [],
-		"colors" : [],
-		"values" : []
+		"colors" : {}
 	}
 ]

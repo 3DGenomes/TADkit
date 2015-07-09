@@ -23,6 +23,16 @@
 
 					geometry = new THREE.TorusKnotGeometry( 100, 30, 100, 16 );
 
+					// GENERATE TEST GEOMETRY
+					// var torusgeom = new THREE.TorusKnotGeometry( 100, 10, 36, 1 );
+					// var testgeom = torusgeom.vertices;
+					// for (var i = testgeom.length - 1; i >= 0; i--) {
+					// 	testgeom[i].x = parseInt(testgeom[i].x.toFixed(2));
+					// 	testgeom[i].y = parseInt(testgeom[i].y.toFixed(2));
+					// 	testgeom[i].z = parseInt(testgeom[i].z.toFixed(2));
+					// };
+					// console.log(JSON.stringify(testgeom));
+
 					material = new THREE.MeshDepthMaterial({
 						color: 0x666666,
 						wireframe: true,

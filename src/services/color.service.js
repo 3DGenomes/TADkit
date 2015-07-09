@@ -104,7 +104,7 @@
 				start_color = start_color.replace(/^\s*#|\s*$/g, '');
 				end_color = end_color.replace(/^\s*#|\s*$/g, '');
 
-				// convert 3 char codes --> 6, e.g. `E0F` --> `EE00FF`
+				// convert 3 char codes --> 6, eg. `E0F` --> `EE00FF`
 				if(start_color.length == 3){
 					start_color = start_color.replace(/(.)/g, '$1$1');
 				}

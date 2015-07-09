@@ -13,11 +13,24 @@
 
 	function config($locationProvider, $mdThemingProvider) {
 		// $locationProvider.html5Mode(true);
+
+		// Material Design Themes
+
 		$mdThemingProvider.theme('default')
 			.primaryPalette('green')
-			.accentPalette('grey')
-			.warnPalette('red')
+			.accentPalette('lime', {
+				'default': '500' // use shade 200 for default, and keep all other shades the same
+			})
+   			.warnPalette('red')
 			.backgroundPalette('grey');
+
+		$mdThemingProvider.theme('darkKit')
+			// .primaryPalette('green')
+			// .accentPalette('lime')
+			// .warnPalette('red')
+			// .backgroundPalette('grey')
+			.dark();
+
 	}
 })();
 (function() {
@@ -40,7 +53,7 @@
 		.config(config);
 
 	function config($stateProvider, $urlRouterProvider) {
-		$urlRouterProvider.otherwise("/home");
+		$urlRouterProvider.otherwise("/project/loader");
 		
 		$stateProvider
 		.state('home', {
@@ -104,7 +117,7 @@
 				},
 				'content@main': {
 					templateUrl: 'assets/templates/project-loader.html',
-					controller: 'ProjectController'
+					controller: 'ProjectLoaderController'
 				},
 				'sidebar-right@main': {
 					templateUrl: 'assets/templates/sidebar.user.html',
@@ -112,17 +125,17 @@
 				}
 			}
 		})
-		.state('upload', {
+		.state('example', {
 			parent: 'project',
-			url: '/upload',
+			url: '/example',
 			views: {
 				'topbar@main': {
 					templateUrl: 'assets/templates/topbar.html',
 					controller: 'TopbarController'
 				},
 				'content@main': {
-					templateUrl: 'assets/templates/project-upload.html',
-					controller: 'ProjectUploadController'
+					templateUrl: 'assets/templates/project-example.html',
+					controller: 'ProjectLoaderController'
 				},
 				'sidebar-right@main': {
 					templateUrl: 'assets/templates/sidebar.user.html',
@@ -132,7 +145,6 @@
 		})
 		.state('dataset', {
 			parent: 'project',
-			controller: 'ProjectDatasetController',
 			url: '/dataset',
 			views: {
 				'content@main': {
@@ -143,7 +155,6 @@
 		})
 		.state('overlay', {
 			parent: 'project',
-			controller: 'ProjectOverlayController',
 			url: '/overlay',
 			views: {
 				'content@main': {
@@ -154,7 +165,6 @@
 		})
 		.state('storyboard', {
 			parent: 'project',
-			controller: 'ProjectStoryboardController',
 			url: '/storyboard',
 			views: {
 				'content@main': {
@@ -165,7 +175,6 @@
 		})
 		.state('browser', {
 			parent: 'project',
-			// controller: 'BrowserController',
 			url: '/browser',
 			views: {
 				'sidebar-left@main': {
@@ -183,65 +192,21 @@
 			// 	}
 			// }
 		})
-			.state('overlay-acquire', {
-				parent: 'browser',
-				url: '/overlay/acquire',
-				views: {
-					'modal@main': {
-						templateUrl: 'assets/templates/overlay-acquire.html',
-						controller: 'OverlayController'
-					}
-				},
-				// resolve: {
-				// 	'initialData': function(initBrowser) {
-				// 		return initBrowser();
-				// 	}
-				// }
-			})
-			.state('overlay-filter', {
-				parent: 'browser',
-				url: '/overlay/filter',
-				views: {
-					'modal@main': {
-						templateUrl: 'assets/templates/overlay-filter.html',
-						controller: 'OverlayController'
-					}
-				},
-				// resolve: {
-				// 	'initialData': function(initBrowser) {
-				// 		return initBrowser();
-				// 	}
-				// }
-			})
-			.state('overlay-represent', {
-				parent: 'browser',
-				url: '/overlay/represent',
-				views: {
-					'modal@main': {
-						templateUrl: 'assets/templates/overlay-represent.html',
-						controller: 'OverlayController'
-					}
-				},
-				// resolve: {
-				// 	'initialData': function(initBrowser) {
-				// 		return initBrowser();
-				// 	}
-				// }
-			})
+		.state('overlay-import', {
+			parent: 'browser',
+			url: '/overlay/import',
+			views: {
+				'modal@main': {
+					templateUrl: 'assets/templates/overlay-import.html',
+					controller: 'OverlayImportController'
+				}
+			},
+		})
 		.state('404', {
 			url: '/404',
 			templateUrl: 'assets/templates/404.tpl.html',
 			controller: 'AppController'
 		});
-	}
-})();
-(function() {
-	'use strict';
-	angular
-		.module('TADkit')
-		.controller('ComponentController', ComponentController);
-
-	function ComponentController (){
 	}
 })();
 (function() {
@@ -255,19 +220,23 @@
 			restrict: 'EA',
 			// controller: 'StoryboardController',
 			link: function(scope, element, attrs) {
-				
+				// console.log(scope);
+
 				var strTemplate = '<data-tk-component-' + scope.component.object.type + ' ' +
 					'id="{{component.object.id}}-' + scope.$index + '" ' +
 					'type="component.object.type" ' +
-					'state="component.object.state" ' +
-					'object="component.object" ' +
-					'view="component.view" ' +
-					'metadata="component.metadata" ' +
-					'data="component.data" ' +
-					'overlay="component.overlay" ' +
-					'overlayindex="currentOverlays.current.index" ' +
-					'contacts="component.contacts" ' +
+					'title="component.object.title" ' +
+					'state="component.object.state" ' + /* for scene until can check for DOM loaded */
 					'settings="settings" ' +
+					'view="component.view" ' +
+					'currentparticle="currentParticle"' +
+					'currentposition="currentPosition"' +
+					'currentmodel="current.model" ' +
+					'currentoverlay="current.overlay" ' +
+					'data="component.data" ' +
+					'proximities="component.proximities" ' +
+					'overlay="component.overlay"' +
+					'toggleoverlay="toggleOverlay(index)" ' +
 					'style="margin: {{component.object.state.margin}}" ' +
 					'class="component ' + scope.component.object.type + '">' +
 					'</data-tk-component-' + scope.component.object.type + '>';
@@ -324,11 +293,11 @@
 			bool = !bool;
 		};
 
-		$scope.width = parseInt($scope.state.width);
-		$scope.height = parseInt($scope.state.height);
+		$scope.width = parseInt($scope.state.width); // strip PX units
+		$scope.height = parseInt($scope.state.height); // strip PX units
 
 		$scope.atPosition = function(gene) {
-			if ($scope.$parent.settings.segmentUpper >= gene.start && $scope.$parent.settings.segmentLower <= gene.end) return true;
+			if ($scope.$parent.settings.current.segmentUpper >= gene.start && $scope.$parent.settings.current.segmentLower <= gene.end) return true;
 			return false;
 		};
 
@@ -340,6 +309,15 @@
 			}
 		};
 		
+		$scope.featureTitle = function(feature) {
+			if (!feature.external_name) {
+				return feature.id;
+			} else {
+				return feature.external_name;
+			}
+		};
+
+
 		$scope.getDetails = function(item, event) {
 			$mdDialog.show(
 				$mdDialog.alert()
@@ -371,6 +349,7 @@
 			},
 			templateUrl: 'assets/templates/panel-inspector.html',
 			link:function(scope, element, attrs){
+				// console.log(scope.data);
 			}
 		};
 	}
@@ -382,9 +361,9 @@
 		.factory('Chromatin', Chromatin);
 
 	// constructor for chromatin model instances
-	function Chromatin() {
-		return function(data, overlay, settings) {
-			// console.log(overlay);
+	function Chromatin(Paths, PathControls) {
+		return function(data, colors, settings) {
+			// console.log(colors);
 
 			var defaults = {
 				visible: true,
@@ -403,13 +382,13 @@
 			// Convert Data to Vector triplets
 			var geometry = getGeometry(data);
 			for (var g = geometry.vertices.length - 1; g >= 0; g--) {
-				var geometryColor = new THREE.Color(overlay[g*20]);
+				var geometryColor = new THREE.Color(colors[g*20]);
 				geometry.colors.unshift(geometryColor);
 			}
 
 			// Derive path controls from geometry vectors
 			// var pathControls = getPathControls( geometry.vertices );
-			var pathControls = getCubicControls(geometry.vertices, this.pathClosed);
+			var pathControls = PathControls.cubic(geometry.vertices, this.pathClosed);
 
 			var controlsGeom = new THREE.Geometry();
 			for ( var h = 0; h < pathControls.vertices.length; h ++ ) {
@@ -422,32 +401,17 @@
 			// Set number of Particles
 			if (this.particles === 0) this.particles = geometry.vertices.length; //pathControls.vertices.length - 1;
 			// Derive chromatin geometry path segments
-			var pathSegments = this.particles * this.particleSegments;
+			var pathSegments = this.particles * this.particleSegments; // same as segmentsCount...
 			this.pathSegments = pathSegments;
 
-			/*** TO DO: Calculate PathSegments based on number of base pairs in the model ***/
-			// // Spline
-			// var splinePath2 = getNearFitSplinePath(pathControls.vertices, pathSegments);
-			// // console.log(splinePath2.getLength());
-			// var splineGeom2 = new THREE.Geometry();
-			// 	splineGeom2.vertices = splinePath2.getPoints( pathSegments );
-			// // Spline Curves
-			// var splinePath = getSplinePath(pathControls.vertices, pathSegments);
-			// // console.log(splinePath.getLength());
-			// var splineGeom = splinePath.createPointsGeometry(pathSegments);
-			// // Quadratic Bezier (3 controls)
-			// var quadPath = getQuadPath(pathControls.vertices, pathSegments);
-			// // console.log(quadPath.getLength());
-			// var quadGeom = quadPath.createPointsGeometry(pathSegments);
-			// // Cubic Bezer (4 controls)
-			var cubicPath = getCubicPath(pathControls.vertices, pathSegments, this.pathClosed);
+			/*** TODO: Calculate PathSegments based on number of base pairs in the model ***/
+			var cubicPath = Paths.cubicBezier(pathControls.vertices, pathSegments, this.pathClosed);
 			var cubicGeom = cubicPath.createPointsGeometry(pathSegments);
 			for (var j = cubicGeom.vertices.length - 1; j >= 0; j--) {
-				var cubicGeomColor = new THREE.Color(overlay[j]);
+				var cubicGeomColor = new THREE.Color(colors[j]);
 				cubicGeom.colors.unshift(cubicGeomColor);
 			}
 			cubicGeom.name = "cubicGeom";
-
 
 			// ********************************************
 			// * MODEL SCALE = 1unit : 1nanometer         *
@@ -469,13 +433,13 @@
 			// Generate Chromatin model
 			var chromatinFiber = new THREE.Object3D(); // unmerged mesh
 			var chromatinGeometry = new THREE.Geometry(); // to calculate merged bounds
+
 			for ( var i = 0 ; i < pathSegments; i++) {
 				// cap if end segment
 				this.endcap = ( i === 0 || i === pathSegments - 1 ) ? false : true ;
 				// color linked to scene scope
 				
-				var segmentColor = overlay[i];
-
+				var segmentColor = colors[i];
 				var segmentMaterial = new THREE.MeshLambertMaterial({
 					color: segmentColor,
 					ambient: segmentColor,
@@ -489,46 +453,35 @@
 				chromatinGeometry.merge(segment);
 
 				var chromatinSegment = new THREE.Mesh(segment, segmentMaterial);
-				chromatinSegment.name = "segment-"+i;
+				chromatinSegment.name = "segment-" + (i + 1);
 				chromatinFiber.add(chromatinSegment);
 			}
 
-			var controlsMaterial = new THREE.LineBasicMaterial({color: "#ff0000",opacity: 0.5});
-			var controlsOutline = new THREE.Line(controlsGeom, controlsMaterial);
+			// Visualize Controls
+			// var controlsMaterial = new THREE.LineBasicMaterial({color: "#ff0000",opacity: 0.5});
+			// var controlsOutline = new THREE.Line(controlsGeom, controlsMaterial);
 			// chromatinFiber.add(controlsOutline);
-
-			// var splineMaterial = new THREE.LineBasicMaterial({color: "#0f0f00"});
-			// var chromatinSpline2 = new THREE.Line(splineGeom2, splineMaterial);
-			// // chromatinFiber.add(chromatinSpline2);
-
-			// var splineMaterial = new THREE.LineBasicMaterial({color: "#0f0f00"});
-			// var chromatinSpline = new THREE.Line(splineGeom, splineMaterial);
-			// // chromatinFiber.add(chromatinSpline);
-
-			// var quadMaterial = new THREE.LineBasicMaterial({color: "#00ff00"});
-			// var chromatinQuad = new THREE.Line(quadGeom, quadMaterial);
-			// // chromatinFiber.add(chromatinQuad);
 
 			var cubicMaterial = new THREE.LineBasicMaterial({color: "#0000ff"});
 			var chromatinCubic = new THREE.Line(cubicGeom, cubicMaterial);
 			// chromatinFiber.add(chromatinCubic);
 
+			// Visualize Controls Nodes
 			// var particleMap = null; // render only point
 			// particleMap = THREE.ImageUtils.loadTexture("assets/img/sphere-glossy.png");
-
-			var particlesMaterial = new THREE.PointCloudMaterial({
-				// color: "#0000ff",
-    			vertexColors: THREE.VertexColors,
-				size: 10,
-				opacity: 1.0,
-				// map: particleMap,
-				// depthTest: true,
-				// alphaTest: true,
-				// transparent: true
-			});
-
-			var chromatinCloud = new THREE.PointCloud(controlsGeom, particlesMaterial);
+			// var particlesMaterial = new THREE.PointCloudMaterial({
+			// 	// color: "#0000ff",
+   //  			vertexColors: THREE.VertexColors,
+			// 	size: 10,
+			// 	opacity: 1.0,
+			// 	// map: particleMap,
+			// 	// depthTest: true,
+			// 	// alphaTest: true,
+			// 	// transparent: true
+			// });
+			// var chromatinCloud = new THREE.PointCloud(controlsGeom, particlesMaterial);
 			// chromatinFiber.add(chromatinCloud);
+
 			chromatinGeometry.computeBoundingSphere();
 			chromatinFiber.boundingSphere = chromatinGeometry.boundingSphere;
 			chromatinFiber.name = "Chromatin Fiber";
@@ -550,270 +503,6 @@
 		}
 		vertexGeometry.name = "Chromatin Geometry";
 		return vertexGeometry;
-	}
-	
-	function getPathControls( vertices ) {
-		var division = "EnsemblBacteria";
-
-		// (totalParticles - 1) because (fore = [i+1])
-		var totalParticles = vertices.length;
-		var pathControls = [];
-		for (var i = 0 ; i < totalParticles - 1 ; i++) {
-			var baseParticle = vertices[i];
-			var foreParticle = vertices[i + 1];
-			var midCoord = new THREE.Vector3(0,0,0);
-			midCoord.addVectors(baseParticle,foreParticle).divideScalar(2);
-			var midOffset = new THREE.Vector3(0,0,0);
-			midOffset.copy(midCoord).sub(baseParticle);
-			if (i === 0 && division != "EnsemblBacteria") { // insert backprojected first coord
-				var preCoord;
-				// if (division == "EnsemblBacteria") {
-				// 	preCoord = vertices[totalParticles - 1];
-				// } else {
-					preCoord = new THREE.Vector3(0,0,0);
-				// }
-				preCoord.copy(baseParticle).sub(midOffset);
-				pathControls.push(preCoord);
-			}
-			//pathControls.push(baseParticle);
-			pathControls.push(midCoord);
-			// if (i == totalParticles - 2) {
-			// //	pathControls.push(foreParticle);
-			// 	var endCoord = new THREE.Vector3(0,0,0);
-			// 	endCoord.copy(foreParticle).add(midOffset);
-			// 	pathControls.push(endCoord);
-			// };
-			if (i == totalParticles - 2 && division != "EnsemblBacteria") {
-			//	pathControls.push(foreParticle);
-				var endCoord;
-				// if (division == "EnsemblBacteria") {
-				// 	endCoord = vertices[0];
-				// } else {
-					endCoord = new THREE.Vector3(0,0,0);
-				// }
-				endCoord.copy(foreParticle).add(midOffset);
-				pathControls.push(endCoord);
-			}
-		}
-		return pathControls;
-	}
-
-	function getCubicControls(vertices, closed) {
-		closed = closed || false; // closed if circular chromosome eg. Bacteria
-		var controlLength = 1; // variable for possible corner tweaking
-
-		// (totalParticles - 1) because (fore = [i+1])
-		var totalParticles = vertices.length;
-		var pathControls = {};
-		pathControls.vertices = [];
-		pathControls.colors = [];
-		var previousOffset = new THREE.Vector3(0,0,0);
-
-		// if (closed) {
-		// 	var firstParticle = vertices[0];
-		// 	var nthParticle = vertices[totalParticles - 1];
-		// 	var closedControl = new THREE.Vector3(0,0,0);
-		// 	if (closed) closedControl.addVectors(nthParticle, firstParticle).divideScalar(2);
-		// }
-
-		for (var i = 0 ; i < totalParticles ; i++) {
-
-			var baseParticle = vertices[i];
-			var foreParticle = new THREE.Vector3(0,0,0);
-			if (i == totalParticles - 1) {
-				if (closed) {
-					// fore particle == first particle
-					foreParticle = vertices[0];
-				} else {
-					// fore particle == extend same dist as to previous particle
-					foreParticle.copy(baseParticle).addVectors(baseParticle, vertices[i - 1]);
-				}
-			} else {
-				foreParticle = vertices[i + 1];
-			}
-			
-			var midControl = new THREE.Vector3(0,0,0);
-			// if (i == totalParticles - 1) {
-			// 	if (closed) {
-			// 		// use first particle mid point as closed chromatin...
-			// 		midControl.copy(closedControl);
-			// 	} else {
-			// 		// use previous particle mid point as no more foreward...
-			// 		midControl.addVectors(baseParticle, vertices[i - 1]).divideScalar(2);
-			// 	}
-			// } else {
-				midControl.addVectors(baseParticle, foreParticle).divideScalar(2);
-			// }
-			
-			var midOffset = new THREE.Vector3(0,0,0);
-			midOffset.copy(midControl).sub(baseParticle);
-
-			if (i === 0) {
-				if (closed) {
-					// set previous for first particle
-					var previousControl =  new THREE.Vector3(0,0,0);
-					previousControl.addVectors(vertices[totalParticles - 1], vertices[0]).divideScalar(2);
-					previousOffset.copy(previousControl).sub(vertices[totalParticles - 1]);
-				} else {
-					previousOffset.copy(midOffset);
-				}
-			}
-
-			var backControl = new THREE.Vector3(0,0,0);
-			backControl.copy(baseParticle).sub(midOffset);
-
-			var foreControl = new THREE.Vector3(0,0,0);
-			foreControl.copy(baseParticle).add(previousOffset);
-
-			// Node tangent
-			var baseTangent =  new THREE.Vector3(0,0,0);
-			baseTangent.subVectors(foreControl, backControl).divideScalar(controlLength);
-			backControl.copy(baseParticle).sub(baseTangent);
-			foreControl.copy(baseParticle).add(baseTangent);
-
-			// Add controls to array
-			pathControls.vertices.push(backControl);
-				pathControls.colors.push(new THREE.Color(0xcccccc));
-			pathControls.vertices.push(baseParticle);
-				pathControls.colors.push(new THREE.Color(0x000000));
-			pathControls.vertices.push(foreControl);
-				pathControls.colors.push(new THREE.Color(0xcccccc));
-
-			previousOffset = midOffset;
-		}
-		// add start and end controls
-		// requires calc of join midway on cubicBezier between start and end
-		var startBackControl = new THREE.Vector3(0,0,0);
-		var startPoint = new THREE.Vector3(0,0,0);
-		var endForeControl = new THREE.Vector3(0,0,0);
-		var endPoint = new THREE.Vector3(0,0,0);
-
-		var totalControls = pathControls.vertices.length;
-		var p1 = pathControls.vertices[totalControls-2]; // last particle
-		var p2 = pathControls.vertices[totalControls-1]; // last fore control
-		var p3 = pathControls.vertices[0]; // first back control
-		var p4 = pathControls.vertices[1]; // first particle
-		if (closed) {
-			// curve between start and end Controls
-			var joinCurve = new THREE.CubicBezierCurve3(p1,p2,p3,p4);
-			// split join curve in two
-			var joinMidpoint = joinCurve.getPointAt(0.5);
-			var joinTangent = joinCurve.getTangent(0.5).multiplyScalar(1);
-
-			// NEEDS ROUNDING OFF TO NEAREST 0.5??? Math.round(num*2)/2;
-			startBackControl.copy(joinMidpoint).sub(joinTangent);
-			startPoint.copy(joinMidpoint);
-			endForeControl.copy(joinMidpoint).add(joinTangent);
-			endPoint.copy(joinMidpoint);
-		} else {
-			startBackControl.copy(p3);
-			startPoint.copy(p3);
-			endForeControl.copy(p2);
-			endPoint.copy(p2);
-		}
-		pathControls.vertices.unshift(startBackControl);
-			pathControls.colors.unshift(new THREE.Color(0xffff00));
-		pathControls.vertices.unshift(startPoint);
-			pathControls.colors.unshift(new THREE.Color(0xff0000));
-		pathControls.vertices.push(endForeControl);
-			pathControls.colors.push(new THREE.Color(0x00ffff));
-		pathControls.vertices.push(endPoint);
-			pathControls.colors.push(new THREE.Color(0x0000ff));
-
-		return pathControls;
-	}
-
-	function getNearFitSplinePath (controls, segments) {
-		var division = "EnsemblBacteria";
-		var splinePath;
-		if (division == "EnsemblBacteria") {
-			splinePath = new THREE.ClosedSplineCurve3(controls);
-		} else {
-			splinePath = new THREE.SplineCurve3(controls);			
-		}
-		// var splineDivisions = splinePath.getSpacedPoints(segments);
-		return splinePath;
-	}
-
-	// Following paths constructed from curve segments passing through particle centers
-	function getSplinePath (controls, segments) {
-		var division = "NotEnsemblBacteria";
-		var curvePath = new THREE.CurvePath();
-		var totalControls = controls.length;
-
-		if (division == "EnsemblBacteria") {
-			// REVISE THIS
-			curvePath= new THREE.ClosedSplineCurve3(controls);
-		} else {
-			for (var i = 1 ; i < totalControls - 2 ; i = i + 3) {
-				var p1 = controls[i];
-				var p2 = controls[i+1];
-				var p3 = controls[i+2];
-				var p4 = controls[i+3];
-
-				var p23 = new THREE.Vector3(0,0,0);
-				p23.addVectors(p3,p2).divideScalar(2);
-
-				var splineCurve = new THREE.SplineCurve3([p1,p23,p4]);
-				curvePath.add(splineCurve);
-			}
-		}
-		return curvePath;
-	}
-	
-	function getQuadPath (controls, segments) {
-		var division = "NotEnsemblBacteria";
-		var quadPath = new THREE.CurvePath();
-		var totalControls = controls.length;
-
-		if (division == "EnsemblBacteria") {
-			// REVISE THIS
-			quadPath= new THREE.ClosedSplineCurve3(controls);
-		} else {
-			for (var i = 1 ; i < totalControls - 2 ; i = i + 3) {
-				var p1 = controls[i];
-				var p2 = controls[i+1];
-				var p3 = controls[i+2];
-				var p4 = controls[i+3];
-
-				var p23 = new THREE.Vector3(0,0,0);
-				p23.addVectors(p3,p2).divideScalar(2);
-
-				var quadCurve = new THREE.QuadraticBezierCurve3(p1,p23,p4);
-				quadPath.add(quadCurve);
-			}
-		}
-		return quadPath;
-	}
-	
-	function getCubicPath (controls, segments, closed) {
-		closed = closed || false; // closed if circular chromosome eg. Bacteria
-		var cubicPath = new THREE.CurvePath();
-		var totalControls = controls.length;
-		var cubicCurveStart, cubicCurveEnd;
-
-			// controls[0] == start point
-			// controls[1] == start point fore control
-			// controls[2] == first particle back control
-			// controls[3] == first particle
-			// ...
-			// n == totalControls - 1
-			// controls[n-3] == last particle
-			// controls[n-2] == last particle fore control
-			// controls[n-1] == end point back control
-			// controls[n] == end point (if closed, end point == start point)
-
-			for (var i = 0 ; i < totalControls - 1 ; i = i + 3) {
-
-				var c1 = controls[i];
-				var c2 = controls[i+1];
-				var c3 = controls[i+2];
-				var c4 = controls[i+3];
-
-				var cubicCurve = new THREE.CubicBezierCurve3(c1,c2,c3,c4);
-				 cubicPath.add(cubicCurve);
-			}
-		return cubicPath;
 	}
 
 	function segmentGeometry (pointX, pointY, props) {
@@ -1059,46 +748,6 @@
 	'use strict';
 	angular
 		.module('TADkit')
-		.factory('Contacts', Contacts);
-
-	// constructor for cluster models ensemble
-	function Contacts() {
-		return function(positions, distances, settings) {
-
-			var defaults = {
-				transparent: true,
-				visible: false
-			};	
-			settings = settings || {};
-			angular.extend(this, angular.copy(defaults), settings);
-
-			var contacts;
-			// var positions = new Float32Array( positions.length * 3 );
-			// var colors = new Float32Array( positions.length * 3 );
-			var geometry = new THREE.BufferGeometry();
-
-			geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
-			geometry.addAttribute( 'color', new THREE.BufferAttribute( distances, 3 ) );
-
-			geometry.computeBoundingSphere();
-
-			var material = new THREE.LineBasicMaterial( {
-				vertexColors: THREE.VertexColors,
-				blending: THREE.AdditiveBlending,
-				transparent: this.transparent
-			} );
-			
-			contacts = new THREE.Line(geometry, material, THREE.LinePieces); // THREE.LinePieces = separate lines
-
-			contacts.name = "Contacts";
-			return contacts;
-		};
-	}
-})();
-(function() {
-	'use strict';
-	angular
-		.module('TADkit')
 		.directive('tkComponentSceneFloatingtad', tkComponentSceneFloatingtad);
 
 	function tkComponentSceneFloatingtad() {
@@ -1119,6 +768,16 @@
 					scene.add(camera);
 
 					geometry = new THREE.TorusKnotGeometry( 100, 30, 100, 16 );
+
+					// GENERATE TEST GEOMETRY
+					// var torusgeom = new THREE.TorusKnotGeometry( 100, 10, 36, 1 );
+					// var testgeom = torusgeom.vertices;
+					// for (var i = testgeom.length - 1; i >= 0; i--) {
+					// 	testgeom[i].x = parseInt(testgeom[i].x.toFixed(2));
+					// 	testgeom[i].y = parseInt(testgeom[i].y.toFixed(2));
+					// 	testgeom[i].z = parseInt(testgeom[i].z.toFixed(2));
+					// };
+					// console.log(JSON.stringify(testgeom));
 
 					material = new THREE.MeshDepthMaterial({
 						color: 0x666666,
@@ -1161,11 +820,60 @@
 	'use strict';
 	angular
 		.module('TADkit')
+		.factory('Mesh', Mesh);
+
+	// constructor for cluster models ensemble
+	function Mesh() {
+		return function(positions, distances, settings) {
+
+			var defaults = {
+				transparent: true,
+				visible: false
+			};	
+			settings = settings || {};
+			angular.extend(this, angular.copy(defaults), settings);
+
+			var mesh;
+			// Distances stored as one per contact-position-pair
+			// so the array needs an RGB (*3) for each pair (*2)
+			// ie. each distance needs to be replicated 6 times
+			var colors = new Float32Array( distances.length * 6 );
+			for (var i = distances.length - 1; i >= 0; i--) {
+				for (var j = 0; j < 6; j++) {
+					var pos = (i*6)+j;
+					colors[pos] = distances[i];
+				}
+			}
+
+			var geometry = new THREE.BufferGeometry();
+
+			geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+			geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
+
+			geometry.computeBoundingSphere();
+
+			var material = new THREE.LineBasicMaterial( {
+				vertexColors: THREE.VertexColors,
+				blending: THREE.AdditiveBlending,
+				transparent: this.transparent
+			} );
+			
+			mesh = new THREE.Line(geometry, material, THREE.LinePieces); // THREE.LinePieces = separate lines
+
+			mesh.name = "Mesh Network";
+			return mesh;
+		};
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
 		.factory('Particles', Particles);
 
 	// constructor for chromatin model instances
 	function Particles() {
-		return function(data, settings) {
+		return function(data, colors, settings) {
 			var defaults = {
 				particles: 0,
 				visible: true,
@@ -1314,7 +1022,7 @@
 		.module('TADkit')
 		.controller('SceneController', SceneController);
 
-	function SceneController( $scope ){
+	function SceneController($scope) {
 
 		$scope.optionsState = false;
 		$scope.toggleOptions = function() {
@@ -1323,6 +1031,7 @@
 
 		$scope.toggle = function(bool) {
 			bool = !bool;
+			console.log(bool);
 		};
 
 		// $scope.keyControls = function (e, component) {
@@ -1339,28 +1048,28 @@
 		.module('TADkit')
 		.directive('tkComponentScene', tkComponentScene);
 
-	function tkComponentScene(Particles, Chromatin, Overlays, Contacts) {
+	function tkComponentScene(Particles, Chromatin, Mesh, Settings) {
 		return {
 			restrict: 'EA',
 			scope: { 
-				id: '@',
+				title: '=',
 				state: '=',
+				settings: '=',
 				view: '=',
-				data: '=',
-				overlay: '=',
-				overlayindex: '=',
-				contacts: '=',
-				settings: '='
+				currentmodel: '=',
+				proximities: '=',
+				currentoverlay: '='
 			},
 			templateUrl: 'assets/templates/scene.html',
 			link: function postLink(scope, element, attrs) {
 				// threeService.three().then(function(THREE) {
-					// console.log(scope.overlayindex);
+					// console.log(scope);
 
-					var scene, viewport, stats;
+					var scene, component, viewport, stats;
 					var camera, cameraPosition, cameraTarget, cameraTranslate;
 					var ambientLight, pointLight;
-					var controls, renderer, particles, chromatin, contacts;
+					var playback, controls, renderer;
+					var particles, chromatin, mesh;
 					var width, height, contW, contH, windowHalfX, windowHalfY;
 
 					var particleOriginalColor = new THREE.Color();
@@ -1374,11 +1083,17 @@
 						 * - component-header == children[0]
 						 * - component-body == children[3]
 						 */
+						// component = element[0].parentNode;
+						// console.log(component.clientWidth);
 						viewport = element[0].children[0].children[3];
-						// width = viewport.clientWidth; // NEED TO WAIT UNTIL DOM LOADED
-						width = parseInt(scope.state.width);
-						// height = viewport.clientHeight;
-						height = parseInt(scope.state.height);
+						// console.log(viewport.clientWidth);
+						// if with controller use line below
+						// viewport = element[0].children[0].children[3];
+
+						// width = component.clientWidth; // NEED TO WAIT UNTIL DOM LOADED
+						width = parseInt(scope.state.width); // USE UNTIL DOM CHECK AVAILBLE
+						// height = component.clientHeight;
+						height = parseInt(scope.state.height); // USE UNTIL DOM CHECK AVAILBLE
 						// OJO! DOM NOT READY
 						// console.log(element[0].firstChild.children[2].clientWidth);
 
@@ -1401,12 +1116,20 @@
 						scene.add(camera);
 	
 						// CONTROLS
-						controls = new THREE.TrackballControls( camera, renderer.domElement );
-						controls.autoRotate = scope.view.controls.autoRotate;
-						controls.autoRotateSpeed = scope.view.controls.autoRotateSpeed;
+						// Use TrackballControls for interaction
+						controls = new THREE.TrackballControls(camera, renderer.domElement);
+						// Use OrbitControls for autoRotate
+						playback = new THREE.OrbitControls(camera, renderer.domElement);
+						playback.autoRotate = scope.view.controls.autoRotate;
+						playback.autoRotateSpeed = scope.view.controls.autoRotateSpeed;
+						// interaction FALSE so as not to conflict with controls
+						playback.noZoom = true;
+						playback.noRotate = true;
+						playback.noPan = true;
+						playback.noKeys = true;
 
 						// AXIS
-						// TO DO: Make local axisHelper
+						// TODO: Make local axisHelper
 						var axisHelper = new THREE.AxisHelper( scope.view.settings.axis.size );
 						axisHelper.visible = scope.view.settings.axis.visible;
 						axisHelper.name = "Axis";
@@ -1420,26 +1143,27 @@
 						// scene.add(ambientLight);
 						
 						// GEOMETRY: PARTICLES
-						particles = new Particles( scope.data, scope.view.settings.particles );
+						particles = new Particles( scope.currentmodel.data, scope.currentoverlay.colors.particles, scope.view.settings.particles );
 						particles.visible = scope.view.settings.particles.visible;
 						scene.add(particles);
 
 						// Add particle count for later color changes
-						scope.view.settings.particles.count = particles.geometry.vertices.length;
+						scope.view.settings.particles.count = particles.geometry.vertices.length; // already known as particlesCount in Dataset???
 						scope.view.settings.chromatin.segments = scope.view.settings.particles.count * scope.view.settings.chromatin.particleSegments;
 						// change radius to be proportional to chromosome length
-						scope.view.settings.genomeLength = scope.settings.currentEndCoord; // eg. 816394 nucelotides
+						scope.view.settings.genomeLength = scope.settings.current.chromEnd; // eg. 816394 nucelotides
 
 						//GEOMETRY: CHROMATIN
-						chromatin = new Chromatin( scope.data, scope.overlay.colors, scope.view.settings.chromatin );
+						chromatin = new Chromatin( scope.currentmodel.data, scope.currentoverlay.colors.chromatin, scope.view.settings.chromatin );
 						chromatin.visible = scope.view.settings.chromatin.visible;
 						scene.add(chromatin);
+						scope.view.settings.chromatin.radius = chromatin.boundingSphere.radius;
 						// scope.view.settings.chromatin.count = 1; // UNUSED
 
-						// GEOMETRY: CONTACTS
-						contacts = new Contacts(scope.contacts.positions, scope.contacts.distances, scope.view.settings.contacts);
-						contacts.visible = scope.view.settings.contacts.visible;
-						scene.add(contacts);
+						// GEOMETRY: MESH
+						mesh = new Mesh(scope.proximities.positions, scope.currentoverlay.colors.mesh, scope.view.settings.mesh);
+						mesh.visible = scope.view.settings.mesh.visible;
+						scene.add(mesh);
 
 						// UPDATE CAMERA TARGET
 						cameraPosition = chromatin.boundingSphere.center;
@@ -1488,7 +1212,8 @@
 					// FIX: NOT REDRAWING SCENE IF THE ONLY VISBLE OBJECT IS TOGGLED OFF
 						scope.$watch('view.controls.autoRotate', function( newValue, oldValue ) {
 							if ( newValue !== oldValue ) {
-								controls.autoRotate = !controls.autoRotate;
+								// playback.autoRotate = !playback.autoRotate;
+								playback.autoRotate = scope.view.controls.autoRotate;
 							}
 						});
 						scope.$watch('view.settings.axis.visible', function( newValue, oldValue ) {
@@ -1506,60 +1231,64 @@
 								chromatin.visible = !chromatin.visible;
 							}
 						});
-						scope.$watch('view.settings.contacts.visible', function( newValue, oldValue ) {
+						scope.$watch('view.settings.mesh.visible', function( newValue, oldValue ) {
 							if ( newValue !== oldValue ) {
-								contacts.visible = !contacts.visible;
+								mesh.visible = !mesh.visible;
 							}
 						});
 
 						var particlesObj = scene.getObjectByName( "Particles Cloud" );
 						var chromatinObj = scene.getObjectByName( "Chromatin Fiber" );
+						var meshObj = scene.getObjectByName( "Mesh Network" );
 						
 						// /* Watch for Chromatin colors */
-						scope.$watch('overlayindex', function( newValue, oldValue ) { // cant deep watch as change through set on service
-							if ( newValue !== oldValue ) {
-								// console.log(newValue);
-								var meshes = chromatinObj.children.length;
-								var newOverlay = Overlays.getOverlay(newValue);
-								// console.log(newValue);
-								for (var i = 0; i < meshes; i++) {
-									var newColor =  new THREE.Color(newOverlay.colors[i]);
-									chromatinObj.children[i].material.color = newColor;
-									chromatinObj.children[i].material.ambient = newColor;
-									chromatinObj.children[i].material.emissive = newColor;
+						scope.$watch('currentoverlay.colors.chromatin', function( newColors, oldColors ) { // cant deep watch as change through set on service
+							if ( newColors !== oldColors ) {
+								// var particleCount = particlesObj.children.length;
+								// for (var i = 0; i < particleCount; i++) {
+								// 	var newParticleColor =  new THREE.Color(newOverlay.colors.particles[i]);
+								// 	particlesObj.children[i].material.color = newParticleColor;
+								// }
+								var chromatinCount = chromatinObj.children.length;
+								for (var i = 0; i < chromatinCount; i++) {
+									var newChromatinColor =  new THREE.Color(newColors[i]);
+									chromatinObj.children[i].material.color = newChromatinColor;
+									chromatinObj.children[i].material.ambient = newChromatinColor;
+									chromatinObj.children[i].material.emissive = newChromatinColor;
 								}
+								// var meshCount = meshObj.children.length;
+								// for (var i = 0; i < meshCount; i++) {
+								// 	var newMeshColor =  new THREE.Color(newOverlay.colors.mesh[i]);
+								// 	meshObj.children[i].material.color = newMeshColor;
+								// }
 							}
 						});
 
 						/* Watch for Browser-wide Position updates */
-						scope.$watch('settings.position', function( newValue, oldValue ) { // deep watch as change direct and changes all?
-							if ( newValue !== oldValue ) {
-
-								var oldInRange = oldValue - scope.view.viewpoint.startCoord;
-								var newInRange = newValue - scope.view.viewpoint.startCoord;
-								var rangeLength = scope.view.viewpoint.endCoord - scope.view.viewpoint.startCoord;
+						scope.$watch('settings.current.particle', function( newParticle, oldParticle ) {
+							if ( newParticle !== oldParticle ) {
 
 								// SET PARTICLE CURSOR COLOR
-								var particlePrevious =  Math.floor(oldInRange * (scope.view.settings.particles.count-1) / rangeLength);
-								var particleCurrent = Math.floor(newInRange * (scope.view.settings.particles.count-1) / rangeLength);
-
-								if (particleOriginalColor) particlesObj.geometry.colors[particlePrevious] = particleOriginalColor;
-								particleOriginalColor = particlesObj.geometry.colors[particleCurrent];
-								particlesObj.geometry.colors[particleCurrent] = highlightColor;
+								if (particleOriginalColor) particlesObj.geometry.colors[(oldParticle - 1)] = particleOriginalColor;
+								particleOriginalColor = particlesObj.geometry.colors[(newParticle - 1)];
+								particlesObj.geometry.colors[(newParticle - 1)] = highlightColor;
 								particlesObj.geometry.colorsNeedUpdate = true;
+							}
+						});
 
-								// SET CHROMATIN CURSOR COLOR
-								var positionPrevious =  Math.floor(oldInRange * (scope.view.settings.chromatin.segments-1) / rangeLength);
-								var positionCurrent = Math.floor(newInRange * (scope.view.settings.chromatin.segments-1) / rangeLength);
+						/* Watch for Browser-wide Position updates */
+						scope.$watch('settings.current.segment', function( newSegment, oldSegment ) {
+							if ( newSegment !== oldSegment ) {
 
-								var segmentPrevious = chromatinObj.getObjectByName( "segment-" + positionPrevious );
+								// SET CHROMATIN CURSOR COLOR								
+								var segmentPrevious = chromatinObj.getObjectByName( "segment-" + oldSegment );
 								if (positionOriginalColor) {
 									segmentPrevious.material.color = positionOriginalColor;
 									segmentPrevious.material.ambient = positionOriginalColor;
 									segmentPrevious.material.emissive = positionOriginalColor;
 								}
 
-								var segmentCurrent = chromatinObj.getObjectByName( "segment-" + positionCurrent );
+								var segmentCurrent = chromatinObj.getObjectByName( "segment-" + newSegment );
 								positionOriginalColor = segmentCurrent.material.color;
 
 								segmentCurrent.material.color = highlightColor;
@@ -1616,6 +1345,7 @@
 					// -----------------------------------
 					scope.animate = function () {
 						requestAnimationFrame( scope.animate );
+						playback.update();
 						controls.update();
 						scope.render();
 					};
@@ -1637,285 +1367,26 @@
 	'use strict';
 	angular
 		.module('TADkit')
-		.directive('tkComponentTrackContacts', tkComponentTrackContacts);
+		.directive('tkComponentTrackBarchart', tkComponentTrackBarchart);
 
-	function tkComponentTrackContacts(d3Service) {    
+	function tkComponentTrackBarchart(d3Service, Settings) {    
 		return {
 			restrict: 'EA',
 			scope: {
-				id: '@',
-				object: '=',
+				type: '=',
+				title: '=',
+				settings: '=',
 				view: '=',
 				data: '=',
-				overlay:'=',
-				settings: '='
-			},
-			templateUrl: 'assets/templates/track.html',
-			link: function(scope, element, attrs) {
-				d3Service.d3().then(function(d3) {
-					// console.log(scope);
-
-					var data = scope.data;
-
-
-					scope.update = function() {
-					};
-				});
-			}
-		};
-	}
-})();
-(function() {
-	'use strict';
-	angular
-		.module('TADkit')
-		.directive('tkComponentTrackGenes', tkComponentTrackGenes);
-
-	function tkComponentTrackGenes(d3Service) {    
-		return {
-			restrict: 'EA',
-			scope: {
-				id: '@',
-				object: '=',
-				view: '=',
-				data: '=',
-				overlay:'=',
-				settings: '='
-			},
-			templateUrl: 'assets/templates/track.html',
-			link: function(scope, element, attrs) {
-				d3Service.d3().then(function(d3) {
-					// console.log(scope);
-
- 					// DATA MANIPULATION >>> MOVE TO CONTROLLER
-					var data = scope.data;
-					var assemblyLength = 3200000000; // CALCULATE
-					var target = scope.id;
-					if (!scope.settings.position) scope.settings.position = assemblyLength / 2;
-					var positions = 100; //scope.positions; // == ?
-					var focusStart = scope.view.viewpoint.startCoord;
-					var focusEnd = scope.view.viewpoint.endCoord;
-					var chrStart = 0;
-					var chrEnd = assemblyLength;
-					var focusLength = focusEnd - focusStart;
-					var positionWidth = 1000; //focusLength / positions; // derive from...?
-					// var highlightPosition = focusStart + (positionWidth * scope.settings.position);
-
-					var focusScale = assemblyLength / focusLength;
-					var focusMargin = focusScale * 0.05;
-					focusScale = focusScale - (focusMargin * 2.0);
-		
-					var focusCenter = focusLength * 0.5;
-					var assemblyCenter = assemblyLength * 0.5;
-
-
-					// SVG GENERATION
-					var componentMargin = parseInt(scope.object.state.margin);
-					/* Rebuild margin Object to maintain D3 standard */
-					var margin = {
-							top: parseInt(scope.object.state.padding.top),
-							right: parseInt(scope.object.state.padding.right),
-							bottom: parseInt(scope.object.state.padding.bottom),
-							left: parseInt(scope.object.state.padding.left)
-						},
-						scale = 4,
-						trackHeight = parseInt(scope.object.state.heightInner),
-						nodeHeight = 10,
-						nodePadding = 0;
-
-					// VIEWPORT
-					/* component-controller == children[0]
-					 * - component-header == children[0]
-					 * - component-body == children[3]
-					 */
-					var component = element[0].parentNode;
-					var viewport = element[0].children[0].children[3];
-					var svg = d3.select(viewport).append('svg');
-					var chart, defs;
-					var xAxis, prime3Axis, prime5Axis;
-					var focus, container, xScale;
-
-					// RESIZE
-					scope.$watch(function(){
-						var w = component.clientWidth;
-						var h = component.clientHeight;
-						return w + h;
-					}, function() {
-						scope.render(scope.data);
-					});
-
-					// REDRAW
-					scope.$watch('data', function(newData) {
-						scope.render(newData);
-					}, true);
- 					
-					// SLIDER
-					scope.$watch('settings.position', function(newData) {
-						scope.update();
-					}, true);
-
- 					// ZOOM
-					var zoom = d3.behavior.zoom()
-						.on("zoom",  function() {
-						scope.update();
-					});
-
-					scope.render = function(data) {
-						svg.selectAll('*').remove();
- 
-						if (!data) return;
- 
-							var width = component.clientWidth - (2 * componentMargin) - margin.left - margin.right,
-								height = trackHeight - margin.top - margin.bottom;
-
-							xScale = d3.scale.linear()
-									.range([0, width])
-									.clamp(true);
-
-							xScale.domain([focusStart, focusEnd]);
-					
-							xAxis = d3.svg.axis()
-									.scale(xScale)
-									.orient("top")
-									.ticks(0)
-									.outerTickSize(0);
-							// prime3Axis = d3.svg.axis().orient("left"),
-							// prime5Axis = d3.svg.axis().orient("right");
-
-							var highlightWidth = 2; //positionWidth * width / focusLength;
-							// if (highlightWidth < 1) highlightWidth = 1; 
-							var focusOffset = xScale(assemblyCenter) - xScale(focusCenter);
-
-							chart = svg.attr('width', width + margin.left + margin.right)
-									.attr('height', height + margin.top + margin.bottom)
-									.append("g")
-									.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-									// .call(zoom);
-							
-							// clipping box to clip overflow
-							// solid rect as background also allow mouse events everywhere 
-							defs = chart.append("defs")
-								.append("clipPath")
-								.attr("id", "clip")
-								.append("rect")
-								.attr("width", width)
-								.attr("height", height)
-								.attr('fill', 'white');
-
-							focus = chart.append("g")
-								.attr("class", "focus");
-
-							var zoomArea = focus.append("g")
-								.attr("class", "zoom")
-								.append("rect")
-								.attr("width", width)
-								.attr("height", height)
-								.attr('fill', 'white');
-
-							container = focus.append("g")
-								.attr("class", "container")
-								.attr('clip-path', 'url(#clip)');
-
-							// zoom.x(xScale);
-
-							chart.select(".focus").append("g")
-								.attr("class", "x axis")
-								.attr("transform", "translate(0," + nodeHeight + ")")
-								.call(xAxis);
-
-							var labels  = chart.append("g")
-								.attr("class", "labels");
-								// labels.append("text")
-								// 	.attr("x", -12)
-								// 	.attr("y", -3)
-								// 	.attr("text-anchor", "right")
-								// 	.style("font-size", "10px")
-								// 	.text("3'");
-								// labels.append("text")
-								// 	.attr("x", width + 8)
-								// 	.attr("y", -3)
-								// 	.attr("text-anchor", "left")
-								// 	.style("font-size", "10px")
-								// 	.text("5'");
-								labels.append("text")
-									.attr("x", -18)
-									.attr("y", 8)
-									.attr("text-anchor", "right")
-									.style("font-size", "10px")
-									.text("<<");
-								labels.append("text")
-									.attr("x", -18)
-									.attr("y", 18)
-									.attr("text-anchor", "right")
-									.style("font-size", "10px")
-									.text(">>");
-// TO DO: Use FontAwesome/IcoMoon...
-// node.append('text')
-//     .attr('font-family', 'FontAwesome')
-//     .attr('font-size', function(d) { return d.size+'em'} )
-//     .text(function(d) { return '\uf118' }); 
-
-							var focusGraph = container.selectAll("rect")
-								.data(data)
-								.enter().append("rect")
-								.attr("x", function(d) { return Math.floor(xScale(d.start)); } )
-								.attr("y", function(d) { if (scope.view.settings.sense) { if (d.strand < 1) {return (nodeHeight);} else {return 0;} } else {return 0;} } )
-								.attr("width", function(d) { return Math.ceil(xScale(d.end) - xScale(d.start)); } )
-								.attr("height", function(d) { if (scope.view.settings.sense) {return (nodeHeight);} else {return (nodeHeight * 2);} }  )
-								.attr("class", function(d) {
-									var biotypeClass = d.biotypeStyle;
-									if (d.strand < 1) {biotypeClass += " forward-strand";}
-									else {biotypeClass += " reverse-strand";}
-									return biotypeClass; } )
-								.append("svg:title")
-								.text(function(d) { return d.external_name; });
-
-							var highlight = chart.append("rect")
-									.attr("id", "highlight")
-									.attr("x", function(d) { return xScale( scope.settings.position - (positionWidth * 0.5)); } )
-									.attr("y", 0)
-									.attr("width", highlightWidth )
-									.attr("height", trackHeight)
-									.attr("class", "highlight-follow");
-					};
-
-					scope.update = function() {
-						svg.select("g.x.axis").call(xAxis);
-						container.selectAll("rect")
-						.attr("x", function(d) { return Math.floor(xScale(d.start)); } )	
-						.attr("y", function(d) { if (scope.view.settings.sense) { if (d.strand < 1) {return (nodeHeight);} else {return 0;} } else {return 0;} } )
-						.attr("width", function(d) { return Math.ceil(xScale(d.end) - xScale(d.start)); } )
-						.attr("height", function(d) { if (scope.view.settings.sense) {return (nodeHeight);} else {return (nodeHeight * 2);} }  );
-
-						svg.select("#highlight") //.style("visibility", "hidden");
-						.attr("x", function(d) { return xScale( scope.settings.position - (positionWidth * 0.5)); } );
-					};
-				});
-			}
-		};
-	}
-})();
-(function() {
-	'use strict';
-	angular
-		.module('TADkit')
-		.directive('tkComponentTrackSlider', tkComponentTrackSlider);
-
-	function tkComponentTrackSlider(d3Service) {
-		return {
-			restrict: 'EA',
-			scope: {
-				id: '@',
-				object: '=',
-				view: '=',
-				settings: '='
+				overlay: '=', /* used in template */
+				toggleoverlay: '&' /* used in template */
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
 				// console.log(scope);
 
 				d3Service.d3().then(function(d3) {
-				
+
 					scope.safeApply = function(fn) {
 						var phase = this.$root.$$phase;
 						if(phase == '$apply' || phase == '$digest') {
@@ -1925,32 +1396,41 @@
 						}
 					};
 
+ 					var data = scope.data;
+					var focusStart = scope.view.viewpoint.chromStart;
+					var focusEnd = scope.view.viewpoint.chromEnd;
+					var focusLength = focusEnd - focusStart + 1; // Resrouces.range...
+					var particlesCount = scope.settings.current.particlesCount;
+
 					// SVG GENERATION
-					var data = scope.data;
-					var focusStart = scope.view.viewpoint.startCoord;
-					var focusEnd = scope.view.viewpoint.endCoord;
-					var segments = scope.view.settings.segments;
-					var componentMargin = parseInt(scope.object.state.margin);
-					/* Rebuild margin Object to maintain D3 standard */
+					var componentMargin = parseInt(scope.view.settings.margin);
+					/* Rebuild margin to maintain D3 standard */
 					var margin = {
-							top: parseInt(scope.object.state.padding.top),
-							right: parseInt(scope.object.state.padding.right),
-							bottom: parseInt(scope.object.state.padding.bottom),
-							left: parseInt(scope.object.state.padding.left)
+							top: parseInt(scope.view.settings.padding.top),
+							right: parseInt(scope.view.settings.padding.right),
+							bottom: parseInt(scope.view.settings.padding.bottom),
+							left: parseInt(scope.view.settings.padding.left)
 						},
-						trackHeight = parseInt(scope.object.state.heightInner);
+						scale = 4,
+						trackHeight = parseInt(scope.view.settings.heightInner),
+						nodeHeight = 10,
+						nodePadding = 0,
+						nodeColor = scope.view.settings.color,
+						harmonicsColor = scope.overlay.palette[0],
+						lowerBoundsColor = scope.overlay.palette[1];
 
 					// VIEWPORT
 					/* component-controller == children[0]
 					 * - component-header == children[0]
 					 * - component-body == children[3]
 					 */
-					var component = element[0];
+					var component = element[0].parentNode;
 					var viewport = element[0].children[0].children[3];
+					// if with controller use line below
+					// var viewport = element[0].children[0].children[3];
 					var svg = d3.select(viewport).append('svg');
-					var slider, xScale, prime3Axis, prime5Axis;
-					var handleWidth, handleHeight;
-					var xAxis, brush, handle;
+					var xScale, yScale, axisX, axisY, brush, chart;
+					var defs, focus, zoomArea, container, axis, labels, harmonics, lowerBounds, highlight;
 
 					// RESIZE
 					scope.$watch(function(){
@@ -1958,113 +1438,224 @@
 						var h = component.clientHeight;
 						return w + h;
 					}, function() {
-						scope.render();
+						scope.render(data);
 					});
 
-					scope.render = function() {
+					// REDRAW
+					scope.$watch('data.dimension', function(newData, oldData) {
+						if (newData !== oldData ) {
+							data = scope.data;
+							scope.render(data);
+						}
+					});
+
+					// UPDATE
+					scope.$watch('settings.current.position', function(newPosition, oldPosition) {
+						if ( newPosition !== oldPosition ) {
+							scope.update();
+						}
+					});
+					
+ 				// 	// ZOOM
+					// var zoom = d3.behavior.zoom()
+					// 	.on("zoom",  function() {
+					// 	scope.update();
+					// });
+
+					scope.getColor = function(code) {
+						var colorCodes = [
+											{"type":"harmonic","code":"H","color":"#4CAF50"},
+											{"type":"upperBound","code":"L","color":"#0000ff"},
+											{"type":"lowerBound","code":"U","color":"#ff00ff"},
+											{"type":"contact","code":"C","color":"#00ff00"}
+										];
+						var color = "#ccc";
+						for (var i = colorCodes.length - 1; i >= 0; i--) {
+							if (code == colorCodes[i].code) {
+								color = colorCodes[i].color;
+							}
+						}
+						return color;
+					};
+
+					scope.getOpacity = function(value) {
+						var opacity;
+						var scaled = value / 5; // 5 being the limit...
+						opacity = scaled * scaled;
+						return opacity;
+					};
+
+					scope.getStrokeWidth = function(value) {
+						var strokeWidth = 10;
+						var scaled = value / 5; // 5 being the limit...
+						strokeWidth = strokeWidth * scaled;
+						return strokeWidth;
+					};
+
+					scope.render = function(data) {
 						svg.selectAll('*').remove();
-						
+ 
+						if (!data) return;
+
 						var width = component.clientWidth - (2 * componentMargin) - margin.left - margin.right,
-							height = trackHeight - margin.bottom - margin.top;
+							height = trackHeight - margin.top - margin.bottom;
+						var verticalOffset = height * 0.5;
+						var particleWidth = (1 * width) / particlesCount;
+						var barWidth = particleWidth;
+
+						// var y0 = Math.max(Math.abs(d3.min(data)), Math.abs(d3.max(data)));
 
 						xScale = d3.scale.linear()
 								.range([0, width])
+								.domain([focusStart, focusEnd])
 								.clamp(true);
 
-						xScale.domain([focusStart, focusEnd]);
+						yScale = d3.scale.linear()
+								.domain([-5, 5])
+								.range([0, height]);
 
-						xAxis = d3.svg.axis()
-								.scale(xScale)
-								.orient("bottom")
-								.ticks(4);
-							prime3Axis = d3.svg.axis().orient("left");
-							prime5Axis = d3.svg.axis().orient("right");
-								// .outerTickSize([0]);
+						axisY = d3.svg.axis()
+								.scale(yScale)
+								.orient("left")
+								.ticks(6)
+								.outerTickSize(1);
 
-						var sliderStart = 0;
-						var sliderEnd = segments-1;
-
-						handleWidth = Math.max( (width / sliderEnd), 4 );
-						handleHeight = trackHeight;
+						var highlightWidth = 2;
 
 						brush = d3.svg.brush()
 							.x(xScale)
 							.extent([0, 0])
 							.on("brush", scope.brushed);
 
-						slider = svg.attr("width", width + margin.left + margin.right)
-								.attr("height", height + margin.top + margin.bottom)
+						chart = svg.attr('width', width + margin.left + margin.right)
+								.attr('height', height + margin.top + margin.bottom)
 								.append("g")
-								.attr("transform", "translate(" + margin.left + ", " + 0 + ")");
+								.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+								.call(brush);
+								// .call(zoom);
+						
+						chart.append("g")
+							.attr("class", "y axis")
+							.append("line")
+							.attr("y1", yScale(0))
+							.attr("y2", yScale(0))
+							.attr("x1", 0)
+							.attr("x2", width);
 
-							var labels  = slider.append("g")
-								.attr("class", "labels");
-								labels.append("text")
-									.attr("x", -16)
-									.attr("y", 26)
-									.attr("text-anchor", "right")
-									.style("font-size", "10px")
-									.text("3'");
-								labels.append("text")
-									.attr("x", width + 8)
-									.attr("y", 26)
-									.attr("text-anchor", "left")
-									.style("font-size", "10px")
-									.text("5'");
 
-						var axis = slider.append("g")
-							.attr("class", "x axis")
-							.attr("transform", "translate(0," + height + ")")
-							.call(xAxis)
-							.select(".domain")
-							.select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
-							.attr("class", "halo");
-
-						slider.append("g")
-							.attr("class", "slider")
-							.call(brush);
-
-						slider.select(".background")
+						chart.select(".background")
 							.attr("y", height/2)
 							.attr("height", height);
-						handle = slider.append("circle")
-							.attr("class", "handle")
-							.attr("cx", xScale(scope.settings.position) - (handleWidth * 0.5))
-							.attr("cy", height)
-							.attr("r", handleWidth * 1.6);
-							// handle.append("text")
-							// 	.attr("x", xScale(scope.settings.position) - (handleWidth * 0.5))
-							// 	.attr("y", height)
-							// 	.attr("text-anchor", "bottom")
-							// 	.style("font-size", "10px")
-							// 	.text(scope.settings.position);
 
-						slider
-							.call(brush.extent([(scope.settings.position), 0]))
-							.call(brush.event);
+						// clipping box to clip overflow
+						// solid rect as background also allow mouse events everywhere 
+						defs = chart.append("defs")
+							.append("clipPath")
+							.attr("id", "clip")
+							.append("rect")
+							.attr("width", width)
+							.attr("height", height)
+							.attr('fill', 'white');
+
+						focus = chart.append("g")
+							.attr("class", "focus");
+
+						// zoomArea = focus.append("g")
+						// 	.attr("class", "zoom")
+						// 	.append("rect")
+						// 	.attr("width", width)
+						// 	.attr("height", height)
+						// 	.attr('fill', 'white');
+
+						container = focus.append("g")
+							.attr("class", "container")
+							.attr('clip-path', 'url(#clip)');
+						harmonics  = container.append("g")
+							.attr("class", "harmonics");
+						lowerBounds  = container.append("g")
+							.attr("class", "lowerbounds");
+
+						axis = focus.append("g")
+							.attr("class", "axis y")
+							.call(axisY);
+
+						labels  = chart.append("g")
+							.attr("class", "labels");
+
+						// if (scope.view.viewtype == "default") {
+							harmonics.selectAll("rect") // RED
+								.data(data.harmonics)
+								.enter().append("rect")
+								.attr("x", function(d) { return (d[1] * barWidth); } )
+								.attr("y", function(d) { return yScale( d[3] ); } )
+								.attr("width", barWidth)
+								.attr("height", function(d) { return yScale( d[3] ); })
+								.style("fill", harmonicsColor)
+								// .style("fill-opacity", function(d) { return scope.getOpacity(d[3]); })
+								.style("stroke", harmonicsColor)
+								.style("stroke-width", 0)
+								.append("svg:title")
+								.text(function(d,i) { return i + ":" + d; });
+
+							lowerBounds.selectAll("rect") // BLUE
+								.data(data.lowerBounds)
+								.enter().append("rect")
+								.attr("x", function(d) { return (d[1] * barWidth); } )
+								.attr("y", function(d) { return yScale( Math.max(0, (d[3] * -1.0))); } )
+								.attr("width", barWidth)
+								.attr("height", function(d) { return yScale( d[3] ); })
+								.style("fill", lowerBoundsColor)
+								// .style("fill-opacity", function(d) { return scope.getOpacity(d[3]); })
+								.style("stroke", lowerBoundsColor)
+								.style("stroke-width", 0)
+								.append("svg:title")
+								.text(function(d,i) { return i + ":" + d; });
+
+						// }
+
+						highlight = chart.append("rect")
+								.attr("id", "highlight")
+								.attr("x", function(d) { return xScale( scope.settings.current.position); } )
+								.attr("y", 0)
+								.attr("width", highlightWidth )
+								.attr("height", trackHeight)
+								.attr("class", "highlight-follow");
+						// highlight
+						// 	.call(brush.extent([(scope.settings.current.position), 0]))
+						// 	.call(brush.event);
+					};
+
+					// UPDATE
+					scope.update = function(data) {
+						svg.select("#highlight") //.style("visibility", "hidden");
+						.attr("x", function(d) { return xScale( scope.settings.current.position ); } );
 					};
 
 					// BRUSH
 					scope.brushed = function() {
+
 						// scope.safeApply( function() {
-							var thisSlider = this;
+							var thisTrack = this;
 							scope.safeApply( function() {
 								var value = brush.extent()[0];
 								if (d3.event.sourceEvent) {
-									value = parseInt(xScale.invert(d3.mouse(thisSlider)[0]));
+									value = parseInt(xScale.invert(d3.mouse(thisTrack)[0]));
 									brush.extent([value, value]);
 								}
-								handle.attr("cx", xScale(value) - (handleWidth * 0.5));
+								highlight.attr("x", xScale(value));
 
 								// UPDATE position
-								scope.settings.position = value;
-								scope.settings.segmentLower = scope.settings.position - (scope.settings.segment * 5); // * 0.5???
-								scope.settings.segmentUpper = scope.settings.position + (scope.settings.segment * 5); // * 0.5???
+								scope.settings.current.position = value;
+								scope.settings.current.particle = Settings.getParticle();
+								scope.settings.current.segmentLower = scope.settings.current.position - (scope.settings.current.segment * 5); // * 0.5???
+								scope.settings.current.segmentUpper = scope.settings.current.position + (scope.settings.current.segment * 5); // * 0.5???
 
 							});
 						// });
 					};
 
+					// Initial render
+					scope.render(data);
 				});
 			}
 		};
@@ -2074,18 +1665,19 @@
 	'use strict';
 	angular
 		.module('TADkit')
-		.directive('tkComponentWiggle0', tkComponentWiggle0);
+		.directive('tkComponentBedgraph', tkComponentBedgraph);
 
-	function tkComponentWiggle0(d3Service) {    
+	function tkComponentBedgraph(d3Service) {    
 		return {
 			restrict: 'EA',
 			scope: {
-				id: '@',
-				object: '=',
+				type: '=',
+				title: '=',
+				settings: '=',
 				view: '=',
 				data: '=',
-				overlay:'=',
-				settings: '='
+				overlay: '=', /* used in template */
+				toggleoverlay: '&' /* used in template */
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
@@ -2094,17 +1686,16 @@
 
  					// DATA MANIPULATION >>> MOVE TO CONTROLLER
 					var data = scope.data;
-					var target = scope.id;
 					// var assemblyLength = 3200000000; // CALCULATE
-					// if (!scope.settings.position) scope.settings.position = assemblyLength / 2;
+					// if (!scope.settings.current.position) scope.settings.current.position = assemblyLength / 2;
 					var step = scope.view.settings.step;
 					var stepWidth;
-					var focusStart = scope.view.viewpoint.startCoord;
-					var focusEnd = scope.view.viewpoint.endCoord;
+					var focusStart = scope.view.viewpoint.chromStart;
+					var focusEnd = scope.view.viewpoint.chromEnd;
 					// var chrStart = 0;
 					// var chrEnd = assemblyLength;
 					var focusLength = focusEnd - focusStart;
-					// var highlightPosition = focusStart + (stepWidth * scope.settings.position);
+					// var highlightPosition = focusStart + (stepWidth * scope.settings.current.position);
 
 					// var focusScale = assemblyLength / focusLength;
 					// var focusMargin = focusScale * 0.05;
@@ -2115,16 +1706,16 @@
 
 
 					// SVG GENERATION
-					var componentMargin = parseInt(scope.object.state.margin);
-					/* Rebuild margin Object to maintain D3 standard */
+					var componentMargin = parseInt(scope.view.settings.margin);
+					/* Rebuild margin to maintain D3 standard */
 					var margin = {
-							top: parseInt(scope.object.state.padding.top),
-							right: parseInt(scope.object.state.padding.right),
-							bottom: parseInt(scope.object.state.padding.bottom),
-							left: parseInt(scope.object.state.padding.left)
+							top: parseInt(scope.view.settings.padding.top),
+							right: parseInt(scope.view.settings.padding.right),
+							bottom: parseInt(scope.view.settings.padding.bottom),
+							left: parseInt(scope.view.settings.padding.left)
 						},
 						scale = 4,
-						trackHeight = parseInt(scope.object.state.heightInner),
+						trackHeight = parseInt(scope.view.settings.heightInner),
 						nodeHeight = trackHeight * 0.5,
 						verticalOffset = (trackHeight - nodeHeight) * 0.5,
 						nodePadding = 0,
@@ -2137,27 +1728,29 @@
 					 */
 					var component = element[0].parentNode;
 					var viewport = element[0].children[0].children[3];
+					// if with controller use line below
+					// var viewport = element[0].children[0].children[3];
 					var svg = d3.select(viewport).append('svg');
 					var chart, defs;
 					var xAxis, prime3Axis, prime5Axis;
 					var focus, container, xScale;
 
-					// RESIZE
+					// RESIZE implies complete redraw
 					scope.$watch(function(){
 						var w = component.clientWidth;
 						var h = component.clientHeight;
 						return w + h;
 					}, function() {
-						scope.render(scope.data);
+						scope.render(data);
 					});
 
-					// REDRAW
-					scope.$watch('data', function(newData) {
-						scope.render(newData);
-					}, true);
+					// REDRAW on new data
+					// scope.$watch('data', function(newData) {
+					// 	scope.render(newData);
+					// }, true);
  					
 					// SLIDER
-					scope.$watch('settings.position', function(newData) {
+					scope.$watch('settings.current.position', function(newData) {
 						scope.update();
 					}, true);
 
@@ -2212,12 +1805,12 @@
 							focus = chart.append("g")
 								.attr("class", "focus");
 
-							var zoomArea = focus.append("g")
-								.attr("class", "zoom")
-								.append("rect")
-								.attr("width", width)
-								.attr("height", height)
-								.attr('fill', 'white');
+							// var zoomArea = focus.append("g")
+							// 	.attr("class", "zoom")
+							// 	.append("rect")
+							// 	.attr("width", width)
+							// 	.attr("height", height)
+							// 	.attr('fill', 'white');
 
 							container = focus.append("g")
 								.attr("class", "container")
@@ -2232,53 +1825,31 @@
 
 							var labels  = chart.append("g")
 								.attr("class", "labels");
-								// labels.append("text")
-								// 	.attr("x", -12)
-								// 	.attr("y", -3)
-								// 	.attr("text-anchor", "right")
-								// 	.style("font-size", "10px")
-								// 	.text("3'");
-								// labels.append("text")
-								// 	.attr("x", width + 8)
-								// 	.attr("y", -3)
-								// 	.attr("text-anchor", "left")
-								// 	.style("font-size", "10px")
-								// 	.text("5'");
-								// labels.append("text")
-								// 	.attr("x", -18)
-								// 	.attr("y", 8)
-								// 	.attr("text-anchor", "right")
-								// 	.style("font-size", "10px")
-								// 	.text("<<");
-								// labels.append("text")
-								// 	.attr("x", -18)
-								// 	.attr("y", 18)
-								// 	.attr("text-anchor", "right")
-								// 	.style("font-size", "10px")
-								// 	.text(">>");
-// TO DO: Use FontAwesome/IcoMoon...
-// node.append('text')
-//     .attr('font-family', 'FontAwesome')
-//     .attr('font-size', function(d) { return d.size+'em'} )
-//     .text(function(d) { return '\uf118' }); 
+
+							// TODO: Use FontAwesome/IcoMoon...
+							// node.append('text')
+							//     .attr('font-family', 'FontAwesome')
+							//     .attr('font-size', function(d) { return d.size+'em'} )
+							//     .text(function(d) { return '\uf118' }); 
 
 							var focusGraph = container.selectAll("rect")
 								.data(data)
 								.enter().append("rect")
-								.attr("x", function(d, i) { return (i + 1) * stepWidth; } )
+								.attr("x", function(d, i) { return Math.floor(xScale(d.start)); } )
 								.attr("y", verticalOffset)
-								.attr("width", stepWidth)
+								.attr("width", function(d) { return Math.ceil(xScale(d.end) - xScale(d.start)); })
 								.attr("height", nodeHeight)
-								.style("fill", nodeColor)
-								.style("fill-opacity", function(d) { return d; })
-								.style("stroke", nodeColor)
-								.style("stroke-width", 0)
+								.attr("class", function(d) { if (d.read == 1) return scope.title; } )
+								// .style("fill", nodeColor)
+								// .style("fill-opacity", function(d) { return d.read; })
+								// .style("stroke", nodeColor)
+								// .style("stroke-width", 0)
 								.append("svg:title")
-								.text(function(d,i) { return i + ":" + d; });
+								.text(function(d,i) { return d.start + ":" + d.end + "(" + d.read + ")"; });
 
 							var highlight = chart.append("rect")
 									.attr("id", "highlight")
-									.attr("x", function(d) { return xScale( scope.settings.position - (step * 0.5)); } )
+									.attr("x", function(d) { return xScale( scope.settings.current.position - (step * 0.5)); } )
 									.attr("y", 0)
 									.attr("width", highlightWidth )
 									.attr("height", trackHeight)
@@ -2298,7 +1869,1193 @@
 						// .attr("height", nodeHeight);
 
 						svg.select("#highlight") //.style("visibility", "hidden");
-						.attr("x", function(d) { return xScale( scope.settings.position - (step * 0.5)); } );
+						.attr("x", function(d) { return xScale( scope.settings.current.position - (step * 0.5)); } );
+					};
+				});
+			}
+		};
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.directive('tkComponentTrackGenes', tkComponentTrackGenes);
+
+	function tkComponentTrackGenes(d3Service) {    
+		return {
+			restrict: 'EA',
+			scope: {
+				type: '=',
+				title: '=',
+				settings: '=',
+				view: '=',
+				data: '=',
+				overlay: '=', /* used in template */
+				toggleoverlay: '&' /* used in template */
+			},
+			templateUrl: 'assets/templates/track.html',
+			link: function(scope, element, attrs) {
+				d3Service.d3().then(function(d3) {
+					// console.log(scope);
+
+ 					// DATA MANIPULATION >>> MOVE TO CONTROLLER
+					var data = scope.data;
+					var assemblyLength = 3200000000; // CALCULATE
+					if (!scope.settings.current.position) scope.settings.current.position = assemblyLength / 2;
+					var positions = 100; //scope.positions; // == ?
+					var focusStart = scope.view.viewpoint.chromStart;
+					var focusEnd = scope.view.viewpoint.chromEnd;
+					var chrStart = 0;
+					var chrEnd = assemblyLength;
+					var focusLength = focusEnd - focusStart;
+					var positionWidth = 1000; //focusLength / positions; // derive from...?
+					// var highlightPosition = focusStart + (positionWidth * scope.settings.current.position);
+
+					var focusScale = assemblyLength / focusLength;
+					var focusMargin = focusScale * 0.05;
+					focusScale = focusScale - (focusMargin * 2.0);
+		
+					var focusCenter = focusLength * 0.5;
+					var assemblyCenter = assemblyLength * 0.5;
+
+
+					// SVG GENERATION
+					var componentMargin = parseInt(scope.view.settings.margin);
+					/* Rebuild margin to maintain D3 standard */
+					var margin = {
+							top: parseInt(scope.view.settings.padding.top),
+							right: parseInt(scope.view.settings.padding.right),
+							bottom: parseInt(scope.view.settings.padding.bottom),
+							left: parseInt(scope.view.settings.padding.left)
+						},
+						scale = 4,
+						trackHeight = parseInt(scope.view.settings.heightInner),
+						nodeHeight = 10,
+						nodePadding = 0;
+
+					// VIEWPORT
+					/* component-controller == children[0]
+					 * - component-header == children[0]
+					 * - component-body == children[3]
+					 */
+					var component = element[0].parentNode;
+					var viewport = element[0].children[0].children[3];
+					// if with controller use line below
+					// var viewport = element[0].children[0].children[3];
+					var svg = d3.select(viewport).append('svg');
+					var chart, defs;
+					var xAxis, prime3Axis, prime5Axis;
+					var focus, container, xScale;
+
+					// RESIZE
+					scope.$watch(function(){
+						var w = component.clientWidth;
+						var h = component.clientHeight;
+						return w + h;
+					}, function() {
+						scope.render(data);
+					});
+
+					// REDRAW
+					scope.$watch('data', function(newData) {
+						scope.render(newData);
+					}, true);
+ 					
+					// SLIDER
+					scope.$watch('settings.current.position', function(newPosition, oldPosition) {
+						if ( newPosition !== oldPosition ) {
+							scope.update();
+						}
+					});
+
+ 					// ZOOM
+					var zoom = d3.behavior.zoom()
+						.on("zoom",  function() {
+						scope.update();
+					});
+
+					scope.render = function(data) {
+						svg.selectAll('*').remove();
+ 
+						if (!data) return;
+ 
+							var width = component.clientWidth - (2 * componentMargin) - margin.left - margin.right,
+								height = trackHeight - margin.top - margin.bottom;
+
+							xScale = d3.scale.linear()
+									.range([0, width])
+									.clamp(true);
+
+							xScale.domain([focusStart, focusEnd]);
+					
+							xAxis = d3.svg.axis()
+									.scale(xScale)
+									.orient("top")
+									.ticks(0)
+									.outerTickSize(0);
+							// prime3Axis = d3.svg.axis().orient("left"),
+							// prime5Axis = d3.svg.axis().orient("right");
+
+							var highlightWidth = 2; //positionWidth * width / focusLength;
+							// if (highlightWidth < 1) highlightWidth = 1; 
+							var focusOffset = xScale(assemblyCenter) - xScale(focusCenter);
+
+							chart = svg.attr('width', width + margin.left + margin.right)
+									.attr('height', height + margin.top + margin.bottom)
+									.append("g")
+									.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+									// .call(zoom);
+							
+							// clipping box to clip overflow
+							// solid rect as background also allow mouse events everywhere 
+							defs = chart.append("defs")
+								.append("clipPath")
+								.attr("id", "clip")
+								.append("rect")
+								.attr("width", width)
+								.attr("height", height)
+								.attr('fill', 'white');
+
+							focus = chart.append("g")
+								.attr("class", "focus");
+
+							// var zoomArea = focus.append("g")
+							// 	.attr("class", "zoom")
+							// 	.append("rect")
+							// 	.attr("width", width)
+							// 	.attr("height", height)
+							// 	.attr('fill', 'white');
+
+							container = focus.append("g")
+								.attr("class", "container")
+								.attr('clip-path', 'url(#clip)');
+
+							// zoom.x(xScale);
+
+							var axis = focus.append("g")
+								.attr("class", "x axis")
+								.attr("transform", "translate(0," + nodeHeight + ")")
+								.call(xAxis);
+
+							var labels  = chart.append("g")
+								.attr("class", "labels");
+								labels.append("text")
+									.attr("x", -18)
+									.attr("y", 8)
+									.attr("text-anchor", "right")
+									.style("font-size", "10px")
+									.text("<<");
+								labels.append("text")
+									.attr("x", -18)
+									.attr("y", 18)
+									.attr("text-anchor", "right")
+									.style("font-size", "10px")
+									.text(">>");
+// TODO: Use FontAwesome/IcoMoon...
+// node.append('text')
+//     .attr('font-family', 'FontAwesome')
+//     .attr('font-size', function(d) { return d.size+'em'} )
+//     .text(function(d) { return '\uf118' }); 
+
+							var focusGraph = container.selectAll("rect")
+								.data(data)
+								.enter().append("rect")
+								.attr("x", function(d) { return Math.floor(xScale(d.start)); } )
+								.attr("y", function(d) { if (scope.view.settings.sense) { if (d.strand < 1) {return (nodeHeight);} else {return 0;} } else {return 0;} } )
+								.attr("width", function(d) { return Math.ceil(xScale(d.end) - xScale(d.start)); } )
+								.attr("height", function(d) { if (scope.view.settings.sense) {return (nodeHeight);} else {return (nodeHeight * 2);} }  )
+								.attr("class", function(d) {
+									var biotypeClass = d.biotypeStyle;
+									if (d.strand < 1) {biotypeClass += " forward-strand";}
+									else {biotypeClass += " reverse-strand";}
+									return biotypeClass; } )
+								.append("svg:title")
+								.text(function(d) { return d.external_name; });
+
+							var highlight = chart.append("rect")
+									.attr("id", "highlight")
+									.attr("x", function(d) { return xScale( scope.settings.current.position - (positionWidth * 0.5)); } )
+									.attr("y", 0)
+									.attr("width", highlightWidth )
+									.attr("height", trackHeight)
+									.attr("class", "highlight-follow");
+					};
+
+					scope.update = function() {
+						svg.select("g.x.axis").call(xAxis);
+						container.selectAll("rect")
+						.attr("x", function(d) { return Math.floor(xScale(d.start)); } )	
+						.attr("y", function(d) { if (scope.view.settings.sense) { if (d.strand < 1) {return (nodeHeight);} else {return 0;} } else {return 0;} } )
+						.attr("width", function(d) { return Math.ceil(xScale(d.end) - xScale(d.start)); } )
+						.attr("height", function(d) { if (scope.view.settings.sense) {return (nodeHeight);} else {return (nodeHeight * 2);} }  );
+
+						svg.select("#highlight") //.style("visibility", "hidden");
+						.attr("x", function(d) { return xScale( scope.settings.current.position - (positionWidth * 0.5)); } );
+					};
+				});
+			}
+		};
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.directive('tkComponentTrackProximities', tkComponentTrackProximities);
+
+	function tkComponentTrackProximities(d3Service, Settings) {    
+		return {
+			restrict: 'EA',
+			scope: {
+				type: '=',
+				title: '=',
+				settings: '=',
+				view: '=',
+				data: '=',
+				overlay: '=', /* used in template */
+				toggleoverlay: '&' /* used in template */
+			},
+			templateUrl: 'assets/templates/track.html',
+			link: function(scope, element, attrs) {
+				// console.log(scope);
+
+				d3Service.d3().then(function(d3) {
+
+					scope.safeApply = function(fn) {
+						var phase = this.$root.$$phase;
+						if(phase == '$apply' || phase == '$digest') {
+							if(fn && (typeof(fn) === 'function')) { fn(); }
+						} else {
+						this.$apply(fn);
+						}
+					};
+
+					// save data matrix for re-slicing as position changes
+					// scope.dataMatrix = scope.data;
+
+					// FYI: data == distances
+					// eg. particles a=rst,b=uvw,c=xyz
+					// give matrix [aa,ab,ac,ba,bb,bc,ca,cb,cc]
+					// can be filtered by no. of particles
+					// totalMatrixVertices / (totalParticeles * 3)
+ 					var data = scope.data.distances;
+					var focusStart = scope.view.viewpoint.chromStart;
+					var focusEnd = scope.view.viewpoint.chromEnd;
+					var focusLength = focusEnd - focusStart + 1; // Resrouces.range...
+					var particlesCount = scope.settings.current.particlesCount;
+					var clipPathUrl = "clip" + scope.title;
+					var clipPath = "url(#" + clipPathUrl + ")";
+
+					/* Note: focusLength may not be exactly particlesCount (N) * resolution
+					 * BUT for now the last bin resolution is taken as equal to the others
+					 * In the future TADbit may output variable bin resolutions
+					 * eg. as an array of resolutions corresponding to the bins/particles
+					 * Then the code commented below can be developed/completed
+					 * to assess and assign the last index of data
+					 * This may be better done externally to the track modules
+					 * and the results accessed through, for example, view.settings.resolutions
+					 */
+					// var resolution = scope.view.resolution;
+					// var particlesCount = focusLength / resolution;
+					// var exactCount = function(particlesCount) { return parseInt(particlesCount) === particlesCount };
+					// var resolutionParticleN = exactCount;
+					// if (!exactCount) resolutionParticleN = focusLength - (resolution * (n-1));
+					// var particles = Math.ceil(particlesCount);
+
+					// SVG GENERATION
+					var componentMargin = parseInt(scope.view.settings.margin);
+					/* Rebuild margin to maintain D3 standard */
+					var margin = {
+							top: parseInt(scope.view.settings.padding.top),
+							right: parseInt(scope.view.settings.padding.right),
+							bottom: parseInt(scope.view.settings.padding.bottom),
+							left: parseInt(scope.view.settings.padding.left)
+						},
+						scale = 4,
+						trackHeight = parseInt(scope.view.settings.heightInner),
+						nodeHeight = trackHeight * 0.5,
+						verticalOffset = (trackHeight - nodeHeight) * 0.5,
+						nodePadding = 0,
+						nodeColor = scope.view.settings.color;
+
+					// VIEWPORT
+					/* component-controller == children[0]
+					 * - component-header == children[0]
+					 * - component-body == children[3]
+					 */
+					var component = element[0].parentNode;
+					var viewport = element[0].children[0].children[3];
+					// if with controller use line below
+					// var viewport = element[0].children[0].children[3];
+					var svg = d3.select(viewport).append('svg');
+					var xScale, xAxis, brush, chart;
+					var defs, focus, zoomArea, container, labels, focusGraph, highlight;
+
+					// RESIZE
+					scope.$watch(function(){
+						var w = component.clientWidth;
+						var h = component.clientHeight;
+						return w + h;
+					}, function() {
+						scope.render(data);
+					});
+
+					// REDRAW
+					scope.$watch('data.dimension', function(newData, oldData) {
+						if (newData !== oldData ) {
+							data = scope.data.distances;
+							scope.render(data);
+						}
+					});
+
+					// UPDATE
+					scope.$watch('settings.current.position', function(newPosition, oldPosition) {
+						if ( newPosition !== oldPosition ) {
+							scope.update();
+						}
+					});
+					
+ 				// 	// ZOOM
+					// var zoom = d3.behavior.zoom()
+					// 	.on("zoom",  function() {
+					// 	scope.update();
+					// });
+
+
+					scope.render = function(data) {
+						svg.selectAll('*').remove();
+ 
+						if (!data) return;
+
+						var width = component.clientWidth - (2 * componentMargin) - margin.left - margin.right,
+							height = trackHeight - margin.top - margin.bottom;
+							console.log(height);
+						var particleWidth = (1 * width) / particlesCount;
+						xScale = d3.scale.linear()
+								.range([0, width])
+								.clamp(true);
+
+						xScale.domain([focusStart, focusEnd]);
+				
+						xAxis = d3.svg.axis()
+								.scale(xScale)
+								.orient("top")
+								.ticks(0)
+								.outerTickSize(0);
+
+						var highlightWidth = 2;
+
+						brush = d3.svg.brush()
+							.x(xScale)
+							.extent([0, 0])
+							.on("brush", scope.brushed);
+
+						chart = svg.attr('width', width + margin.left + margin.right)
+								.attr('height', height + margin.top + margin.bottom)
+								.append("g")
+								.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+								.call(brush);
+								// .call(zoom);
+						
+						chart.select(".background")
+							.attr("y", height/2)
+							.attr("height", height);
+
+						// clipping box to clip overflow
+						// solid rect as background also allow mouse events everywhere 
+						defs = chart.append("defs")
+							.append("clipPath")
+							.attr("id", clipPathUrl)
+							.append("rect")
+							.attr("width", width)
+							.attr("height", height)
+							.attr('fill', 'white');
+
+						focus = chart.append("g")
+							.attr("class", "focus");
+
+						// zoomArea = focus.append("g")
+						// 	.attr("class", "zoom")
+						// 	.append("rect")
+						// 	.attr("width", width)
+						// 	.attr("height", height)
+						// 	.attr('fill', 'white');
+
+						container = focus.append("g")
+							.attr("class", "container")
+							.attr('clip-path', clipPath);
+
+						labels  = chart.append("g")
+							.attr("class", "labels");
+	
+						focusGraph = container.selectAll("rect")
+							.data(data)
+							.enter().append("rect")
+							.attr("x", function(d, i) { return (i * particleWidth); } )
+							.attr("y", verticalOffset)
+							.attr("width", particleWidth)
+							.attr("height", nodeHeight)
+							.style("fill", nodeColor)
+							.style("fill-opacity", function(d) { return d; })
+							.style("stroke", nodeColor)
+							.style("stroke-width", 0)
+							.append("svg:title")
+							.text(function(d,i) { return i + ":" + d; });
+
+						highlight = chart.append("rect")
+								.attr("id", "highlight")
+								.attr("x", function(d) { return xScale( scope.settings.current.position); } )
+								.attr("y", 0)
+								.attr("width", highlightWidth )
+								.attr("height", trackHeight)
+								.attr("class", "highlight-follow");
+						highlight
+							.call(brush.extent([(scope.settings.current.position), 0]))
+							.call(brush.event);
+					};
+
+					// UPDATE
+					scope.update = function() {
+						svg.select("#highlight") //.style("visibility", "hidden");
+						.attr("x", function(d) { return xScale( scope.settings.current.position ); } );
+					};
+
+					// BRUSH
+					scope.brushed = function() {
+
+						// scope.safeApply( function() {
+							var thisTrack = this;
+							scope.safeApply( function() {
+								var value = brush.extent()[0];
+								if (d3.event.sourceEvent) {
+									value = parseInt(xScale.invert(d3.mouse(thisTrack)[0]));
+									brush.extent([value, value]);
+								}
+								highlight.attr("x", xScale(value));
+
+								// UPDATE position
+								scope.settings.current.position = value;
+								scope.settings.current.particle = Settings.getParticle();
+								scope.settings.current.segmentLower = scope.settings.current.position - (scope.settings.current.segment * 5); // * 0.5???
+								scope.settings.current.segmentUpper = scope.settings.current.position + (scope.settings.current.segment * 5); // * 0.5???
+
+							});
+						// });
+					};
+
+					// Initial render
+					scope.render(data);
+				});
+			}
+		};
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.directive('tkComponentTrackRestraints', tkComponentTrackRestraints);
+
+	function tkComponentTrackRestraints(d3Service, Settings) {    
+		return {
+			restrict: 'EA',
+			scope: {
+				type: '=',
+				title: '=',
+				settings: '=',
+				view: '=',
+				data: '=',
+				overlay: '=', /* used in template */
+				toggleoverlay: '&' /* used in template */
+			},
+			templateUrl: 'assets/templates/track.html',
+			link: function(scope, element, attrs) {
+				// console.log(scope);
+
+				d3Service.d3().then(function(d3) {
+
+					scope.safeApply = function(fn) {
+						var phase = this.$root.$$phase;
+						if(phase == '$apply' || phase == '$digest') {
+							if(fn && (typeof(fn) === 'function')) { fn(); }
+						} else {
+						this.$apply(fn);
+						}
+					};
+
+ 					var data = scope.data;
+					var focusStart = scope.view.viewpoint.chromStart;
+					var focusEnd = scope.view.viewpoint.chromEnd;
+					var focusLength = focusEnd - focusStart + 1; // Resrouces.range...
+					var particlesCount = scope.settings.current.particlesCount;
+					var clipPathUrl = "clip" + scope.title;
+					var clipPath = "url(#" + clipPathUrl + ")";
+
+					// SVG GENERATION
+					var componentMargin = parseInt(scope.view.settings.margin);
+					/* Rebuild margin to maintain D3 standard */
+					var margin = {
+							top: parseInt(scope.view.settings.padding.top),
+							right: parseInt(scope.view.settings.padding.right),
+							bottom: parseInt(scope.view.settings.padding.bottom),
+							left: parseInt(scope.view.settings.padding.left)
+						},
+						scale = 4,
+						trackHeight = parseInt(scope.view.settings.heightInner),
+						nodePadding = 0,
+						nodeColor = scope.view.settings.color,
+						harmonicsColor = scope.overlay.palette[0],
+						lowerBoundsColor = scope.overlay.palette[1];
+
+					// VIEWPORT
+					/* component-controller == children[0]
+					 * - component-header == children[0]
+					 * - component-body == children[3]
+					 */
+					var component = element[0].parentNode;
+					var viewport = element[0].children[0].children[3];
+					// if with controller use line below
+					// var viewport = element[0].children[0].children[3];
+					var svg = d3.select(viewport).append('svg');
+					var xScale, axisUpper, axisLower, brush, chart;
+					var defs, focus, zoomArea, container, labels, harmonics, lowerBounds, highlight;
+
+					// RESIZE
+					scope.$watch(function(){
+						var w = component.clientWidth;
+						var h = component.clientHeight;
+						return w + h;
+					}, function() {
+						scope.render(scope.data);
+					});
+
+					// REDRAW
+					scope.$watch('data.dimension', function(newData, oldData) {
+						if (newData !== oldData ) {
+							data = scope.data;
+							scope.render(data);
+						}
+					});
+
+					// UPDATE
+					scope.$watch('settings.current.position', function(newPosition, oldPosition) {
+						if ( newPosition !== oldPosition ) {
+							scope.update();
+						}
+					});
+					
+ 				// 	// ZOOM
+					// var zoom = d3.behavior.zoom()
+					// 	.on("zoom",  function() {
+					// 	scope.update();
+					// });
+
+					scope.getColor = function(code) {
+						var colorCodes = [
+											{"type":"harmonic","code":"H","color":"#4CAF50"},
+											{"type":"upperBound","code":"L","color":"#0000ff"},
+											{"type":"lowerBound","code":"U","color":"#ff00ff"},
+											{"type":"contact","code":"C","color":"#00ff00"}
+										];
+						var color = "#ccc";
+						for (var i = colorCodes.length - 1; i >= 0; i--) {
+							if (code == colorCodes[i].code) {
+								color = colorCodes[i].color;
+							}
+						}
+						return color;
+					};
+
+					scope.getOpacity = function(value) {
+						var opacity;
+						var scaled = value / 5; // 5 being the limit...
+						opacity = scaled ;
+						return opacity;
+					};
+
+					scope.getStrokeWidth = function(value) {
+						var strokeWidth = 10;
+						var scaled = value / 5; // 5 being the limit...
+						strokeWidth = strokeWidth * scaled;
+						return strokeWidth;
+					};
+
+					scope.render = function(data) {
+						svg.selectAll('*').remove();
+ 
+						if (!data) return;
+
+						var width = component.clientWidth - (2 * componentMargin) - margin.left - margin.right,
+							height = trackHeight - margin.top - margin.bottom,
+							nodeHeight = height,// - margin.top - margin.bottom,
+							verticalOffset = margin.top;//(trackHeight - nodeHeight) * 0.5,
+						var particleWidth = (1 * width) / particlesCount;
+						xScale = d3.scale.linear()
+								.range([0, width])
+								.clamp(true);
+
+						xScale.domain([focusStart, focusEnd]);
+				
+						axisUpper = d3.svg.axis()
+								.scale(xScale)
+								.orient("top")
+								.ticks(0)
+								.outerTickSize(0);
+
+						axisLower = d3.svg.axis()
+								.scale(xScale)
+								.orient("bottom")
+								.ticks(0)
+								.outerTickSize(0);
+
+						var highlightWidth = 2;
+
+						brush = d3.svg.brush()
+							.x(xScale)
+							.extent([0, 0])
+							.on("brush", scope.brushed);
+
+						chart = svg.attr('width', width + margin.left + margin.right)
+								.attr('height', height + margin.top + margin.bottom)
+								.append("g")
+								.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+								.call(brush);
+								// .call(zoom);
+						
+						chart.select(".background")
+							.attr("y", height/2)
+							.attr("height", height);
+
+						// clipping box to clip overflow
+						// solid rect as background also allow mouse events everywhere 
+						defs = chart.append("defs")
+							.append("clipPath")
+							.attr("id", clipPathUrl)
+							.append("rect")
+							.attr("width", width)
+							.attr("height", height)
+							.attr('fill', 'white');
+
+						focus = chart.append("g")
+							.attr("class", "focus");
+
+						// zoomArea = focus.append("g")
+						// 	.attr("class", "zoom")
+						// 	.append("rect")
+						// 	.attr("width", width)
+						// 	.attr("height", height)
+						// 	.attr('fill', 'white');
+
+						container = focus.append("g")
+							.attr("class", "container")
+							.attr('clip-path', clipPath);
+
+						// var axisH = focus.append("g")
+						// 	.attr("class", "axis upper")
+						// 	.attr("transform", "translate(0," + nodeHeight + ")")
+						// 	.call(axisUpper);
+
+						// var axisL = focus.append("g")
+						// 	.attr("class", "axis lower")
+						// 	.attr("transform", "translate(0," + 0 + ")")
+						// 	.call(axisLower);
+
+						labels  = chart.append("g")
+							.attr("class", "labels");
+
+							harmonics = container.selectAll("line")
+								.data(data.harmonics)
+								.enter()
+								.append("line")
+									.attr("x1", function(d) { return (data.dimension * particleWidth - (particleWidth * 0.5) ); } )
+									.attr("y1", verticalOffset)
+									.attr("x2", function(d) { return (d[1] * particleWidth - (particleWidth * 0.5) ); } )
+									.attr("y2", nodeHeight)
+									.attr("stroke", harmonicsColor)
+									.attr("opacity", function(d) { return scope.getOpacity(d[3]); } )
+									.attr("stroke-width", function(d) { return scope.getStrokeWidth(d[3]); } )
+								// .append("circle")
+								// 	.attr("cx", 0)//function(d) { return (d[1] * particleWidth - (particleWidth * 0.5) ); } )
+								// 	.attr("cy", 0)//nodeHeight)
+								// 	.attr("r", 4)
+								// 	.style("fill", harmonicsColor)
+								.append("svg:title")
+									.text(function(d,i) { return i + ":" + d; });
+
+							lowerBounds = container.selectAll("line")
+								.data(data.lowerBounds)
+								.enter()
+								.append("line")
+									.attr("x1", function(d) { return (data.dimension * particleWidth - (particleWidth * 0.5) ); } )
+									.attr("y1", nodeHeight)
+									.attr("x2", function(d) { return (d[1] * particleWidth - (particleWidth * 0.5) ); } )
+									.attr("y2", verticalOffset)
+									.attr("stroke", lowerBoundsColor)
+									.attr("opacity", function(d) { return scope.getOpacity(d[3]); } )
+									.attr("stroke-width", function(d) { return scope.getStrokeWidth(d[3]); } )
+								.append("svg:title")
+									.text(function(d,i) { return i + ":" + d; });
+
+						highlight = chart.append("rect")
+								.attr("id", "highlight")
+								.attr("x", function(d) { return xScale( scope.settings.current.position); } )
+								.attr("y", 0)
+								.attr("width", highlightWidth )
+								.attr("height", trackHeight)
+								.attr("class", "highlight-follow");
+						// highlight
+						// 	.call(brush.extent([(scope.settings.current.position), 0]))
+						// 	.call(brush.event);
+					};
+
+					// UPDATE
+					scope.update = function(data) {
+						svg.select("#highlight") //.style("visibility", "hidden");
+						.attr("x", function(d) { return xScale( scope.settings.current.position ); } );
+					};
+
+					// BRUSH
+					scope.brushed = function() {
+
+						// scope.safeApply( function() {
+							var thisTrack = this;
+							scope.safeApply( function() {
+								var value = brush.extent()[0];
+								if (d3.event.sourceEvent) {
+									value = parseInt(xScale.invert(d3.mouse(thisTrack)[0]));
+									brush.extent([value, value]);
+								}
+								highlight.attr("x", xScale(value));
+
+								// UPDATE position
+								scope.settings.current.position = value;
+								scope.settings.current.particle = Settings.getParticle();
+								scope.settings.current.segmentLower = scope.settings.current.position - (scope.settings.current.segment * 5); // * 0.5???
+								scope.settings.current.segmentUpper = scope.settings.current.position + (scope.settings.current.segment * 5); // * 0.5???
+
+							});
+						// });
+					};
+
+					// Initial render
+					scope.render(data);
+				});
+			}
+		};
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.directive('tkComponentTrackSlider', tkComponentTrackSlider);
+
+	function tkComponentTrackSlider(d3Service, Settings) {
+		return {
+			restrict: 'EA',
+			scope: {
+				type: '=',
+				title: '=',
+				settings: '=',
+				view: '=',
+				data: '=',
+				overlay: '=', /* used in template */
+				toggleoverlay: '&' /* used in template */
+			},
+			templateUrl: 'assets/templates/track.html',
+			link: function(scope, element, attrs) {
+				// console.log(scope);
+
+				d3Service.d3().then(function(d3) {
+				
+					scope.safeApply = function(fn) {
+						var phase = this.$root.$$phase;
+						if(phase == '$apply' || phase == '$digest') {
+							if(fn && (typeof(fn) === 'function')) { fn(); }
+						} else {
+						this.$apply(fn);
+						}
+					};
+
+					// SVG GENERATION
+					var data = scope.data;
+					var focusStart = scope.view.viewpoint.chromStart;
+					var focusEnd = scope.view.viewpoint.chromEnd;
+					var cursorWidth = scope.view.settings.cursorWidth;
+					var componentMargin = parseInt(scope.view.settings.margin);
+					/* Rebuild margin to maintain D3 standard */
+					var margin = {
+							top: parseInt(scope.view.settings.padding.top),
+							right: parseInt(scope.view.settings.padding.right),
+							bottom: parseInt(scope.view.settings.padding.bottom),
+							left: parseInt(scope.view.settings.padding.left)
+						},
+						trackHeight = parseInt(scope.view.settings.heightInner);
+
+					// VIEWPORT
+					/* component-controller == children[0]
+					 * - component-header == children[0]
+					 * - component-body == children[3]
+					 */
+					var component = element[0];
+						// console.log(component.clientWidth);
+					var viewport = element[0].children[0].children[3];
+						// console.log(viewport.clientWidth);
+					// if with controller use line below
+					// var viewport = element[0].children[0].children[3];
+					var svg = d3.select(viewport).append('svg');
+					var slider, xScale, prime3Axis, prime5Axis;
+					var handleWidth, handleHeight;
+					var xAxis, brush, handle;
+
+					// RESIZE
+					scope.$watch(function(){
+						var w = component.clientWidth;
+						var h = component.clientHeight;
+						return w + h;
+					}, function() {
+						scope.render();
+					});
+
+					// UPDATE
+					scope.$watch('settings.current.position', function(newPosition, oldPosition) {
+						if ( newPosition !== oldPosition ) {
+							scope.update();
+						}
+					});
+					
+ 				// 	// ZOOM
+					// var zoom = d3.behavior.zoom()
+					// 	.on("zoom",  function() {
+					// 	scope.update();
+					// });
+
+					scope.render = function() {
+						svg.selectAll('*').remove();
+						
+						var width = component.clientWidth - (2 * componentMargin) - margin.left - margin.right,
+							height = trackHeight - margin.bottom - margin.top;
+
+						xScale = d3.scale.linear()
+								.range([0, width])
+								.clamp(true);
+
+						xScale.domain([focusStart, focusEnd]);
+
+						xAxis = d3.svg.axis()
+								.scale(xScale)
+								.orient("bottom")
+								.ticks(4);
+							prime3Axis = d3.svg.axis().orient("left");
+							prime5Axis = d3.svg.axis().orient("right");
+								// .outerTickSize([0]);
+
+						handleWidth = height * 0.5;
+						handleHeight = trackHeight;
+
+						brush = d3.svg.brush()
+							.x(xScale)
+							.extent([0, 0])
+							.on("brush", scope.brushed);
+
+						slider = svg.attr("width", width + margin.left + margin.right)
+								.attr("height", height + margin.top + margin.bottom)
+								.append("g")
+								.attr("transform", "translate(" + margin.left + ", " + 0 + ")");
+
+							var labels  = slider.append("g")
+								.attr("class", "labels");
+								labels.append("text")
+									.attr("x", -16)
+									.attr("y", 26)
+									.attr("text-anchor", "right")
+									.style("font-size", "10px")
+									.text("3'");
+								labels.append("text")
+									.attr("x", width + 8)
+									.attr("y", 26)
+									.attr("text-anchor", "left")
+									.style("font-size", "10px")
+									.text("5'");
+
+						var axis = slider.append("g")
+							.attr("class", "x axis")
+							.attr("transform", "translate(0," + height + ")")
+							.call(xAxis)
+							.select(".domain")
+							.select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+							.attr("class", "halo");
+
+						slider.append("g")
+							.attr("class", "slider")
+							.call(brush);
+
+						slider.select(".background")
+							.attr("y", height/2)
+							.attr("height", height);
+							
+						handle = slider.append("circle")
+							.attr("id", "handle")
+							.attr("class", "handle")
+							.attr("cx", xScale(scope.settings.current.position))
+							.attr("cy", height)
+							.attr("r", handleWidth * 0.6);
+
+							// handle.append("text")
+							// 	.attr("x", xScale(scope.settings.current.position) - (handleWidth * 0.5))
+							// 	.attr("y", height)
+							// 	.attr("text-anchor", "bottom")
+							// 	.style("font-size", "10px")
+							// 	.text(scope.settings.current.position);
+
+						slider
+							.call(brush.extent([(scope.settings.current.position), 0]))
+							.call(brush.event);
+					};
+
+					// UPDATE
+					scope.update = function(data) {
+						svg.select("#handle") //.style("visibility", "hidden");
+						.attr("cx", function(d) { return xScale( scope.settings.current.position ); } );
+					};
+
+					// BRUSH
+					scope.brushed = function() {
+						// scope.safeApply( function() {
+							var thisSlider = this;
+							scope.safeApply( function() {
+								var value = brush.extent()[0];
+								if (d3.event.sourceEvent) {
+									value = parseInt(xScale.invert(d3.mouse(thisSlider)[0]));
+									brush.extent([value, value]);
+								}
+								handle.attr("cx", xScale(value));
+
+								// UPDATE position
+								scope.settings.current.position = value;
+								scope.settings.current.particle = Settings.getParticle();
+								scope.settings.current.segment = Settings.getSegment();
+								scope.settings.current.segmentLower = scope.settings.current.position - (scope.settings.current.segment * 5); // * 0.5???
+								scope.settings.current.segmentUpper = scope.settings.current.position + (scope.settings.current.segment * 5); // * 0.5???
+
+							});
+						// });
+					};
+
+				});
+			}
+		};
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.directive('tkComponentWiggle0', tkComponentWiggle0);
+
+	function tkComponentWiggle0(d3Service) {    
+		return {
+			restrict: 'EA',
+			scope: {
+				type: '=',
+				title: '=',
+				settings: '=',
+				view: '=',
+				data: '=',
+				overlay: '=', /* used in template */
+				toggleoverlay: '&' /* used in template */
+			},
+			templateUrl: 'assets/templates/track.html',
+			link: function(scope, element, attrs) {
+				d3Service.d3().then(function(d3) {
+					// console.log(scope);
+
+ 					// DATA MANIPULATION >>> MOVE TO CONTROLLER
+					var data = scope.data;
+					// var assemblyLength = 3200000000; // CALCULATE
+					// if (!scope.settings.current.position) scope.settings.current.position = assemblyLength / 2;
+					var step = scope.view.settings.step;
+					var stepWidth;
+					var focusStart = scope.view.viewpoint.chromStart;
+					var focusEnd = scope.view.viewpoint.chromEnd;
+					// var chrStart = 0;
+					// var chrEnd = assemblyLength;
+					var focusLength = focusEnd - focusStart;
+					// var highlightPosition = focusStart + (stepWidth * scope.settings.current.position);
+
+					// var focusScale = assemblyLength / focusLength;
+					// var focusMargin = focusScale * 0.05;
+					// focusScale = focusScale - (focusMargin * 2.0);
+		
+					// var focusCenter = focusLength * 0.5;
+					// var assemblyCenter = assemblyLength * 0.5;
+
+
+					// SVG GENERATION
+					var componentMargin = parseInt(scope.view.settings.margin);
+					/* Rebuild margin to maintain D3 standard */
+					var margin = {
+							top: parseInt(scope.view.settings.padding.top),
+							right: parseInt(scope.view.settings.padding.right),
+							bottom: parseInt(scope.view.settings.padding.bottom),
+							left: parseInt(scope.view.settings.padding.left)
+						},
+						scale = 4,
+						trackHeight = parseInt(scope.view.settings.heightInner),
+						nodeHeight = trackHeight * 0.5,
+						verticalOffset = (trackHeight - nodeHeight) * 0.5,
+						nodePadding = 0,
+						nodeColor = scope.view.settings.color;
+
+					// VIEWPORT
+					/* component-controller == children[0]
+					 * - component-header == children[0]
+					 * - component-body == children[3]
+					 */
+					var component = element[0].parentNode;
+					var viewport = element[0].children[0].children[3];
+					// if with controller use line below
+					// var viewport = element[0].children[0].children[3];
+					var svg = d3.select(viewport).append('svg');
+					var chart, defs;
+					var xAxis, prime3Axis, prime5Axis;
+					var focus, container, xScale;
+
+					// RESIZE implies complete redraw
+					scope.$watch(function(){
+						var w = component.clientWidth;
+						var h = component.clientHeight;
+						return w + h;
+					}, function() {
+						scope.render(data);
+					});
+
+					// REDRAW on new data
+					// scope.$watch('data', function(newData) {
+					// 	scope.render(newData);
+					// }, true);
+ 					
+					// SLIDER
+					scope.$watch('settings.current.position', function(newData) {
+						scope.update();
+					}, true);
+
+ 					// ZOOM
+					var zoom = d3.behavior.zoom()
+						.on("zoom",  function() {
+						scope.update();
+					});
+
+					scope.render = function(data) {
+						svg.selectAll('*').remove();
+ 
+						if (!data) return;
+ 
+							var width = component.clientWidth - (2 * componentMargin) - margin.left - margin.right,
+								height = trackHeight - margin.top - margin.bottom;
+							stepWidth = (step * width) / focusLength;
+							xScale = d3.scale.linear()
+									.range([0, width])
+									.clamp(true);
+
+							xScale.domain([focusStart, focusEnd]);
+					
+							xAxis = d3.svg.axis()
+									.scale(xScale)
+									.orient("top")
+									.ticks(0)
+									.outerTickSize(0);
+							// prime3Axis = d3.svg.axis().orient("left"),
+							// prime5Axis = d3.svg.axis().orient("right");
+
+							var highlightWidth = 2; //stepWidth;// * width / focusLength;
+							// if (highlightWidth < 4) highlightWidth = 4; 
+							// var focusOffset = xScale(assemblyCenter) - xScale(focusCenter);
+
+							chart = svg.attr('width', width + margin.left + margin.right)
+									.attr('height', height + margin.top + margin.bottom)
+									.append("g")
+									.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+									// .call(zoom);
+							
+							// clipping box to clip overflow
+							// solid rect as background also allow mouse events everywhere 
+							defs = chart.append("defs")
+								.append("clipPath")
+								.attr("id", "clip")
+								.append("rect")
+								.attr("width", width)
+								.attr("height", height)
+								.attr('fill', 'white');
+
+							focus = chart.append("g")
+								.attr("class", "focus");
+
+							// var zoomArea = focus.append("g")
+							// 	.attr("class", "zoom")
+							// 	.append("rect")
+							// 	.attr("width", width)
+							// 	.attr("height", height)
+							// 	.attr('fill', 'white');
+
+							container = focus.append("g")
+								.attr("class", "container")
+								.attr('clip-path', 'url(#clip)');
+
+							// zoom.x(xScale);
+
+							// chart.select(".focus").append("g")
+							// 	.attr("class", "x axis")
+							// 	.attr("transform", "translate(0," + nodeHeight + ")");
+								// .call(xAxis);
+
+							var labels  = chart.append("g")
+								.attr("class", "labels");
+
+							// TODO: Use FontAwesome/IcoMoon...
+							// node.append('text')
+							//     .attr('font-family', 'FontAwesome')
+							//     .attr('font-size', function(d) { return d.size+'em'} )
+							//     .text(function(d) { return '\uf118' }); 
+
+							var focusGraph = container.selectAll("rect")
+								.data(data)
+								.enter().append("rect")
+								.attr("x", function(d, i) { return (i + 1) * stepWidth; } )
+								.attr("y", verticalOffset)
+								.attr("width", stepWidth)
+								.attr("height", nodeHeight)
+								.style("fill", nodeColor)
+								.style("fill-opacity", function(d) { return d; })
+								.style("stroke", nodeColor)
+								.style("stroke-width", 0)
+								.append("svg:title")
+								.text(function(d,i) { return i + ":" + d; });
+
+							var highlight = chart.append("rect")
+									.attr("id", "highlight")
+									.attr("x", function(d) { return xScale( scope.settings.current.position - (step * 0.5)); } )
+									.attr("y", 0)
+									.attr("width", highlightWidth )
+									.attr("height", trackHeight)
+									.attr("class", "highlight-follow");
+					};
+
+					scope.update = function() {
+						// 	var width = component.clientWidth - (2 * componentMargin) - margin.left - margin.right,
+						// 		height = trackHeight - margin.top - margin.bottom;
+						// 	stepWidth = (step * width) / focusLength;
+
+						// svg.select("g.x.axis").call(xAxis);
+						// container.selectAll("rect")
+						// .attr("x", function(d, i) { return (i + 1) * stepWidth; } )	
+						// .attr("y", verticalOffset)
+						// .attr("width", stepWidth)
+						// .attr("height", nodeHeight);
+
+						svg.select("#highlight") //.style("visibility", "hidden");
+						.attr("x", function(d) { return xScale( scope.settings.current.position - (step * 0.5)); } );
 					};
 				});
 			}
@@ -2311,22 +3068,24 @@
 		.module('TADkit')
 		.controller('TrackController', TrackController);
 
-	function TrackController($scope, Overlays) {
-		if ($scope.overlay) {
-			$scope.overlaid = $scope.overlay.object.state.overlaid;
-			$scope.overlayOrig = Overlays.getOverlay(); // current overlay
-			$scope.toggleOverlay = function(index) {
-				$scope.overlaid = Overlays.getOverlay(index).object.state.overlaid;
-				if (!$scope.overlaid) {
-					Overlays.setOverlaid(index);
-					Overlays.set(index);
-				} else {
-					Overlays.setOverlaid($scope.overlayOrig.object.state.index);
-					Overlays.set($scope.overlayOrig.object.state.index);
-				}
-				$scope.overlaid = !$scope.overlaid;
-			};
-		}
+	function TrackController($scope) {
+		// if ($scope.overlay) {
+		// 	// console.log($scope.overlay.object.id);
+		// 	// console.log($scope.overlay.object.state.overlaid);
+		// 	$scope.overlaid = $scope.overlay.object.state.overlaid;
+		// 	$scope.overlayOrig = Overlays.getOverlay(); // current overlay
+		// 	$scope.toggleOverlay = function(index) {
+		// 		$scope.overlaid = Overlays.getOverlay(index).object.state.overlaid;
+		// 		if (!$scope.overlaid) {
+		// 			Overlays.setOverlaid(index);
+		// 			Overlays.set(index);
+		// 		} else {
+		// 			Overlays.setOverlaid($scope.overlayOrig.object.state.index);
+		// 			Overlays.set($scope.overlayOrig.object.state.index);
+		// 		}
+		// 		$scope.overlaid = !$scope.overlaid;
+		// 	};
+		// }
 
 		$scope.optionsState = false;
 		$scope.toggleOptions = function() {
@@ -2342,7 +3101,7 @@
 		.controller('BrowserController', BrowserController);
 
 	function BrowserController ($scope, initialData){
-		console.log(initialData);
+		console.log("initialData");
 	}
 })();
 (function() {
@@ -2370,23 +3129,20 @@
 		.module('TADkit')
 		.controller('MainController', MainController);
 
-	function MainController($state, $scope, initialData, Users, Projects, Datasets, Overlays, Storyboards, Components) {
-		// Set static settings from initalData
-		if (!$scope.settings) {
-			$scope.settings = initialData.settings;
-			$scope.settings.featureColors = initialData.featureColors;
-			$scope.settings.components = initialData.components;
-		}
+	function MainController($state, $scope, Settings, Users, Projects, Datasets, Overlays, Storyboards) {
 
-		$scope.settings.isProject = $state.is('project');
+		if (!$scope.settings) {
+			$scope.settings = Settings.get();
+		}
+		$scope.settings.app.isProject = $state.is('project');
 		$scope.$on("$stateChangeSuccess", function updatePage() {
-			$scope.settings.isProject = $state.is('project');
+			$scope.settings.app.isProject = $state.is('project');
 		});
 
-		// Bind dynamic data to service objects
+		// BUILD DEFAULT DATA HIERARCHY
+		// USERS >> PROJECTS >> DATASETS | OVERLAYS | STORYBOARDS
 		if (!$scope.users) {
 			$scope.users = Users.get();
-			// LOAD DEFAULT PROJECTS AND DATA
 			if (typeof $scope.users.loaded[0].projects !== "undefined" && $scope.users.loaded[0].projects.length === 0) {
 				$scope.users.loaded[0].projects = Projects.get();
 				if (typeof $scope.users.loaded[0].projects.loaded[0].datasets !== "undefined" &&  $scope.users.loaded[0].projects.loaded[0].datasets.length === 0)
@@ -2398,38 +3154,14 @@
 			}
 		}
 		
-		// Get current data to share between child views
-		$scope.projects = $scope.users.loaded[$scope.users.current.index].projects;
-		$scope.datasets = $scope.projects.loaded[$scope.projects.current.index].datasets;
-		$scope.overlays = $scope.projects.loaded[$scope.projects.current.index].overlays;
-		$scope.storyboards = $scope.projects.loaded[$scope.projects.current.index].storyboards;
-
-		$scope.currentUser = $scope.users.loaded[$scope.users.current.index];
-		$scope.currentProject = $scope.projects.loaded[$scope.projects.current.index];
-		$scope.currentDataset = $scope.datasets.loaded[$scope.datasets.current.index];
-		$scope.currentCluster = $scope.currentDataset.clusters[$scope.datasets.current.cluster - 1];
-		$scope.currentCentroid = $scope.currentDataset.centroids[$scope.datasets.current.cluster - 1];
-		$scope.currentModel = $scope.currentDataset.models[$scope.currentDataset.centroids[$scope.datasets.current.cluster - 1] - 1];
-
-		$scope.currentOverlay = $scope.overlays.loaded[$scope.overlays.current.index];
-		$scope.currentStoryboard = $scope.storyboards.loaded[$scope.storyboards.current.index];
-
-		// Set coords to default Storyboard views from dataset
-		$scope.settings.currentStartCoord = $scope.currentDataset.object.startCoord;
-		$scope.settings.currentEndCoord = $scope.currentDataset.object.endCoord;
-		$scope.settings.currentScale = 1; //$scope.currentDataset.object.scale;
-		Storyboards.setViewpoint($scope.settings.currentStartCoord,$scope.settings.currentEndCoord,$scope.settings.currentScale);
-		Components.setViewpoint($scope.settings.currentStartCoord,$scope.settings.currentEndCoord,$scope.settings.currentScale);
-		// $scope.storyboards = $scope.projects.loaded[$scope.projects.current.index].storyboards;
-
-
-		$scope.addDataset = function($fileContent) {
-			console.log("adding...");
-			Datasets.addDataset($fileContent);
-			$scope.currentDataset = $scope.datasets.loaded[$scope.datasets.current.index];
-			$state.go('dataset');
-		};
-
+		// SET SHARED CURRENT PROJECT LEVEL DATA
+		$scope.current = {};
+		$scope.current.user = Users.getUser();
+		$scope.current.project = Projects.getProject();
+		$scope.current.dataset = Datasets.getDataset();
+		$scope.current.model = Datasets.getModel();
+		$scope.current.overlay = Overlays.getOverlay();
+		$scope.current.storyboard = Storyboards.getStoryboard();
 
 	}
 })();
@@ -2437,38 +3169,13 @@
 	'use strict';
 	angular
 		.module('TADkit')
-		.directive('tkOverlayImport', tkOverlayImport);
+		.controller('OverlayImportController', OverlayImportController);
 
-	function tkOverlayImport($parse) {		
-		return {
-			restrict: 'A',
-			scope: {
-				tkOverlayImport : "&"
-			},
-			link: function(scope, element, attrs) {
-				element.on('change', function(e) {
-					var reader = new FileReader();
-					reader.onload = function(e) {
-						scope.$apply(function() {
-							// console.log("here in apply");
-							scope.tkOverlayImport({$fileContent:e.target.result});
-						});
-					};
-					reader.readAsText((e.srcElement || e.target).files[0]);
-				});
-			}
-		};
-	}
-})();
-(function() {
-	'use strict';
-	angular
-		.module('TADkit')
-		.controller('OverlayController', OverlayController);
-
-	function OverlayController ($state, $scope, $mdDialog, $mdToast, Settings, Overlays, Components, Storyboards, uuid4) {
+	function OverlayImportController ($state, $scope, $mdDialog, $mdToast, Settings, Overlays, Components, Storyboards, uuid4) {
+		$scope.fileTitle = "No file loaded";
 
 		$scope.$on('$viewContentLoaded', function() {
+
 			var parentElement = angular.element(document.body);
 			var stateTemplate = "assets/templates/" + $state.current.name + ".html";
 			
@@ -2476,20 +3183,24 @@
 			$mdDialog.show({
 				parent: parentElement,
 				templateUrl: stateTemplate,
-				controller: OverlayController,
+				controller: OverlayImportController,
 				locals: {
 					overlays: $scope.$parent.overlays,
 				},
 				onComplete: afterShowAnimation
 			}).then(function(importedOverlays) {
+
+				// convert to function in Overlays service
 				var overlays = Overlays.get();
 				var newOverlays = [];
 				var newComponents = [];
 				var currentOverlaysIndex = overlays.loaded.length - 1;
 				angular.forEach(importedOverlays, function(overlay, key) {
+
 					var componentTemplate = Components.getComponentByType(overlay.object.type);
 					var overlayExists = false;
 					var newComponent = angular.copy(componentTemplate);
+
 					for (var i = overlays.loaded.length - 1; i >= 0; i--) {
 						// console.log(overlays.loaded[i].object.uuid);
 						// console.log(overlay.object.uuid);
@@ -2509,10 +3220,9 @@
 						newComponent.object.dataset = overlay.object.id;
 						newComponent.view.settings.step = overlay.object.step;
 						newComponent.view.settings.color = overlay.object.color;
-						newComponent.view.settings.segments = settings.segmentsCount;
-						newComponent.view.viewpoint.startCoord = settings.currentStartCoord;
-						newComponent.view.viewpoint.endCoord = settings.currentEndCoord;
-						newComponent.view.viewpoint.scale = settings.currentScale;
+						newComponent.view.viewpoint.chromStart = settings.current.chromStart;
+						newComponent.view.viewpoint.chromEnd = settings.current.chromEnd;
+						newComponent.view.viewpoint.scale = settings.views.scale;
 						newComponent.view.viewtype = overlay.object.type + "-" + overlay.object.stepType;
 						newComponent.data = overlay.data;
 						newComponent.overlay = overlay;
@@ -2525,14 +3235,10 @@
 				// Add newOverlays to Overlays
 				overlays.loaded = overlays.loaded.concat(newOverlays);
 				// Generate overlay colors
-				var startCoord = Settings.get().startCoord;
-				var segmentsCount = Settings.get().segmentsCount;
-				var segmentLength = Settings.get().segmentLength;
-				var featureTypes = Settings.get().featureTypes;
-				Overlays.segmentOverlays(startCoord, segmentsCount, segmentLength, featureTypes);
+				Overlays.segment();
 
 				// Add new overlays as Components to Storyboard
-				for (var i = newComponents.length - 1; i >= 0; i--) {
+				for (var i = 0; i < newComponents.length; i++) {
 					Storyboards.addComponent("default", newComponents[i]);
 				}
 
@@ -2540,8 +3246,10 @@
 					$mdToast.simple()
 					.content("Overlays (" + newOverlays.length + "/" + importedOverlays.length + ") added")
 				);
-	 			// $state.go('overlay-filter');	
-	 			$state.go('browser');	
+	 			// $state.go('overlay-import-filter');	
+	 			// $state.go('browser');
+
+
 			}, function() {
 				$mdToast.show(
 					$mdToast.simple()
@@ -2556,17 +3264,43 @@
 				// console.log(scope);
 				console.log("showing dialog");
 			}
+
 		});
 
-		$scope.importOverlay = function($fileContent) {
+		$scope.parseFile = function($fileContent) {
+			// Parse File for Data
+			// var delimiter = Settings.get().import.delimiter;
+			Papa.DefaultDelimiter = " ";
 			$scope.dataParsed = Papa.parse($fileContent,{
-				delimiter: " ",
+				// delimiter: delimiter,
 				dynamicTyping: true,
 				fastMode: true
 			});
-			$scope.overlaysAcquired = Overlays.aquire($scope.dataParsed.data);
-			console.log("Overlays acquired!");
-			// $state.go('overlay-filter');	
+			$scope.fileData = $scope.dataParsed.data;
+
+			// Selected Rows in File Data
+			// Controlled by checkboxes in overlay-import.html
+			$scope.selectedRows = [];
+			var rows = $scope.fileData.length;
+			while (--rows >= 0) {$scope.selectedRows[rows] = true;}
+
+			// Selected Columns in File Data
+			// Controlled by checkboxes in overlay-import.html
+			$scope.selectedCols = [];
+			var cols = $scope.fileData[0].length;
+			while (--cols >= 0) {$scope.selectedCols[cols] = true;}
+
+			console.log("File Opened...");
+		};
+
+		$scope.importData = function(parsedData) {
+			// remove unwanted rows and cols
+			// var filteredData = parsedData;
+			var filteredData = Overlays.filter(parsedData, $scope.selectedRows, $scope.selectedCols);
+			$scope.overlaysAcquired = Overlays.aquire(filteredData);
+			console.log("Data Imported");
+			$mdDialog.hide($scope.overlaysAcquired);
+			$state.go('browser');
 		};
 
 		$scope.hide = function() {
@@ -2575,6 +3309,35 @@
 
 		$scope.cancel = function() {
 			$mdDialog.cancel();
+		};
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.directive('tkOverlayImport', tkOverlayImport);
+
+	function tkOverlayImport($parse) {		
+		return {
+			restrict: 'A',
+			scope: {
+				tkOverlayImport : "&",
+				filetitle : "="
+			},
+			link: function(scope, element, attrs) {
+				element.on('change', function(e) {
+					var reader = new FileReader();
+					reader.onload = function(e) {
+						scope.$apply(function() {
+							// console.log("here in apply");
+							scope.tkOverlayImport({$fileContent:e.target.result});
+						});
+					};
+					reader.readAsText((e.srcElement || e.target).files[0]);
+					scope.filetitle = (e.srcElement || e.target).files[0].name;
+				});
+			}
 		};
 	}
 })();
@@ -2595,7 +3358,8 @@
 		.module('TADkit')
 		.controller('ProjectDatasetController', ProjectDatasetController);
 
-	function ProjectDatasetController ($state, $scope, Datasets, Overlays, Components){
+	function ProjectDatasetController ($state, $scope, Datasets, Overlays, Components, Segments){
+		// console.log($scope);
 
 		// Get dataset scene icon component
 		$scope.clusterComponent = Components.getComponentById("datasets-scene-icon");
@@ -2603,22 +3367,22 @@
 		// Set cluster color to gradient
 		// Recalculate specifically for single segment per particle in cluster scene
 		var gradientOverlay = Overlays.getOverlayById("gradient");
-		var clusterLength = $scope.currentModel.data.length / $scope.currentDataset.object.components;
-		var gradientColors = Overlays.segmentGradientHCL(gradientOverlay.data, clusterLength);
+		var clusterLength = $scope.current.model.data.length / $scope.current.dataset.object.components;
+		var gradientColors = Segments.gradientHCL(gradientOverlay, clusterLength);
 		$scope.clusterComponent.overlay = gradientColors;
 
 		// Calculate consistent camera position (translation) from combined dataset models
 		var datasetModels = new THREE.BufferGeometry();
-		for (var h = $scope.currentDataset.models.length - 1; h >= 0; h--) {
-			datasetModels.addAttribute( 'position', new THREE.BufferAttribute( $scope.currentDataset.models[i], 3 ) );
+		for (var h = $scope.current.dataset.models.length - 1; h >= 0; h--) {
+			datasetModels.addAttribute( 'position', new THREE.BufferAttribute( $scope.current.dataset.models[i], 3 ) );
 		}
 		datasetModels.computeBoundingSphere();
 		$scope.clusterComponent.view.viewpoint.translate = datasetModels.boundingSphere.radius;
 
 		// Create collection of cluster models
 		$scope.clusters = [];
-		var clusterLists = $scope.currentDataset.clusters;
-		var models = $scope.currentDataset.models;
+		var clusterLists = $scope.current.dataset.clusters;
+		var models = $scope.current.dataset.models;
 		for (var i = clusterLists.length - 1; i >= 0; i--) {
 			var cluster = {};
 			cluster.number = i + 1;
@@ -2657,26 +3421,144 @@
 	'use strict';
 	angular
 		.module('TADkit')
+		.directive('tkProjectDropzone', tkProjectDropzone);
+
+	function tkProjectDropzone($state, $parse) {    
+		return {
+	        restrict: 'A',
+	        // template: '<div>tkProjectDropzone is functioning</div>', // uncomment to test if directive is functioning
+	        link: function (scope, element, attrs) {
+
+            var expression = attrs.dropzone;
+            var accesor = $parse(expression);
+
+            var onDragOver = function (e) {
+                e.preventDefault();
+                element.addClass("dragOver");
+            };
+ 
+            var onDragEnd = function (e) {
+               e.preventDefault();
+                element.removeClass("dragOver");
+            };
+
+           var loadFile = function (file) {
+				var reader = new FileReader();
+				reader.onload = function(onLoadEvent) {
+					scope.$apply(function() {
+   						// HERE: call the parsed function correctly (with scope AND params object)
+						accesor(scope, {$fileContent:onLoadEvent.target.result});
+						scope.addDataset(onLoadEvent.target.result);
+						// $state.go('dataset');
+					});
+				};
+				reader.readAsText(file);
+				console.log("File loaded...");
+           };
+ 
+            element.bind("dragover", onDragOver)
+                   .bind("dragleave", onDragEnd)
+                   .bind("drop", function (e) {
+                       onDragEnd(e);
+                       loadFile(e.dataTransfer.files[0]);
+                   });
+ 
+            scope.$watch(expression, function () {
+                element.attr("src", accesor(scope));
+            });
+  
+	            // element.bind('drop', function(evt) {
+	            //     evt.stopPropagation();
+	            //     evt.preventDefault();
+
+	            //     var files = evt.dataTransfer.files;
+	            //     for (var i = 0; i <= files.length; i++) {
+	            //     		var f = files[i];
+	            //         var reader = new FileReader();
+	            //         reader.readAsArrayBuffer(f);
+
+	            //         reader.onload = (function(theFile) {
+	            //             return function(e) {
+	            //                 var newFile = { name : theFile.name,
+	            //                     type : theFile.type,
+	            //                     size : theFile.size,
+	            //                     lastModifiedDate : theFile.lastModifiedDate
+	            //                 };
+
+	            //                 scope.addfile(newFile);
+	            //             };
+	            //         })(f);
+	            //     }
+	            // });
+
+	        }
+	    };
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.controller('ProjectLoaderController', ProjectLoaderController);
+
+	function ProjectLoaderController($q, $state, $scope, $timeout, Settings, Datasets, Overlays, Ensembl, Proximities, Restraints) {
+			// console.log($scope);
+
+		$scope.addDataset = function($fileContent) {
+
+			Datasets.add($fileContent);
+			var overlay = Overlays.getOverlayById("genes");
+			var loadEnsembl = Ensembl.load(overlay, Settings.get().app.online);
+			return $q.all([overlay, loadEnsembl])
+			.then(function(results) {
+				// Recalc all related to new Dataset...
+				// Settings.init(); // dependent on Storyboards and Datasets
+				// Proximities.set(); // dependent on Datasets
+				// Restraints.set(); // dependent on Datasets
+				// Overlays.segment();
+
+				Overlays.update();
+				return results;
+			})
+			.then(function(results) {
+				$scope.$parent.current.dataset = Datasets.getDataset();
+				$scope.$parent.current.model = Datasets.getModel();
+				$scope.$parent.currentOverlay = Overlays.getOverlay();
+				$state.go('dataset');
+			});
+		};
+
+		// $scope.openInput = function() {
+		// 	$timeout(function() {
+		// 		angular.element("file-input").trigger('click');
+		// 	}, 0);
+		// };
+
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
 		.directive('tkProjectLoader', tkProjectLoader);
 
-	function tkProjectLoader($parse) {		
+	function tkProjectLoader($state, $parse) {		
 		return {
 			restrict: 'A',
 			scope: false,
 			link: function(scope, element, attrs) {
-			var fn = $parse(attrs.tkProjectLoader);
-
+				var fn = $parse(attrs.tkProjectLoader);
 				element.on('change', function(onChangeEvent) {
 					var reader = new FileReader();
 					reader.onload = function(onLoadEvent) {
 						console.log("Data Loaded");
 						scope.$apply(function() {
+       					// HERE: call the parsed function correctly (with scope AND params object)
 							fn(scope, {$fileContent:onLoadEvent.target.result});
+							// $state.go('dataset');
 						});
 					};
-
 					reader.readAsText((onChangeEvent.srcElement || onChangeEvent.target).files[0]);
-					// srcElement??					
 				});
 			}
 		};
@@ -2712,20 +3594,6 @@
 		$scope.uploader = new FileUploader();
 		
 		// console.log($scope.uploader);
-	}
-})();
-(function() {
-	'use strict';
-	angular
-		.module('TADkit')
-		.controller('ProjectController', ProjectController);
-
-	function ProjectController ($scope, Datasets){
-
-		$scope.addDataset = function($fileContent) {
-			Datasets.add($fileContent);
-		};
-
 	}
 })();
 (function() {
@@ -2793,74 +3661,9 @@
 	'use strict';
 	angular
 		.module('TADkit')
-		.controller('StoryboardController', StoryboardController);
+		.directive('tkStoryboardComponents', tkStoryboardComponents);
 
-	function StoryboardController($window, $scope, Settings, Datasets, Overlays, Resources) {
-		// WATCH FOR WINDOW RESIZE
-		angular.element($window).on('resize', function(){ $scope.$apply(); });
-
-		// SET DERIVED DATA AND ATTRIBUTES ON COMPONENTS
-		var defaultIndex = 0; // ?? used in components and overlays OR use currentIndex?
-		
-		var particlesCount = $scope.currentModel.length / $scope.currentDataset.object.components;
-		var particleSegments = $scope.currentStoryboard.components[defaultIndex].view.settings.chromatin.particleSegments;
-		var segmentsCount = particlesCount * particleSegments;
-		var dataStart = $scope.currentDataset.object.startCoord;
-		var dataEnd = $scope.currentDataset.object.endCoord;
-		var segmentLength = $scope.currentStoryboard.components[defaultIndex].view.settings.chromatin.segmentLength = $scope.currentDataset.object.resolution / particleSegments; // base pairs
-
-		// SET INITIAL position
-		$scope.settings.position = dataStart + parseInt((dataEnd - dataStart) * 0.5);
-
-		// AND SEGMENT IT LIES WITHIN
-		$scope.settings.segment = Math.floor( ($scope.settings.position - dataStart) / segmentLength);
-		$scope.settings.segmentLower = $scope.settings.position - ($scope.settings.segment * 0.5);
-		$scope.settings.segmentUpper = $scope.settings.position + ($scope.settings.segment * 0.5);
-
-		$scope.currentModel = Datasets.getModel();
-		$scope.currentOverlays = Overlays.get();
-		// $scope.currentOverlayIndex = $scope.currentOverlays.current.index;
-
-		$scope.proximityMatrix = Resources.getProximityMatrix($scope.currentModel.data);
-
-		angular.forEach( $scope.currentStoryboard.components, function(value, index) {
-			var overlay;
-			// if (value.object.dataset == "default") {
-				if (value.object.type == "scene") {
-					value.data = $scope.currentModel.data;
-					value.overlay = $scope.currentOverlays.loaded[$scope.currentOverlays.current.index];
-					// value.overlayIndex = $scope.currentOverlays.current.index;
-					value.contacts = $scope.proximityMatrix;
-					value.overlay.state = {};
-					value.overlay.object.state.index = $scope.currentOverlays.current.index; // for track
-				} else if (value.object.type == "track-slider") {
-					value.view.viewpoint.segments = particlesCount * particleSegments;
-				} else if (value.object.type == "track-genes" || value.object.type == "panel-inspector") {
-					overlay = Overlays.getOverlayById("genes");
-					value.data = overlay.data;
-					value.overlay = overlay;
-				} else if (value.object.type == "track-contacts") {
-					value.data = $scope.proximityMatrix.positions;
-					value.overlay = $scope.proximityMatrix.distances;
-				} else if (value.object.type == "track-wiggle") {
-					overlay = Overlays.getOverlayById(value.object.dataset);
-					value.data = overlay.data;
-					value.overlay = overlay;
-				} else {
-					// other types of component...
-				}
-			// }
-		});
-		// console.log($scope.currentStoryboard);
-	}
-})();
-(function() {
-	'use strict';
-	angular
-		.module('TADkit')
-		.directive('tkStoryboard', tkStoryboard);
-
-	function tkStoryboard() {
+	function tkStoryboardComponents() {
 		return {
 			restrict:'EA',
 			templateUrl: 'assets/templates/storyboard-components.html',
@@ -2874,9 +3677,154 @@
 	'use strict';
 	angular
 		.module('TADkit')
+		.controller('StoryboardController', StoryboardController);
+
+	function StoryboardController($window, $scope, Settings, Storyboards, Components, Overlays, Proximities, Restraints) {
+
+		// WATCH FOR WINDOW RESIZE
+		angular.element($window).on('resize', function(){ $scope.$apply(); });
+
+		$scope.current.storyboard.components[0].view.settings.chromatin.segmentLength = $scope.settings.current.segmentLength;
+
+		// TODO: PLACE FOLLOWING INSIDE SETTINGS SERVICE... and refine $scope setup
+		// TODO: CHECK FOR DYNAMIC SETTINGS WHICH SHOULD BE IN SCOPE...
+		// Set coords to default Storyboard views from dataset
+		var chromosomeIndex = 0;
+		if ($scope.current.dataset.object.chromosomeIndex) {
+			chromosomeIndex = $scope.current.dataset.object.chromosomeIndex;	
+		}
+		$scope.settings.current.chromStart = $scope.current.dataset.object.chromStart[chromosomeIndex];
+		$scope.settings.current.chromEnd = $scope.current.dataset.object.chromEnd[chromosomeIndex];
+		$scope.settings.views.scale = 1; //$scope.current.dataset.object.scale;
+		Storyboards.setViewpoint($scope.settings.current.chromStart,$scope.settings.current.chromEnd,$scope.settings.views.scale);
+		Components.setViewpoint($scope.settings.current.chromStart,$scope.settings.current.chromEnd,$scope.settings.views.scale);
+		$scope.settings.current.particlesCount = Settings.get().current.particlesCount;
+
+		// SET INITIAL position at midpoint
+		var position = $scope.settings.current.chromStart + parseInt(($scope.settings.current.chromEnd - $scope.settings.current.chromStart) * 0.5);
+		$scope.settings.current.position = position;
+		var currentParticle = Settings.getParticle();
+		$scope.settings.current.particle = currentParticle; 
+
+		// AND SEGMENT IT LIES WITHIN
+		$scope.settings.current.segment = Settings.getSegment($scope.settings.current.position);
+		$scope.settings.current.segmentLower = $scope.settings.current.position - ($scope.settings.current.segment * 0.5);
+		$scope.settings.current.segmentUpper = $scope.settings.current.position + ($scope.settings.current.segment * 0.5);
+
+		// Calculating Initial Proximities
+		//NOTE in future if more than 1 currentModel need same number of currentProximities
+		$scope.currentProximities = Proximities.at($scope.settings.current.particle); // for D3 tracks
+
+		// Calculating Initial Restraints
+		//NOTE in future if more than 1 currentModel need same number of currentRestraints
+		$scope.currentRestraints = Restraints.at($scope.settings.current.particle); // for D3 tracks
+
+		// Slice Matrix Overlays
+		Overlays.at($scope.settings.current.particle);
+
+		// Assign data and overlays for each component by type
+		angular.forEach( $scope.current.storyboard.components, function(component, index) {
+
+			// if (component.object.dataset == "default") {
+				var overlay, overlayProximities;
+				if (component.object.type == "scene") {
+					component.data = $scope.current.model.data;
+					 // component.proximities required for Scenes: overlay.colors Saturation
+					component.proximities = $scope.currentProximities;
+					component.overlay = $scope.current.overlay;
+					component.overlay.state = {};
+					component.overlay.object.state.index = Overlays.getCurrentIndex();
+				} else if (component.object.type == "track-genes" || component.object.type == "panel-inspector") {
+					overlay = Overlays.getOverlayById("genes");
+					component.data = overlay.data;
+					// component.overlay required for toggle
+					component.overlay = overlay;
+				} else if (component.object.type == "track-proximities") {
+					// ie only one... see note above for Calculating Proximities
+					// component.data for Scenes: overlay.colors Saturation
+					component.data = $scope.currentProximities;
+					// component.overlay required for toggle
+					//   and for Scenes: overlay.colors Hue
+					overlay = Overlays.getOverlayById("proximities");
+					component.overlay = overlay;
+				} else if (component.object.type == "track-restraints") {
+					// ie only one... see note above for Calculating Restraints
+					// component.data for Scenes: overlay.colors Saturation
+					component.data = $scope.currentRestraints;
+					// component.overlay required for toggle
+					//   and for Scenes: overlay.colors Hue
+					overlay = Overlays.getOverlayById("restraints");
+					component.overlay = overlay;
+				}
+				// } else if (component.object.type == "track-wiggle") {
+				// 	overlay = Overlays.getOverlayById(component.object.dataset);
+				// 	component.data = overlay.data;
+				// 	component.overlay = overlay; // required for toggle
+				// } else {
+				// 	// slider and other types of component...
+				// }
+			// }
+		});
+
+		// Watch for Slider Position updates
+		$scope.$watch('settings.current.particle', function(newParticle, oldParticle) { // deep watch as change direct and changes all?
+			if ( newParticle !== oldParticle ) {
+				$scope.currentProximities = Proximities.at(newParticle); // for D3 tracks
+				$scope.currentProximities = Restraints.at(newParticle); // for D3 tracks
+				if ($scope.current.overlay.object.type == "matrix") {
+					Overlays.at(newParticle);
+					$scope.current.overlay = Overlays.getOverlay();
+				} 
+				// console.log($scope.currentProximities);
+			}
+		});
+
+		// save original overlaid
+		$scope.overlayOrig = $scope.current.overlay;
+		$scope.toggleOverlay = function(index) {
+			$scope.overlaid = Overlays.getOverlay(index).object.state.overlaid;
+			if (!$scope.overlaid) {
+				Overlays.setOverlaid(index);
+				Overlays.set(index);
+				$scope.current.overlay = Overlays.getOverlay();
+			} else {
+				Overlays.setOverlaid($scope.overlayOrig.object.state.index);
+				Overlays.set($scope.overlayOrig.object.state.index);
+				$scope.current.overlay = Overlays.getOverlay();
+			}
+			// $scope.overlay.object.state.overlaid = !$scope.overlay.object.state.overlaid;
+		};
+
+		$scope.optionsState = false;
+		$scope.toggleOptions = function() {
+			$scope.optionsState = !$scope.optionsState;
+		};
+
+		$scope.toggle = function(bool) {
+			bool = !bool;
+			console.log(bool);
+		};
+
+		$scope.testfn = function() {
+			console.log("test worked");
+		};
+
+		// $scope.keyControls = function (e, component) {
+		// 	if (event.keyCode === 32 || event.charCode === 32) {
+		// 		component.view.controls.autoRotate = !component.view.controls.autoRotate; 
+		// 	}
+		// };
+
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
 		.controller('TopbarController', TopbarController);
 
 	function TopbarController($state, $scope, $mdSidenav) {
+
 		$scope.$state = $state;
 		if ($state.includes('main.project')){
 			$scope.projectTitle = $scope.users[0].projects[0].object.title;
@@ -2898,7 +3846,8 @@
 		.service('colorConvert', colorConvert);
 
 	function colorConvert() {
-		var rootObj = this;
+		// var rootObj = this;
+		var rootObj = {};
 		rootObj.re_ = {
 		  // An X11 "rgb:ddd/ddd/ddd" value.
 		  x11rgb: /^\s*rgb:([a-f0-9]{1,4})\/([a-f0-9]{1,4})\/([a-f0-9]{1,4})\s*$/i,
@@ -3089,7 +4038,7 @@
 
 					if (v.length == 3) {
 						// Three digit values seem to be padded by repeating the final digit.
-						// e.g. 10f becomes 10ff.
+						// eg. 10f becomes 10ff.
 						v = v + v.substr(2);
 					}
 
@@ -3214,7 +4163,7 @@
 				start_color = start_color.replace(/^\s*#|\s*$/g, '');
 				end_color = end_color.replace(/^\s*#|\s*$/g, '');
 
-				// convert 3 char codes --> 6, e.g. `E0F` --> `EE00FF`
+				// convert 3 char codes --> 6, eg. `E0F` --> `EE00FF`
 				if(start_color.length == 3){
 					start_color = start_color.replace(/(.)/g, '$1$1');
 				}
@@ -3257,51 +4206,6 @@
 		};
 	}
 })();
-(function() {
-	'use strict';
-	angular
-		.module('TADkit')
-		.factory('colorsFromINI', colorsFromINI);
-
-	function colorsFromINI(colorConvert) {
-
-		return {
-			parse: function(data) {
-				var regex = {
-					section: /^\s*\[\s*([^\]]*)\s*\]\s*$/,
-					param: /^\s*([\w\.\-\_]+)\s*=\s*([\w\.\-\_]+)/,
-					comment: /^\s*#.*$/
-				};
-				var value = {};
-				var lines = data.split(/\r\n|\r|\n/);
-				var section = null;
-				lines.forEach(function(line){
-					if(regex.comment.test(line) || line === ""){
-						return;
-					}
-					var match;
-					if(regex.param.test(line)){
-						match = line.match(regex.param);
-						if(section){
-							var hexColor = colorConvert.nameToHex( match[2] );
-							value[section][match[1]] = hexColor;
-						}else{
-							value[match[1]] = match[2];
-						}
-					}else if(regex.section.test(line)){
-						match = line.match(regex.section);
-						value[match[1]] = {};
-						section = match[1];
-					}else if(line.length === 0 && section){
-						section = null;
-					}
-				});
-				return value;
-			}
-		};
-	}
-})();
-
 (function() {
 	'use strict';
 	angular
@@ -3368,15 +4272,15 @@
 				var component = components.loaded[components.current.index];
 				return component;
 			},
-			setViewpoint: function(startCoord, endCoord, scaleOrig) {
-				startCoord = startCoord || 0;
-				endCoord = endCoord || 4999999;
+			setViewpoint: function(chromStart, chromEnd, scaleOrig) {
+				chromStart = chromStart || 0;
+				chromEnd = chromEnd || 4999999;
 				var currentComponents = components.loaded;
 				// console.log(currentComponents);
 				angular.forEach( currentComponents, function(component, index) {
 					var scale = scaleOrig || 1;
-					component.view.viewpoint.startCoord = startCoord;
-					component.view.viewpoint.endCoord = endCoord;
+					component.view.viewpoint.chromStart = chromStart;
+					component.view.viewpoint.chromEnd = chromEnd;
 					if (component.object.type === "scene" || component.object.type === "scene-icon") {
 						var angle = component.view.viewpoint.fov / 2;
 						var margin = 0.6;
@@ -3489,9 +4393,9 @@
 		return {
 			load: function() {
 				var deferral = $q.defer();
-				// var source = "assets/json/tk-defaults-datasets.json";
-				var source = "assets/json/mycoplasma_pneumoniae-tadbit.json";
-
+				// var source = "assets/json/testdata_torusknot-tadbit.json";
+				// var source = "assets/json/mycoplasma_pneumoniae_m129-tadbit.json";
+				var source = "assets/json/tk-defaults-datasets.json";
 				var self = this;
 				if( datasets.loaded.length > 0 ) {
 					deferral.resolve(datasets);
@@ -3499,14 +4403,10 @@
 					$http.get(source)
 					.success( function(data) {
 						datasets.loaded = data;
-						// console.log(data[0].models);
-						// angular.forEach(data[0].models, function(model, key) {
-						// 	model = JSON.stringify(model).replace("####",key+1);
-						// 	data[0].models[key] = JSON.parse(model);
-						// });
-						// console.log(JSON.stringify(data[0].models));
-						var current = datasets.current.index;
-						datasets.loaded[current].object.speciesUrl = self.setSpeciesUrl(current);
+						datasets.current.index = datasets.loaded.length - 1;
+						// console.log(datasets.current.index);
+						// Make speicesUrl forEach...
+						datasets.loaded[datasets.current.index].object.speciesUrl = self.setSpeciesUrl(datasets.current.index);
 						console.log("Datasets (" + data.length + ") loaded from " + source);
 						deferral.resolve(datasets);
 					});
@@ -3515,14 +4415,17 @@
 			},
 			add: function(data) { // rename import?
 				/* CHECK DATASET IS VALID */
+				var self = this;
 				var dataset = JSON.parse(data);
+				// console.log(dataset); // NOT AN ARRAY - A SINGLE DATASET
 				// var uuid = dataObj.uuid || uuid4.generate(),
 				// if (!projects.default.datasets[uuid]) {
-					datasets.loaded.push(dataset[0]);
+					datasets.loaded.push(dataset);
 					datasets.current.index = datasets.loaded.length - 1;
+					datasets.loaded[datasets.current.index].object.speciesUrl = self.setSpeciesUrl(datasets.current.index);
 					console.log("Dataset \"" + datasets.loaded[datasets.current.index].object.title + "\" loaded from file.");
 				// }
-				console.log(datasets.loaded[datasets.current.index]);
+				// console.log(datasets.loaded);
 				return datasets;
 			},
 			// add: function(title) {
@@ -3544,7 +4447,7 @@
 			},
 			set: function(index) {
 				if (index !== undefined || index !== false) datasets.current.index = index;
-				this.setCluster(datasets.current.cluster);
+				this.setCluster(datasets.current.cluster); // need to determine which cluster is current?
 				var dataset = datasets.loaded[datasets.current.index];
 				return dataset;
 			},
@@ -3602,7 +4505,11 @@
 			},
 			getRegion: function(index) {
 				if (index === undefined || index === false) index = datasets.current.index;
-				var region = datasets.loaded[index].object.chromosome + ":" + datasets.loaded[index].object.startCoord + "-" + datasets.loaded[index].object.endCoord;
+				var chromosomeIndex = 0;
+				if (datasets.loaded[index].object.chromosomeIndex) {
+					chromosomeIndex = datasets.loaded[index].object.chromosomeIndex;	
+				}
+				var region = datasets.loaded[index].object.chromosome[chromosomeIndex] + ":" + datasets.loaded[index].object.chromStart[chromosomeIndex] + "-" + datasets.loaded[index].object.chromEnd[chromosomeIndex];
 				return region;
 			},
 			getComponents: function(index) {
@@ -3619,7 +4526,7 @@
 		.module('TADkit')
 		.factory('Ensembl', Ensembl);
 
-	function Ensembl($q, $http) {
+	function Ensembl($q, $http, Datasets) {
 		var ensembl = {
 			ping : 0
 		};
@@ -3627,7 +4534,7 @@
 			ping: function() {
 				console.log("Pinging Ensembl RESTful genomic data server...");
 				var deferral = $q.defer();
-				var source = "http://rest.ensembl.org/info/ping?content-type=application/json";
+				var source = "http://rest.ensemblgenomes.org/info/ping?content-type=application/json";
 				$http.get(source)
 				.success(function(data){
 					ensembl.ping = data.ping;
@@ -3635,14 +4542,21 @@
 				});
 				return deferral.promise;
 			},
-			load: function(datasetObject, overlay, online) {
+			load: function(overlay, online) {
+
+				online = online || false;
 				var deferral = $q.defer();
 				var source;
+				var datasetObject = Datasets.getDataset().object;
 				var species = datasetObject.species;
 				var speciesUrl = datasetObject.speciesUrl;
-				var chromosome = datasetObject.chromosome;
-				var start = datasetObject.startCoord;
-				var end = datasetObject.endCoord;
+				var chromosomeIndex = 0;
+				if (datasetObject.chromosomeIndex) {
+					chromosomeIndex = datasetObject.chromosomeIndex;	
+				}
+				var chromosome = datasetObject.chromosome[chromosomeIndex];
+				var start = datasetObject.chromStart[chromosomeIndex];
+				var end = datasetObject.chromEnd[chromosomeIndex];
 				var self = this;
 				if (online) {
 					source = overlay.object.url[0] + speciesUrl + overlay.object.url[2] + chromosome + overlay.object.url[4] + start + overlay.object.url[6] + end + overlay.object.url[8];
@@ -3679,34 +4593,9 @@
 	'use strict';
 	angular
 		.module('TADkit')
-		.service('initBrowser', initBrowser);
-
-	function initBrowser($q, Datasets, Resources) {
-		return function() {
-
-			var currentDataset = Datasets.getDataset();
-			console.log(currentDataset);
-			// var proximityMatrix = Resources.getProximityMatrix();
-
-			// return $q.all([proximityMatrix]);
-			// .then(function(results){
-			// 	console.log(results);
-			// })
-			// .then(function(results){
-			// 	return {
-			// 		proximityMatrix: results[0]
-			// 	};
-			// });
-		};
-	}
-})();
-(function() {
-	'use strict';
-	angular
-		.module('TADkit')
 		.service('initMain', initMain);
 
-	function initMain($q, Settings, Users, Projects, Datasets, Overlays, Components, Storyboards, Resources, Ensembl) {
+	function initMain($q, Settings, Users, Projects, Datasets, Overlays, Components, Storyboards, Resources, Proximities, Restraints) {
 		return function() {
 			var settings = Settings.load();
 			var users = Users.load();
@@ -3719,58 +4608,14 @@
 
 			return $q.all([settings, users, projects, datasets, overlays, components, storyboards, featureColors])
 			.then(function(results){
-
-				// var promise = Resources.loadInfoAssembly(Datasets.getSpeciesUrl());
-				// promise.then(function(data) {
-				// 	var settings = results[0];
-				// 	settings.infoAssembly = data;
-				// }, function(reason) {
-				// 	console.log('Failed: ' + reason);
-				// });
-				// return results;
-
-				var processList = [];
-
-				var infoAssembly = Resources.loadInfoAssembly(Datasets.getSpeciesUrl());
-				processList.push(infoAssembly);
-
-				var currentDataset = Datasets.getDataset();
-				var overlays = Overlays.get();
-				angular.forEach(overlays.loaded, function(overlay, key) {
-					var ensembl;
-					if (overlay.object.type == "ensembl" && overlay.object.format == "json") {
-						ensembl = Ensembl.load(currentDataset.object, overlay);
-						 // ojo returning Overlays... cHANGE 
-						processList.push(ensembl);
-					}
-				});
-
-				return $q.all(processList)
-				.then(function(data) {
-					var settings = results[0];
-					settings.infoAssembly = data;
-					return results;
-				});
+				Settings.init(); // dependent on Storyboards and Datasets
+				Proximities.set(); // dependent on Datasets
+				Restraints.set(); // dependent on Datasets
 			})
 			.then(function(results){
-				var settings = Settings.get();
-				var currentDataset = Datasets.getDataset();
-				var currentStoryboards = Storyboards.getStoryboard();
-				var particlesCount = currentDataset.models[0].data.length / currentDataset.object.components;
-				var particleSegments = currentStoryboards.components[0].view.settings.chromatin.particleSegments;
-				var segmentsCount = particlesCount * particleSegments;
-				var segmentLength = currentDataset.object.resolution / particleSegments; // base pairs
-				return $q.all([settings, currentDataset, currentStoryboards, particleSegments, particlesCount, segmentsCount, segmentLength])
-				.then(function() {
-					var startCoord = currentDataset.object.startCoord;
-					var featureColors = results[7];
-					var featureTypes = featureColors;
-					settings.startCoord = startCoord;
-					settings.particlesCount = particlesCount;
-					settings.particleSegments = particleSegments;
-					settings.segmentsCount = segmentsCount;
-					settings.segmentLength = segmentLength;
-					Overlays.segmentOverlays(startCoord, segmentsCount, segmentLength, featureTypes);
+				var updateOverlays = Overlays.update(); // for Proximities
+				return $q.all([updateOverlays])
+				.then(function(results){
 					return results;
 				});
 			})
@@ -3795,7 +4640,7 @@
 		.module('TADkit')
 		.factory('Overlays', Overlays);
 
-	function Overlays($q, $http, uuid4, d3Service) {
+	function Overlays($q, $http, uuid4, d3Service, Settings, Datasets, Storyboards, Proximities, Ensembl, Segments, Resources) {
 		var overlays = {
 			loaded : [],
 			current : {index:0}
@@ -3818,32 +4663,93 @@
 				}
 				return deferral.promise;
 			},
-			import: function(data) {
-				/* CHECK IMPORT IS VALID */
-				var rawdata = JSON.parse(data);
-				// var uuid = dataObj.uuid || uuid4.generate(),
-				// if (!projects.default.overlays[uuid]) {
-					// determine format eg table rows of items, columns of properties
-					// user select colmns to use - which rows: title, (meta,) start, end, data
-					// test all
-					var newOverlay = rawdata;
-					this.add(newOverlay);
-					console.log("New overlay \"" + overlays.loaded[datasets.current.index].object.title + "\" created from imported data.");
-				// }
-				console.log(overlays.loaded[overlays.current.index]);
-				return overlays;
+			// import: function(data) {
+			// 	/* CHECK IMPORT IS VALID */
+			// 	var rawdata = JSON.parse(data);
+			// 	// var uuid = dataObj.uuid || uuid4.generate(),
+			// 	// if (!projects.default.overlays[uuid]) {
+			// 		// determine format eg table rows of items, columns of properties
+			// 		// user select colmns to use - which rows: title, (meta,) start, end, data
+			// 		// test all
+			// 		var newOverlay = rawdata;
+			// 		this.add(newOverlay);
+			// 		console.log("New overlay \"" + overlays.loaded[datasets.current.index].object.title + "\" created from imported data.");
+			// 	// }
+			// 	console.log(overlays.loaded[overlays.current.index]);
+			// 	return overlays;
+			// },
+			filter: function(dataTable, selectedRows, selectedCols) {
+				// dataTable [[row1col1,row1col2...],[row2col1,row2col2...]...]
+				// Remove rows/cols marked false in selectedRows/Cols arrays
+				var filteredData = [];
+				var rows = selectedRows.length;
+				var cols = selectedCols.length;
+				for (var i = 0; i < rows; i++) {
+					var newRow = [];
+					if (selectedRows[i]) {
+						for (var j = 0; j < cols; j++) {
+							if (selectedCols[j]) newRow.push(dataTable[i][j]); // else column not added
+						}
+						filteredData.push(newRow);
+					} // else row not added
+				}
+				return filteredData;
 			},
 			aquire: function(data) {
+
 				// d3Service.d3().then(function(d3) {
 					// var colorRange = ["#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff"];
+					var colorFilion = ["#227c4f","#e71818","#8ece0d","#6666ff","#424242"];
 					var colorRange = d3.scale.category20();
+
 					// columns to overlays
 					// skip row 1 = headers ie. length - 2
 					// skip colums 1 and 2 = coords ie. length - 3
-					var aquiredOverlays = [];
-					var step = data[1][1] - data[1][0] + 1;
-					for (var i = data[0].length - 1; i >= 2; i--) { // i >= 2 to skip 2 first columns
-						aquiredOverlays.unshift(
+					var acquiredOverlays = [];
+					// check for bigwig data the step and start
+					// var step = 1; // override below if fixed
+					// if none find which is start and end eg. Marie's and Filion's data
+					// cycle through first lineto determine columns
+					// create as BedGraph
+					var headerRow = 0;
+					var firstDataRow = 1;
+					var startColumn = 0;
+					var endColumn = 1;
+					var colsCount = data[headerRow].length;
+
+					// Check if fixed steps
+					var step = data[firstDataRow][endColumn] - data[firstDataRow][startColumn] + 1; // get step from chromEnd to chromStart
+					var step2 = data[firstDataRow+1][endColumn] - data[firstDataRow+1][startColumn] + 1; // check next row
+					var type, format, stepType;
+					if (step == step2) {
+						type = "wiggle_0";
+						format = "fixed";
+						stepType = "fixed";
+					} else {
+						type = "bedgraph";
+						format = "variable";
+						stepType = "variable";
+					}
+
+					// Check if Filion proteins ie. chromatin colors
+					var filion = false;
+					if (colsCount == 7){
+						var filionProteins = 0;
+						for (var h = 2; h < colsCount; h++) { // h=2 to skip start and end cols
+							var header = data[headerRow][h].toLowerCase();
+							if (header=="hp1" || header=="brm" || header=="mrg15" || header=="pc" || header=="h1") filionProteins++;
+						}
+						if (filionProteins == 5) filion = true;
+					}
+
+					for (var i = colsCount - 1; i >= 2; i--) { // i >= 2 to skip, start and end columns
+						var colored;
+						if (filion) {
+							colored = colorFilion[i-2];
+						} else {
+							colored = colorRange(i);
+						}				
+						acquiredOverlays.unshift(
 							{
 								"metadata": {
 									"version" : 1.0,
@@ -3852,37 +4758,47 @@
 								},
 								"object" : {
 									"uuid" : uuid4.generate(),
-									"id" : data[0][i],
-									"title": data[0][i],
+									"id" : data[headerRow][i],
+									"title" : data[headerRow][i],
 									"source" : "Research output",
 									"url" : "local",
-									"description": "center_label", //also BigWig description (track title): "User Supplied Track"
-									"type": "wiggle_0", //also BigWig type
-									"format" : "bigwig",
+									"description" : "center_label", //also BigWig description (track title): "User Supplied Track"
+									"type" : type, //also BigWig type
+									"format" : format,
 									"components" : 2,
-									"name": data[0][i], //BigWig: "User Track"
-									"visibility": "full", //BigWig: "full", "dense" or "hide"
-									"color": colorRange(i), // red NOTE: convert to RGB for BigWig: eg. 255,255,255
-									"altColor": "#0000ff", // blue NOTE: convert to RGB for BigWig: eg. 128,128,128
-									"priority": "100", //BigWig: 100
-									"stepType": "fixed", //BigWig: "variable" or "fixed"
-									"chrom": "", //BigWig: derive from dataset...???
-									"start": data[1][0], //BigWig
-									"step": step, //BigWig
-									"state": {
-										"index": 0, // make real index???
-										"overlaid": false
+									"name" : data[headerRow][i], //BigWig: "User Track"
+									"visibility" : "full", //BigWig: "full", "dense" or "hide"
+									"color" : colored, // random from D3.js function. NOTE: convert to RGB for BigWig: eg. 255,255,255
+									"altColor" : "#cccccc", // light grey gives best 3D render vis. NOTE: convert to RGB for BigWig: eg. 128,128,128
+									"priority" : "100", //BigWig: 100
+									"stepType" : stepType, //BigWig: "variable" or "fixed"
+									"chrom" : "", //BigWig: derive from dataset...???
+									"start" : data[firstDataRow][startColumn], //BigWig
+									"step" : step, //BigWig
+									"state" : {
+										"index" : 0, // make real index???
+										"overlaid" : false
 									}
 								},
-								"data": []
+								"palette" : [colored,"#cccccc"],
+								"data" : [],
+								"colors" : {}
 							}
 						);
 						// convert column data to array
-						for (var j = data.length - 1; j >= 1; j--) { // j >= 1 to skip first row
-							aquiredOverlays[0].data.unshift(data[j][i]);
+						for (var j = data.length - 1; j >= 1; j--) { // j >= 1 to skip first header row
+							if (format == "variable") {
+								acquiredOverlays[0].data.unshift({
+									"start" : data[j][startColumn],
+									"end" : data[j][endColumn],
+									"read" : data[j][i]
+								});
+							} else {
+								acquiredOverlays[0].data.unshift(data[j][i]);
+							}				
 						}
 					}
-					return aquiredOverlays;
+					return acquiredOverlays;
 				// }); // End d3 Service
 			},
 			add: function(details) {
@@ -3932,168 +4848,121 @@
 				});
 				return index;
 			},
-			// setOverlay: function(data, segments, particleSegments) {
-			// 	var colors = [];
-			// 	for (var i=0; i<segments; i++) {
-			// 		var particle = Math.floor(i/particleSegments);
-			// 		var color = data[particle];
-			// 		colors.push(color);
-			// 	}
-			// 	overlays.loaded.push({"id":"newoverlay","data":data,"colors":colors});
-			// 	overlays.current = overlays.loaded.length - 1;
-			// 	return overlays.loaded[overlays.current];
-			// },
-			segmentOverlays: function(startCoord, segmentsCount, segmentLength, featureTypes) {
-				featureTypes = featureTypes || [];
+			update: function() {
+				// things that need updating for changes:
+				// - ext.data eg. Ensembl
+				// - proximities (derived from datsets)
+				// - segments (derived from datsets)
+				var self = this;
+				var overlaysAsync = []; // push async functions into list for subsequent processing
+				angular.forEach(overlays.loaded, function(overlay, key) {
+
+					// For Overlays with Aync Ensembl Data eg. genes
+					// check if changed...
+					if (overlay.object.type == "ensembl") {
+						var online = Settings.get().app.online;
+						var ensembl = Ensembl.load(overlay, online);
+						overlaysAsync.push(ensembl);
+					}
+
+					if (overlay.object.type == "matrix") {
+						overlay.data = Proximities.get().distances;
+					}
+
+				});
+				return $q.all(overlaysAsync)
+				.then(function(results) {
+					self.segment();
+					return results;
+				});
+
+			},
+			segment: function() {
+				var settings = Settings.get();
+				var currentDataset = Datasets.getDataset();
+					var chromosomeIndex = 0;
+					if (currentDataset.object.chromosomeIndex) {
+						chromosomeIndex = datasetObject.chromosomeIndex;	
+					}
+				var chromStart = currentDataset.object.chromStart[chromosomeIndex];
+				var currentStoryboard = Storyboards.getStoryboard();
+
+				// GET FROM SETTINGS service...
+				var particlesCount = currentDataset.models[0].data.length / currentDataset.object.components;
+				var particleSegments = currentStoryboard.components[0].view.settings.chromatin.particleSegments;
+				var segmentsCount = particlesCount * particleSegments;
+				var segmentLength = currentDataset.object.resolution / particleSegments; // base pairs
+
+
 				var self = this; // SYNChronous functions...
 				angular.forEach(overlays.loaded, function(overlay, key) {
-					if (!overlay.colors || overlay.colors.length === 0) {
+
+					// check if colors already exist (for chromatin as principal set) or number of segments have changed
+					if (!overlay.colors.chromatin || (overlay.colors.chromatin && segmentsCount != settings.current.segmentsCount) ) {
+
 						// run function based on object type
 						var type = overlay.object.type;
 						var format = overlay.object.format;
-						// convert string directly to function???
-						// var typeFunction = "segment" + type[0].toUpperCase() + type.substring(1);
-						var colors = [];
+						var meshEdgesCount = particlesCount * particlesCount;
 						if (type == "gradient" && format == "hex") {
-							// data must contain 2 hex values
-							colors = self.segmentGradientHCL(overlay.data, segmentsCount);
-						} else if (type == "wiggle_0" && format == "bigwig") {
-							// colors derived from BigWig color and altColor
-							// featureTypes == single hex for use as color
-							var featureColor = overlay.object.color;
-							colors = self.segmentLinear(overlay.data, startCoord, segmentsCount, segmentLength, featureColor);
-						} else if (type == "linear" && format == "seq") {
-							// data must contain array of indexs
-							colors = self.segmentLinear(overlay.data, startCoord, segmentsCount, segmentLength);
+							// palette must contain 2 hex values
+							overlay.colors.particles = Segments.gradientHCL(overlay, particlesCount);
+							overlay.colors.chromatin = Segments.gradientHCL(overlay, segmentsCount);
+							overlay.colors.mesh = []; // relevance???
+						} else if (type == "wiggle_0" && format == "fixed") {
+							// OJO! create additional option for format = "bigwig-variable"
+							overlay.colors.particles = Segments.bicolor(overlay, particlesCount);
+							overlay.colors.chromatin = Segments.bicolor(overlay, segmentsCount);
+							overlay.colors.mesh = []; // relevance???
+						} else if (type == "wiggle_0" && format == "variable") {
+							// To Do...
+						} else if (type == "bedgraph") {
+							overlay.colors.particles = Segments.bicolorVariable(overlay, chromStart, particlesCount, 1);
+							overlay.colors.chromatin = Segments.bicolorVariable(overlay, chromStart, segmentsCount, segmentLength);
+							overlay.colors.mesh = []; // relevance???
+						} else if (type == "matrix") {
+							// Distances are per edge so just convert to color
+							overlay.colors.particlesMatrix = Segments.matrix(overlay, 1); // ie. per particle
+							overlay.colors.chromatinMatrix = Segments.matrix(overlay, particleSegments);
+							overlay.colors.meshMatrix = overlay.colors.particlesMatrix; // ie. also color mesh edges by matrix
+							self.at(1, particlesCount, particleSegments);
+						} else if (type == "misc" && format == "variable") {
+							overlay.colors.particles = [];
+							overlay.colors.chromatin = [];
+							overlay.colors.mesh = [];
 						} else if (type == "ensembl" && format == "json") {
 							// data must have .start and .end
-							featureTypes = featureTypes.gene; // TO DO: MAKE FUNCTION MORE GENERIC... ie. not just "gene"
-							colors = self.segmentFeatures(overlay.data, startCoord, segmentsCount, segmentLength, featureTypes);
+							var features = Resources.get().biotypes;
+							var singleSegment = 1;
+							overlay.colors.particles = Segments.features(overlay, chromStart, particlesCount, singleSegment, features);
+							overlay.colors.chromatin = Segments.features(overlay, chromStart, segmentsCount, segmentLength, features);
+							overlay.colors.mesh = []; // relevance???
 						}
-						overlay.colors = colors;
-					} else {					// already segmented --> ADD REsegement option...
+
+					} else {
+						// already segmented
 						console.log("Overlay '" + overlay.object.title + "' already segmented as color array matching current dataset length");
 					}
+
 				});
 				return overlays;
 			},
-			segmentGradientHCL: function(data, segmentsCount) {
-				// d3Service.d3().then(function(d3) {
-					// Using D3 HCL for correct perceptual model
-					// Data is an array of 2 hex colors eg. ff0000
-					// Output is RGB hex (000000-ffffff) eg. [rrggbb,rrggbb,rrggbb...]
-					// Note: prefix depends API ie. THREE == 0xrrggbb and D3 == #rrggbb
-					var gradient = [];
-					var hexStart = data[0];
-					var hexEnd = data[1];
-
-					for (var i = segmentsCount - 1; i >= 0; i--) {
-						var step = i / segmentsCount; // This should be between 0 and 1
-						var hex = d3.interpolateHcl(hexStart, hexEnd)(step);
-						gradient.push(hex);
+			at: function(currentParticle) {
+				var settings = Settings.get();
+				angular.forEach(overlays.loaded, function(overlay, key) {
+					var type = overlay.object.type;
+					if (type == "matrix") {
+						var particleStart = (currentParticle - 1) * settings.current.particlesCount;
+						var particleEnd = currentParticle * settings.current.particlesCount;
+						var chromatinStart = particleStart * settings.current.particleSegments;
+						var chromatinEnd = particleEnd * settings.current.particleSegments;
+						// console.log(overlay);
+						overlay.colors.particles = overlay.colors.particlesMatrix.slice(particleStart, particleEnd);
+						overlay.colors.chromatin = overlay.colors.chromatinMatrix.slice(chromatinStart, chromatinEnd);
+						overlay.colors.mesh = overlay.colors.meshMatrix.slice(particleStart, particleEnd);
 					}
-					return gradient;
-				// });
-			},
-			segmentGradientLinear: function(rangeColors, segmentsCount) {
-				// data is an array of 2 hex colors eg. ff0000
-				// output is RGB decimal (0.0-1.0) eg. [r,g,b,r,g,b,r,g,b,...]
-				var gradient = [];
-				var hexStart = "0x" + rangeColors[0].substring(1);
-				var hexEnd = "0x" + rangeColors[1].substring(1);
-				var red1, green1, blue1,
-					red2, green2, blue2,
-					step, outred, outgreen, outblue;
-
-					red1 = hexStart >> 16;
-					green1 = (hexStart >> 8) & 0xFF;
-					blue1  = hexStart & 0xFF;
-
-					red2 = hexEnd >> 16;
-					green2 = (hexEnd >> 8) & 0xFF;
-					blue2  = hexEnd & 0xFF;
-
-				for (var i = segmentsCount - 1; i >= 0; i--) {
-
-					step = i / segmentsCount; // This should be between 0 and 1
-
-					outred = +(step * red1 + (1-step) * red2).toFixed(2);
-					outgreen = +(step * green1 + (1-step) * green2).toFixed(2);
-					outblue = +(step * blue1 + (1-step) * blue2).toFixed(2);
-
-					gradient.push(outred, outgreen, outblue);
-				}
-				return gradient;
-			},
-			segmentLinear: function(overlayData, startCoord, segmentsCount, segmentLength, featureColor) {
-				var defaultColor = "#cccccc";
-				var colors = [];
-				for(var i=0; i<segmentsCount; i++){
-						var segmentColor;
-						if (overlayData[i] === 1) {
-							segmentColor = featureColor;
-						} else {
-							segmentColor = defaultColor;
-						}
-					colors.push(segmentColor);
-				}
-				return colors;
-			},
-			segmentFeatures: function(features, startCoord, segmentsCount, segmentLength, featureTypes) {
-				var colors = [];
-
-				for(var i=0; i<segmentsCount; i++){
-
-					var featuresPresent = [];
-					var segmentLower = startCoord + (segmentLength * i);
-					var segmentUpper = segmentLower + segmentLength;
-					var genesCount = features.length;
-					var hex = "cccccc"; // Base color - ie if none found
-					var color = "#" + hex; //parseInt(hex,16);
-
-					// For every gene [j]...
-					for(var j=0; j<genesCount; j++){
-						var start = features[j].start;
-						var end = features[j].end;
-						var inSegments = [];
-						 // check if overlaps current fragment [i]
-						if ( Math.max(segmentLower, start) <= Math.min(segmentUpper,end) ) {
-							// console.log("Yes gene " + features[j].external_name + "("+j+") in fragment " + i );
-							inSegments.push(i);
-							var featureTypeKey = "biotype";
-							var dominantFeatureType = "protein_coding";
-							if (featuresPresent.length > 0) {
-								// Simple weight - give preference to smaller segments
-								if ( featuresPresent[0] == dominantFeatureType ) {
-									// if already contains protein_coding, replace with...
-									featuresPresent[0] = features[j][featureTypeKey].toLowerCase();
-								} else {
-									featuresPresent.push(features[j][featureTypeKey].toLowerCase());
-								}
-							} else {
-								featuresPresent.push(features[j][featureTypeKey].toLowerCase());							
-							}
-						} else {
-							// if (i==3) console.log("No features in fragment " + i );
-							// if (j == 0) console.log( JSON.stringify(segmentLower)+", "+JSON.stringify(start)+" <= "+JSON.stringify(segmentUpper)+", "+JSON.stringify(end) );
-						}
-						// console.log(insegments);
-						features[j].inSegments = inSegments;
-					}
-					for(var k=0; k<featuresPresent.length; k++){
-						var feature = featuresPresent[0];
-						if (feature in featureTypes) {
-							hex = featureTypes[feature].match(/[a-f0-9]{6}/gi);
-							color = "#" + hex; //parseInt(hex,16);
-						} else {
-							hex = "110100";
-							color = "#" + hex; //parseInt(hex,16);
-						}
-					}
-					colors.push(color);
-				}
-				// console.log(colors);
-				return colors;
+				});
+				return overlays;
 			},
 			get: function() {
 				return overlays;
@@ -4133,6 +5002,290 @@
 			}
 		};
 	}
+})();
+ (function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.factory('PathControls', PathControls);
+
+	// constructor for chromatin model instances
+	function PathControls() {
+		return {
+			simple: function(vertices) {
+				var division = "EnsemblBacteria";
+
+				// (totalParticles - 1) because (fore = [i+1])
+				var totalParticles = vertices.length;
+				var pathControls = [];
+				for (var i = 0 ; i < totalParticles - 1 ; i++) {
+					var baseParticle = vertices[i];
+					var foreParticle = vertices[i + 1];
+					var midCoord = new THREE.Vector3(0,0,0);
+					midCoord.addVectors(baseParticle,foreParticle).divideScalar(2);
+					var midOffset = new THREE.Vector3(0,0,0);
+					midOffset.copy(midCoord).sub(baseParticle);
+					if (i === 0 && division != "EnsemblBacteria") { // insert backprojected first coord
+						var preCoord;
+						// if (division == "EnsemblBacteria") {
+						// 	preCoord = vertices[totalParticles - 1];
+						// } else {
+							preCoord = new THREE.Vector3(0,0,0);
+						// }
+						preCoord.copy(baseParticle).sub(midOffset);
+						pathControls.push(preCoord);
+					}
+					//pathControls.push(baseParticle);
+					pathControls.push(midCoord);
+					// if (i == totalParticles - 2) {
+					// //	pathControls.push(foreParticle);
+					// 	var chromEnd = new THREE.Vector3(0,0,0);
+					// 	chromEnd.copy(foreParticle).add(midOffset);
+					// 	pathControls.push(chromEnd);
+					// };
+					if (i == totalParticles - 2 && division != "EnsemblBacteria") {
+					//	pathControls.push(foreParticle);
+						var chromEnd;
+						// if (division == "EnsemblBacteria") {
+						// 	chromEnd = vertices[0];
+						// } else {
+							chromEnd = new THREE.Vector3(0,0,0);
+						// }
+						chromEnd.copy(foreParticle).add(midOffset);
+						pathControls.push(chromEnd);
+					}
+				}
+				return pathControls;
+			},
+			cubic: function(vertices, closed) {
+				closed = closed || false; // closed if circular chromosome eg. Bacteria
+				var controlLength = 1; // variable for possible corner tweaking
+
+				// (totalParticles - 1) because (fore = [i+1])
+				var totalParticles = vertices.length;
+				var pathControls = {};
+				pathControls.vertices = [];
+				pathControls.colors = [];
+				var previousOffset = new THREE.Vector3(0,0,0);
+
+				// if (closed) {
+				// 	var firstParticle = vertices[0];
+				// 	var nthParticle = vertices[totalParticles - 1];
+				// 	var closedControl = new THREE.Vector3(0,0,0);
+				// 	if (closed) closedControl.addVectors(nthParticle, firstParticle).divideScalar(2);
+				// }
+
+				for (var i = 0 ; i < totalParticles ; i++) {
+
+					var baseParticle = vertices[i];
+					var foreParticle = new THREE.Vector3(0,0,0);
+					if (i == totalParticles - 1) {
+						if (closed) {
+							// fore particle == first particle
+							foreParticle = vertices[0];
+						} else {
+							// fore particle == extend same dist as to previous particle
+							foreParticle.copy(baseParticle).addVectors(baseParticle, vertices[i - 1]);
+						}
+					} else {
+						foreParticle = vertices[i + 1];
+					}
+					
+					var midControl = new THREE.Vector3(0,0,0);
+					// if (i == totalParticles - 1) {
+					// 	if (closed) {
+					// 		// use first particle mid point as closed chromatin...
+					// 		midControl.copy(closedControl);
+					// 	} else {
+					// 		// use previous particle mid point as no more foreward...
+					// 		midControl.addVectors(baseParticle, vertices[i - 1]).divideScalar(2);
+					// 	}
+					// } else {
+						midControl.addVectors(baseParticle, foreParticle).divideScalar(2);
+					// }
+					
+					var midOffset = new THREE.Vector3(0,0,0);
+					midOffset.copy(midControl).sub(baseParticle);
+
+					if (i === 0) {
+						if (closed) {
+							// set previous for first particle
+							var previousControl =  new THREE.Vector3(0,0,0);
+							previousControl.addVectors(vertices[totalParticles - 1], vertices[0]).divideScalar(2);
+							previousOffset.copy(previousControl).sub(vertices[totalParticles - 1]);
+						} else {
+							previousOffset.copy(midOffset);
+						}
+					}
+
+					var backControl = new THREE.Vector3(0,0,0);
+					backControl.copy(baseParticle).sub(midOffset);
+
+					var foreControl = new THREE.Vector3(0,0,0);
+					foreControl.copy(baseParticle).add(previousOffset);
+
+					// Node tangent
+					var baseTangent =  new THREE.Vector3(0,0,0);
+					baseTangent.subVectors(foreControl, backControl).divideScalar(controlLength);
+					backControl.copy(baseParticle).sub(baseTangent);
+					foreControl.copy(baseParticle).add(baseTangent);
+
+					// Add controls to array
+					pathControls.vertices.push(backControl);
+						pathControls.colors.push(new THREE.Color(0xcccccc));
+					pathControls.vertices.push(baseParticle);
+						pathControls.colors.push(new THREE.Color(0x000000));
+					pathControls.vertices.push(foreControl);
+						pathControls.colors.push(new THREE.Color(0xcccccc));
+
+					previousOffset = midOffset;
+				}
+				// add start and end controls
+				// requires calc of join midway on cubicBezier between start and end
+				var startBackControl = new THREE.Vector3(0,0,0);
+				var startPoint = new THREE.Vector3(0,0,0);
+				var endForeControl = new THREE.Vector3(0,0,0);
+				var endPoint = new THREE.Vector3(0,0,0);
+
+				var totalControls = pathControls.vertices.length;
+				var p1 = pathControls.vertices[totalControls-2]; // last particle
+				var p2 = pathControls.vertices[totalControls-1]; // last fore control
+				var p3 = pathControls.vertices[0]; // first back control
+				var p4 = pathControls.vertices[1]; // first particle
+				if (closed) {
+					// curve between start and end Controls
+					var joinCurve = new THREE.CubicBezierCurve3(p1,p2,p3,p4);
+					// split join curve in two
+					var joinMidpoint = joinCurve.getPointAt(0.5);
+					var joinTangent = joinCurve.getTangent(0.5).multiplyScalar(1);
+
+					// NEEDS ROUNDING OFF TO NEAREST 0.5??? Math.round(num*2)/2;
+					startBackControl.copy(joinMidpoint).sub(joinTangent);
+					startPoint.copy(joinMidpoint);
+					endForeControl.copy(joinMidpoint).add(joinTangent);
+					endPoint.copy(joinMidpoint);
+				} else {
+					startBackControl.copy(p3);
+					startPoint.copy(p3);
+					endForeControl.copy(p2);
+					endPoint.copy(p2);
+				}
+				pathControls.vertices.unshift(startBackControl);
+					pathControls.colors.unshift(new THREE.Color(0xffff00));
+				pathControls.vertices.unshift(startPoint);
+					pathControls.colors.unshift(new THREE.Color(0xff0000));
+				pathControls.vertices.push(endForeControl);
+					pathControls.colors.push(new THREE.Color(0x00ffff));
+				pathControls.vertices.push(endPoint);
+					pathControls.colors.push(new THREE.Color(0x0000ff));
+
+				return pathControls;
+			}
+		};
+	}
+
+})();
+ (function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.factory('Paths', Paths);
+
+	// constructor for chromatin model instances
+	function Paths() {
+		return {
+			splineNearFit: function(controls, segments) {
+				var division = "EnsemblBacteria";
+				var splinePath;
+				if (division == "EnsemblBacteria") {
+					splinePath = new THREE.ClosedSplineCurve3(controls);
+				} else {
+					splinePath = new THREE.SplineCurve3(controls);			
+				}
+				// var splineDivisions = splinePath.getSpacedPoints(segments);
+				return splinePath;
+			},
+			// Following paths constructed from curve segments passing through particle centers
+			spline: function(controls, segments) {
+				var division = "NotEnsemblBacteria";
+				var curvePath = new THREE.CurvePath();
+				var totalControls = controls.length;
+
+				if (division == "EnsemblBacteria") {
+					// REVISE THIS
+					curvePath= new THREE.ClosedSplineCurve3(controls);
+				} else {
+					for (var i = 1 ; i < totalControls - 2 ; i = i + 3) {
+						var p1 = controls[i];
+						var p2 = controls[i+1];
+						var p3 = controls[i+2];
+						var p4 = controls[i+3];
+
+						var p23 = new THREE.Vector3(0,0,0);
+						p23.addVectors(p3,p2).divideScalar(2);
+
+						var splineCurve = new THREE.SplineCurve3([p1,p23,p4]);
+						curvePath.add(splineCurve);
+					}
+				}
+				return curvePath;
+			},			
+			quadraticBezier: function(controls, segments) {
+				var division = "NotEnsemblBacteria";
+				var quadPath = new THREE.CurvePath();
+				var totalControls = controls.length;
+
+				if (division == "EnsemblBacteria") {
+					// REVISE THIS
+					quadPath= new THREE.ClosedSplineCurve3(controls);
+				} else {
+					for (var i = 1 ; i < totalControls - 2 ; i = i + 3) {
+						var p1 = controls[i];
+						var p2 = controls[i+1];
+						var p3 = controls[i+2];
+						var p4 = controls[i+3];
+
+						var p23 = new THREE.Vector3(0,0,0);
+						p23.addVectors(p3,p2).divideScalar(2);
+
+						var quadCurve = new THREE.QuadraticBezierCurve3(p1,p23,p4);
+						quadPath.add(quadCurve);
+					}
+				}
+				return quadPath;
+			},			
+			cubicBezier: function(controls, segments, closed) {
+				closed = closed || false; // closed if circular chromosome eg. Bacteria
+				var cubicPath = new THREE.CurvePath();
+				var totalControls = controls.length;
+				var cubicCurveStart, cubicCurveEnd;
+
+					// controls[0] == start point
+					// controls[1] == start point fore control
+					// controls[2] == first particle back control
+					// controls[3] == first particle
+					// ...
+					// n == totalControls - 1
+					// controls[n-3] == last particle
+					// controls[n-2] == last particle fore control
+					// controls[n-1] == end point back control
+					// controls[n] == end point (if closed, end point == start point)
+
+					for (var i = 0 ; i < totalControls - 1 ; i = i + 3) {
+
+						var c1 = controls[i];
+						var c2 = controls[i+1];
+						var c3 = controls[i+2];
+						var c4 = controls[i+3];
+
+						var cubicCurve = new THREE.CubicBezierCurve3(c1,c2,c3,c4);
+						 cubicPath.add(cubicCurve);
+					}
+				return cubicPath;
+			}
+		};
+	}
+
 })();
 (function() {
 	'use strict';
@@ -4216,11 +5369,139 @@
 	'use strict';
 	angular
 		.module('TADkit')
+		.factory('Proximities', Proximities);
+
+	function Proximities(Datasets) {
+		// Matrix - n x m dimensions == particleCount */
+		var proximities = {
+			dimension: 0,
+			positions: [],
+			distances: []
+		};
+		// Single Matrix row at current Particle/Position
+		var current = {
+			dimension: 0,
+			positions: [],
+			distances: []
+		};
+		return {
+			set: function (settings) {
+				// Generate a matrix of proximity between points
+				// from vertices = array of point coordinates components
+				// up to minDistance = threshold for proximity
+				// eg. [u1,v1,z1,w1,y1,z1,x1,u2,v2,w2,x2,y2,z2 ... un,vn,wn,xn,yn,zn]
+				
+				// To be used by THREE.Line( geometry, material, THREE.LinePieces )
+				// where LinePieces is the equivalent to GL_LINES in OpenGL terms.
+				// THREE.LinePieces will draw a series of pairs of segments
+				// ie. (u1,v1,w1) to (x1,y1,z1), (u2,v2,w2) to (x2,y2,z2), etc.
+
+				// Stored in proximities object {positions:[],distances[]}
+				// as vertex components (rather than THREE.Vertex)
+				// for processing as THREE.BufferGeometry attributes:
+				// 'position' as positions; 'color' derived from distances.
+
+				var defaults = {
+					minDistance: 150,
+					maxDistance: 400,
+					limitConnections: true,
+					maxConnections: 200
+				};
+				settings = settings || {};
+				angular.extend(this, angular.copy(defaults), settings);
+
+				var vertices = Datasets.getModel().data;
+				settings.maxDistance = this.getMaxDistance(vertices);
+
+				var vertexpos = 0;
+				var distancepos = 0;
+
+				proximities.dimension = vertices.length / 3; // 3 == xyz components of vertices
+				var lines = proximities.dimension * proximities.dimension; // matrix of all against all points
+				var linePieces = lines * 2; // pairs of points to make THREE.LinePieces
+				
+				// Matrix of positions of point pairs (*3 as xyz components)
+				var positions = new Float32Array( linePieces * 3 );
+				// Matrix of distances between point pairs
+				var distances = new Float32Array( lines );
+
+				var dimensionIndex = proximities.dimension - 1;
+				for (var i = dimensionIndex; i >= 0; i--) {
+
+					// Check collision
+					for (var j = dimensionIndex; j >= 0; j--) {
+
+						var dx = vertices[ i * 3     ] - vertices[ j * 3     ];
+						var dy = vertices[ i * 3 + 1 ] - vertices[ j * 3 + 1 ];
+						var dz = vertices[ i * 3 + 2 ] - vertices[ j * 3 + 2 ];
+						var dist = Math.sqrt( dx * dx + dy * dy + dz * dz );
+
+						// if ( dist < this.minDistance ) {
+
+							// FROM PARTICLE
+							positions[ vertexpos++ ] = vertices[ i * 3     ]; // from u
+							positions[ vertexpos++ ] = vertices[ i * 3 + 1 ]; // from v
+							positions[ vertexpos++ ] = vertices[ i * 3 + 2 ]; // from w
+							// TO PARTICLE
+							positions[ vertexpos++ ] = vertices[ j * 3     ]; // to x
+							positions[ vertexpos++ ] = vertices[ j * 3 + 1 ]; // to y
+							positions[ vertexpos++ ] = vertices[ j * 3 + 2 ]; // to z
+
+							// Distance as value (0.00-1.00) between (u,v,w) and (x,y,z)
+							// is stored as RGB 0.00-1.00 (equal RGB ie greyscale)
+							// for each position, start == end ie. not a gradient.
+
+							// Can be added as 'color' to THREE.BufferGeometry
+							// using THREE.BufferAttribute to store the array
+							// but would need *6 to give RGB for each position.
+
+							var distance = (1.0 - (dist / this.maxDistance)); // .toFixed(2)
+							distances[ distancepos++ ] = distance;
+
+						// }
+
+					}
+				}
+				proximities.positions = positions;
+				proximities.distances = distances;
+				return proximities;
+			},
+			getMaxDistance: function(vertices) {
+				// Where maxDistance is the max diameter of the cluster of vertices
+				// Calculation is of distance from center to each vertex.
+				var maxDistCalc = 0;
+				var clusterGeometry = new THREE.BufferGeometry();
+				clusterGeometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+				clusterGeometry.computeBoundingSphere();
+				var clusterDiameter = Math.ceil(clusterGeometry.boundingSphere.radius * 2.0);
+				return clusterDiameter;
+			},
+			at: function(currentParticle) {
+				current.dimension = currentParticle;
+				var dataStart = (currentParticle - 1) * proximities.dimension;
+				var dataEnd = currentParticle * proximities.dimension;
+				current.positions = proximities.positions.subarray((dataStart * 3), (dataEnd * 3));
+				current.distances = proximities.distances.subarray(dataStart, dataEnd);
+				return current;
+			},
+			get: function() {
+				return proximities;
+			},
+			getCurrent: function() {
+				return current;
+			}
+		};
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
 		.factory('Resources', Resources);
 
 	function Resources($q, $http, Color, uuid4) {
 		var resources = {};
-		var ensemblRoot = "http://rest.ensembl.org/";
+		var ensemblRoot = "http://rest.ensemblgenomes.org/";
 		resources.assembly = {};
 		resources.featureColors = {};
 		return {
@@ -4236,26 +5517,26 @@
 				}
 				return lengthBP;
 			},
-			loadInfoAssembly: function(speciesUrl, online) {
-				var deferral = $q.defer();
-				var self = this;
-				var source;
-				if (online) {
-					source = ensemblRoot + "info/assembly/" + speciesUrl + "?content-type=application/json";
-				} else {
-					source = "assets/json/" + speciesUrl + "-assembly.json";
-				}
-				$http.get(source)
-				.success(function(data){
-					var whence = online ? "Ensembl" : "local storage";
-					console.log("Assembly Info for " + speciesUrl + " retreived from " + whence + ".");
-					data.lengthBP = self.setLengthBP(data.top_level_region);
-					console.log("Assembly length for " + speciesUrl + " = " + data.lengthBP);
-					resources.assembly = data;
-					deferral.resolve(data);
-				});
-				return deferral.promise;
-			},
+			// loadInfoAssembly: function(speciesUrl, online) { // *** UNUSED ***
+			// 	var deferral = $q.defer();
+			// 	var self = this;
+			// 	var source;
+			// 	if (online) {
+			// 		source = ensemblRoot + "info/assembly/" + speciesUrl + "?content-type=application/json";
+			// 	} else {
+			// 		source = "assets/json/" + speciesUrl + "-assembly.json";
+			// 	}
+			// 	$http.get(source)
+			// 	.success(function(data){
+			// 		var whence = online ? "Ensembl" : "local storage";
+			// 		console.log("Assembly Info for " + speciesUrl + " retreived from " + whence + ".");
+			// 		data.lengthBP = self.setLengthBP(data.top_level_region);
+			// 		console.log("Assembly length for " + speciesUrl + " = " + data.lengthBP);
+			// 		resources.assembly = data;
+			// 		deferral.resolve(data);
+			// 	});
+			// 	return deferral.promise;
+			// },
 			loadBiotypeColors: function() {
 				var deferral = $q.defer();
 				var online = false;//$scope.online;
@@ -4277,21 +5558,21 @@
 				});
 				return deferral.promise;
 			},
-			loadInfoBiotypes: function(speciesUrl) {
-				var deferral = $q.defer();
-				var source;
-				if (online) {
-					source = ensemblRoot + "info/biotypes/" + speciesUrl + "?content-type=application/json";
-				} else {
-					source = "assets/json/" + speciesUrl + "-biotypes.json";
-				}
-				$http.get(source).
-				success(function(data){
-					console.log("Biotypes for " + speciesUrl + " retreived from Ensembl.");
-					deferral.resolve(data);
-				});
-				return deferral.promise;
-			},
+			// loadInfoBiotypes: function(speciesUrl) { // *** UNUSED ***
+			// 	var deferral = $q.defer();
+			// 	var source;
+			// 	if (online) {
+			// 		source = ensemblRoot + "info/biotypes/" + speciesUrl + "?content-type=application/json";
+			// 	} else {
+			// 		source = "assets/json/" + speciesUrl + "-biotypes.json";
+			// 	}
+			// 	$http.get(source).
+			// 	success(function(data){
+			// 		console.log("Biotypes for " + speciesUrl + " retreived from Ensembl.");
+			// 		deferral.resolve(data);
+			// 	});
+			// 	return deferral.promise;
+			// },
 			get: function () {
 				return resources;
 			},
@@ -4316,73 +5597,265 @@
 				console.log(biotypes);
 				var totalbiotypes = biotypes.length;
 				console.log("Total Biotypes: %s", totalbiotypes);
-			},
-			getProximityMatrix: function (vertices, settings) {
-				// generate a matrix of proximity between points
-				// from vertices = array of point coordinates components
-				// to minDistance = threshold for proximity
-				// eg. [x,y,z,x,y,z,x,y,z,...]
-				// becomes:
-				// positions eg. []
-				// distances eg.
+			}
+		};
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.factory('Restraints', Restraints);
+
+	function Restraints(Datasets) {
+		// Matrix - n x m dimensions == particleCount */
+		var restraints = {
+			dimension: 0,
+			harmonics: [],
+			lowerBounds: [],
+			upperBounds: [],
+			neighbours: []
+		};
+		// Single Matrix row at current Particle/Position
+		var current = {
+			dimension: 0,
+			harmonics: [],
+			lowerBounds: [],
+			upperBounds: [],
+			neighbours: []
+		};
+		return {
+			set: function (settings) {
+				// Generate a matrix of proximity between points
 
 				var defaults = {
-					minDistance: 150,
-					limitConnections: true,
-					maxConnections: 200
+					setting: true
 				};
 				settings = settings || {};
 				angular.extend(this, angular.copy(defaults), settings);
 
-				var proximityMatrix = {};
+				var vertices = Datasets.getModel().data;
+				restraints.dimension = vertices.length / 3; // 3 == xyz components of vertices
 
-				var vertexpos = 0;
-				var distancepos = 0;
+				var datasetRestraints = Datasets.getDataset().restraints;
+				for (var i = 0; i < datasetRestraints.length; i++) {
+					if (datasetRestraints[i][2] == "H") restraints.harmonics.push(datasetRestraints[i]);
+					if (datasetRestraints[i][2] == "L") restraints.lowerBounds.push(datasetRestraints[i]);
+					if (datasetRestraints[i][2] == "U") restraints.upperBounds.push(datasetRestraints[i]);
+					if (datasetRestraints[i][2] == "C") restraints.neighbours.push(datasetRestraints[i]);
+				}
+				return restraints;
+			},
+			at: function(currentParticle) {
+				current.dimension = currentParticle;
+				current.harmonics = [];
+				current.lowerBounds = [];
+				current.upperBounds = [];
+				current.neighbours = [];
+				angular.forEach(restraints, function(restraint, name) {
+					if (name != "dimension") {
+						for (var j = restraint.length - 1; j >= 0; j--) {
+							if (restraint[j][0] == currentParticle) {
+								current[name].push(restraint[j]);
+							}
+							if (restraint[j][1] == currentParticle) {
+								var reorderedRestraint = [];
+								reorderedRestraint.push(restraint[j][1]);
+								reorderedRestraint.push(restraint[j][0]);
+								reorderedRestraint.push(restraint[j][2]);
+								reorderedRestraint.push(restraint[j][3]);
+								current[name].push(reorderedRestraint);
+							}
+						}
+					}
+				});
+				return current;
+			},
+			get: function() {
+				return restraints;
+			},
+			getCurrent: function() {
+				return current;
+			}
+		};
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.factory('Segments', Segments);
 
-				var pointsCount = vertices.length / 3; // components of vertices
-				var contacts = pointsCount * pointsCount;
+	function Segments(d3Service) {
+		return {
+			gradientHCL: function(overlay, segmentsCount) {
+			// d3Service.d3().then(function(d3) {
+				// Using D3 HCL for correct perceptual model
+				// Data is an array of 2 hex colors eg. ff0000
+				// Output is RGB hex (000000-ffffff) eg. [rrggbb,rrggbb,rrggbb...]
+				// Note: prefix depends API ie. THREE == 0xrrggbb and D3 == #rrggbb
+				var gradient = [];
+				var hexStart = overlay.palette[0];
+				var hexEnd = overlay.palette[1];
 
-				var positions = new Float32Array( contacts * 3 );
-				var distances = new Float32Array( contacts * 3 );
-				
-				for (var i = pointsCount - 1; i >= 0; i--) {
-
-					// Check collision
-					for (var j = pointsCount - 1; j >= 0; j--) {
-
-						var dx = vertices[ i * 3     ] - vertices[ j * 3     ];
-						var dy = vertices[ i * 3 + 1 ] - vertices[ j * 3 + 1 ];
-						var dz = vertices[ i * 3 + 2 ] - vertices[ j * 3 + 2 ];
-						var dist = Math.sqrt( dx * dx + dy * dy + dz * dz );
-
-						// if ( dist < this.minDistance ) {
-
-							var distance = (1.0 - dist / this.minDistance).toFixed(2);
-
-							positions[ vertexpos++ ] = vertices[ i * 3     ]; // from x
-							positions[ vertexpos++ ] = vertices[ i * 3 + 1 ]; // from y
-							positions[ vertexpos++ ] = vertices[ i * 3 + 2 ]; // from z
-
-							positions[ vertexpos++ ] = vertices[ j * 3     ]; // to p
-							positions[ vertexpos++ ] = vertices[ j * 3 + 1 ]; // to q
-							positions[ vertexpos++ ] = vertices[ j * 3 + 2 ]; // to r
-
-							// distance as value (0-1) between (x,y,z) and (p,q,r)
-							// but matrix structure repeated for ease of iteration
-							distances[ distancepos++ ] = distance;
-							distances[ distancepos++ ] = distance;
-							distances[ distancepos++ ] = distance;
-
-							distances[ distancepos++ ] = distance;
-							distances[ distancepos++ ] = distance;
-							distances[ distancepos++ ] = distance;
-						// }
-
+				for (var i = segmentsCount - 1; i >= 0; i--) {
+					var step = i / segmentsCount; // This should be between 0 and 1
+					var hex = d3.interpolateHcl(hexStart, hexEnd)(step);
+					gradient.push(hex);
+				}
+				return gradient;
+			// });
+			},
+			gradientComponentRGB: function(overlay, segmentsCount) { // UNUSED
+				// where overlay.palette is an array of 2 hex colors eg. ["#ff0000","#0000ff"]
+				// output is RGB decimal (0.0-1.0) eg. [r,g,b,r,g,b,r,g,b,...]
+				var gradient = [];
+				// convert "#" to "0x" for following manipulation
+				var hexStart = "0x" + overlay.palette[0].substring(1);
+				var hexEnd = "0x" + overlay.palette[1].substring(1);
+				var red1, green1, blue1,
+					red2, green2, blue2,
+					step, outred, outgreen, outblue;
+					// convert hexStart to RGB components (0.0-255.0)
+					red1 = hexStart >> 16;
+					green1 = (hexStart >> 8) & 0xFF;
+					blue1  = hexStart & 0xFF;
+					// convert hexEnd to RGB components (0.0-255.0)
+					red2 = hexEnd >> 16;
+					green2 = (hexEnd >> 8) & 0xFF;
+					blue2  = hexEnd & 0xFF;
+				// generate gradient as array of RGB component triplets
+				for (var i = segmentsCount - 1; i >= 0; i--) {
+					step = i / segmentsCount; // This should be between 0 and 1
+					outred = +(step * red1 + (1-step) * red2).toFixed(2);
+					outgreen = +(step * green1 + (1-step) * green2).toFixed(2);
+					outblue = +(step * blue1 + (1-step) * blue2).toFixed(2);
+					gradient.push(outred, outgreen, outblue);
+				}
+				return gradient;
+			},
+			bicolor: function(overlay, segmentsCount) {
+				// if palette is not an array of hex colors then:
+				// colors derived from BigWig color and altColor
+				// featureTypes == single hex for use as color 
+				var featureColor = overlay.palette[0];
+				var defaultColor = overlay.palette[1];
+				var colors = [];
+				for(var i = 0; i < segmentsCount; i++){
+						var segmentColor;
+						if (overlay.data[i] === 1) {
+							segmentColor = featureColor;
+						} else {
+							segmentColor = defaultColor;
+						}
+					colors.push(segmentColor);
+				}
+				return colors;
+			},
+			matrix: function(overlay, particleSegments) {
+				// where palette is array of hex colors
+				var featureColor = overlay.palette[0];
+				var defaultColor = overlay.palette[1];
+				var colors = [];
+				for (var i = overlay.data.length - 1; i >= 0; i--) {
+					var intensity = 1 - overlay.data[i];
+					var hex = d3.interpolateHsl(featureColor, defaultColor)(intensity);
+					for(var j = 0; j < particleSegments; j++){
+						colors.push(hex);
 					}
 				}
-				proximityMatrix.positions = positions;
-				proximityMatrix.distances = distances;
-				return proximityMatrix;
+				// console.log(colors);
+				return colors;
+			},
+			bicolorVariable: function(overlay, chromStart, segmentsCount, segmentLength) {
+
+				var featureColor = overlay.palette[0];
+				var defaultColor = overlay.palette[1];
+
+				var features = overlay.data;
+				var colors = [];
+				for(var i=0; i < segmentsCount; i++){
+					var segmentColor = defaultColor;
+					var segmentLower = chromStart + (segmentLength * i);
+					var segmentUpper = segmentLower + segmentLength;
+					var featuresCount = features.length;
+
+					// For every feaeture [j]...
+					for(var j=0; j < featuresCount; j++){
+						var start = features[j].start;
+						var end = features[j].end;
+
+						 // check if overlaps current fragment [i]
+						if ( Math.max(segmentLower, start) <= Math.min(segmentUpper,end) ) {
+							if (features[j].read === 1) {
+								segmentColor = featureColor;
+							} else {
+								segmentColor = defaultColor;
+							}
+						}
+					}
+					colors.push(segmentColor);
+				}
+				// console.log(colors);
+				return colors;
+			},
+			features: function(overlay, chromStart, segmentsCount, segmentLength, featureTypes) {
+
+				var features = overlay.data;
+				var colors = [];
+
+				for(var i=0; i < segmentsCount; i++){
+
+					var featuresPresent = [];
+					var segmentLower = chromStart + (segmentLength * i);
+					var segmentUpper = segmentLower + segmentLength;
+					var featuresCount = features.length;
+					var hex = "cccccc"; // Base color - ie if none found
+					var color = "#" + hex; //parseInt(hex,16);
+
+					// For every feaeture [j]...
+					for(var j=0; j < featuresCount; j++){
+						var start = features[j].start;
+						var end = features[j].end;
+						var inSegments = [];
+						 // check if overlaps current fragment [i]
+						if ( Math.max(segmentLower, start) <= Math.min(segmentUpper,end) ) {
+							// console.log("Yes feature " + features[j].external_name + "("+j+") in fragment " + i );
+							inSegments.push(i);
+							var featureTypeKey = "biotype";
+							var dominantFeatureType = "protein_coding";
+							if (featuresPresent.length > 0) {
+								// Simple weight - give preference to smaller segments
+								if ( featuresPresent[0] == dominantFeatureType ) {
+									// if already contains protein_coding, replace with...
+									featuresPresent[0] = features[j][featureTypeKey].toLowerCase();
+								} else {
+									featuresPresent.push(features[j][featureTypeKey].toLowerCase());
+								}
+							} else {
+								featuresPresent.push(features[j][featureTypeKey].toLowerCase());							
+							}
+						} else {
+							// if (i==3) console.log("No features in fragment " + i );
+							// if (j == 0) console.log( JSON.stringify(segmentLower)+", "+JSON.stringify(start)+" <= "+JSON.stringify(segmentUpper)+", "+JSON.stringify(end) );
+						}
+						// console.log(insegments);
+						features[j].inSegments = inSegments;
+					}
+					for(var k=0; k<featuresPresent.length; k++){
+						var feature = featuresPresent[0];
+						if (feature in featureTypes) {
+							hex = featureTypes[feature].match(/[a-f0-9]{6}/gi);
+							color = "#" + hex; //parseInt(hex,16);
+						} else {
+							hex = "110100";
+							color = "#" + hex; //parseInt(hex,16);
+						}
+					}
+					colors.push(color);
+				}
+				// console.log(colors);
+				return colors;
 			}
 		};
 	}
@@ -4393,7 +5866,7 @@
 		.module('TADkit')
 		.factory('Settings', Settings);
 
-	function Settings($q, $http, uuid4) {
+	function Settings($q, $http, uuid4, Storyboards, Datasets) {
 		var settings = {};
 
 		return {
@@ -4412,6 +5885,21 @@
 				}
 				return deferral.promise;
 			},
+			init: function() {
+				// INITIAL STATE
+				var storyboard = Storyboards.getStoryboard();
+				var dataset = Datasets.getDataset();
+				// TODO: component/model = 0  - change to default/current
+				settings.current.particleSegments = storyboard.components[0].view.settings.chromatin.particleSegments;
+				settings.current.particlesCount = dataset.models[0].data.length / dataset.object.components;
+				settings.current.segmentsCount = settings.current.particlesCount * settings.current.particleSegments;
+				// NOTE: segmentLength can be calculated in 2 ways:
+				// 1. particleResolution (TADbit data) / particleSegments (TADkit setting)
+				// 2. modelResolution (TADbit chromEnd - TADbit chromStart) / segmentsCount (see above)
+				// Method 1. is used as it is simpler to calculate and the data is already loaded.
+				// Also focus on particles and does not address rounding off of sequence length.
+				settings.current.segmentLength = dataset.object.resolution / settings.current.particleSegments; // base pairs
+ 			},
 			add: function(setting) {
 				// // rewrite for Object
 				// settings.push(settingID);
@@ -4429,6 +5917,29 @@
 			},
 			get: function() {
 				return settings;
+			},
+			getSegment: function (chromPosition) {
+				chromPosition = chromPosition || settings.current.position;
+				var self = this;
+				var chromOffset = self.getRange(settings.current.chromStart, chromPosition);
+				var chromRange = self.getRange(settings.current.chromStart, settings.current.chromEnd);
+				var segment = Math.ceil((chromOffset * settings.current.segmentsCount) / chromRange);
+				return segment;
+			},
+			getParticle: function (chromPosition) {
+				chromPosition = chromPosition || settings.current.position;
+				var self = this;
+				var chromOffset = self.getRange(settings.current.chromStart, chromPosition);
+				var chromRange = self.getRange(settings.current.chromStart, settings.current.chromEnd);
+				var particle = Math.ceil((chromOffset * settings.current.particlesCount) / chromRange);
+				return particle;
+			},
+			getRange: function (start, end) {
+				var range = 0;
+				for (var i = start; i <= end; i++) {
+					range++;
+				}
+				return range;
 			},
 			toggle: function(selected) {
 				// settings = $filter('filter')(settings, {name: '!settingID'}) // USE THIS???
@@ -4511,15 +6022,15 @@
 				var storyboard = storyboards.loaded[storyboards.current.index];
 				return storyboard;
 			},
-			setViewpoint: function(startCoord, endCoord, scaleOrig) {
-				startCoord = startCoord || 0;
-				endCoord = endCoord || 4999999;
+			setViewpoint: function(chromStart, chromEnd, scaleOrig) {
+				chromStart = chromStart || 0;
+				chromEnd = chromEnd || 4999999;
 				var currentComponents = storyboards.loaded[storyboards.current.index].components;
 				// console.log(currentComponents);
 				angular.forEach( currentComponents, function(component, index) {
 					var scale = scaleOrig || 1;
-					component.view.viewpoint.startCoord = startCoord;
-					component.view.viewpoint.endCoord = endCoord;
+					component.view.viewpoint.chromStart = chromStart;
+					component.view.viewpoint.chromEnd = chromEnd;
 					if (component.object.type === "scene" || component.object.type === "scene-icon") {
 						var angle = component.view.viewpoint.fov / 2;
 						var margin = 0.6;
@@ -4655,6 +6166,19 @@
 			
 		};
 	}
+})();
+ (function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.factory('Template', Template);
+
+	// constructor for chromatin model instances
+	function Template() {
+		return {
+		};
+	}
+
 })();
 (function() {
 	'use strict';

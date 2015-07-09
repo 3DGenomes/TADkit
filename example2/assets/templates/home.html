@@ -1,0 +1,32 @@
+<div layout="column" class="fullheight">
+	<div ui-view="topbar"></div>
+	<section layout="row" flex class="fullheight">
+		<md-content id="home" flex="100" class="fullheight">
+			<div tk-component-scene-floatingtad class="floatingtad"></div>
+			<div layout="column">
+				<h2 class="tadkit-title">
+					<img alt="TADkit" src="assets/img/tadkit-logo-invert.png" />
+				</h2>
+				<h3>3D genome browser <br class="hide-for-small">and TADbit front-end.</h3>
+			</div>
+			<div layout="column" layout-align="space-around left">
+<!-- 				<md-input-container>
+					<md-input type="file" accept=".json" tk-project-loader="addDataset($fileContent)" />
+				</md-input-container> -->
+				<md-button ui-sref="dataset" class="md-raised">
+					<md-icon class="icon-file-upload"></md-icon> TADkit Online</md-button>
+				<md-button ui-sref="download" class="md-raised">
+					<md-icon class="icon-cloud-download"></md-icon> View @GitHub</md-button>
+			</div>
+<!-- 			<div id="backdrop" class="fullheight">
+				<section id="marcius">
+					<a href="https://github.com/3DGenomes/">3DGenomes on GitHub</a>
+				</section>
+				<section id="twitter">
+					<a href="http://3dgenomes.org/">3D Genomes </a>from <a href="http://marciuslab.org/">Marcius Lab</a>
+				</section>
+			</div> -->
+		</md-content>
+	<md-sidenav  ui-view="sidebaruser" class="md-sidenav-right md-whiteframe-z2" md-component-id="right"></md-sidenav>
+	</section>
+</div>

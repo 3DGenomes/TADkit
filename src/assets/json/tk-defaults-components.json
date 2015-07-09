@@ -15,14 +15,13 @@
 				"width" : "400px",
 				"height" : 	"300px",
 				"margin" : "4px",
-				"padding" : {"top": "20px", "right": "40px", "bottom": "20px", "left": "40px"},
 				"position" : 0
 			}
 		},
 		"view" : {
 			"viewpoint" : {
-				"startCoord" : 0,
-				"endCoord" : 4999999,
+				"chromStart" : 1,
+				"chromEnd" : 999999,
 				"scale" : 1,
 				"camera" : [ 5000, 5000, 5000 ],
 				"target" : [ 0, 0, 0 ],
@@ -40,6 +39,8 @@
 			},
 			"viewtype" : "cylinderSegments",
 			"settings" : {
+				"margin" : "4px",
+				"padding" : {"top": "20px", "right": "40px", "bottom": "20px", "left": "40px"},
 				"lighting": {
 					"ambient" : "#111111",
 					"color" : "#333333",
@@ -90,16 +91,14 @@
 			"state" : {
 				"width" : "150px",
 				"height" : 	"150px",
-				"heightInner" : "40px",
 				"margin" : "4px",
-				"padding" : {"top": "5px", "right": "5px", "bottom": "5px", "left": "5px"},
 				"position" : 0
 			}
 		},
 		"view" : {
 			"viewpoint" : {
-				"startCoord" : 0,
-				"endCoord" : 4999999,
+				"chromStart" : 1,
+				"chromEnd" : 999999,
 				"scale" : 1,
 				"camera" : [ 5000, 5000, 5000 ],
 				"target" : [ 0, 0, 0 ],
@@ -113,10 +112,13 @@
 			},
 			"controls" : {
 				"autoRotate" : true,
-				"autoRotateSpeed" : 2.0
+				"autoRotateSpeed" : 4.0
 			},
 			"viewtype" : "line",
 			"settings" : {
+				"heightInner" : "40px",
+				"margin" : "4px",
+				"padding" : {"top": "5px", "right": "5px", "bottom": "5px", "left": "5px"},
 				"particles" : {
 					"color" : "#ff0000",
 					"size" : 100,
@@ -158,20 +160,21 @@
 			"state" : {
 				"width" : "400px",
 				"height" : "300px",
-				"heightInner" : "40px",
 				"margin" : "4px",
-				"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
 				"position" : 1
 			}
 		},
 		"view" : {
 			"viewpoint" : {
-				"startCoord" : 1,
-				"endCoord" : 10,
+				"chromStart" : 1,
+				"chromEnd" : 10,
 				"scale" : 1
 			},
 			"viewtype" : "list",
 			"settings" : {
+				"heightInner" : "40px",
+				"margin" : "4px",
+				"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
 				"example" : 1
 			}
 		}
@@ -191,20 +194,21 @@
 			"state" : {
 				"width" : "100%",
 				"height" : "auto",
-				"heightInner" : "40px",
 				"margin" : "4px",
-				"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
 				"position" : 2
 			}
 		},
 		"view" : {
 			"viewpoint" : {
-				"startCoord" : 4730996,
-				"endCoord" : 5729937,
+				"chromStart" : 1,
+				"chromEnd" : 999999,
 				"scale" : 1
 			},
 			"viewtype" : "linear",
 			"settings" : {
+				"heightInner" : "40px",
+				"margin" : "4px",
+				"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
 				"sense" : true,
 				"segments" : 1000
 			}
@@ -225,20 +229,21 @@
 			"state" : {
 				"width" : "100%",
 				"height" : "auto",
-				"heightInner" : "40px",
 				"margin" : "4px",
-				"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
 				"position" : 3
 			}
 		},
 		"view" : {
 			"viewpoint" : {
-				"startCoord" : 4730996,
-				"endCoord" : 5729937,
+				"chromStart" : 1,
+				"chromEnd" : 999999,
 				"scale" : 1
 			},
 			"viewtype" : "step-variable",
 			"settings" : {
+				"heightInner" : "40px",
+				"margin" : "4px",
+				"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
 				"sense" : true,
 				"segments" : 1000
 			}
@@ -259,22 +264,93 @@
 			"state" : {
 				"width" : "100%",
 				"height" : "auto",
-				"heightInner" : "20px",
-				"margin" : "0px",
-				"padding" : {"top": "0px", "right": "100px", "bottom": "0px", "left": "100px"},
+				"margin" : "4px",
 				"position" : 3
 			}
 		},
 		"view" : {
 			"viewpoint" : {
-				"startCoord" : 4730996,
-				"endCoord" : 5729937,
+				"chromStart" : 1,
+				"chromEnd" : 999999,
 				"scale" : 1
 			},
 			"viewtype" : "step-fixed",
 			"settings" : {
+				"heightInner" : "20px",
+				"margin" : "4px",
+				"padding" : {"top": "0px", "right": "100px", "bottom": "0px", "left": "100px"},
 				"sense" : false,
 				"segments" : 1000
+			}
+		}
+	},
+	{
+		"metadata" : {
+			"version" : 1.0,
+			"type" : "component",
+			"generator" : "TADkit"
+		},
+		"object" : {
+			"uuid" : "00000000-0000-0000-0000-000000000000",
+			"id" : "default-bedgraph",
+			"title" : "BedGraph Track",
+			"type" : "bedgraph",
+			"dataset" : "default",
+			"state" : {
+				"width" : "100%",
+				"height" : "auto",
+				"margin" : "4px",
+				"position" : 4
+			}
+		},
+		"view" : {
+			"viewpoint" : {
+				"chromStart" : 1,
+				"chromEnd" : 999999,
+				"scale" : 1
+			},
+			"viewtype" : "step-fixed",
+			"settings" : {
+				"heightInner" : "40px",
+				"margin" : "4px",
+				"padding" : {"top": "0px", "right": "100px", "bottom": "0px", "left": "100px"},
+				"sense" : false,
+				"segments" : 1000
+			}
+		}
+	},
+	{
+		"metadata" : {
+			"version" : 1.0,
+			"type" : "component",
+			"generator" : "TADkit"
+		},
+		"object" : {
+			"uuid" : "00000000-0000-0000-0000-000000000004",
+			"id" : "h-restraints-track",
+			"title" : "Restraints",
+			"type" : "track-barchart",
+			"dataset" : "restraints",
+			"state" : {
+				"width" : "100%",
+				"height" : "auto",
+				"margin" : "0px",
+				"position" : 4
+			}
+		},
+		"view" : {
+			"viewpoint" : {
+				"chromStart" : 1,
+				"chromEnd" : 999999,
+				"scale" : 1
+			},
+			"viewtype" : "linear",
+			"settings" : {
+				"heightInner" : "80px",
+				"margin" : "0px",
+				"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
+				"color" : "#0000ff",
+				"cursorWidth" : 1
 			}
 		}
 	}

@@ -5,7 +5,8 @@
 		.service('colorConvert', colorConvert);
 
 	function colorConvert() {
-		var rootObj = this;
+		// var rootObj = this;
+		var rootObj = {};
 		rootObj.re_ = {
 		  // An X11 "rgb:ddd/ddd/ddd" value.
 		  x11rgb: /^\s*rgb:([a-f0-9]{1,4})\/([a-f0-9]{1,4})\/([a-f0-9]{1,4})\s*$/i,
@@ -196,7 +197,7 @@
 
 					if (v.length == 3) {
 						// Three digit values seem to be padded by repeating the final digit.
-						// e.g. 10f becomes 10ff.
+						// eg. 10f becomes 10ff.
 						v = v + v.substr(2);
 					}
 

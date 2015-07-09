@@ -1,0 +1,204 @@
+/* General Style - crude Foundation overrides... */
+.tadkit-title img {
+	margin-top: -2px;
+}
+.dropdown ul {
+	line-height: 0.8rem;
+}
+.dropdown li {
+	color: #ccc;
+	padding: 0.1rem 1.5rem 0.5rem;
+	font-size: 0.7rem;
+}
+.tad-metatitle {
+	width: 5rem;
+	display: inline-block;
+}
+.tad-species {
+	color: #fff;
+}
+.tad-slice {
+	color: #ccc;
+	margin: 0 0.4rem;
+}
+.btn-cog {
+	color: #fff;
+	text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+}
+/* React Styling */
+.trackholder {
+/*	background: red;*/
+	min-height: 5rem;
+}
+track {
+	display: block;
+/*	background: blue;*/
+}
+#track-controls {
+	position: relative;
+}
+#track-controls ul {
+	position: absolute;
+	top: 20px;
+	right: 35px;
+	list-style-type: none;
+	font-size: 0.8rem;
+	color: #666;
+	text-align: right;
+}
+#track-controls a {
+	color: #999;
+}
+
+#scene-controls {
+	position: relative;
+}
+#scene-controls ul {
+	list-style-type: none;
+	font-size: 0.8rem;
+	color: #666;
+	text-align: right;
+/*	border: solid 1px #ccc;*/
+	padding: 6px;
+	margin-right: 40px;
+	margin-top: 6px;
+}
+#scene-controls a {
+	color: #999;
+}
+.lower-tracks {
+	margin-top: 20px !important;
+}
+/* D3 Style */
+svg {
+	font: 0.7rem sans-serif;
+	padding: 20px 40px;
+}
+#slider svg {
+	padding: 0px 40px;	
+}
+#slider .axis path {
+	fill: none;
+	stroke: #ccc;
+	stroke-width: 4px;
+	shape-rendering: crispEdges;
+}
+#slider .background {
+	cursor: n-resize !important;
+}
+#slider .handle {
+	fill: #ee6363;
+	stroke: #f00;
+	cursor: col-resize;
+}
+#slider .axis text, #slider .axis line {
+	display: none;
+}
+#genes .axis path {
+	fill: none;
+	stroke: #fff;
+}
+#highlight {
+	fill: none;
+	stroke: #f00;
+	stroke-width: 1px;
+}
+
+.axis line {
+	fill: none;
+	stroke: #999;
+	stroke-width: 2px;
+	shape-rendering: crispEdges;
+}
+.axis text { fill: #999; }
+.brush .extent {
+	stroke: #;
+	fill-opacity: .25;
+	shape-rendering: crispEdges;
+}
+/* Context */
+.context {
+	fill: hsla(120,50%,50%,0.4);
+}
+/* Focus - Biotype colors */
+.protein_coding {
+	fill: hsla(120,50%,50%,0.4);
+}
+.pseudogene {
+	fill: hsla(120,50%,50%,0.4);
+}
+.ncRNA {
+	fill: hsla(120,50%,50%,0.4);
+}
+.snoRNA {
+	fill: hsla(120,50%,50%,0.4);
+}
+.pre_miRNA {
+	fill: hsla(120,50%,50%,0.4);
+}
+.tRNA {
+	fill: hsla(120,50%,50%,0.4);
+}
+.snRNA {
+	fill: hsla(120,50%,50%,0.4);
+}
+/* Contacts */ 
+data-tk-contacts svg {
+	padding: 0 40px;
+}
+data-tk-contacts path {
+	fill: none;
+	stroke: #ccc;
+	stroke-width: 1px;
+	shape-rendering: crispEdges;
+}
+#contacts line, #contacts .tick text {
+	display: none;
+}
+.particle {
+	fill: hsla(300, 100%, 25%,1.0);
+}
+
+/* Proteins */ 
+data-tk-proteins svg {
+	padding: 0 40px;
+}
+data-tk-proteins path {
+	fill: none;
+	stroke: #ccc;
+	stroke-width: 1px;
+	shape-rendering: crispEdges;
+}
+#H1 .tick line, #H1 .tick text, 
+#HP1 .tick line, #HP1 .tick text, 
+#BRM .tick line, #BRM .tick text,
+#MRG15 .tick line, #MRG15 .tick text,
+#PC .tick line, #PC .tick text {
+	display: none;
+}
+.HP1 {
+	fill: hsla(130,58%,33%,0.4);
+}
+.BRM {
+	fill: hsla(80,100%,50%,0.4);
+}
+.MRG15 {
+	fill: hsla(360,81%,50%,0.4);
+}
+.PC {
+	fill: hsla(240,100%,70%,0.4);
+}
+.H1 {
+	fill: hsla(0,0%,26%,0.6);
+}
+
+
+/* D3 test */
+.bar
+{
+  display: inline-block;
+  width: 20px;
+  height: 75px; /* Gets overriden by D3-assigned height below */
+  margin-right: 2px;
+  background-color: teal;
+}

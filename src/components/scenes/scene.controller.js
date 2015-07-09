@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.controller('SceneController', SceneController);
 
-	function SceneController( $scope ){
+	function SceneController($scope) {
 
 		$scope.optionsState = false;
 		$scope.toggleOptions = function() {
@@ -13,6 +13,7 @@
 
 		$scope.toggle = function(bool) {
 			bool = !bool;
+			console.log(bool);
 		};
 
 		// $scope.keyControls = function (e, component) {

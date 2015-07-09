@@ -16,9 +16,9 @@
 		return {
 			load: function() {
 				var deferral = $q.defer();
-				// var source = "assets/json/tk-defaults-datasets.json";
-				var source = "assets/json/mycoplasma_pneumoniae-tadbit.json";
-
+				// var source = "assets/json/testdata_torusknot-tadbit.json";
+				// var source = "assets/json/mycoplasma_pneumoniae_m129-tadbit.json";
+				var source = "assets/json/tk-defaults-datasets.json";
 				var self = this;
 				if( datasets.loaded.length > 0 ) {
 					deferral.resolve(datasets);
@@ -26,14 +26,10 @@
 					$http.get(source)
 					.success( function(data) {
 						datasets.loaded = data;
-						// console.log(data[0].models);
-						// angular.forEach(data[0].models, function(model, key) {
-						// 	model = JSON.stringify(model).replace("####",key+1);
-						// 	data[0].models[key] = JSON.parse(model);
-						// });
-						// console.log(JSON.stringify(data[0].models));
-						var current = datasets.current.index;
-						datasets.loaded[current].object.speciesUrl = self.setSpeciesUrl(current);
+						datasets.current.index = datasets.loaded.length - 1;
+						// console.log(datasets.current.index);
+						// Make speicesUrl forEach...
+						datasets.loaded[datasets.current.index].object.speciesUrl = self.setSpeciesUrl(datasets.current.index);
 						console.log("Datasets (" + data.length + ") loaded from " + source);
 						deferral.resolve(datasets);
 					});
@@ -42,14 +38,17 @@
 			},
 			add: function(data) { // rename import?
 				/* CHECK DATASET IS VALID */
+				var self = this;
 				var dataset = JSON.parse(data);
+				// console.log(dataset); // NOT AN ARRAY - A SINGLE DATASET
 				// var uuid = dataObj.uuid || uuid4.generate(),
 				// if (!projects.default.datasets[uuid]) {
-					datasets.loaded.push(dataset[0]);
+					datasets.loaded.push(dataset);
 					datasets.current.index = datasets.loaded.length - 1;
+					datasets.loaded[datasets.current.index].object.speciesUrl = self.setSpeciesUrl(datasets.current.index);
 					console.log("Dataset \"" + datasets.loaded[datasets.current.index].object.title + "\" loaded from file.");
 				// }
-				console.log(datasets.loaded[datasets.current.index]);
+				// console.log(datasets.loaded);
 				return datasets;
 			},
 			// add: function(title) {
@@ -71,7 +70,7 @@
 			},
 			set: function(index) {
 				if (index !== undefined || index !== false) datasets.current.index = index;
-				this.setCluster(datasets.current.cluster);
+				this.setCluster(datasets.current.cluster); // need to determine which cluster is current?
 				var dataset = datasets.loaded[datasets.current.index];
 				return dataset;
 			},
@@ -129,7 +128,11 @@
 			},
 			getRegion: function(index) {
 				if (index === undefined || index === false) index = datasets.current.index;
-				var region = datasets.loaded[index].object.chromosome + ":" + datasets.loaded[index].object.startCoord + "-" + datasets.loaded[index].object.endCoord;
+				var chromosomeIndex = 0;
+				if (datasets.loaded[index].object.chromosomeIndex) {
+					chromosomeIndex = datasets.loaded[index].object.chromosomeIndex;	
+				}
+				var region = datasets.loaded[index].object.chromosome[chromosomeIndex] + ":" + datasets.loaded[index].object.chromStart[chromosomeIndex] + "-" + datasets.loaded[index].object.chromEnd[chromosomeIndex];
 				return region;
 			},
 			getComponents: function(index) {

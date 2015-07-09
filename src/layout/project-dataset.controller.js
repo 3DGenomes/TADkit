@@ -4,7 +4,8 @@
 		.module('TADkit')
 		.controller('ProjectDatasetController', ProjectDatasetController);
 
-	function ProjectDatasetController ($state, $scope, Datasets, Overlays, Components){
+	function ProjectDatasetController ($state, $scope, Datasets, Overlays, Components, Segments){
+		// console.log($scope);
 
 		// Get dataset scene icon component
 		$scope.clusterComponent = Components.getComponentById("datasets-scene-icon");
@@ -12,22 +13,22 @@
 		// Set cluster color to gradient
 		// Recalculate specifically for single segment per particle in cluster scene
 		var gradientOverlay = Overlays.getOverlayById("gradient");
-		var clusterLength = $scope.currentModel.data.length / $scope.currentDataset.object.components;
-		var gradientColors = Overlays.segmentGradientHCL(gradientOverlay.data, clusterLength);
+		var clusterLength = $scope.current.model.data.length / $scope.current.dataset.object.components;
+		var gradientColors = Segments.gradientHCL(gradientOverlay, clusterLength);
 		$scope.clusterComponent.overlay = gradientColors;
 
 		// Calculate consistent camera position (translation) from combined dataset models
 		var datasetModels = new THREE.BufferGeometry();
-		for (var h = $scope.currentDataset.models.length - 1; h >= 0; h--) {
-			datasetModels.addAttribute( 'position', new THREE.BufferAttribute( $scope.currentDataset.models[i], 3 ) );
+		for (var h = $scope.current.dataset.models.length - 1; h >= 0; h--) {
+			datasetModels.addAttribute( 'position', new THREE.BufferAttribute( $scope.current.dataset.models[i], 3 ) );
 		}
 		datasetModels.computeBoundingSphere();
 		$scope.clusterComponent.view.viewpoint.translate = datasetModels.boundingSphere.radius;
 
 		// Create collection of cluster models
 		$scope.clusters = [];
-		var clusterLists = $scope.currentDataset.clusters;
-		var models = $scope.currentDataset.models;
+		var clusterLists = $scope.current.dataset.clusters;
+		var models = $scope.current.dataset.models;
 		for (var i = clusterLists.length - 1; i >= 0; i--) {
 			var cluster = {};
 			cluster.number = i + 1;

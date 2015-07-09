@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Ensembl', Ensembl);
 
-	function Ensembl($q, $http) {
+	function Ensembl($q, $http, Datasets) {
 		var ensembl = {
 			ping : 0
 		};
@@ -12,7 +12,7 @@
 			ping: function() {
 				console.log("Pinging Ensembl RESTful genomic data server...");
 				var deferral = $q.defer();
-				var source = "http://rest.ensembl.org/info/ping?content-type=application/json";
+				var source = "http://rest.ensemblgenomes.org/info/ping?content-type=application/json";
 				$http.get(source)
 				.success(function(data){
 					ensembl.ping = data.ping;
@@ -20,14 +20,21 @@
 				});
 				return deferral.promise;
 			},
-			load: function(datasetObject, overlay, online) {
+			load: function(overlay, online) {
+
+				online = online || false;
 				var deferral = $q.defer();
 				var source;
+				var datasetObject = Datasets.getDataset().object;
 				var species = datasetObject.species;
 				var speciesUrl = datasetObject.speciesUrl;
-				var chromosome = datasetObject.chromosome;
-				var start = datasetObject.startCoord;
-				var end = datasetObject.endCoord;
+				var chromosomeIndex = 0;
+				if (datasetObject.chromosomeIndex) {
+					chromosomeIndex = datasetObject.chromosomeIndex;	
+				}
+				var chromosome = datasetObject.chromosome[chromosomeIndex];
+				var start = datasetObject.chromStart[chromosomeIndex];
+				var end = datasetObject.chromEnd[chromosomeIndex];
 				var self = this;
 				if (online) {
 					source = overlay.object.url[0] + speciesUrl + overlay.object.url[2] + chromosome + overlay.object.url[4] + start + overlay.object.url[6] + end + overlay.object.url[8];

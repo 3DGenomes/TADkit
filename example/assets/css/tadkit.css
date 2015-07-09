@@ -14,8 +14,19 @@ svg {
 	color: #fff;
 	overflow-y: scroll;
 }
+#file-input {
+	/*display: none;*/
+}
 
 /*** GENERAL ***/
+table, th, tr, td {
+	font-size: 0.8rem;
+	border: 1px solid #ccc;
+	border-collapse: collapse;
+}
+td {
+	padding: 1px 5px;
+}
 .fullheight {
 	height: 100%;
 }
@@ -27,10 +38,38 @@ md-grid-list md-grid-tile {
 	font-weight: inherit;
 	font-size: 1rem;
 }
+md-checkbox.md-default-theme:not([disabled]).md-primary .md-icon {
+	border-color: rgba(76,175,80,0.37);
+}
 
 /*** TOPBAR ***/
 md-toolbar {
 	min-height: 48px;
+}
+.md-toolbar-tools .md-button {
+  font-size: 1em;
+}
+md-input-container {
+	width: 220px;
+}
+.md-button.md-default-theme.md-accent,
+md-toolbar md-icon {
+	color: #fff;
+}
+md-input-container.md-default-theme .md-input {
+	text-align: end;
+	color: #fff;
+	border-color: rgba(255,255,255,0.37);
+	/*width: 180px;*/
+}
+md-input-container.md-default-theme .md-input:focus {
+	color: #333;
+	background-color: rgba(255,255,255,0.67);
+}
+md-input-container.md-icon-float>md-icon {
+	position: absolute;
+	top: 14px;
+	left: 24px;
 }
 .md-toolbar-tools {
 	height: 48px;
@@ -94,23 +133,54 @@ md-sidenav md-list-item {
 	width: 400px;
 	height: 400px;
 	position: absolute;
-	right: 120px;
+	right: 60px;
 	top: 50px;
+	z-index: 0;
 }
 #home .logo {
 	padding: 80px 140px 20px;
 }
 #home .md-button {
-	width: 240px;
-	height: 40px;
-	margin: 20px 180px;
+	/*min-width: 300px;*/
+	/*margin-top: 16px;*/
+	/*margin-bottom: 16px;*/
 }
+#home .md-button md-icon {
+/*	margin-left: 0;
+	margin-right: 16px;
+*/}
+
+
 /*** PROJECTS ***/
 #project-list {
 }
 #project-content .tk-toolbar {
 	background-color: transparent;
-	box-shadow: none:;
+	box-shadow: none;
+}
+.loader .md-button {
+	min-width: 300px;
+}
+.loader .md-button md-icon {
+/*	margin-left: 0;
+	margin-right: 16px;
+*/}
+.loader div[tk-project-dropzone] {
+	background: rgb(76,175,80);
+	color: #fff;
+	border: dashed 1px #fff;
+	min-width: 300px;
+	padding: 16px 6px;
+	margin: 20px 0;
+	min-height: 20px;
+	border-radius: 9px;
+	-webkit-box-shadow: inset 0 2px 5px rgba(0,0,0,0.26);
+	box-shadow: inset 0 2px 5px rgba(0,0,0,0.26);
+}
+.loader div[tk-project-dropzone]:hover {
+	background: rgb(67,160,71);
+	-webkit-box-shadow: inset 0 4px 8px rgba(0,0,0,0.4);
+	box-shadow: inset 0 4px 8px rgba(0,0,0,0.4);
 }
 
 /**
@@ -145,12 +215,28 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
 }
 .component a.toggle-false:hover,
 .component a.toggle-false:focus {
-	color: #99f;
+	color: rgba(76,175,80,0.7);
 }
 .component a.toggle-true,
 .component a.toggle-true {
-	color: #00f;
+	color: rgba(76,175,80,1);
 }
+md-checkbox {
+	margin: 3px;
+}
+/*
+md-checkbox .md-ripple {
+	color:#e53935
+}
+
+md-checkbox.md-checked.md-focused .md-container:before {
+	background-color:rgba(255,82,82,0.26)
+}
+
+md-checkbox.md-checked .md-icon {
+	background-color:rgba(255,82,82,0.87)
+}
+*/
 .component-controller {
 	position: relative;
 	display: inline-block;
@@ -251,11 +337,11 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
 	float: left;
 }
 .component-container .scene {
-	width: 600px;
+	width: 800px;
 	height: 400px;
 }
 .component-container .panel-inspector {
-	width: 400px;
+	width: 300px;
 	height: 324px;
 }
 .component-container .track-slider,
@@ -275,30 +361,33 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
 	height: 20px;
 }
 
-
 /**
  * MODALS
  */
+
+/*
 .dialogdemoBasicUsage .dialogDemo1 {
-  height: 500px; }
+	height: 500px; }
 .dialogdemoBasicUsage .full {
-  width: 100%;
-  height: 100%; }
+	width: 100%;
+	height: 100%; }
 .dialogdemoBasicUsage .gap {
-  width: 50px; }
+	width: 50px; }
 .dialogdemoBasicUsage md-dialog md-content.sticky-container {
-  padding: 0; }
+	padding: 0; }
 .dialogdemoBasicUsage md-dialog md-content.sticky-container .dialog-content {
-  padding: 0 24px 24px; }
+	overflow: scroll;
+	padding: 0 24px 24px; }
 .dialogdemoBasicUsage .md-subheader {
-  background-color: #dcedc8;
-  margin: 0px; }
+	background-color: #dcedc8;
+	margin: 0px; }
 .dialogdemoBasicUsage h2.md-subheader.md-sticky-clone {
-  margin-right: 0px;
-  margin-top: 0px;
-  box-shadow: 0px 2px 4px 0 rgba(0, 0, 0, 0.16); }
+	margin-right: 0px;
+	margin-top: 0px;
+	box-shadow: 0px 2px 4px 0 rgba(0, 0, 0, 0.16); }
 .dialogdemoBasicUsage h2 .md-subheader-content {
-  padding-left: 10px; }
+	padding-left: 10px; }
+*/
 
 
 /* ********** */
@@ -398,7 +487,8 @@ track {
 #track-controls a {
 	color: #999;
 }
-.axis path {
+.axis path,
+.axis line {
 	fill: none;
 	stroke: #ccc;
 	stroke-width: 2px;
@@ -503,14 +593,14 @@ track {
 .snRNA {
 	fill: hsla(120,50%,50%,0.4);
 }
-/* track-contacts */ 
-data-tk-contacts path {
+/* track-proximities */ 
+data-tk-proximities path {
 	fill: none;
 	stroke: #ccc;
 	stroke-width: 1px;
 	shape-rendering: crispEdges;
 }
-#contacts line, #contacts .tick text {
+#proximities line, #proximities .tick text {
 	display: none;
 }
 .particle {
@@ -518,7 +608,7 @@ data-tk-contacts path {
 }
 
 /* track-filion */ 
-data-tk-proteins path {
+data-tk-component-bedgraph path {
 	fill: none;
 	stroke: #ccc;
 	stroke-width: 1px;
@@ -531,14 +621,21 @@ data-tk-proteins path {
 #PC .tick line, #PC .tick text {
 	display: none;
 }
+data-tk-component-bedgraph rect {
+	color: #fff;
+	fill: none;
+	stroke: #fff;
+	stroke-width: 0px;
+	shape-rendering: crispEdges;
+}
 .HP1 {
 	fill: hsla(130,58%,33%,0.4);
 }
 .BRM {
-	fill: hsla(80,100%,50%,0.4);
+	fill: hsla(360,81%,50%,0.4);
 }
 .MRG15 {
-	fill: hsla(360,81%,50%,0.4);
+	fill: hsla(80,100%,50%,0.4);
 }
 .PC {
 	fill: hsla(240,100%,70%,0.4);
@@ -577,6 +674,7 @@ md-icon {
 .md-icon-sm {
   font-size: 12px;
 }
+
 /* IcoMoon code <md-icon> classes */
 
 .icon-exit-to-app:before {

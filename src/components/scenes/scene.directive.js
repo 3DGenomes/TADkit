@@ -4,28 +4,28 @@
 		.module('TADkit')
 		.directive('tkComponentScene', tkComponentScene);
 
-	function tkComponentScene(Particles, Chromatin, Overlays, Contacts) {
+	function tkComponentScene(Particles, Chromatin, Mesh, Settings) {
 		return {
 			restrict: 'EA',
 			scope: { 
-				id: '@',
+				title: '=',
 				state: '=',
+				settings: '=',
 				view: '=',
-				data: '=',
-				overlay: '=',
-				overlayindex: '=',
-				contacts: '=',
-				settings: '='
+				currentmodel: '=',
+				proximities: '=',
+				currentoverlay: '='
 			},
 			templateUrl: 'assets/templates/scene.html',
 			link: function postLink(scope, element, attrs) {
 				// threeService.three().then(function(THREE) {
-					// console.log(scope.overlayindex);
+					// console.log(scope);
 
-					var scene, viewport, stats;
+					var scene, component, viewport, stats;
 					var camera, cameraPosition, cameraTarget, cameraTranslate;
 					var ambientLight, pointLight;
-					var controls, renderer, particles, chromatin, contacts;
+					var playback, controls, renderer;
+					var particles, chromatin, mesh;
 					var width, height, contW, contH, windowHalfX, windowHalfY;
 
 					var particleOriginalColor = new THREE.Color();
@@ -39,11 +39,17 @@
 						 * - component-header == children[0]
 						 * - component-body == children[3]
 						 */
+						// component = element[0].parentNode;
+						// console.log(component.clientWidth);
 						viewport = element[0].children[0].children[3];
-						// width = viewport.clientWidth; // NEED TO WAIT UNTIL DOM LOADED
-						width = parseInt(scope.state.width);
-						// height = viewport.clientHeight;
-						height = parseInt(scope.state.height);
+						// console.log(viewport.clientWidth);
+						// if with controller use line below
+						// viewport = element[0].children[0].children[3];
+
+						// width = component.clientWidth; // NEED TO WAIT UNTIL DOM LOADED
+						width = parseInt(scope.state.width); // USE UNTIL DOM CHECK AVAILBLE
+						// height = component.clientHeight;
+						height = parseInt(scope.state.height); // USE UNTIL DOM CHECK AVAILBLE
 						// OJO! DOM NOT READY
 						// console.log(element[0].firstChild.children[2].clientWidth);
 
@@ -66,12 +72,20 @@
 						scene.add(camera);
 	
 						// CONTROLS
-						controls = new THREE.TrackballControls( camera, renderer.domElement );
-						controls.autoRotate = scope.view.controls.autoRotate;
-						controls.autoRotateSpeed = scope.view.controls.autoRotateSpeed;
+						// Use TrackballControls for interaction
+						controls = new THREE.TrackballControls(camera, renderer.domElement);
+						// Use OrbitControls for autoRotate
+						playback = new THREE.OrbitControls(camera, renderer.domElement);
+						playback.autoRotate = scope.view.controls.autoRotate;
+						playback.autoRotateSpeed = scope.view.controls.autoRotateSpeed;
+						// interaction FALSE so as not to conflict with controls
+						playback.noZoom = true;
+						playback.noRotate = true;
+						playback.noPan = true;
+						playback.noKeys = true;
 
 						// AXIS
-						// TO DO: Make local axisHelper
+						// TODO: Make local axisHelper
 						var axisHelper = new THREE.AxisHelper( scope.view.settings.axis.size );
 						axisHelper.visible = scope.view.settings.axis.visible;
 						axisHelper.name = "Axis";
@@ -85,26 +99,27 @@
 						// scene.add(ambientLight);
 						
 						// GEOMETRY: PARTICLES
-						particles = new Particles( scope.data, scope.view.settings.particles );
+						particles = new Particles( scope.currentmodel.data, scope.currentoverlay.colors.particles, scope.view.settings.particles );
 						particles.visible = scope.view.settings.particles.visible;
 						scene.add(particles);
 
 						// Add particle count for later color changes
-						scope.view.settings.particles.count = particles.geometry.vertices.length;
+						scope.view.settings.particles.count = particles.geometry.vertices.length; // already known as particlesCount in Dataset???
 						scope.view.settings.chromatin.segments = scope.view.settings.particles.count * scope.view.settings.chromatin.particleSegments;
 						// change radius to be proportional to chromosome length
-						scope.view.settings.genomeLength = scope.settings.currentEndCoord; // eg. 816394 nucelotides
+						scope.view.settings.genomeLength = scope.settings.current.chromEnd; // eg. 816394 nucelotides
 
 						//GEOMETRY: CHROMATIN
-						chromatin = new Chromatin( scope.data, scope.overlay.colors, scope.view.settings.chromatin );
+						chromatin = new Chromatin( scope.currentmodel.data, scope.currentoverlay.colors.chromatin, scope.view.settings.chromatin );
 						chromatin.visible = scope.view.settings.chromatin.visible;
 						scene.add(chromatin);
+						scope.view.settings.chromatin.radius = chromatin.boundingSphere.radius;
 						// scope.view.settings.chromatin.count = 1; // UNUSED
 
-						// GEOMETRY: CONTACTS
-						contacts = new Contacts(scope.contacts.positions, scope.contacts.distances, scope.view.settings.contacts);
-						contacts.visible = scope.view.settings.contacts.visible;
-						scene.add(contacts);
+						// GEOMETRY: MESH
+						mesh = new Mesh(scope.proximities.positions, scope.currentoverlay.colors.mesh, scope.view.settings.mesh);
+						mesh.visible = scope.view.settings.mesh.visible;
+						scene.add(mesh);
 
 						// UPDATE CAMERA TARGET
 						cameraPosition = chromatin.boundingSphere.center;
@@ -153,7 +168,8 @@
 					// FIX: NOT REDRAWING SCENE IF THE ONLY VISBLE OBJECT IS TOGGLED OFF
 						scope.$watch('view.controls.autoRotate', function( newValue, oldValue ) {
 							if ( newValue !== oldValue ) {
-								controls.autoRotate = !controls.autoRotate;
+								// playback.autoRotate = !playback.autoRotate;
+								playback.autoRotate = scope.view.controls.autoRotate;
 							}
 						});
 						scope.$watch('view.settings.axis.visible', function( newValue, oldValue ) {
@@ -171,60 +187,64 @@
 								chromatin.visible = !chromatin.visible;
 							}
 						});
-						scope.$watch('view.settings.contacts.visible', function( newValue, oldValue ) {
+						scope.$watch('view.settings.mesh.visible', function( newValue, oldValue ) {
 							if ( newValue !== oldValue ) {
-								contacts.visible = !contacts.visible;
+								mesh.visible = !mesh.visible;
 							}
 						});
 
 						var particlesObj = scene.getObjectByName( "Particles Cloud" );
 						var chromatinObj = scene.getObjectByName( "Chromatin Fiber" );
+						var meshObj = scene.getObjectByName( "Mesh Network" );
 						
 						// /* Watch for Chromatin colors */
-						scope.$watch('overlayindex', function( newValue, oldValue ) { // cant deep watch as change through set on service
-							if ( newValue !== oldValue ) {
-								// console.log(newValue);
-								var meshes = chromatinObj.children.length;
-								var newOverlay = Overlays.getOverlay(newValue);
-								// console.log(newValue);
-								for (var i = 0; i < meshes; i++) {
-									var newColor =  new THREE.Color(newOverlay.colors[i]);
-									chromatinObj.children[i].material.color = newColor;
-									chromatinObj.children[i].material.ambient = newColor;
-									chromatinObj.children[i].material.emissive = newColor;
+						scope.$watch('currentoverlay.colors.chromatin', function( newColors, oldColors ) { // cant deep watch as change through set on service
+							if ( newColors !== oldColors ) {
+								// var particleCount = particlesObj.children.length;
+								// for (var i = 0; i < particleCount; i++) {
+								// 	var newParticleColor =  new THREE.Color(newOverlay.colors.particles[i]);
+								// 	particlesObj.children[i].material.color = newParticleColor;
+								// }
+								var chromatinCount = chromatinObj.children.length;
+								for (var i = 0; i < chromatinCount; i++) {
+									var newChromatinColor =  new THREE.Color(newColors[i]);
+									chromatinObj.children[i].material.color = newChromatinColor;
+									chromatinObj.children[i].material.ambient = newChromatinColor;
+									chromatinObj.children[i].material.emissive = newChromatinColor;
 								}
+								// var meshCount = meshObj.children.length;
+								// for (var i = 0; i < meshCount; i++) {
+								// 	var newMeshColor =  new THREE.Color(newOverlay.colors.mesh[i]);
+								// 	meshObj.children[i].material.color = newMeshColor;
+								// }
 							}
 						});
 
 						/* Watch for Browser-wide Position updates */
-						scope.$watch('settings.position', function( newValue, oldValue ) { // deep watch as change direct and changes all?
-							if ( newValue !== oldValue ) {
-
-								var oldInRange = oldValue - scope.view.viewpoint.startCoord;
-								var newInRange = newValue - scope.view.viewpoint.startCoord;
-								var rangeLength = scope.view.viewpoint.endCoord - scope.view.viewpoint.startCoord;
+						scope.$watch('settings.current.particle', function( newParticle, oldParticle ) {
+							if ( newParticle !== oldParticle ) {
 
 								// SET PARTICLE CURSOR COLOR
-								var particlePrevious =  Math.floor(oldInRange * (scope.view.settings.particles.count-1) / rangeLength);
-								var particleCurrent = Math.floor(newInRange * (scope.view.settings.particles.count-1) / rangeLength);
-
-								if (particleOriginalColor) particlesObj.geometry.colors[particlePrevious] = particleOriginalColor;
-								particleOriginalColor = particlesObj.geometry.colors[particleCurrent];
-								particlesObj.geometry.colors[particleCurrent] = highlightColor;
+								if (particleOriginalColor) particlesObj.geometry.colors[(oldParticle - 1)] = particleOriginalColor;
+								particleOriginalColor = particlesObj.geometry.colors[(newParticle - 1)];
+								particlesObj.geometry.colors[(newParticle - 1)] = highlightColor;
 								particlesObj.geometry.colorsNeedUpdate = true;
+							}
+						});
 
-								// SET CHROMATIN CURSOR COLOR
-								var positionPrevious =  Math.floor(oldInRange * (scope.view.settings.chromatin.segments-1) / rangeLength);
-								var positionCurrent = Math.floor(newInRange * (scope.view.settings.chromatin.segments-1) / rangeLength);
+						/* Watch for Browser-wide Position updates */
+						scope.$watch('settings.current.segment', function( newSegment, oldSegment ) {
+							if ( newSegment !== oldSegment ) {
 
-								var segmentPrevious = chromatinObj.getObjectByName( "segment-" + positionPrevious );
+								// SET CHROMATIN CURSOR COLOR								
+								var segmentPrevious = chromatinObj.getObjectByName( "segment-" + oldSegment );
 								if (positionOriginalColor) {
 									segmentPrevious.material.color = positionOriginalColor;
 									segmentPrevious.material.ambient = positionOriginalColor;
 									segmentPrevious.material.emissive = positionOriginalColor;
 								}
 
-								var segmentCurrent = chromatinObj.getObjectByName( "segment-" + positionCurrent );
+								var segmentCurrent = chromatinObj.getObjectByName( "segment-" + newSegment );
 								positionOriginalColor = segmentCurrent.material.color;
 
 								segmentCurrent.material.color = highlightColor;
@@ -281,6 +301,7 @@
 					// -----------------------------------
 					scope.animate = function () {
 						requestAnimationFrame( scope.animate );
+						playback.update();
 						controls.update();
 						scope.render();
 					};

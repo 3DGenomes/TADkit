@@ -8,7 +8,8 @@
 		return {
 			restrict: 'A',
 			scope: {
-				tkOverlayImport : "&"
+				tkOverlayImport : "&",
+				filetitle : "="
 			},
 			link: function(scope, element, attrs) {
 				element.on('change', function(e) {
@@ -20,6 +21,7 @@
 						});
 					};
 					reader.readAsText((e.srcElement || e.target).files[0]);
+					scope.filetitle = (e.srcElement || e.target).files[0].name;
 				});
 			}
 		};
