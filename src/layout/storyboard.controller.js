@@ -38,6 +38,7 @@
 
 		// Calculating Initial Proximities
 		//NOTE in future if more than 1 currentModel need same number of currentProximities
+		$scope.allProximities = Proximities.get(); // for Scene
 		$scope.currentProximities = Proximities.at($scope.settings.current.particle); // for D3 tracks
 
 		// Calculating Initial Restraints
@@ -55,7 +56,7 @@
 				if (component.object.type == "scene") {
 					component.data = $scope.current.model.data;
 					 // component.proximities required for Scenes: overlay.colors Saturation
-					component.proximities = $scope.currentProximities;
+					component.proximities = $scope.allProximities;
 					component.overlay = $scope.current.overlay;
 					component.overlay.state = {};
 					component.overlay.object.state.index = Overlays.getCurrentIndex();
@@ -94,8 +95,9 @@
 		// Watch for Slider Position updates
 		$scope.$watch('settings.current.particle', function(newParticle, oldParticle) { // deep watch as change direct and changes all?
 			if ( newParticle !== oldParticle ) {
+				console.log(newParticle);
 				$scope.currentProximities = Proximities.at(newParticle); // for D3 tracks
-				$scope.currentProximities = Restraints.at(newParticle); // for D3 tracks
+				$scope.currentRestraints = Restraints.at(newParticle); // for D3 tracks
 				if ($scope.current.overlay.object.type == "matrix") {
 					Overlays.at(newParticle);
 					$scope.current.overlay = Overlays.getOverlay();

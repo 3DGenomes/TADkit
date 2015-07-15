@@ -1,6 +1,6 @@
 /* TADkit Stylesheet
- *
- *
+ * primary color: rgba(76,175,80,0.8) == grass green
+ * secondary color: rgba(205,220,57,0.87) == yellow ochre
  */
 
 /*** SRC WORK ***/
@@ -46,6 +46,8 @@ md-checkbox.md-default-theme:not([disabled]).md-primary .md-icon {
 md-toolbar {
 	min-height: 48px;
 }
+.tad-species {}
+.tad-slice { font-size: 1.0rem; }
 .md-toolbar-tools .md-button {
   font-size: 1em;
 }
@@ -278,10 +280,11 @@ md-checkbox.md-checked .md-icon {
 	position: absolute;
 	top: 28px; /* height of #component-title */
 	left: 0;
-	margin: 0.2rem;
+	margin: 2.0rem;
 	padding: 0.3rem;
 	background: rgba(255,255,255,0.8);
-	border: #99f solid 1px;
+	border: rgba(205,220,57,0.87) solid 2px;
+	border-radius: 0.6rem;
 	font-size: 0.6rem;
 }
 .component-options.track {

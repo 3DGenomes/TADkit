@@ -9,7 +9,7 @@
 			restrict: 'EA',
 			scope: {
 				type: '=',
-				title: '=',
+				title: '@',
 				settings: '=',
 				view: '=',
 				data: '=',
@@ -60,7 +60,7 @@
 					var svg = d3.select(viewport).append('svg');
 					var slider, xScale, prime3Axis, prime5Axis;
 					var handleWidth, handleHeight;
-					var xAxis, brush, handle;
+					var xAxis, brush, handle, label;
 
 					// RESIZE
 					scope.$watch(function(){
@@ -155,12 +155,15 @@
 							.attr("cy", height)
 							.attr("r", handleWidth * 0.6);
 
-							// handle.append("text")
-							// 	.attr("x", xScale(scope.settings.current.position) - (handleWidth * 0.5))
-							// 	.attr("y", height)
-							// 	.attr("text-anchor", "bottom")
-							// 	.style("font-size", "10px")
-							// 	.text(scope.settings.current.position);
+						label = slider.append("text")
+							.attr("id", "position")
+							.attr("x", xScale(scope.settings.current.position) - (handleWidth * 0.5))
+							.attr("y", height - 10)
+							.attr("text-anchor", "bottom")
+							.attr("font-family", "sans-serif")
+							.attr("font-size", "10px")
+							.attr("fill", "#000000")
+							.text(scope.settings.current.particle);
 
 						slider
 							.call(brush.extent([(scope.settings.current.position), 0]))
@@ -170,7 +173,10 @@
 					// UPDATE
 					scope.update = function(data) {
 						svg.select("#handle") //.style("visibility", "hidden");
-						.attr("cx", function(d) { return xScale( scope.settings.current.position ); } );
+						.attr("cx", xScale(scope.settings.current.position) );
+						svg.select("#position") //.style("visibility", "hidden");
+						.attr("x", (xScale(scope.settings.current.position) - (handleWidth * 0.5)) )
+						.text(scope.settings.current.particle);
 					};
 
 					// BRUSH

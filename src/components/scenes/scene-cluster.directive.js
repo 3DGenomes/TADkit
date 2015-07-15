@@ -8,9 +8,12 @@
 		return {
 			restrict: 'EA',
 			scope: { 
-				id: '@',
-				state: '=',
+				state: '=', /* for scene until can check for DOM loaded */
+				type: '=',
+				title: '@',
+				settings: '=',
 				view: '=',
+				id: '@', /*???*/
 				cluster: '=',
 				overlay:'='
 			},
@@ -24,10 +27,6 @@
 				var ambientLight, pointLight;
 				var orbit, controls, particles, cluster;
 				var width, height, contW, contH, windowHalfX, windowHalfY;
-
-				var particleOriginalColor = new THREE.Color();
-				var positionOriginalColor = new THREE.Color();
-				var highlightColor = new THREE.Color("#ffffff");
 
 				scope.init = function () {
 
@@ -47,10 +46,12 @@
 					if (window.WebGLRenderingContext)
 						renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
 					else
-						renderer = new THREE.CanvasRenderer({alpha: true});					
-					renderer.setClearColor( 0xffffff );
+						renderer = new THREE.CanvasRenderer({alpha: true});	
+					var sceneColor = scope.view.viewpoint.sceneColor;
+					var clearColor = "0x" + sceneColor.substring(1);
+					renderer.setClearColor( clearColor );
 					renderer.setSize( width, height );
-					// renderer.autoClear = false; // To allow render overlay on top of sprited sphere
+					renderer.autoClear = false; // To allow render overlay on top of sprited sphere
 					renderer.setSize( width, height );
 					viewport.appendChild( renderer.domElement );
 
@@ -91,12 +92,6 @@
 					cameraTarget = new THREE.Vector3( 0,0,0 ); //cluster.boundingSphere.center;
 					cameraTranslate = cluster.boundingSphere.radius * scope.view.viewpoint.scale;
 					scope.lookAtTarget(cameraPosition, cameraTarget, cameraTranslate);
-
-					// FOG SCENE
-					var fogColor = 0xFFFFFF,
-						fogNear = cameraTranslate * scope.view.viewpoint.fogNear,
-						fogFar = cameraTranslate * scope.view.viewpoint.fogFar;
-					// scene.fog = new THREE.Fog( fogColor, fogNear, fogFar );
 
 				};
 

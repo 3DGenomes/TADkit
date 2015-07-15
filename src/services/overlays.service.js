@@ -242,7 +242,7 @@
 
 			},
 			segment: function() {
-				var settings = Settings.get();
+				var settings = Settings.get().current;
 				var currentDataset = Datasets.getDataset();
 					var chromosomeIndex = 0;
 					if (currentDataset.object.chromosomeIndex) {
@@ -251,45 +251,41 @@
 				var chromStart = currentDataset.object.chromStart[chromosomeIndex];
 				var currentStoryboard = Storyboards.getStoryboard();
 
-				// GET FROM SETTINGS service...
-				var particlesCount = currentDataset.models[0].data.length / currentDataset.object.components;
-				var particleSegments = currentStoryboard.components[0].view.settings.chromatin.particleSegments;
-				var segmentsCount = particlesCount * particleSegments;
-				var segmentLength = currentDataset.object.resolution / particleSegments; // base pairs
-
+				// var particlesCount = currentDataset.models[0].data.length / currentDataset.object.components;
+				// var particleSegments = currentStoryboard.components[0].view.settings.chromatin.particleSegments;
+				// var segmentsCount = particlesCount * particleSegments;
 
 				var self = this; // SYNChronous functions...
 				angular.forEach(overlays.loaded, function(overlay, key) {
 
 					// check if colors already exist (for chromatin as principal set) or number of segments have changed
-					if (!overlay.colors.chromatin || (overlay.colors.chromatin && segmentsCount != settings.current.segmentsCount) ) {
+					if (!overlay.colors.chromatin) { // ??? || (overlay.colors.chromatin && segmentsCount != settings.segmentsCount)
 
 						// run function based on object type
 						var type = overlay.object.type;
 						var format = overlay.object.format;
-						var meshEdgesCount = particlesCount * particlesCount;
 						if (type == "gradient" && format == "hex") {
 							// palette must contain 2 hex values
-							overlay.colors.particles = Segments.gradientHCL(overlay, particlesCount);
-							overlay.colors.chromatin = Segments.gradientHCL(overlay, segmentsCount);
-							overlay.colors.mesh = []; // relevance???
+							overlay.colors.particles = Segments.gradientHCL(overlay, settings.particlesCount);
+							overlay.colors.chromatin = Segments.gradientHCL(overlay, settings.segmentsCount);
+							overlay.colors.mesh = Segments.gradientHCL(overlay, settings.edgesCount);
 						} else if (type == "wiggle_0" && format == "fixed") {
 							// OJO! create additional option for format = "bigwig-variable"
-							overlay.colors.particles = Segments.bicolor(overlay, particlesCount);
-							overlay.colors.chromatin = Segments.bicolor(overlay, segmentsCount);
+							overlay.colors.particles = Segments.bicolor(overlay, settings.particlesCount);
+							overlay.colors.chromatin = Segments.bicolor(overlay, settings.segmentsCount);
 							overlay.colors.mesh = []; // relevance???
 						} else if (type == "wiggle_0" && format == "variable") {
 							// To Do...
 						} else if (type == "bedgraph") {
-							overlay.colors.particles = Segments.bicolorVariable(overlay, chromStart, particlesCount, 1);
-							overlay.colors.chromatin = Segments.bicolorVariable(overlay, chromStart, segmentsCount, segmentLength);
+							overlay.colors.particles = Segments.bicolorVariable(overlay, chromStart, settings.particlesCount, 1);
+							overlay.colors.chromatin = Segments.bicolorVariable(overlay, chromStart, settings.segmentsCount, settings.segmentLength);
 							overlay.colors.mesh = []; // relevance???
 						} else if (type == "matrix") {
 							// Distances are per edge so just convert to color
 							overlay.colors.particlesMatrix = Segments.matrix(overlay, 1); // ie. per particle
-							overlay.colors.chromatinMatrix = Segments.matrix(overlay, particleSegments);
+							overlay.colors.chromatinMatrix = Segments.matrix(overlay, settings.particleSegments);
 							overlay.colors.meshMatrix = overlay.colors.particlesMatrix; // ie. also color mesh edges by matrix
-							self.at(1, particlesCount, particleSegments);
+							self.at(1, settings.particlesCount, settings.particleSegments);
 						} else if (type == "misc" && format == "variable") {
 							overlay.colors.particles = [];
 							overlay.colors.chromatin = [];
@@ -298,8 +294,8 @@
 							// data must have .start and .end
 							var features = Resources.get().biotypes;
 							var singleSegment = 1;
-							overlay.colors.particles = Segments.features(overlay, chromStart, particlesCount, singleSegment, features);
-							overlay.colors.chromatin = Segments.features(overlay, chromStart, segmentsCount, segmentLength, features);
+							overlay.colors.particles = Segments.features(overlay, chromStart, settings.particlesCount, singleSegment, features);
+							overlay.colors.chromatin = Segments.features(overlay, chromStart, settings.segmentsCount, settings.segmentLength, features);
 							overlay.colors.mesh = []; // relevance???
 						}
 
@@ -312,14 +308,14 @@
 				return overlays;
 			},
 			at: function(currentParticle) {
-				var settings = Settings.get();
+				var settings = Settings.get().current;
 				angular.forEach(overlays.loaded, function(overlay, key) {
 					var type = overlay.object.type;
 					if (type == "matrix") {
-						var particleStart = (currentParticle - 1) * settings.current.particlesCount;
-						var particleEnd = currentParticle * settings.current.particlesCount;
-						var chromatinStart = particleStart * settings.current.particleSegments;
-						var chromatinEnd = particleEnd * settings.current.particleSegments;
+						var particleStart = (currentParticle - 1) * settings.particlesCount;
+						var particleEnd = currentParticle * settings.particlesCount;
+						var chromatinStart = particleStart * settings.particleSegments;
+						var chromatinEnd = particleEnd * settings.particleSegments;
 						// console.log(overlay);
 						overlay.colors.particles = overlay.colors.particlesMatrix.slice(particleStart, particleEnd);
 						overlay.colors.chromatin = overlay.colors.chromatinMatrix.slice(chromatinStart, chromatinEnd);

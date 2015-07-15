@@ -225,7 +225,7 @@
 				var strTemplate = '<data-tk-component-' + scope.component.object.type + ' ' +
 					'id="{{component.object.id}}-' + scope.$index + '" ' +
 					'type="component.object.type" ' +
-					'title="component.object.title" ' +
+					'title="{{component.object.title}}" ' +
 					'state="component.object.state" ' + /* for scene until can check for DOM loaded */
 					'settings="settings" ' +
 					'view="component.view" ' +
@@ -237,7 +237,7 @@
 					'proximities="component.proximities" ' +
 					'overlay="component.overlay"' +
 					'toggleoverlay="toggleOverlay(index)" ' +
-					'style="margin: {{component.object.state.margin}}" ' +
+					'style="margin: {{component.object.state.margin}}; background-color: {{component.view.viewpoint.sceneColor}}" ' +
 					'class="component ' + scope.component.object.type + '">' +
 					'</data-tk-component-' + scope.component.object.type + '>';
 
@@ -539,9 +539,12 @@
 		return {
 			restrict: 'EA',
 			scope: { 
-				id: '@',
-				state: '=',
+				state: '=', /* for scene until can check for DOM loaded */
+				type: '=',
+				title: '@',
+				settings: '=',
 				view: '=',
+				id: '@', /*???*/
 				cluster: '=',
 				overlay:'='
 			},
@@ -555,10 +558,6 @@
 				var ambientLight, pointLight;
 				var orbit, controls, particles, cluster;
 				var width, height, contW, contH, windowHalfX, windowHalfY;
-
-				var particleOriginalColor = new THREE.Color();
-				var positionOriginalColor = new THREE.Color();
-				var highlightColor = new THREE.Color("#ffffff");
 
 				scope.init = function () {
 
@@ -578,10 +577,12 @@
 					if (window.WebGLRenderingContext)
 						renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
 					else
-						renderer = new THREE.CanvasRenderer({alpha: true});					
-					renderer.setClearColor( 0xffffff );
+						renderer = new THREE.CanvasRenderer({alpha: true});	
+					var sceneColor = scope.view.viewpoint.sceneColor;
+					var clearColor = "0x" + sceneColor.substring(1);
+					renderer.setClearColor( clearColor );
 					renderer.setSize( width, height );
-					// renderer.autoClear = false; // To allow render overlay on top of sprited sphere
+					renderer.autoClear = false; // To allow render overlay on top of sprited sphere
 					renderer.setSize( width, height );
 					viewport.appendChild( renderer.domElement );
 
@@ -622,12 +623,6 @@
 					cameraTarget = new THREE.Vector3( 0,0,0 ); //cluster.boundingSphere.center;
 					cameraTranslate = cluster.boundingSphere.radius * scope.view.viewpoint.scale;
 					scope.lookAtTarget(cameraPosition, cameraTarget, cameraTranslate);
-
-					// FOG SCENE
-					var fogColor = 0xFFFFFF,
-						fogNear = cameraTranslate * scope.view.viewpoint.fogNear,
-						fogFar = cameraTranslate * scope.view.viewpoint.fogFar;
-					// scene.fog = new THREE.Fog( fogColor, fogNear, fogFar );
 
 				};
 
@@ -822,9 +817,13 @@
 		.module('TADkit')
 		.factory('Mesh', Mesh);
 
-	// constructor for cluster models ensemble
-	function Mesh() {
-		return function(positions, distances, settings) {
+	// create one line between each pair in dataset
+	function Mesh(Color) {
+		return function(data, overlay, settings) {
+			// console.log(data);
+
+			// Uses THREE.LinePieces to generate separate lines
+			// from an array of vertex pairs
 
 			var defaults = {
 				transparent: true,
@@ -833,22 +832,13 @@
 			settings = settings || {};
 			angular.extend(this, angular.copy(defaults), settings);
 
-			var mesh;
-			// Distances stored as one per contact-position-pair
-			// so the array needs an RGB (*3) for each pair (*2)
-			// ie. each distance needs to be replicated 6 times
-			var colors = new Float32Array( distances.length * 6 );
-			for (var i = distances.length - 1; i >= 0; i--) {
-				for (var j = 0; j < 6; j++) {
-					var pos = (i*6)+j;
-					colors[pos] = distances[i];
-				}
-			}
+			var vertexPairs = getVertexPairs(data);
+			var overlayColors = Color.colorsFromHex(overlay);
+			var vertexColors = getVertexColors(overlayColors);
 
 			var geometry = new THREE.BufferGeometry();
-
-			geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
-			geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
+			geometry.addAttribute( 'position', new THREE.BufferAttribute( vertexPairs, 3 ) );
+			geometry.addAttribute( 'color', new THREE.BufferAttribute( vertexColors, 3 ) );
 
 			geometry.computeBoundingSphere();
 
@@ -858,12 +848,68 @@
 				transparent: this.transparent
 			} );
 			
-			mesh = new THREE.Line(geometry, material, THREE.LinePieces); // THREE.LinePieces = separate lines
-
+			var mesh = new THREE.Line(geometry, material, THREE.LinePieces); // THREE.LinePieces = separate lines
 			mesh.name = "Mesh Network";
+			// console.log(mesh);
 			return mesh;
 		};
 	}
+
+	function getVertexPairs(data) {
+		// from an array of vertex pairs
+		// eg. [x1,y1,z1,x2,y2,z2,x1,y1,z1,x3,y3,z3,...xn,yn,zn,xm,ym,zm]
+		// such that all point pairs are represented uniquely
+		// ie. one half of matrix where array length = (n^2-n)/2
+		// eg.  1 2 3 4
+		//     1  x x x  ==  1-2 1-3 1-4    3
+		//     2    x x  ==  2-3 2-4      + 2
+		//     3      x  ==  3-4          + 1
+		//     4         ==  ((4*4)-4)*0.5  = 6 pairs of vertices
+		var dataLength = data.length / 3;
+		var totalPairs = ((dataLength * dataLength) - dataLength) * 0.5;
+		var vertexPairs = new Float32Array( totalPairs * 6); // 6 ie. 2 * xyz
+		var pairPos = 0;
+		for (var i = 0; i < data.length; i += 3) {
+			var vertex1 = i;
+			for (var j = i + 3; j < data.length; j += 3) {
+				var vertex2 = j;
+				// console.log(pairPos);
+				// console.log(data[vertex1]+","+data[vertex1+1]+","+data[vertex1+2]);
+				// console.log(data[vertex2]+","+data[vertex2+1]+","+data[vertex2+2]);
+				// from vertex
+				vertexPairs[pairPos] = data[vertex1]; pairPos++;
+				vertexPairs[pairPos] = data[vertex1 + 1]; pairPos++;
+				vertexPairs[pairPos] = data[vertex1 + 2]; pairPos++;
+				// to vertex
+				vertexPairs[pairPos] = data[vertex2]; pairPos++;
+				vertexPairs[pairPos] = data[vertex2 + 1]; pairPos++;
+				vertexPairs[pairPos] = data[vertex2 + 2]; pairPos++;
+			}
+		}
+		vertexPairs.name = "Mesh Vertex Pairs";
+		return vertexPairs;
+	}
+
+	function getVertexColors(colors) {
+		// Buffer Geomptry to be used as LinePieces so
+		// colors stored as one per data-position-pair
+		// so the array needs an RGB (*3) for each pair (*2)
+		// ie. each distance needs to be replicated 6 times
+		var vertexColors = new Float32Array( colors.length * 6 );
+		for (var i = colors.length - 1; i >= 0; i--) {
+			var pos = i * 6;
+			var RGB = colors[i];
+			vertexColors[pos] = RGB.r;
+			vertexColors[pos+1] = RGB.g;
+			vertexColors[pos+2] = RGB.b;
+			vertexColors[pos+3] = RGB.r;
+			vertexColors[pos+4] = RGB.g;
+			vertexColors[pos+5] = RGB.b;
+		}
+		return vertexColors;
+	}
+
+
 })();
 (function() {
 	'use strict';
@@ -935,6 +981,55 @@
 		return vertexGeometry;
 	}
 		
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.factory('Mesh', Mesh);
+
+	// constructor for cluster models ensemble
+	function Mesh() {
+		return function(positions, distances, settings) {
+			
+			var defaults = {
+				transparent: true,
+				visible: false
+			};	
+			settings = settings || {};
+			angular.extend(this, angular.copy(defaults), settings);
+
+			var mesh;
+			// Distances stored as one per contact-position-pair
+			// so the array needs an RGB (*3) for each pair (*2)
+			// ie. each distance needs to be replicated 6 times
+			var colors = new Float32Array( distances.length * 6 );
+			for (var i = distances.length - 1; i >= 0; i--) {
+				for (var j = 0; j < 6; j++) {
+					var pos = (i*6)+j;
+					colors[pos] = distances[i];
+				}
+			}
+
+			var geometry = new THREE.BufferGeometry();
+
+			geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+			geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
+
+			geometry.computeBoundingSphere();
+
+			var material = new THREE.LineBasicMaterial( {
+				vertexColors: THREE.VertexColors,
+				blending: THREE.AdditiveBlending,
+				transparent: this.transparent
+			} );
+			
+			mesh = new THREE.Line(geometry, material, THREE.LinePieces); // THREE.LinePieces = separate lines
+
+			mesh.name = "Mesh Network";
+			return mesh;
+		};
+	}
 })();
 (function() {
 	'use strict';
@@ -1052,10 +1147,13 @@
 		return {
 			restrict: 'EA',
 			scope: { 
-				title: '=',
-				state: '=',
+				type: '=',
+				title: '@',
 				settings: '=',
 				view: '=',
+				data: '=',
+				overlay: '=',
+				state: '=',
 				currentmodel: '=',
 				proximities: '=',
 				currentoverlay: '='
@@ -1064,7 +1162,8 @@
 			link: function postLink(scope, element, attrs) {
 				// threeService.three().then(function(THREE) {
 					// console.log(scope);
-
+// console.log(JSON.stringify(scope.overlay));
+// console.log(JSON.stringify(scope.currentoverlay));
 					var scene, component, viewport, stats;
 					var camera, cameraPosition, cameraTarget, cameraTranslate;
 					var ambientLight, pointLight;
@@ -1074,7 +1173,7 @@
 
 					var particleOriginalColor = new THREE.Color();
 					var positionOriginalColor = new THREE.Color();
-					var highlightColor = new THREE.Color("rgb(0,0,0)");
+					var highlightColor = new THREE.Color("rgb(0,0,0)"); // add to scene component
 
 					scope.init = function () {
 
@@ -1101,7 +1200,9 @@
 							renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
 						else
 							renderer = new THREE.CanvasRenderer({alpha: true});					
-						renderer.setClearColor( 0xffffff );
+					var sceneColor = scope.view.viewpoint.sceneColor;
+					var clearColor = "0x" + sceneColor.substring(1);
+						renderer.setClearColor( clearColor );
 						renderer.setSize( width, height );
 						renderer.autoClear = false; // To allow render overlay on top of sprited sphere
 						viewport.appendChild( renderer.domElement );
@@ -1161,7 +1262,8 @@
 						// scope.view.settings.chromatin.count = 1; // UNUSED
 
 						// GEOMETRY: MESH
-						mesh = new Mesh(scope.proximities.positions, scope.currentoverlay.colors.mesh, scope.view.settings.mesh);
+						// mesh = new Mesh(scope.proximities.positions, scope.proximities.distances, scope.view.settings.mesh);
+						mesh = new Mesh(scope.data, scope.overlay.colors.mesh, scope.view.settings.mesh);
 						mesh.visible = scope.view.settings.mesh.visible;
 						scene.add(mesh);
 
@@ -1185,10 +1287,9 @@
 						// scene.add(pointLightHelper);
 						
 						// FOG SCENE
-						var fogColor = scope.view.viewpoint.fogColor,
-							fogNear = cameraTranslate * scope.view.viewpoint.fogNear,
+						var fogNear = cameraTranslate * scope.view.viewpoint.fogNear,
 							fogFar = cameraTranslate * scope.view.viewpoint.fogFar;
-						if (scope.view.viewpoint.fog) scene.fog = new THREE.Fog(fogColor,fogNear,fogFar);
+						if (scope.view.viewpoint.fog) scene.fog = new THREE.Fog(sceneColor,fogNear,fogFar);
 
 						// EVENT LISTENERS / SCOPE WATCHERS
 						// window.addEventListener( 'resize', scope.onWindowResize, false );
@@ -1374,7 +1475,7 @@
 			restrict: 'EA',
 			scope: {
 				type: '=',
-				title: '=',
+				title: '@',
 				settings: '=',
 				view: '=',
 				data: '=',
@@ -1672,7 +1773,7 @@
 			restrict: 'EA',
 			scope: {
 				type: '=',
-				title: '=',
+				title: '@',
 				settings: '=',
 				view: '=',
 				data: '=',
@@ -1887,7 +1988,7 @@
 			restrict: 'EA',
 			scope: {
 				type: '=',
-				title: '=',
+				title: '@',
 				settings: '=',
 				view: '=',
 				data: '=',
@@ -2109,7 +2210,7 @@
 			restrict: 'EA',
 			scope: {
 				type: '=',
-				title: '=',
+				title: '@',
 				settings: '=',
 				view: '=',
 				data: '=',
@@ -2230,7 +2331,6 @@
 
 						var width = component.clientWidth - (2 * componentMargin) - margin.left - margin.right,
 							height = trackHeight - margin.top - margin.bottom;
-							console.log(height);
 						var particleWidth = (1 * width) / particlesCount;
 						xScale = d3.scale.linear()
 								.range([0, width])
@@ -2362,7 +2462,7 @@
 			restrict: 'EA',
 			scope: {
 				type: '=',
-				title: '=',
+				title: '@',
 				settings: '=',
 				view: '=',
 				data: '=',
@@ -2371,7 +2471,6 @@
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
-				// console.log(scope);
 
 				d3Service.d3().then(function(d3) {
 
@@ -2402,7 +2501,10 @@
 							left: parseInt(scope.view.settings.padding.left)
 						},
 						scale = 4,
+						maxValue = 2,
 						trackHeight = parseInt(scope.view.settings.heightInner),
+						nodeSize = scope.view.settings.nodeSize,
+						verticalOffset = margin.top + (nodeSize * 0.5),
 						nodePadding = 0,
 						nodeColor = scope.view.settings.color,
 						harmonicsColor = scope.overlay.palette[0],
@@ -2469,13 +2571,13 @@
 
 					scope.getOpacity = function(value) {
 						var opacity;
-						var scaled = value / 5; // 5 being the limit...
-						opacity = scaled ;
+						var scaled = value / maxValue; // 5 being the limit...
+						opacity = scaled * scaled;
 						return opacity;
 					};
 
 					scope.getStrokeWidth = function(value) {
-						var strokeWidth = 10;
+						var strokeWidth = 5;
 						var scaled = value / 5; // 5 being the limit...
 						strokeWidth = strokeWidth * scaled;
 						return strokeWidth;
@@ -2486,10 +2588,8 @@
  
 						if (!data) return;
 
-						var width = component.clientWidth - (2 * componentMargin) - margin.left - margin.right,
-							height = trackHeight - margin.top - margin.bottom,
-							nodeHeight = height,// - margin.top - margin.bottom,
-							verticalOffset = margin.top;//(trackHeight - nodeHeight) * 0.5,
+						var width = component.clientWidth - (2 * componentMargin) - margin.left - margin.right;
+						var height = trackHeight - margin.top - margin.bottom;
 						var particleWidth = (1 * width) / particlesCount;
 						xScale = d3.scale.linear()
 								.range([0, width])
@@ -2529,79 +2629,171 @@
 
 						// clipping box to clip overflow
 						// solid rect as background also allow mouse events everywhere 
-						defs = chart.append("defs")
-							.append("clipPath")
+						defs = chart.append("defs");
+
+						defs.append("clipPath")
 							.attr("id", clipPathUrl)
 							.append("rect")
 							.attr("width", width)
 							.attr("height", height)
 							.attr('fill', 'white');
 
+						// defs.append("svg:marker")
+						// 	.attr("id", "harmonics-marker")
+						// 	.attr("viewBox", "0 -3 8 6")
+						// 	.attr("refX", 20)
+						// 	.attr("refY", 0)
+						// 	.attr("markerWidth", 8)
+						// 	.attr("markerHeight", 6)
+						// 	.attr("orient", "auto")
+						//     .append('svg:path')
+						// 		.attr('d', "M8,-3 L0,0 L8,6")
+						// 		.attr("stroke", harmonicsColor)
+						// 		.attr("stroke-width", 1) // get from line?
+						// 		.attr('fill', "none");
+
+						// defs.append("svg:marker")
+						// 	.attr("id", "lowerbounds-marker")
+						// 	.attr("viewBox", "0 -3 8 6")
+						// 	.attr("refX", 8)
+						// 	.attr("refY", 0)
+						// 	.attr("markerWidth", 8)
+						// 	.attr("markerHeight", 6)
+						// 	.attr("orient", "auto")
+						//     .append('svg:path')
+						// 		.attr('d', "M0,-3 L8,0 L0,3")
+						// 		.attr("stroke", lowerBoundsColor)
+						// 		.attr("stroke-width", 1) // get from line?
+						// 		.attr('fill', "none");
+
 						focus = chart.append("g")
 							.attr("class", "focus");
 
-						// zoomArea = focus.append("g")
-						// 	.attr("class", "zoom")
-						// 	.append("rect")
-						// 	.attr("width", width)
-						// 	.attr("height", height)
-						// 	.attr('fill', 'white');
-
-						container = focus.append("g")
-							.attr("class", "container")
+						harmonics = focus.append("g")
+							.attr("class", "harmonics")
 							.attr('clip-path', clipPath);
 
-						// var axisH = focus.append("g")
-						// 	.attr("class", "axis upper")
-						// 	.attr("transform", "translate(0," + nodeHeight + ")")
-						// 	.call(axisUpper);
-
-						// var axisL = focus.append("g")
-						// 	.attr("class", "axis lower")
-						// 	.attr("transform", "translate(0," + 0 + ")")
-						// 	.call(axisLower);
+						lowerBounds = focus.append("g")
+							.attr("class", "lowerbounds")
+							.attr('clip-path', clipPath);
 
 						labels  = chart.append("g")
 							.attr("class", "labels");
 
-							harmonics = container.selectAll("line")
+							// HARMONICS
+							// from:
+							harmonics.append("rect")
+								.attr("x", (data.dimension * particleWidth - (particleWidth)))
+								.attr("y", verticalOffset - (nodeSize * 0.5))
+								.attr("width", particleWidth)
+								.attr("height", nodeSize)
+								// .attr("stroke", harmonicsColor)
+								// .attr("stroke-width", 1)
+								.attr("fill", harmonicsColor)
+								.append("svg:title")
+									.text(data.dimension);
+							// connector:
+							harmonics.selectAll("line")
 								.data(data.harmonics)
 								.enter()
 								.append("line")
-									.attr("x1", function(d) { return (data.dimension * particleWidth - (particleWidth * 0.5) ); } )
+									.attr("x1", function(d) { return (d[0] * particleWidth - (particleWidth * 0.5)); })
 									.attr("y1", verticalOffset)
-									.attr("x2", function(d) { return (d[1] * particleWidth - (particleWidth * 0.5) ); } )
-									.attr("y2", nodeHeight)
+									.attr("x2", function(d) { return (d[1] * particleWidth - (particleWidth * 0.5)); })
+									.attr("y2", height - nodeSize)
 									.attr("stroke", harmonicsColor)
-									.attr("opacity", function(d) { return scope.getOpacity(d[3]); } )
-									.attr("stroke-width", function(d) { return scope.getStrokeWidth(d[3]); } )
-								// .append("circle")
-								// 	.attr("cx", 0)//function(d) { return (d[1] * particleWidth - (particleWidth * 0.5) ); } )
-								// 	.attr("cy", 0)//nodeHeight)
-								// 	.attr("r", 4)
-								// 	.style("fill", harmonicsColor)
+									.attr("opacity", 1)//function(d) { return scope.getOpacity(d[3]); } )
+									.attr("stroke-width", function(d) { return scope.getStrokeWidth(d[3]); })
+									.attr("marker-end", "url(#harmonics-marker)")
+									.append("svg:title")
+										.text(function(d) { return d[1] + ":" + d[3]; });
+							// to:
+							// harmonics.selectAll("polygon")
+							// 	.data(data.harmonics)
+							// 	.enter()
+							// 	.append("polygon")
+							// 		.attr("points", function(d) {
+							// 			var x = (d[1] * particleWidth) - (particleWidth * 0.5);
+							// 			var y = height;
+							// 			var points = x+","+(y-nodeSize)+" "+(x+(nodeSize*0.5))+","+y+" "+(x-(nodeSize*0.5))+","+y;
+							// 			return points;
+							// 		} )
+							// 		.attr("opacity", function(d) { return scope.getOpacity(d[3]); } )
+							// 		.attr("fill", harmonicsColor)
+							// 	.append("svg:title")
+							// 		.text(function(d) { return d[1] + ":" + d[3]; });
+							harmonics.selectAll("circle")
+								.data(data.harmonics)
+								.enter()
+								.append("circle")
+									.attr("cx", function(d) { return (d[1] * particleWidth - (particleWidth * 0.5)); })
+									.attr("cy", height - nodeSize)
+									.attr("r", (nodeSize * 0.5))
+									.attr("opacity", function(d) { return scope.getOpacity(d[3]); })
+									.attr("fill", harmonicsColor)
 								.append("svg:title")
-									.text(function(d,i) { return i + ":" + d; });
+									.text(function(d) { return d[0] + " : " + d[1]; });
 
-							lowerBounds = container.selectAll("line")
+							// LOWERBOUNDS
+							// from:
+							lowerBounds.append("rect")
+								.attr("x", (data.dimension * particleWidth - (particleWidth)))
+								.attr("y", (height - (nodeSize * 1.5)))
+								.attr("width", particleWidth)
+								.attr("height", nodeSize)
+								// .attr("stroke", lowerBoundsColor)
+								// .attr("stroke-width", 1)
+								.attr("fill", lowerBoundsColor)
+								.append("svg:title")
+									.text(data.dimension);
+							// connector:
+							lowerBounds.selectAll("line")
 								.data(data.lowerBounds)
 								.enter()
 								.append("line")
-									.attr("x1", function(d) { return (data.dimension * particleWidth - (particleWidth * 0.5) ); } )
-									.attr("y1", nodeHeight)
-									.attr("x2", function(d) { return (d[1] * particleWidth - (particleWidth * 0.5) ); } )
+									.attr("x1", function(d) { return (d[0] * particleWidth - (particleWidth * 0.5)); })
 									.attr("y2", verticalOffset)
+									.attr("x2", function(d) { return (d[1] * particleWidth - (particleWidth * 0.5)); })
+									.attr("y1", height - nodeSize)
 									.attr("stroke", lowerBoundsColor)
-									.attr("opacity", function(d) { return scope.getOpacity(d[3]); } )
-									.attr("stroke-width", function(d) { return scope.getStrokeWidth(d[3]); } )
+									.attr("opacity", function(d) { return scope.getOpacity(d[3]); })
+									.attr("stroke-width", function(d) { return scope.getStrokeWidth(d[3]); })
+									.attr("marker-end", "url(#lowerbounds-marker)")
+									.append("svg:title")
+										.text(function(d) { return d[1] + ":" + d[3]; });
+							// to:
+							// to:
+							// lowerBounds.selectAll("polygon")
+							// 	.data(data.lowerBounds)
+							// 	.enter()
+							// 	.append("polygon")
+							// 		.attr("points", function(d) {
+							// 			var x = (d[1] * particleWidth) - (particleWidth * 0.5);
+							// 			var y = verticalOffset - nodeSize;
+							// 			var points = x+","+y+" "+(x+(nodeSize*0.5	))+","+(y+nodeSize)+" "+(x-(nodeSize*0.5))+","+(y+nodeSize);
+							// 			return points;
+							// 		} )
+							// 		.attr("opacity", function(d) { return scope.getOpacity(d[3]); } )
+							// 		.style("fill", lowerBoundsColor)
+							// 	.append("svg:title")
+							// 		.text(function(d,i) { return d[1] + ":" + d[3]; });
+							lowerBounds.selectAll("circle")
+								.data(data.lowerBounds)
+								.enter()
+								.append("circle")
+									.attr("cx", function(d) { return (d[1] * particleWidth - (particleWidth * 0.5)); })
+									.attr("cy", verticalOffset)
+									.attr("r", (nodeSize * 0.5))
+									.attr("opacity", function(d) { return scope.getOpacity(d[3]); })
+									.attr("fill", lowerBoundsColor)
 								.append("svg:title")
-									.text(function(d,i) { return i + ":" + d; });
+									.text(function(d) { return d[0] + " : " + d[1]; });
 
 						highlight = chart.append("rect")
 								.attr("id", "highlight")
-								.attr("x", function(d) { return xScale( scope.settings.current.position); } )
+								.attr("x", xScale(scope.settings.current.position))
 								.attr("y", 0)
-								.attr("width", highlightWidth )
+								.attr("width", highlightWidth)
 								.attr("height", trackHeight)
 								.attr("class", "highlight-follow");
 						// highlight
@@ -2656,7 +2848,7 @@
 			restrict: 'EA',
 			scope: {
 				type: '=',
-				title: '=',
+				title: '@',
 				settings: '=',
 				view: '=',
 				data: '=',
@@ -2707,7 +2899,7 @@
 					var svg = d3.select(viewport).append('svg');
 					var slider, xScale, prime3Axis, prime5Axis;
 					var handleWidth, handleHeight;
-					var xAxis, brush, handle;
+					var xAxis, brush, handle, label;
 
 					// RESIZE
 					scope.$watch(function(){
@@ -2802,12 +2994,15 @@
 							.attr("cy", height)
 							.attr("r", handleWidth * 0.6);
 
-							// handle.append("text")
-							// 	.attr("x", xScale(scope.settings.current.position) - (handleWidth * 0.5))
-							// 	.attr("y", height)
-							// 	.attr("text-anchor", "bottom")
-							// 	.style("font-size", "10px")
-							// 	.text(scope.settings.current.position);
+						label = slider.append("text")
+							.attr("id", "position")
+							.attr("x", xScale(scope.settings.current.position) - (handleWidth * 0.5))
+							.attr("y", height - 10)
+							.attr("text-anchor", "bottom")
+							.attr("font-family", "sans-serif")
+							.attr("font-size", "10px")
+							.attr("fill", "#000000")
+							.text(scope.settings.current.particle);
 
 						slider
 							.call(brush.extent([(scope.settings.current.position), 0]))
@@ -2817,7 +3012,10 @@
 					// UPDATE
 					scope.update = function(data) {
 						svg.select("#handle") //.style("visibility", "hidden");
-						.attr("cx", function(d) { return xScale( scope.settings.current.position ); } );
+						.attr("cx", xScale(scope.settings.current.position) );
+						svg.select("#position") //.style("visibility", "hidden");
+						.attr("x", (xScale(scope.settings.current.position) - (handleWidth * 0.5)) )
+						.text(scope.settings.current.particle);
 					};
 
 					// BRUSH
@@ -2859,7 +3057,7 @@
 			restrict: 'EA',
 			scope: {
 				type: '=',
-				title: '=',
+				title: '@',
 				settings: '=',
 				view: '=',
 				data: '=',
@@ -3713,6 +3911,7 @@
 
 		// Calculating Initial Proximities
 		//NOTE in future if more than 1 currentModel need same number of currentProximities
+		$scope.allProximities = Proximities.get(); // for Scene
 		$scope.currentProximities = Proximities.at($scope.settings.current.particle); // for D3 tracks
 
 		// Calculating Initial Restraints
@@ -3730,7 +3929,7 @@
 				if (component.object.type == "scene") {
 					component.data = $scope.current.model.data;
 					 // component.proximities required for Scenes: overlay.colors Saturation
-					component.proximities = $scope.currentProximities;
+					component.proximities = $scope.allProximities;
 					component.overlay = $scope.current.overlay;
 					component.overlay.state = {};
 					component.overlay.object.state.index = Overlays.getCurrentIndex();
@@ -3769,8 +3968,9 @@
 		// Watch for Slider Position updates
 		$scope.$watch('settings.current.particle', function(newParticle, oldParticle) { // deep watch as change direct and changes all?
 			if ( newParticle !== oldParticle ) {
+				console.log(newParticle);
 				$scope.currentProximities = Proximities.at(newParticle); // for D3 tracks
-				$scope.currentProximities = Restraints.at(newParticle); // for D3 tracks
+				$scope.currentRestraints = Restraints.at(newParticle); // for D3 tracks
 				if ($scope.current.overlay.object.type == "matrix") {
 					Overlays.at(newParticle);
 					$scope.current.overlay = Overlays.getOverlay();
@@ -3843,9 +4043,9 @@
 	'use strict';
 	angular
 		.module('TADkit')
-		.service('colorConvert', colorConvert);
+		.service('ColorConvert', ColorConvert);
 
-	function colorConvert() {
+	function ColorConvert() {
 		// var rootObj = this;
 		var rootObj = {};
 		rootObj.re_ = {
@@ -4053,7 +4253,18 @@
 
 				ary.splice(0, 1);
 				return rootObj.arrayToRGBA(ary.map(scale));
-			}	
+			},
+			hexToRGB: function(hex) {
+				var RGB = [];
+				RGB.push(hexToR(hex));
+				RGB.push(hexToG(hex));
+				RGB.push(hexToB(hex));
+				return RGB;
+			},
+			hexToR: function(hex) {return parseInt((cutHex(hex)).substring(0,2),16)},
+			hexToG: function(hex) {return parseInt((cutHex(hex)).substring(2,4),16)},
+			hexToB: function(hex) {return parseInt((cutHex(hex)).substring(4,6),16)},
+			cutHex: function(hex) {return (hex.charAt(0)=="#") ? hex.substring(1,7):hex}	
 		};
 	}
 })();
@@ -4063,7 +4274,7 @@
 		.module('TADkit')
 		.factory('Color', Color);
 
-	function Color(colorConvert) {
+	function Color(ColorConvert) {
 		// NOTE Ideally these will all be deprecated
 		//      in favor of nbative JS, THREE or D3 functions.
 		//      Those already UNUSED are marked as such.
@@ -4091,7 +4302,7 @@
 					if(regex.param.test(line)){
 						match = line.match(regex.param);
 						if(section){
-							var hexColor = colorConvert.nameToHex( match[2] );
+							var hexColor = ColorConvert.nameToHex( match[2] );
 							colors[section][match[1]] = hexColor;
 						}else{
 							colors[match[1]] = match[2];
@@ -4878,7 +5089,7 @@
 
 			},
 			segment: function() {
-				var settings = Settings.get();
+				var settings = Settings.get().current;
 				var currentDataset = Datasets.getDataset();
 					var chromosomeIndex = 0;
 					if (currentDataset.object.chromosomeIndex) {
@@ -4887,45 +5098,41 @@
 				var chromStart = currentDataset.object.chromStart[chromosomeIndex];
 				var currentStoryboard = Storyboards.getStoryboard();
 
-				// GET FROM SETTINGS service...
-				var particlesCount = currentDataset.models[0].data.length / currentDataset.object.components;
-				var particleSegments = currentStoryboard.components[0].view.settings.chromatin.particleSegments;
-				var segmentsCount = particlesCount * particleSegments;
-				var segmentLength = currentDataset.object.resolution / particleSegments; // base pairs
-
+				// var particlesCount = currentDataset.models[0].data.length / currentDataset.object.components;
+				// var particleSegments = currentStoryboard.components[0].view.settings.chromatin.particleSegments;
+				// var segmentsCount = particlesCount * particleSegments;
 
 				var self = this; // SYNChronous functions...
 				angular.forEach(overlays.loaded, function(overlay, key) {
 
 					// check if colors already exist (for chromatin as principal set) or number of segments have changed
-					if (!overlay.colors.chromatin || (overlay.colors.chromatin && segmentsCount != settings.current.segmentsCount) ) {
+					if (!overlay.colors.chromatin) { // ??? || (overlay.colors.chromatin && segmentsCount != settings.segmentsCount)
 
 						// run function based on object type
 						var type = overlay.object.type;
 						var format = overlay.object.format;
-						var meshEdgesCount = particlesCount * particlesCount;
 						if (type == "gradient" && format == "hex") {
 							// palette must contain 2 hex values
-							overlay.colors.particles = Segments.gradientHCL(overlay, particlesCount);
-							overlay.colors.chromatin = Segments.gradientHCL(overlay, segmentsCount);
-							overlay.colors.mesh = []; // relevance???
+							overlay.colors.particles = Segments.gradientHCL(overlay, settings.particlesCount);
+							overlay.colors.chromatin = Segments.gradientHCL(overlay, settings.segmentsCount);
+							overlay.colors.mesh = Segments.gradientHCL(overlay, settings.edgesCount);
 						} else if (type == "wiggle_0" && format == "fixed") {
 							// OJO! create additional option for format = "bigwig-variable"
-							overlay.colors.particles = Segments.bicolor(overlay, particlesCount);
-							overlay.colors.chromatin = Segments.bicolor(overlay, segmentsCount);
+							overlay.colors.particles = Segments.bicolor(overlay, settings.particlesCount);
+							overlay.colors.chromatin = Segments.bicolor(overlay, settings.segmentsCount);
 							overlay.colors.mesh = []; // relevance???
 						} else if (type == "wiggle_0" && format == "variable") {
 							// To Do...
 						} else if (type == "bedgraph") {
-							overlay.colors.particles = Segments.bicolorVariable(overlay, chromStart, particlesCount, 1);
-							overlay.colors.chromatin = Segments.bicolorVariable(overlay, chromStart, segmentsCount, segmentLength);
+							overlay.colors.particles = Segments.bicolorVariable(overlay, chromStart, settings.particlesCount, 1);
+							overlay.colors.chromatin = Segments.bicolorVariable(overlay, chromStart, settings.segmentsCount, settings.segmentLength);
 							overlay.colors.mesh = []; // relevance???
 						} else if (type == "matrix") {
 							// Distances are per edge so just convert to color
 							overlay.colors.particlesMatrix = Segments.matrix(overlay, 1); // ie. per particle
-							overlay.colors.chromatinMatrix = Segments.matrix(overlay, particleSegments);
+							overlay.colors.chromatinMatrix = Segments.matrix(overlay, settings.particleSegments);
 							overlay.colors.meshMatrix = overlay.colors.particlesMatrix; // ie. also color mesh edges by matrix
-							self.at(1, particlesCount, particleSegments);
+							self.at(1, settings.particlesCount, settings.particleSegments);
 						} else if (type == "misc" && format == "variable") {
 							overlay.colors.particles = [];
 							overlay.colors.chromatin = [];
@@ -4934,8 +5141,8 @@
 							// data must have .start and .end
 							var features = Resources.get().biotypes;
 							var singleSegment = 1;
-							overlay.colors.particles = Segments.features(overlay, chromStart, particlesCount, singleSegment, features);
-							overlay.colors.chromatin = Segments.features(overlay, chromStart, segmentsCount, segmentLength, features);
+							overlay.colors.particles = Segments.features(overlay, chromStart, settings.particlesCount, singleSegment, features);
+							overlay.colors.chromatin = Segments.features(overlay, chromStart, settings.segmentsCount, settings.segmentLength, features);
 							overlay.colors.mesh = []; // relevance???
 						}
 
@@ -4948,14 +5155,14 @@
 				return overlays;
 			},
 			at: function(currentParticle) {
-				var settings = Settings.get();
+				var settings = Settings.get().current;
 				angular.forEach(overlays.loaded, function(overlay, key) {
 					var type = overlay.object.type;
 					if (type == "matrix") {
-						var particleStart = (currentParticle - 1) * settings.current.particlesCount;
-						var particleEnd = currentParticle * settings.current.particlesCount;
-						var chromatinStart = particleStart * settings.current.particleSegments;
-						var chromatinEnd = particleEnd * settings.current.particleSegments;
+						var particleStart = (currentParticle - 1) * settings.particlesCount;
+						var particleEnd = currentParticle * settings.particlesCount;
+						var chromatinStart = particleStart * settings.particleSegments;
+						var chromatinEnd = particleEnd * settings.particleSegments;
 						// console.log(overlay);
 						overlay.colors.particles = overlay.colors.particlesMatrix.slice(particleStart, particleEnd);
 						overlay.colors.chromatin = overlay.colors.chromatinMatrix.slice(chromatinStart, chromatinEnd);
@@ -5411,7 +5618,7 @@
 				angular.extend(this, angular.copy(defaults), settings);
 
 				var vertices = Datasets.getModel().data;
-				settings.maxDistance = this.getMaxDistance(vertices);
+				this.maxDistance = this.getMaxDistance(vertices);
 
 				var vertexpos = 0;
 				var distancepos = 0;
@@ -5437,7 +5644,7 @@
 						var dist = Math.sqrt( dx * dx + dy * dy + dz * dz );
 
 						// if ( dist < this.minDistance ) {
-
+							// if (i == "0" && j=="0") console.log("i:"+i+" ("+vertices[i*3]+","+vertices[i*3+1]+","+vertices[i*3+2]+") j:"+j+" ("+vertices[j*3]+","+vertices[j*3+1]+","+vertices[j*3+2]+")");
 							// FROM PARTICLE
 							positions[ vertexpos++ ] = vertices[ i * 3     ]; // from u
 							positions[ vertexpos++ ] = vertices[ i * 3 + 1 ]; // from v
@@ -5454,7 +5661,6 @@
 							// Can be added as 'color' to THREE.BufferGeometry
 							// using THREE.BufferAttribute to store the array
 							// but would need *6 to give RGB for each position.
-
 							var distance = (1.0 - (dist / this.maxDistance)); // .toFixed(2)
 							distances[ distancepos++ ] = distance;
 
@@ -5480,7 +5686,7 @@
 				current.dimension = currentParticle;
 				var dataStart = (currentParticle - 1) * proximities.dimension;
 				var dataEnd = currentParticle * proximities.dimension;
-				current.positions = proximities.positions.subarray((dataStart * 3), (dataEnd * 3));
+				current.positions = proximities.positions.subarray((dataStart * 2 * 3), (dataEnd * 2 * 3));
 				current.distances = proximities.distances.subarray(dataStart, dataEnd);
 				return current;
 			},
@@ -5892,6 +6098,7 @@
 				// TODO: component/model = 0  - change to default/current
 				settings.current.particleSegments = storyboard.components[0].view.settings.chromatin.particleSegments;
 				settings.current.particlesCount = dataset.models[0].data.length / dataset.object.components;
+				settings.current.edgesCount = ((settings.current.particlesCount*settings.current.particlesCount)-settings.current.particlesCount)*0.5;
 				settings.current.segmentsCount = settings.current.particlesCount * settings.current.particleSegments;
 				// NOTE: segmentLength can be calculated in 2 ways:
 				// 1. particleResolution (TADbit data) / particleSegments (TADkit setting)

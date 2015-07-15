@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Color', Color);
 
-	function Color(colorConvert) {
+	function Color(ColorConvert) {
 		// NOTE Ideally these will all be deprecated
 		//      in favor of nbative JS, THREE or D3 functions.
 		//      Those already UNUSED are marked as such.
@@ -32,7 +32,7 @@
 					if(regex.param.test(line)){
 						match = line.match(regex.param);
 						if(section){
-							var hexColor = colorConvert.nameToHex( match[2] );
+							var hexColor = ColorConvert.nameToHex( match[2] );
 							colors[section][match[1]] = hexColor;
 						}else{
 							colors[match[1]] = match[2];

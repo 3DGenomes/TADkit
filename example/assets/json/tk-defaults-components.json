@@ -29,6 +29,7 @@
 				"near" : 1,
 				"far" : 1000000,
 				"translate" : 30000,
+				"sceneColor" : "#ffffff",
 				"fog" : true,
 				"fogNear" : 0.8,
 				"fogFar" : 1.2
@@ -106,12 +107,13 @@
 				"near" : 1,
 				"far" : 1000000,
 				"translate" : 30000,
+				"sceneColor" : "#ffffff",
 				"fog" : true,
 				"fogNear" : 0.8,
 				"fogFar" : 1.25
 			},
 			"controls" : {
-				"autoRotate" : true,
+				"autoRotate" : false,
 				"autoRotateSpeed" : 4.0
 			},
 			"viewtype" : "line",
@@ -350,6 +352,7 @@
 				"margin" : "0px",
 				"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
 				"color" : "#0000ff",
+				"nodeSize" : 5,
 				"cursorWidth" : 1
 			}
 		}

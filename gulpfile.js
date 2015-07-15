@@ -167,6 +167,7 @@ gulp.task('watch', function() {
 		'src/*.js',
 		'src/*.html',
 		// 'src/assets/css/*.css',
+		'src/assets/json/*.json',
 		'src/components/*.js',
 		'src/components/panels/*.js',
 		'src/components/panels/*.html',

@@ -30,6 +30,7 @@
 				// TODO: component/model = 0  - change to default/current
 				settings.current.particleSegments = storyboard.components[0].view.settings.chromatin.particleSegments;
 				settings.current.particlesCount = dataset.models[0].data.length / dataset.object.components;
+				settings.current.edgesCount = ((settings.current.particlesCount*settings.current.particlesCount)-settings.current.particlesCount)*0.5;
 				settings.current.segmentsCount = settings.current.particlesCount * settings.current.particleSegments;
 				// NOTE: segmentLength can be calculated in 2 ways:
 				// 1. particleResolution (TADbit data) / particleSegments (TADkit setting)

@@ -17,6 +17,7 @@
 		"particle" : 0,
 		"particleSegments" : 0,
 		"particlesCount" : 0,
+		"edgesCount" : 0,
 		"position" : 0,
 		"segment" : 0,
 		"segmentLength" : 0,

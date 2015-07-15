@@ -7,7 +7,7 @@
 	// constructor for cluster models ensemble
 	function Mesh() {
 		return function(positions, distances, settings) {
-
+			
 			var defaults = {
 				transparent: true,
 				visible: false

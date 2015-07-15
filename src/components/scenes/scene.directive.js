@@ -8,10 +8,13 @@
 		return {
 			restrict: 'EA',
 			scope: { 
-				title: '=',
-				state: '=',
+				type: '=',
+				title: '@',
 				settings: '=',
 				view: '=',
+				data: '=',
+				overlay: '=',
+				state: '=',
 				currentmodel: '=',
 				proximities: '=',
 				currentoverlay: '='
@@ -20,7 +23,8 @@
 			link: function postLink(scope, element, attrs) {
 				// threeService.three().then(function(THREE) {
 					// console.log(scope);
-
+// console.log(JSON.stringify(scope.overlay));
+// console.log(JSON.stringify(scope.currentoverlay));
 					var scene, component, viewport, stats;
 					var camera, cameraPosition, cameraTarget, cameraTranslate;
 					var ambientLight, pointLight;
@@ -30,7 +34,7 @@
 
 					var particleOriginalColor = new THREE.Color();
 					var positionOriginalColor = new THREE.Color();
-					var highlightColor = new THREE.Color("rgb(0,0,0)");
+					var highlightColor = new THREE.Color("rgb(0,0,0)"); // add to scene component
 
 					scope.init = function () {
 
@@ -57,7 +61,9 @@
 							renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
 						else
 							renderer = new THREE.CanvasRenderer({alpha: true});					
-						renderer.setClearColor( 0xffffff );
+					var sceneColor = scope.view.viewpoint.sceneColor;
+					var clearColor = "0x" + sceneColor.substring(1);
+						renderer.setClearColor( clearColor );
 						renderer.setSize( width, height );
 						renderer.autoClear = false; // To allow render overlay on top of sprited sphere
 						viewport.appendChild( renderer.domElement );
@@ -117,7 +123,8 @@
 						// scope.view.settings.chromatin.count = 1; // UNUSED
 
 						// GEOMETRY: MESH
-						mesh = new Mesh(scope.proximities.positions, scope.currentoverlay.colors.mesh, scope.view.settings.mesh);
+						// mesh = new Mesh(scope.proximities.positions, scope.proximities.distances, scope.view.settings.mesh);
+						mesh = new Mesh(scope.data, scope.overlay.colors.mesh, scope.view.settings.mesh);
 						mesh.visible = scope.view.settings.mesh.visible;
 						scene.add(mesh);
 
@@ -141,10 +148,9 @@
 						// scene.add(pointLightHelper);
 						
 						// FOG SCENE
-						var fogColor = scope.view.viewpoint.fogColor,
-							fogNear = cameraTranslate * scope.view.viewpoint.fogNear,
+						var fogNear = cameraTranslate * scope.view.viewpoint.fogNear,
 							fogFar = cameraTranslate * scope.view.viewpoint.fogFar;
-						if (scope.view.viewpoint.fog) scene.fog = new THREE.Fog(fogColor,fogNear,fogFar);
+						if (scope.view.viewpoint.fog) scene.fog = new THREE.Fog(sceneColor,fogNear,fogFar);
 
 						// EVENT LISTENERS / SCOPE WATCHERS
 						// window.addEventListener( 'resize', scope.onWindowResize, false );
