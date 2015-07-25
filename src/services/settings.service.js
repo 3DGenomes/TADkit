@@ -10,14 +10,14 @@
 		return {
 			load: function() {
 				var deferral = $q.defer();
-				var source = "assets/json/tk-defaults-settings.json";
+				var dataUrl = "assets/json/tk-defaults-settings.json";
 				if( Object.getOwnPropertyNames(settings).length > 0 ) {
 					deferral.resolve(settings);
 				} else {
-					$http.get(source)
+					$http.get(dataUrl)
 					.success( function(data) {
 						settings = data;
-						console.log("Settings loaded from " + source);
+						console.log("Settings loaded from " + dataUrl);
 						deferral.resolve(settings);
 					});
 				}

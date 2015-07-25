@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Overlays', Overlays);
 
-	function Overlays($q, $http, uuid4, d3Service, Settings, Datasets, Storyboards, Proximities, Ensembl, Segments, Resources) {
+	function Overlays($q, $http, uuid4, d3Service, Settings, Datasets, Storyboards, Proximities, Restraints, Ensembl, Segments, Networks, Resources) {
 		var overlays = {
 			loaded : [],
 			current : {index:0}
@@ -13,15 +13,15 @@
 		return {
 			load: function() {
 				var deferral = $q.defer();
-				var source = "assets/json/tk-defaults-overlays.json";
+				var dataUrl = "assets/json/tk-defaults-overlays.json";
 				if( overlays.loaded.length > 0 ) {
 					deferral.resolve(overlays);
 				} else {
-					$http.get(source)
+					$http.get(dataUrl)
 					.success( function(data) {
 						overlays.loaded = data;
 						// overlays.current.index = overlays.loaded.length - 1;
-						console.log("Overlays (" + data.length + ") loaded from " + source);
+						console.log("Overlays (" + data.length + ") loaded from " + dataUrl);
 						deferral.resolve(overlays);
 					});
 				}
@@ -146,7 +146,14 @@
 								},
 								"palette" : [colored,"#cccccc"],
 								"data" : [],
-								"colors" : {}
+								"colors" : {
+									"particles" : [],
+									"chromatin" : [],
+									"network" : {
+										"RGB" : [],
+										"alpha" : []
+									}
+								}
 							}
 						);
 						// convert column data to array
@@ -229,8 +236,12 @@
 						overlaysAsync.push(ensembl);
 					}
 
-					if (overlay.object.type == "matrix") {
+					if (overlay.object.id == "proximities") {
 						overlay.data = Proximities.get().distances;
+					}
+
+					if (overlay.object.id == "restraints") {
+						overlay.data = Datasets.getDataset().restraints;
 					}
 
 				});
@@ -259,7 +270,7 @@
 				angular.forEach(overlays.loaded, function(overlay, key) {
 
 					// check if colors already exist (for chromatin as principal set) or number of segments have changed
-					if (!overlay.colors.chromatin) { // ??? || (overlay.colors.chromatin && segmentsCount != settings.segmentsCount)
+					if (!overlay.colors.chromatin || overlay.colors.chromatin.length === 0) { // ??? || (overlay.colors.chromatin && segmentsCount != settings.segmentsCount)
 
 						// run function based on object type
 						var type = overlay.object.type;
@@ -268,35 +279,40 @@
 							// palette must contain 2 hex values
 							overlay.colors.particles = Segments.gradientHCL(overlay, settings.particlesCount);
 							overlay.colors.chromatin = Segments.gradientHCL(overlay, settings.segmentsCount);
-							overlay.colors.mesh = Segments.gradientHCL(overlay, settings.edgesCount);
+							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.edgesCount);
+							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.edgesCount);
 						} else if (type == "wiggle_0" && format == "fixed") {
 							// OJO! create additional option for format = "bigwig-variable"
 							overlay.colors.particles = Segments.bicolor(overlay, settings.particlesCount);
 							overlay.colors.chromatin = Segments.bicolor(overlay, settings.segmentsCount);
-							overlay.colors.mesh = []; // relevance???
+							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.edgesCount);
+							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.edgesCount);
 						} else if (type == "wiggle_0" && format == "variable") {
 							// To Do...
 						} else if (type == "bedgraph") {
 							overlay.colors.particles = Segments.bicolorVariable(overlay, chromStart, settings.particlesCount, 1);
 							overlay.colors.chromatin = Segments.bicolorVariable(overlay, chromStart, settings.segmentsCount, settings.segmentLength);
-							overlay.colors.mesh = []; // relevance???
+							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.edgesCount);
+							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.edgesCount);
 						} else if (type == "matrix") {
 							// Distances are per edge so just convert to color
 							overlay.colors.particlesMatrix = Segments.matrix(overlay, 1); // ie. per particle
 							overlay.colors.chromatinMatrix = Segments.matrix(overlay, settings.particleSegments);
-							overlay.colors.meshMatrix = overlay.colors.particlesMatrix; // ie. also color mesh edges by matrix
+							overlay.colors.networkMatrix = overlay.colors.particlesMatrix; // ie. also color network edges by matrix
 							self.at(1, settings.particlesCount, settings.particleSegments);
-						} else if (type == "misc" && format == "variable") {
+						} else if (type == "misc" && format == "variable") { // eg. restraints
 							overlay.colors.particles = [];
 							overlay.colors.chromatin = [];
-							overlay.colors.mesh = [];
+							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.edgesCount);
+							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.edgesCount);
 						} else if (type == "ensembl" && format == "json") {
 							// data must have .start and .end
 							var features = Resources.get().biotypes;
 							var singleSegment = 1;
 							overlay.colors.particles = Segments.features(overlay, chromStart, settings.particlesCount, singleSegment, features);
 							overlay.colors.chromatin = Segments.features(overlay, chromStart, settings.segmentsCount, settings.segmentLength, features);
-							overlay.colors.mesh = []; // relevance???
+							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.edgesCount);
+							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.edgesCount);
 						}
 
 					} else {
@@ -319,7 +335,7 @@
 						// console.log(overlay);
 						overlay.colors.particles = overlay.colors.particlesMatrix.slice(particleStart, particleEnd);
 						overlay.colors.chromatin = overlay.colors.chromatinMatrix.slice(chromatinStart, chromatinEnd);
-						overlay.colors.mesh = overlay.colors.meshMatrix.slice(particleStart, particleEnd);
+						overlay.colors.network = overlay.colors.networkMatrix.slice(particleStart, particleEnd);
 					}
 				});
 				return overlays;
@@ -354,11 +370,6 @@
 			},
 			getCurrentIndex: function() {
 				return overlays.current.index;
-			},
-			getComponents: function(index) {
-				if (index === undefined || index === false) index = overlays.current.index;
-				var components = overlays.loaded[index].object.components;
-				return components;
 			}
 		};
 	}

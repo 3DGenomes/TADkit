@@ -22,7 +22,14 @@
 		},
 		"palette" : ["#0000ff","#ff0000"],
 		"data" : [],
-		"colors" : {}
+		"colors" : {
+			"particles" : [],
+			"chromatin" : [],
+			"network" : {
+				"RGB" : [],
+				"alpha" : []
+			}
+		}
 	},
 	{
 		"metadata" : {
@@ -47,7 +54,14 @@
 		},
 		"palette" : ["#0000ff","#cccccc"],
 		"data" : [],
-		"colors" : {}
+		"colors" : {
+			"particles" : [],
+			"chromatin" : [],
+			"network" : {
+				"RGB" : [],
+				"alpha" : []
+			}
+		}
 	},
 	{
 		"metadata" : {
@@ -72,7 +86,14 @@
 		},
 		"palette" : ["#ff0000","#0000ff"],
 		"data" : [],
-		"colors" : {}
+		"colors" : {
+			"particles" : [],
+			"chromatin" : [],
+			"network" : {
+				"RGB" : [],
+				"alpha" : []
+			}
+		}
 	},
 	{
 		"metadata" : {
@@ -85,7 +106,7 @@
 			"id" : "genes",
 			"title" : "Genes Overlay",
 			"source" : "Ensembl RESTful API",
-			"url" : ["http://rest.ensemblgenomes.org/overlap/region/","species","/","chromosome",":","start","-","end","?feature=gene;content-type=application/json"],
+			"url" : ["http://rest.ensemblgenomes.org/overlap/region/","species","/","chrom",":","chromStart","-","chromEnd","?feature=gene;content-type=application/json"],
 			"description" : "Genes from Ensembl RESTful API",
 			"type" : "ensembl",
 			"format" : "json",
@@ -97,6 +118,13 @@
 		},
 		"palette" : [],
 		"data" : [],
-		"colors" : {}
+		"colors" : {
+			"particles" : [],
+			"chromatin" : [],
+			"network" : {
+				"RGB" : [],
+				"alpha" : []
+			}
+		}
 	}
 ]

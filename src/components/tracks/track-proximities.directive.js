@@ -169,7 +169,7 @@
 							.append("rect")
 							.attr("width", width)
 							.attr("height", height)
-							.attr('fill', 'white');
+							.style('fill', 'white');
 
 						focus = chart.append("g")
 							.attr("class", "focus");
@@ -200,7 +200,7 @@
 							.style("stroke", nodeColor)
 							.style("stroke-width", 0)
 							.append("svg:title")
-							.text(function(d,i) { return i + ":" + d; });
+								.text(function(d,i) { return i + ":" + d; });
 
 						highlight = chart.append("rect")
 								.attr("id", "highlight")

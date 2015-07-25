@@ -20,7 +20,7 @@
                    "identifier" : "None",
                    "resolution" : 20000,
                    "species" : "Mycoplasma pneumoniae m129",
-                   "chromosome" : ["Chromosome"],
+                   "chrom" : ["Chromosome"],
                    "datatype": "xyz",
                    "components": 3,
                    "source": "local",

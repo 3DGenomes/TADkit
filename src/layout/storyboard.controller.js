@@ -95,7 +95,6 @@
 		// Watch for Slider Position updates
 		$scope.$watch('settings.current.particle', function(newParticle, oldParticle) { // deep watch as change direct and changes all?
 			if ( newParticle !== oldParticle ) {
-				console.log(newParticle);
 				$scope.currentProximities = Proximities.at(newParticle); // for D3 tracks
 				$scope.currentRestraints = Restraints.at(newParticle); // for D3 tracks
 				if ($scope.current.overlay.object.type == "matrix") {
@@ -114,6 +113,7 @@
 				Overlays.setOverlaid(index);
 				Overlays.set(index);
 				$scope.current.overlay = Overlays.getOverlay();
+				// console.log($scope.current.overlay);
 			} else {
 				Overlays.setOverlaid($scope.overlayOrig.object.state.index);
 				Overlays.set($scope.overlayOrig.object.state.index);

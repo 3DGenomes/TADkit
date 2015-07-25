@@ -60,7 +60,7 @@
 					var svg = d3.select(viewport).append('svg');
 					var slider, xScale, prime3Axis, prime5Axis;
 					var handleWidth, handleHeight;
-					var xAxis, brush, handle, label;
+					var xAxis, brush, handle, position;
 
 					// RESIZE
 					scope.$watch(function(){
@@ -122,13 +122,13 @@
 								labels.append("text")
 									.attr("x", -16)
 									.attr("y", 26)
-									.attr("text-anchor", "right")
+									.style("text-anchor", "right")
 									.style("font-size", "10px")
 									.text("3'");
 								labels.append("text")
 									.attr("x", width + 8)
 									.attr("y", 26)
-									.attr("text-anchor", "left")
+									.style("text-anchor", "left")
 									.style("font-size", "10px")
 									.text("5'");
 
@@ -155,14 +155,14 @@
 							.attr("cy", height)
 							.attr("r", handleWidth * 0.6);
 
-						label = slider.append("text")
+						position = slider.append("text")
 							.attr("id", "position")
 							.attr("x", xScale(scope.settings.current.position) - (handleWidth * 0.5))
 							.attr("y", height - 10)
-							.attr("text-anchor", "bottom")
-							.attr("font-family", "sans-serif")
-							.attr("font-size", "10px")
-							.attr("fill", "#000000")
+							.style("text-anchor", "bottom")
+							.style("font-family", "sans-serif")
+							.style("font-size", "10px")
+							.style("color", "#333")
 							.text(scope.settings.current.particle);
 
 						slider

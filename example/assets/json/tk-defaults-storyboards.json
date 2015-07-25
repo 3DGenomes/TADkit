@@ -81,9 +81,9 @@
 							"radiusSegments" : 16,
 							"endcap" : false,
 							"pathClosed" : false,
-							"visible" : true
+							"visible" : false
 						},
-						"mesh" : {
+						"network" : {
 							"transparent": false,
 							"visible" : false
 						},

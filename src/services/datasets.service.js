@@ -14,26 +14,26 @@
 			}
 		};
 		return {
-			load: function() {
-				var deferral = $q.defer();
-				// var source = "assets/json/testdata_torusknot-tadbit.json";
-				// var source = "assets/json/mycoplasma_pneumoniae_m129-tadbit.json";
-				var source = "assets/json/tk-defaults-datasets.json";
-				var self = this;
-				if( datasets.loaded.length > 0 ) {
-					deferral.resolve(datasets);
-				} else {
-					$http.get(source)
-					.success( function(data) {
-						datasets.loaded = data;
-						datasets.current.index = datasets.loaded.length - 1;
-						// console.log(datasets.current.index);
-						// Make speicesUrl forEach...
-						datasets.loaded[datasets.current.index].object.speciesUrl = self.setSpeciesUrl(datasets.current.index);
-						console.log("Datasets (" + data.length + ") loaded from " + source);
-						deferral.resolve(datasets);
-					});
+			load: function(filename, clear) {
+				filename = filename || "tk-defaults-dataset";
+				clear = clear || false;
+				if (clear) {
+					while (datasets.loaded.length > 0) {
+						datasets.loaded.shift();
+					}
 				}
+				var deferral = $q.defer();
+				var dataUrl = "assets/json/" + filename + ".json";
+				var self = this;
+				$http.get(dataUrl)
+				.success( function(dataset) {
+					datasets.loaded.push(dataset);
+					datasets.current.index = datasets.loaded.length - 1;
+					self.setSpeciesUrl();
+					self.setRegion();
+					console.log("Dataset " + dataset.object.species + " " + dataset.object.region + " loaded from " + dataUrl);
+					deferral.resolve(datasets);
+				});
 				return deferral.promise;
 			},
 			add: function(data) { // rename import?
@@ -45,8 +45,9 @@
 				// if (!projects.default.datasets[uuid]) {
 					datasets.loaded.push(dataset);
 					datasets.current.index = datasets.loaded.length - 1;
-					datasets.loaded[datasets.current.index].object.speciesUrl = self.setSpeciesUrl(datasets.current.index);
-					console.log("Dataset \"" + datasets.loaded[datasets.current.index].object.title + "\" loaded from file.");
+					self.setSpeciesUrl();
+					self.setRegion();
+					console.log("Dataset " + dataset.object.species + " " + dataset.object.region + " loaded from file.");
 				// }
 				// console.log(datasets.loaded);
 				return datasets;
@@ -64,9 +65,23 @@
 			},
 			setSpeciesUrl: function(index) {
 				if (index === undefined || index === false) index = datasets.current.index;
-				var speciesUrl = datasets.loaded[index].object.species;
-				speciesUrl = speciesUrl.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+				var species = datasets.loaded[index].object.species;
+				var speciesUrl = species.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+				datasets.loaded[index].object.speciesUrl = speciesUrl;
 				return speciesUrl;
+			},
+			setRegion: function(index) {
+				if (index === undefined || index === false) index = datasets.current.index;
+				var chromosomeIndex = 0;
+				if (datasets.loaded[index].object.chromosomeIndex) {
+					chromosomeIndex = datasets.loaded[index].object.chromosomeIndex;	
+				}
+				var chrom = datasets.loaded[index].object.chrom[chromosomeIndex];
+				var chromStart = datasets.loaded[index].object.chromStart[chromosomeIndex];
+				var chromEnd = datasets.loaded[index].object.chromEnd[chromosomeIndex];
+				var region = chrom + ":" + chromStart + "-" + chromEnd;
+				datasets.loaded[index].object.region = region;
+				return region;
 			},
 			set: function(index) {
 				if (index !== undefined || index !== false) datasets.current.index = index;
@@ -120,26 +135,7 @@
 					if (models[i].ref == ref) model = models[i];
 				}
 				return model; // array of model vertices
-			},
-			getSpeciesUrl: function(index) {
-				if (index === undefined || index === false) index = datasets.current.index;
-				var speciesUrl = datasets.loaded[index].object.speciesUrl;
-				return speciesUrl;
-			},
-			getRegion: function(index) {
-				if (index === undefined || index === false) index = datasets.current.index;
-				var chromosomeIndex = 0;
-				if (datasets.loaded[index].object.chromosomeIndex) {
-					chromosomeIndex = datasets.loaded[index].object.chromosomeIndex;	
-				}
-				var region = datasets.loaded[index].object.chromosome[chromosomeIndex] + ":" + datasets.loaded[index].object.chromStart[chromosomeIndex] + "-" + datasets.loaded[index].object.chromEnd[chromosomeIndex];
-				return region;
-			},
-			getComponents: function(index) {
-				if (index === undefined || index === false) index = datasets.current.index;
-				var components = datasets[index].components;
-				return components;
-			},
+			}
 		};
 	}
 })();

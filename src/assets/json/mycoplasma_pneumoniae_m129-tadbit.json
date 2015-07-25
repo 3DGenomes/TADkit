@@ -18,7 +18,7 @@
                    "identifier" : "None",
                    "resolution" : 20000,
                    "species" : "Mycoplasma pneumoniae m129",
-                   "chromosome" : ["Chromosome"],
+                   "chrom" : ["Chromosome"],
                    "source": "TADbit 0.1_alpha.205",
                    "datatype": "xyz",
                    "components": "3",

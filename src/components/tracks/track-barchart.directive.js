@@ -190,7 +190,7 @@
 							.append("rect")
 							.attr("width", width)
 							.attr("height", height)
-							.attr('fill', 'white');
+							.style('fill', 'white');
 
 						focus = chart.append("g")
 							.attr("class", "focus");
@@ -200,7 +200,7 @@
 						// 	.append("rect")
 						// 	.attr("width", width)
 						// 	.attr("height", height)
-						// 	.attr('fill', 'white');
+						// 	.style('fill', 'white');
 
 						container = focus.append("g")
 							.attr("class", "container")
@@ -230,7 +230,7 @@
 								.style("stroke", harmonicsColor)
 								.style("stroke-width", 0)
 								.append("svg:title")
-								.text(function(d,i) { return i + ":" + d; });
+									.text(function(d,i) { return i + ":" + d; });
 
 							lowerBounds.selectAll("rect") // BLUE
 								.data(data.lowerBounds)
@@ -244,7 +244,7 @@
 								.style("stroke", lowerBoundsColor)
 								.style("stroke-width", 0)
 								.append("svg:title")
-								.text(function(d,i) { return i + ":" + d; });
+									.text(function(d,i) { return i + ":" + d; });
 
 						// }
 

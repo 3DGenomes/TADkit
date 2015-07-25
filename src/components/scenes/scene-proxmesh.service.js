@@ -2,10 +2,10 @@
 	'use strict';
 	angular
 		.module('TADkit')
-		.factory('Mesh', Mesh);
+		.factory('Network', Network);
 
 	// constructor for cluster models ensemble
-	function Mesh() {
+	function Network() {
 		return function(positions, distances, settings) {
 			
 			var defaults = {
@@ -15,7 +15,7 @@
 			settings = settings || {};
 			angular.extend(this, angular.copy(defaults), settings);
 
-			var mesh;
+			var network;
 			// Distances stored as one per contact-position-pair
 			// so the array needs an RGB (*3) for each pair (*2)
 			// ie. each distance needs to be replicated 6 times
@@ -40,10 +40,10 @@
 				transparent: this.transparent
 			} );
 			
-			mesh = new THREE.Line(geometry, material, THREE.LinePieces); // THREE.LinePieces = separate lines
+			network = new THREE.Line(geometry, material, THREE.LinePieces); // THREE.LinePieces = separate lines
 
-			mesh.name = "Mesh Network";
-			return mesh;
+			network.name = "Network Network";
+			return network;
 		};
 	}
 })();

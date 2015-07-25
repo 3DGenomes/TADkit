@@ -34,6 +34,9 @@
 			resolve:{
 				'initialData': function(initMain) {
 					return initMain();
+				test: ['$stateParams', function($stateParams){
+						return $stateParams.test;
+					}]
 				}
 			}
 		})

@@ -9,18 +9,24 @@
 			<md-tab label="About" ui-sref="home#about"></md-tab>
 			<md-tab label="Usage" ui-sref="home#usage"></md-tab>
 		</md-tabs>
-		<span layout-padding ui-sref="dataset">
-			<md-button ui-sref="project.dataset" aria-label="Add Track" class="md-icon-button md-accent" ng-show="$state.includes('browser')"><md-icon class="icon-view-module"></md-icon><md-icon class="icon-keyboard-arrow-left"></md-icon></md-button>
+		<span layout-padding>
+			<md-button ui-sref="dataset" aria-label="Add Track" class="md-icon-button md-accent" ng-show="$state.includes('browser')">
+				<md-icon class="icon-view-module"></md-icon>
+				<md-icon class="icon-keyboard-arrow-left"></md-icon>
+			</md-button>
+			<md-button ui-sref="browser" aria-label="View Select Cluster in Browser" class="md-icon-button md-accent" ng-show="$state.includes('dataset')">
+				<md-icon class="icon-view-carousel"></md-icon>
+				<md-icon class="icon-keyboard-arrow-right"></md-icon>
+			</md-button>
 			<span ng-show="$state.includes('hide_temp_all')">{{projects.loaded[projects.current.index].object.title}} :</span>
 		</span>
-		<div layout-padding id="infobox" class="tk-component-panel-infobox"></div>
+		<div layout-padding id="infobox" class="tk-component-panel-infobox" ng-hide="$state.includes('loader')"></div>
 		<span flex=""></span>
 		<!-- Home Icons -->
 		<md-button ng-click="toggleRight()" aria-label="Open User panel" class="md-icon-button md-accent" ng-show="$state.includes('home')"><md-icon class="icon-perm-identity"></md-icon></md-button>
 		<!-- Project Icons -->
 		<md-button ng-click="toggleRight()" aria-label="Open User panel" class="md-icon-button md-accent" ng-show="$state.includes('dataset')"><md-icon class="icon-perm-identity"></md-icon></md-button>
 		<md-button ui-sref="project" aria-label="Add Project" class="md-icon-button md-accent" ng-show="$state.includes('dataset')"><md-icon class="icon-add"></md-icon></md-button>
-		<md-button ui-sref="browser" aria-label="View Select Cluster in Browser" class="md-icon-button md-accent" ng-show="$state.includes('dataset')"><md-icon class="icon-view-carousel"></md-icon></md-button>
 		<!-- Browser Icons -->
 		<!--md-button ui-sref="overlay-acquire" aria-label="Add Track" class="md-icon-button md-accent" ng-show="$state.includes('browser')"><md-icon class="icon-add"></md-icon></md-button-->
 		<md-button ui-sref="overlay-import" aria-label="Add Tracks" class="md-icon-button md-accent" ng-show="$state.includes('browser')">

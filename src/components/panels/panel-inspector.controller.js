@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.controller('PanelInspectorController', PanelInspectorController);
 
-	function PanelInspectorController($scope, $mdDialog){
+	function PanelInspectorController($scope, $mdDialog) {
 
 		$scope.optionsState = false;
 		$scope.toggleOptions = function() {

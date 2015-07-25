@@ -47,7 +47,7 @@ md-toolbar {
 	min-height: 48px;
 }
 .tad-species {}
-.tad-slice { font-size: 1.0rem; }
+.tad-region { font-size: 1.0rem; }
 .md-toolbar-tools .md-button {
   font-size: 1em;
 }
@@ -758,6 +758,10 @@ md-icon {
 
 .icon-keyboard-arrow-left:before {
 	content: "\e60a";
+}
+
+.icon-keyboard-arrow-right:before {
+    content: "\e61a";
 }
 
 .icon-keyboard-backspace:before {

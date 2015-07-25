@@ -183,7 +183,7 @@
 							.append("rect")
 							.attr("width", width)
 							.attr("height", height)
-							.attr('fill', 'white');
+							.style('fill', 'white');
 
 						// defs.append("svg:marker")
 						// 	.attr("id", "harmonics-marker")
@@ -234,9 +234,9 @@
 								.attr("y", verticalOffset - (nodeSize * 0.5))
 								.attr("width", particleWidth)
 								.attr("height", nodeSize)
-								// .attr("stroke", harmonicsColor)
-								// .attr("stroke-width", 1)
-								.attr("fill", harmonicsColor)
+								// .style("stroke", harmonicsColor)
+								// .style("stroke-width", 1)
+								.style("fill", harmonicsColor)
 								.append("svg:title")
 									.text(data.dimension);
 							// connector:
@@ -248,10 +248,10 @@
 									.attr("y1", verticalOffset)
 									.attr("x2", function(d) { return (d[1] * particleWidth - (particleWidth * 0.5)); })
 									.attr("y2", height - nodeSize)
-									.attr("stroke", harmonicsColor)
-									.attr("opacity", 1)//function(d) { return scope.getOpacity(d[3]); } )
-									.attr("stroke-width", function(d) { return scope.getStrokeWidth(d[3]); })
 									.attr("marker-end", "url(#harmonics-marker)")
+									.style("stroke", harmonicsColor)
+									.style("opacity", 1)//function(d) { return scope.getOpacity(d[3]); } )
+									.style("stroke-width", function(d) { return scope.getStrokeWidth(d[3]); })
 									.append("svg:title")
 										.text(function(d) { return d[1] + ":" + d[3]; });
 							// to:
@@ -276,8 +276,8 @@
 									.attr("cx", function(d) { return (d[1] * particleWidth - (particleWidth * 0.5)); })
 									.attr("cy", height - nodeSize)
 									.attr("r", (nodeSize * 0.5))
-									.attr("opacity", function(d) { return scope.getOpacity(d[3]); })
-									.attr("fill", harmonicsColor)
+									.style("opacity", function(d) { return scope.getOpacity(d[3]); })
+									.style("fill", harmonicsColor)
 								.append("svg:title")
 									.text(function(d) { return d[0] + " : " + d[1]; });
 
@@ -288,9 +288,9 @@
 								.attr("y", (height - (nodeSize * 1.5)))
 								.attr("width", particleWidth)
 								.attr("height", nodeSize)
-								// .attr("stroke", lowerBoundsColor)
-								// .attr("stroke-width", 1)
-								.attr("fill", lowerBoundsColor)
+								// .style("stroke", lowerBoundsColor)
+								// .style("stroke-width", 1)
+								.style("fill", lowerBoundsColor)
 								.append("svg:title")
 									.text(data.dimension);
 							// connector:
@@ -302,10 +302,10 @@
 									.attr("y2", verticalOffset)
 									.attr("x2", function(d) { return (d[1] * particleWidth - (particleWidth * 0.5)); })
 									.attr("y1", height - nodeSize)
-									.attr("stroke", lowerBoundsColor)
-									.attr("opacity", function(d) { return scope.getOpacity(d[3]); })
-									.attr("stroke-width", function(d) { return scope.getStrokeWidth(d[3]); })
 									.attr("marker-end", "url(#lowerbounds-marker)")
+									.style("stroke", lowerBoundsColor)
+									.style("opacity", function(d) { return scope.getOpacity(d[3]); })
+									.style("stroke-width", function(d) { return scope.getStrokeWidth(d[3]); })
 									.append("svg:title")
 										.text(function(d) { return d[1] + ":" + d[3]; });
 							// to:
@@ -331,8 +331,8 @@
 									.attr("cx", function(d) { return (d[1] * particleWidth - (particleWidth * 0.5)); })
 									.attr("cy", verticalOffset)
 									.attr("r", (nodeSize * 0.5))
-									.attr("opacity", function(d) { return scope.getOpacity(d[3]); })
-									.attr("fill", lowerBoundsColor)
+									.style("opacity", function(d) { return scope.getOpacity(d[3]); })
+									.style("fill", lowerBoundsColor)
 								.append("svg:title")
 									.text(function(d) { return d[0] + " : " + d[1]; });
 

@@ -12,8 +12,8 @@
 			ping: function() {
 				console.log("Pinging Ensembl RESTful genomic data server...");
 				var deferral = $q.defer();
-				var source = "http://rest.ensemblgenomes.org/info/ping?content-type=application/json";
-				$http.get(source)
+				var dataUrl = "http://rest.ensemblgenomes.org/info/ping?content-type=application/json";
+				$http.get(dataUrl)
 				.success(function(data){
 					ensembl.ping = data.ping;
 					console.log("Ensembl RESTful is contactable.");
@@ -24,7 +24,7 @@
 
 				online = online || false;
 				var deferral = $q.defer();
-				var source;
+				var dataUrl;
 				var datasetObject = Datasets.getDataset().object;
 				var species = datasetObject.species;
 				var speciesUrl = datasetObject.speciesUrl;
@@ -32,24 +32,24 @@
 				if (datasetObject.chromosomeIndex) {
 					chromosomeIndex = datasetObject.chromosomeIndex;	
 				}
-				var chromosome = datasetObject.chromosome[chromosomeIndex];
-				var start = datasetObject.chromStart[chromosomeIndex];
-				var end = datasetObject.chromEnd[chromosomeIndex];
+				var chrom = datasetObject.chrom[chromosomeIndex];
+				var chromStart = datasetObject.chromStart[chromosomeIndex];
+				var chromEnd = datasetObject.chromEnd[chromosomeIndex];
 				var self = this;
 				if (online) {
-					source = overlay.object.url[0] + speciesUrl + overlay.object.url[2] + chromosome + overlay.object.url[4] + start + overlay.object.url[6] + end + overlay.object.url[8];
+					dataUrl = overlay.object.url[0] + speciesUrl + overlay.object.url[2] + chrom + overlay.object.url[4] + chromStart + overlay.object.url[6] + chromEnd + overlay.object.url[8];
 				} else {
-					source = "assets/json/" + speciesUrl + "-genes.json";
-					// source = "assets/json/tk-sample-genes.json";
-					// var source = "assets/json/tk-defaults-datasets2-genes.json";
+					dataUrl = "assets/json/" + speciesUrl + "-genes.json";
+					// dataUrl = "assets/json/tk-sample-genes.json";
+					// var dataUrl = "assets/json/tk-defaults-datasets2-genes.json";
 				}
-				$http.get(source)
+				$http.get(dataUrl)
 				.success(function(data){
 					var genes = self.setBiotypeStyle(data);
 					overlay.data = genes;
-					var slice = "(" + chromosome + ":" + start + "-" + end + ")";
-					var whence = online ? "Ensembl" : "local storage";
-					console.log("Genes for " + species + " "+ slice + " retreived from " + whence + ".");
+					var region = chrom + ":" + chromStart + "-" + chromEnd;
+					var source = online ? "Ensembl" : "local storage";
+					console.log("Genes for " + species + " "+ region + " retreived from " + source + ".");
 					deferral.resolve(overlay);
 				});
 				return deferral.promise;

@@ -4,10 +4,9 @@
 		.module('TADkit')
 		.factory('Segments', Segments);
 
-	function Segments(d3Service) {
+	function Segments(d3Service, Color) {
 		return {
-			gradientHCL: function(overlay, segmentsCount) {
-			// d3Service.d3().then(function(d3) {
+			gradientHCL: function(overlay, count) {
 				// Using D3 HCL for correct perceptual model
 				// Data is an array of 2 hex colors eg. ff0000
 				// Output is RGB hex (000000-ffffff) eg. [rrggbb,rrggbb,rrggbb...]
@@ -16,15 +15,14 @@
 				var hexStart = overlay.palette[0];
 				var hexEnd = overlay.palette[1];
 
-				for (var i = segmentsCount - 1; i >= 0; i--) {
-					var step = i / segmentsCount; // This should be between 0 and 1
+				for (var i = count - 1; i >= 0; i--) {
+					var step = i / count; // This should be between 0 and 1
 					var hex = d3.interpolateHcl(hexStart, hexEnd)(step);
 					gradient.push(hex);
 				}
 				return gradient;
-			// });
 			},
-			gradientComponentRGB: function(overlay, segmentsCount) { // UNUSED
+			gradientComponentRGB: function(overlay, count) { // UNUSED
 				// where overlay.palette is an array of 2 hex colors eg. ["#ff0000","#0000ff"]
 				// output is RGB decimal (0.0-1.0) eg. [r,g,b,r,g,b,r,g,b,...]
 				var gradient = [];
@@ -43,8 +41,8 @@
 					green2 = (hexEnd >> 8) & 0xFF;
 					blue2  = hexEnd & 0xFF;
 				// generate gradient as array of RGB component triplets
-				for (var i = segmentsCount - 1; i >= 0; i--) {
-					step = i / segmentsCount; // This should be between 0 and 1
+				for (var i = count - 1; i >= 0; i--) {
+					step = i / count; // This should be between 0 and 1
 					outred = +(step * red1 + (1-step) * red2).toFixed(2);
 					outgreen = +(step * green1 + (1-step) * green2).toFixed(2);
 					outblue = +(step * blue1 + (1-step) * blue2).toFixed(2);
@@ -52,25 +50,25 @@
 				}
 				return gradient;
 			},
-			bicolor: function(overlay, segmentsCount) {
+			bicolor: function(overlay, count) {
 				// if palette is not an array of hex colors then:
 				// colors derived from BigWig color and altColor
 				// featureTypes == single hex for use as color 
 				var featureColor = overlay.palette[0];
 				var defaultColor = overlay.palette[1];
 				var colors = [];
-				for(var i = 0; i < segmentsCount; i++){
-						var segmentColor;
+				for(var i = 0; i < count; i++){
+						var color;
 						if (overlay.data[i] === 1) {
-							segmentColor = featureColor;
+							color = featureColor;
 						} else {
-							segmentColor = defaultColor;
+							color = defaultColor;
 						}
-					colors.push(segmentColor);
+					colors.push(color);
 				}
 				return colors;
 			},
-			matrix: function(overlay, particleSegments) {
+			matrix: function(overlay, segments) {
 				// where palette is array of hex colors
 				var featureColor = overlay.palette[0];
 				var defaultColor = overlay.palette[1];
@@ -78,7 +76,7 @@
 				for (var i = overlay.data.length - 1; i >= 0; i--) {
 					var intensity = 1 - overlay.data[i];
 					var hex = d3.interpolateHsl(featureColor, defaultColor)(intensity);
-					for(var j = 0; j < particleSegments; j++){
+					for(var j = 0; j < segments; j++){
 						colors.push(hex);
 					}
 				}
@@ -117,6 +115,15 @@
 				// console.log(colors);
 				return colors;
 			},
+			featureGraph: function(overlay, count) {
+				// where palette is array of hex colors
+				var featureColor = "#ff0000";
+				var defaultColor = "#000000";
+				var segmentedColors = this.gradientHCL(overlay, count);
+				var overlayColors = Color.THREEColorsFromHex(segmentedColors);
+				var vertexColors = Color.vertexColorsFromTHREEColors(overlayColors);
+				return vertexColors;
+			},
 			features: function(overlay, chromStart, segmentsCount, segmentLength, featureTypes) {
 
 				var features = overlay.data;
@@ -124,7 +131,7 @@
 
 				for(var i=0; i < segmentsCount; i++){
 
-					var featuresPresent = [];
+					var featuresPresent = []; 
 					var segmentLower = chromStart + (segmentLength * i);
 					var segmentUpper = segmentLower + segmentLength;
 					var featuresCount = features.length;

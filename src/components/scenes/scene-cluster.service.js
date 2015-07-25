@@ -19,7 +19,7 @@
 			var overlayColors = Color.colorsFromHex(overlay);
 
 			// Generate Cluster model
-			var clusterEnsemble = new THREE.Object3D(); // unmerged mesh
+			var clusterEnsemble = new THREE.Object3D(); // unmerged network
 			for ( var i = 0 ; i < data.length; i++) {
 				var modelComponents = data[i];
 				clusterBufferGeometry.addAttribute( 'position', new THREE.BufferAttribute( modelComponents, 3 ) );

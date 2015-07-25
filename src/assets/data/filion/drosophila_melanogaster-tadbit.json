@@ -12,7 +12,7 @@
                    "project" : "TADbit_paper",
                    "start" : 15590000,
                    "end" : 16600000,
-                   "chromosome" : ["chrX"],
+                   "chrom" : ["chrX"],
                    "chromStart" : [15590000],
                    "chromEnd" : [16600000],
                    "identifier" : "GSE38468",

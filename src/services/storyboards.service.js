@@ -13,14 +13,14 @@
 		return {
 			load: function() {
 				var deferral = $q.defer();
-				var source = "assets/json/tk-defaults-storyboards.json";
+				var dataUrl = "assets/json/tk-defaults-storyboards.json";
 				if( storyboards.loaded.length > 0 ) {
 					deferral.resolve(storyboards);
 				} else {
-					$http.get(source)
+					$http.get(dataUrl)
 					.success( function(data) {
 						storyboards.loaded = data;
-						console.log("Storyboards (" + data.length + ") loaded from " + source);
+						console.log("Storyboards (" + data.length + ") loaded from " + dataUrl);
 						deferral.resolve(storyboards);
 					});
 				}

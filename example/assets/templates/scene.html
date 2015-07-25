@@ -15,7 +15,27 @@
 		<!-- TODO: ENABLE AUTO-GENERATION --> MODELS
 		 <md-checkbox ng-model="view.settings.particles.visible">Particles</md-checkbox>
 		 <md-checkbox ng-model="view.settings.chromatin.visible">Chromatin</md-checkbox>
-		 <md-checkbox ng-model="view.settings.mesh.visible">Mesh</md-checkbox>
+		 <md-checkbox ng-model="view.settings.network.visible">Network</md-checkbox>
 	</div>
 	<div class="component-body"></div>
 </div>
+<script id="vertexShader" type="x-shader/x-vertex">
+	attribute float alpha;
+	varying vec3 vColor;
+	varying float vAlpha;
+	void main() {
+		vColor = color;
+		vAlpha = alpha;
+        vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+        gl_PointSize = 16.0;
+        gl_Position = projectionMatrix * mvPosition;
+	}
+</script>
+<script type="x-shader/x-fragment" id="fragmentShader">  	// uniform vec3 color;
+	varying vec3 vColor;
+	varying float vAlpha;
+	void main() {
+		gl_FragColor = vec4(vColor, vAlpha);  // adjust the alpha
+		if (gl_FragColor.a < 0.1) discard;
+	}
+</script>  

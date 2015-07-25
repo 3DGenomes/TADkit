@@ -26,7 +26,8 @@
 			.then(function(results) {
 				$scope.$parent.current.dataset = Datasets.getDataset();
 				$scope.$parent.current.model = Datasets.getModel();
-				$scope.$parent.currentOverlay = Overlays.getOverlay();
+				$scope.$parent.current.overlay = Overlays.getOverlay();
+				// $scope.$parent.currentOverlay = Overlays.getOverlay(); //??? REMOVE
 				$state.go('dataset');
 			});
 		};

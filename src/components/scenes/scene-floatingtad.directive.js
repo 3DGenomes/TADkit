@@ -8,7 +8,7 @@
 		return {
 			restrict: 'EA',
 			link: function(scope, element, attrs) {
-				var viewport, viewsize, camera, scene, renderer, geometry, material, mesh, controls;
+				var viewport, viewsize, camera, scene, renderer, geometry, material, network, controls;
 				init();
 				animate();
 				function init() {
@@ -39,9 +39,9 @@
 						wireframeLinewidth: 1
 					});
 
-					mesh = new THREE.Mesh( geometry, material );
-					mesh.name = "Floating TAD";
-					scene.add(mesh);
+					network = new THREE.Mesh( geometry, material );
+					network.name = "Floating TAD";
+					scene.add(network);
 
 					if (window.WebGLRenderingContext)
  						renderer = new THREE.WebGLRenderer({alpha: true});
@@ -62,8 +62,8 @@
 					render();
 				}
 				function render() {
-					mesh.rotation.x += 0.006;
-					mesh.rotation.y += 0.006;
+					network.rotation.x += 0.006;
+					network.rotation.y += 0.006;
 					renderer.render(scene, camera);
 				}
 			}

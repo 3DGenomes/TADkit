@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.controller('MainController', MainController);
 
-	function MainController($state, $scope, Settings, Users, Projects, Datasets, Overlays, Storyboards) {
+	function MainController($state, $stateParams, $scope, Settings, Users, Projects, Datasets, Overlays, Storyboards) {
 
 		if (!$scope.settings) {
 			$scope.settings = Settings.get();
@@ -38,5 +38,8 @@
 		$scope.current.overlay = Overlays.getOverlay();
 		$scope.current.storyboard = Storyboards.getStoryboard();
 
+		console.log($stateParams);
+		$stateParams.test = "42";
+		console.log($stateParams);
 	}
 })();

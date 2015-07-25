@@ -137,7 +137,7 @@
 								.append("rect")
 								.attr("width", width)
 								.attr("height", height)
-								.attr('fill', 'white');
+								.style('fill', 'white');
 
 							focus = chart.append("g")
 								.attr("class", "focus");
@@ -147,7 +147,7 @@
 							// 	.append("rect")
 							// 	.attr("width", width)
 							// 	.attr("height", height)
-							// 	.attr('fill', 'white');
+							// 	.style('fill', 'white');
 
 							container = focus.append("g")
 								.attr("class", "container")
