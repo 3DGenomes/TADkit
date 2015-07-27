@@ -15,14 +15,14 @@
 		};
 		return {
 			load: function(filename, clear) {
-				filename = filename || "chrX_1559_1660"; //"tk-defaults-dataset";
+				filename = filename || "tk-example-dataset";
 				clear = clear || false;
 
 				var self = this;
 				if (clear) self.clear();
 
 				var datapath = "defaults";
-				if (filename != "tk-defaults-dataset") datapath = "examples";
+				if (filename != "tk-example-dataset") datapath = "examples";
 
 				var deferral = $q.defer();
 				var dataUrl = "assets/" + datapath + "/" + filename + ".json";

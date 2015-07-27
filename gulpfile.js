@@ -57,11 +57,11 @@ gulp.task('scripts', function() {
 		])
 		.pipe(concat('tadkit.js'))
 		.pipe(gulp.dest('dist'))
-		.pipe(gulp.dest('example/assets/js'))
+		.pipe(gulp.dest('demo/assets/js'))
 		.pipe(rename('tadkit.min.js'))
 		.pipe(uglify())
 		.pipe(gulp.dest('dist'))
-		.pipe(gulp.dest('example/assets/js'));
+		.pipe(gulp.dest('demo/assets/js'));
 });
 
 // Transfer Vendor JS
@@ -88,7 +88,7 @@ gulp.task('assets-libs', function() {
 		.pipe(concat('vendors.js'))
 		// .pipe(uglify())
 		.pipe(gulp.dest('dist'))
-		.pipe(gulp.dest('example/assets/js'));
+		.pipe(gulp.dest('demo/assets/js'));
 });
 // Transfer Libs used in Services for local offline load
 gulp.task('assets-libs-services', function() {
@@ -97,7 +97,7 @@ gulp.task('assets-libs-services', function() {
 		'bower_components/threejs/build/three.min.js',
 		])
 		.pipe(gulp.dest('src/assets/js'))
-		.pipe(gulp.dest('example/assets/js'));
+		.pipe(gulp.dest('demo/assets/js'));
 });
 
 // Transfer HTML Templates
@@ -110,7 +110,7 @@ gulp.task('assets-html', function() {
 		])
         // .pipe(header("<!-- This file is generated — do not edit by hand! -->\n"))
 		.pipe(gulp.dest('src/assets/templates'))
-		.pipe(gulp.dest('example/assets/templates'));
+		.pipe(gulp.dest('demo/assets/templates'));
 });
 // Transfer CSS Assets
 gulp.task('assets-css', function() {
@@ -120,49 +120,49 @@ gulp.task('assets-css', function() {
 		'src/assets/css/ensembl-genes.css',
 		'src/assets/font-awesome/css/font-awesome.min.css'
 		])
-		.pipe(gulp.dest('example/assets/css'));
+		.pipe(gulp.dest('demo/assets/css'));
 });
 // Transfer Fonts Assets
 gulp.task('assets-fonts', function() {
 	return gulp.src([
 		'src/assets/fonts/*.*',
 		])
-		.pipe(gulp.dest('example/assets/fonts'));
+		.pipe(gulp.dest('demo/assets/fonts'));
 });
 // Transfer Favicon Assets
 gulp.task('assets-favicon', function() {
 	return gulp.src([
 		'src/favicon-32x32.png'
 		])
-		.pipe(gulp.dest('example'));
+		.pipe(gulp.dest('demo'));
 });
 // Transfer Image Assets
 gulp.task('assets-img', function() {
 	return gulp.src([
 		'src/assets/img/*.png'
 		])
-		.pipe(gulp.dest('example/assets/img'));
+		.pipe(gulp.dest('demo/assets/img'));
 });
 // Transfer Defaults
 gulp.task('assets-defaults', function() {
 	return gulp.src([
 		'src/assets/defaults/*.*'
 		])
-		.pipe(gulp.dest('example/assets/defaults'));
+		.pipe(gulp.dest('demo/assets/defaults'));
+});
+// Transfer Offline
+gulp.task('assets-offline', function() {
+	return gulp.src([
+		'src/assets/offline/*.*'
+		])
+		.pipe(gulp.dest('demo/assets/offline'));
 });
 // Transfer Examples
 gulp.task('assets-examples', function() {
 	return gulp.src([
-		'src/assets/examples/dekker/ensembl-offline/*.json',
-		'src/assets/examples/dekker/jsons/*.json',
-		'src/assets/examples/dekker/marks/*.tsv'
-		// 'src/assets/examples/filion/*.*',
-		// 'src/assets/examples/trussart/*.*',
-		// 'src/assets/examples/misc/drosophila_melanogaster-*.json',
-		// 'src/assets/examples/misc/homo_sapiens-assembly-*.json',
-		// 'src/assets/examples/misc/testdata_torusknot-tadbit.json'
+		'src/assets/examples/*.*'
 		])
-		.pipe(gulp.dest('example/assets/examples'));
+		.pipe(gulp.dest('demo/assets/examples'));
 });
 
 gulp.task('webserver', function() {
@@ -187,6 +187,7 @@ gulp.task('watch', function() {
 		'src/*.html',
 		// 'src/assets/css/*.css',
 		'src/assets/defaults/*.*',
+		'src/assets/offline/*.*',
 		'src/assets/examples/*.*',
 		'src/components/*.js',
 		'src/components/panels/*.js',
@@ -209,6 +210,7 @@ gulp.task('watch', function() {
 		'assets-favicon',
 		'assets-img',
 		'assets-defaults',
+		'assets-offline',
 		'assets-examples'
 	]);
 	// gulp.watch('src/assets/scss/*.scss', ['sass']);
@@ -227,6 +229,7 @@ gulp.task('default', [
 	'assets-favicon',
 	'assets-img',
 	'assets-defaults',
+	'assets-offline',
 	'assets-examples',
 	'webserver',
 	'openbrowser',

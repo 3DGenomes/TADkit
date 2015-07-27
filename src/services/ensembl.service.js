@@ -20,9 +20,7 @@
 				});
 				return deferral.promise;
 			},
-			load: function(overlay, online) {
-
-				online = online || false;
+			load: function(overlay) {
 				var deferral = $q.defer();
 				var dataUrl;
 				var settings = Settings.get();
@@ -36,12 +34,12 @@
 				var chromStart = settings.current.chromStart;
 				var chromEnd = settings.current.chromEnd;
 				var self = this;
+				var online = Settings.getOnline();
 				if (online) {
 					dataUrl = overlay.object.url[0] + speciesUrl + overlay.object.url[2] + chrom + overlay.object.url[4] + chromStart + overlay.object.url[6] + chromEnd + overlay.object.url[8];
 				} else {
-					dataUrl = "assets/examples/" + speciesUrl + "-genes.json";
+					dataUrl = "assets/offline/" + speciesUrl + "-genes.json";
 				}
-				console.log(dataUrl);
 				$http.get(dataUrl)
 				.success(function(data){
 					var genes = self.setBiotypeStyle(data);

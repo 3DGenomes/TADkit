@@ -28,14 +28,16 @@
 				return deferral.promise;
 			},
 			import: function(filename, filetype, defaults) {
-				filename = filename || "chrX_1559_1660";
+				filename = filename || "tk-example-dataset";
 				filetype = filetype || "tsv";
 				defaults = defaults || false;
 
 				var self = this;
+				var datapath = "defaults";
+				if (filename != "tk-example-dataset") datapath = "examples";
 
 				var deferral = $q.defer();
-				var dataUrl = "assets/examples/" + filename + "." + filetype;
+				var dataUrl = "assets/" + datapath + "/" + filename + "." + filetype;
 				$http.get(dataUrl)
 				.success( function(fileData) {
 					var parsedData = self.parse(fileData).data;
@@ -308,8 +310,7 @@
 					// For Overlays with Aync Ensembl Data eg. genes
 					// check if changed...
 					if (overlay.object.type == "ensembl") { // more generic than id == "genes"
-						var online = Settings.get().app.online;
-						var ensembl = Ensembl.load(overlay, online);
+						var ensembl = Ensembl.load(overlay);
 						overlaysAsync.push(ensembl);
 					}
 
