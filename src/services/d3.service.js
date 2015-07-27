@@ -5,7 +5,6 @@
 		.factory('d3Service', d3Service);
 
 	function d3Service($document, $q, $rootScope, Settings) {
-			var online = Settings.getOnline();
 			var d = $q.defer();
 			function onScriptLoad() {
 				// Load client in the browser
@@ -17,6 +16,7 @@
 			var scriptTag = $document[0].createElement('script');
 			scriptTag.type = 'text/javascript'; 
 			scriptTag.async = true;
+			var online = Settings.getOnline();
 			if (online) {
 				scriptTag.src = 'http://d3js.org/d3.v3.min.js';
 			} else {

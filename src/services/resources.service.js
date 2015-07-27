@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Resources', Resources);
 
-	function Resources($q, $http, Color, uuid4) {
+	function Resources($q, $http, uuid4, Color, Settings) {
 		var resources = {};
 		var ensemblRoot = "http://rest.ensemblgenomes.org/";
 		resources.assembly = {};
@@ -44,13 +44,13 @@
 			// },
 			loadBiotypeColors: function() {
 				var deferral = $q.defer();
-				var online = false;//$scope.online;
 				var dataUrl;
+				var online = false; // Settings.getOnline(); // Most up-to-date version not strictly necessary
 				if (online) {
 				// dataUrl = "https://raw.githubusercontent.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini" // NOT PERMITTED
 					dataUrl = "https://cdn.rawgit.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini";
 				} else {
-					dataUrl = "assets/defaults/ensembl-webcode-COLOUR.ini";
+					dataUrl = "assets/offline/ensembl-webcode-COLOUR.ini";
 
 				}
 				$http.get(dataUrl)
