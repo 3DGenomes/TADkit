@@ -5,38 +5,39 @@
 		.config(config);
 
 	function config($stateProvider, $urlRouterProvider) {
-		$urlRouterProvider.otherwise("/project/loader");
+		$urlRouterProvider.otherwise("/project/loader/");
 		
 		$stateProvider
-		.state('home', {
-			controller: 'HomeController',
-			url: '/home',
-			views: {
-				'': {
-					templateUrl: 'assets/templates/home.html',
-					controller: 'HomeController'
-				},
-				'topbar@home': {
-					templateUrl: 'assets/templates/topbar.html',
-					controller: 'TopbarController'
-				},
-				'sidebaruser@home': {
-					templateUrl: 'assets/templates/sidebar.user.html',
-					controller: 'SidebarUserController'
-				}
-			}
-		})
+		// .state('home', {
+		// 	controller: 'HomeController',
+		// 	url: '/home',
+		// 	views: {
+		// 		'topbar': {
+		// 			templateUrl: 'assets/templates/topbar.html',
+		// 			controller: 'TopbarController'
+		// 		},
+		// 		'sidebar-left': {
+		// 			templateUrl: 'assets/templates/sidebar.project.html',
+		// 			controller: 'SidebarProjectController'
+		// 		},
+		// 		'content': {
+		// 			templateUrl: 'assets/templates/home.html',
+		// 			controller: 'HomeController'
+		// 		},
+		// 		'sidebar-right': {
+		// 			templateUrl: 'assets/templates/sidebar.user.html',
+		// 			controller: 'SidebarUserController'
+		// 		}
+		// 	}
+		// })
 		.state('main', {
 			controller: 'MainController',
 			abstract: true,
 			url: '',
 			templateUrl: 'assets/templates/main.html',
-			resolve:{
+			resolve: {
 				'initialData': function(initMain) {
 					return initMain();
-				test: ['$stateParams', function($stateParams){
-						return $stateParams.test;
-					}]
 				}
 			}
 		})
@@ -64,7 +65,7 @@
 		})
 		.state('loader', {
 			parent: 'project',
-			url: '/loader',
+			url: '/loader/:loadDataset',
 			views: {
 				'topbar@main': {
 					templateUrl: 'assets/templates/topbar.html',
@@ -72,24 +73,6 @@
 				},
 				'content@main': {
 					templateUrl: 'assets/templates/project-loader.html',
-					controller: 'ProjectLoaderController'
-				},
-				'sidebar-right@main': {
-					templateUrl: 'assets/templates/sidebar.user.html',
-					controller: 'SidebarUserController'
-				}
-			}
-		})
-		.state('example', {
-			parent: 'project',
-			url: '/example',
-			views: {
-				'topbar@main': {
-					templateUrl: 'assets/templates/topbar.html',
-					controller: 'TopbarController'
-				},
-				'content@main': {
-					templateUrl: 'assets/templates/project-example.html',
 					controller: 'ProjectLoaderController'
 				},
 				'sidebar-right@main': {

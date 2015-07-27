@@ -23,8 +23,7 @@
 			link: function postLink(scope, element, attrs) {
 				// threeService.three().then(function(THREE) {
 					// console.log(scope);
-// console.log(JSON.stringify(scope.overlay));
-// console.log(JSON.stringify(scope.currentoverlay));
+
 					var scene, component, viewport, stats;
 					var camera, cameraPosition, cameraTarget, cameraTranslate;
 					var ambientLight, pointLight;
@@ -109,18 +108,11 @@
 						particles.visible = scope.view.settings.particles.visible;
 						scene.add(particles);
 
-						// Add particle count for later color changes
-						scope.view.settings.particles.count = particles.geometry.vertices.length; // already known as particlesCount in Dataset???
-						scope.view.settings.chromatin.segments = scope.view.settings.particles.count * scope.view.settings.chromatin.particleSegments;
-						// change radius to be proportional to chromosome length
-						scope.view.settings.genomeLength = scope.settings.current.chromEnd; // eg. 816394 nucelotides
-
 						//GEOMETRY: CHROMATIN
 						chromatin = new Chromatin(scope.currentmodel.data, scope.currentoverlay.colors.chromatin, scope.view.settings.chromatin);
 						chromatin.visible = scope.view.settings.chromatin.visible;
 						scene.add(chromatin);
 						scope.view.settings.chromatin.radius = chromatin.boundingSphere.radius;
-						// scope.view.settings.chromatin.count = 1; // UNUSED
 
 						// GEOMETRY: MESH
 						// network = new Network(scope.proximities.positions, scope.proximities.distances, scope.view.settings.network);

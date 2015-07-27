@@ -1,0 +1,34 @@
+{
+	"metadata" : {
+		"version" : 1.0,
+		"type" : "settings",
+		"generator" : "TADkit"
+	},
+	"app" : {
+		"init" : false,
+		"online" : true
+	},
+	"import" : {
+		"delimiter" : " "
+	},
+	"current" : {
+		"chrom" : "chromosome",
+		"chromStart" : 1,
+		"chromEnd" : 2,
+		"particle" : 1,
+		"particleSegments" : 1,
+		"particlesCount" : 1,
+		"edgesCount" : 1,
+		"position" : 1,
+		"segment" : 1,
+		"segmentLength" : 1,
+		"segmentLower" : 0,
+		"segmentUpper" : 1,
+		"segmentCount" : 1
+	},
+	"views" : {
+		"strands" : true,
+		"margin" : "4px",
+		"position" : 0
+	}
+}

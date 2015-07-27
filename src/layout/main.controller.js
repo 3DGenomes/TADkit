@@ -38,8 +38,5 @@
 		$scope.current.overlay = Overlays.getOverlay();
 		$scope.current.storyboard = Storyboards.getStoryboard();
 
-		console.log($stateParams);
-		$stateParams.test = "42";
-		console.log($stateParams);
 	}
 })();

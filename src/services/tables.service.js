@@ -13,7 +13,7 @@
 
 			loadTables: function(species, requestSlice) {
 				var deferral = $q.defer();
-				$http.get('assets/json/GSE22069_norm_aggregated_discretized_tiling_arrays.json')
+				$http.get('assets/defaults/GSE22069_norm_aggregated_discretized_tiling_arrays.json')
 				.success(function(data){
 					tables = data;
 					console.log("Tables for region " + requestSlice + " of " + species + " retreived from file.");

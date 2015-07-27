@@ -13,7 +13,7 @@
 		return {
 			load: function() {
 				var deferral = $q.defer();
-				var dataUrl = "assets/json/tk-defaults-storyboards.json";
+				var dataUrl = "assets/defaults/tk-defaults-storyboards.json";
 				if( storyboards.loaded.length > 0 ) {
 					deferral.resolve(storyboards);
 				} else {
@@ -50,10 +50,20 @@
 			},
 			addComponent: function(storyboardId, component, options) {
 				// Add a preconfigured conponent from Components - update with options if necessary
+				var self = this;
 				storyboardId = storyboardId || "default";
 				options = options || [""];
-				var storyboard = this.getStoryboardById(storyboardId);
+				var storyboard = self.getStoryboardById(storyboardId);
 				storyboard.components.push(component);
+				return storyboard;
+			},
+			defaultComponents: function(storyboardId) {
+				var self = this;
+				storyboardId = storyboardId || "default";
+				var storyboard = self.getStoryboardById(storyboardId);
+				while (storyboard.components.length > 6) { // remove all except defaults
+					storyboard.components.pop();
+				}
 				return storyboard;
 			},
 			remove: function(index) {

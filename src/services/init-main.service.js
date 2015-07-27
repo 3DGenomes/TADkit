@@ -4,7 +4,8 @@
 		.module('TADkit')
 		.service('initMain', initMain);
 
-	function initMain($q, Settings, Users, Projects, Datasets, Overlays, Components, Storyboards, Resources, Proximities, Restraints) {
+	function initMain($q, Settings, Users, Projects, Datasets, Overlays, Components, Storyboards, Resources) {
+
 		return function() {
 			var settings = Settings.load();
 			var users = Users.load();
@@ -16,18 +17,6 @@
 			var featureColors = Resources.loadBiotypeColors();
 
 			return $q.all([settings, users, projects, datasets, overlays, components, storyboards, featureColors])
-			.then(function(results){
-				Settings.init(); // dependent on Storyboards and Datasets
-				Proximities.set(); // dependent on Datasets
-				Restraints.set(); // dependent on Datasets
-			})
-			.then(function(results){
-				var updateOverlays = Overlays.update(); // for Proximities
-				return $q.all([updateOverlays])
-				.then(function(results){
-					return results;
-				});
-			})
 			.then(function(results){
 				return {
 					settings: results[0],

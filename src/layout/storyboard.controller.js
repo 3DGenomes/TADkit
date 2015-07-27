@@ -9,32 +9,11 @@
 		// WATCH FOR WINDOW RESIZE
 		angular.element($window).on('resize', function(){ $scope.$apply(); });
 
-		$scope.current.storyboard.components[0].view.settings.chromatin.segmentLength = $scope.settings.current.segmentLength;
+		// $scope.current.storyboard.components[0].view.settings.chromatin.segmentLength = $scope.settings.current.segmentLength;
 
-		// TODO: PLACE FOLLOWING INSIDE SETTINGS SERVICE... and refine $scope setup
-		// TODO: CHECK FOR DYNAMIC SETTINGS WHICH SHOULD BE IN SCOPE...
-		// Set coords to default Storyboard views from dataset
-		var chromosomeIndex = 0;
-		if ($scope.current.dataset.object.chromosomeIndex) {
-			chromosomeIndex = $scope.current.dataset.object.chromosomeIndex;	
-		}
-		$scope.settings.current.chromStart = $scope.current.dataset.object.chromStart[chromosomeIndex];
-		$scope.settings.current.chromEnd = $scope.current.dataset.object.chromEnd[chromosomeIndex];
 		$scope.settings.views.scale = 1; //$scope.current.dataset.object.scale;
 		Storyboards.setViewpoint($scope.settings.current.chromStart,$scope.settings.current.chromEnd,$scope.settings.views.scale);
 		Components.setViewpoint($scope.settings.current.chromStart,$scope.settings.current.chromEnd,$scope.settings.views.scale);
-		$scope.settings.current.particlesCount = Settings.get().current.particlesCount;
-
-		// SET INITIAL position at midpoint
-		var position = $scope.settings.current.chromStart + parseInt(($scope.settings.current.chromEnd - $scope.settings.current.chromStart) * 0.5);
-		$scope.settings.current.position = position;
-		var currentParticle = Settings.getParticle();
-		$scope.settings.current.particle = currentParticle; 
-
-		// AND SEGMENT IT LIES WITHIN
-		$scope.settings.current.segment = Settings.getSegment($scope.settings.current.position);
-		$scope.settings.current.segmentLower = $scope.settings.current.position - ($scope.settings.current.segment * 0.5);
-		$scope.settings.current.segmentUpper = $scope.settings.current.position + ($scope.settings.current.segment * 0.5);
 
 		// Calculating Initial Proximities
 		//NOTE in future if more than 1 currentModel need same number of currentProximities
@@ -44,9 +23,6 @@
 		// Calculating Initial Restraints
 		//NOTE in future if more than 1 currentModel need same number of currentRestraints
 		$scope.currentRestraints = Restraints.at($scope.settings.current.particle); // for D3 tracks
-
-		// Slice Matrix Overlays
-		Overlays.at($scope.settings.current.particle);
 
 		// Assign data and overlays for each component by type
 		angular.forEach( $scope.current.storyboard.components, function(component, index) {

@@ -14,7 +14,7 @@
 			// Extract colors from (Ensembl) INI files
 			// eg. https://raw.githubusercontent.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini
 			//  OR https://cdn.rawgit.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini
-			//  OR in TADkit: assets/json/ensembl-webcode-COLOUR.ini
+			//  OR in TADkit: assets/defaults/ensembl-webcode-COLOUR.ini
 			colorsFromIni: function(data) {
 				var regex = {
 					section: /^\s*\[\s*([^\]]*)\s*\]\s*$/,

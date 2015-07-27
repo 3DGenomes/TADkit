@@ -13,7 +13,7 @@
 		return {
 			load: function() {
 				var deferral = $q.defer();
-				var dataUrl = "assets/json/tk-defaults-projects.json";
+				var dataUrl = "assets/defaults/tk-defaults-projects.json";
 				if( projects.loaded.length > 0 ) {
 					deferral.resolve(projects);
 				} else {

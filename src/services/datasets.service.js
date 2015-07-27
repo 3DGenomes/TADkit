@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Datasets', Datasets);
 
-	function Datasets($q, $http, uuid4) {
+	function Datasets($q, $http, uuid4, Settings, Proximities, Restraints, Overlays) {
 		var datasets = {
 			loaded : [],
 			current : {
@@ -15,48 +15,70 @@
 		};
 		return {
 			load: function(filename, clear) {
-				filename = filename || "tk-defaults-dataset";
+				filename = filename || "chrX_1559_1660"; //"tk-defaults-dataset";
 				clear = clear || false;
-				if (clear) {
-					while (datasets.loaded.length > 0) {
-						datasets.loaded.shift();
-					}
-				}
-				var deferral = $q.defer();
-				var dataUrl = "assets/json/" + filename + ".json";
+
 				var self = this;
+				if (clear) self.clear();
+
+				var datapath = "defaults";
+				if (filename != "tk-defaults-dataset") datapath = "examples";
+
+				var deferral = $q.defer();
+				var dataUrl = "assets/" + datapath + "/" + filename + ".json";
 				$http.get(dataUrl)
 				.success( function(dataset) {
-					datasets.loaded.push(dataset);
-					datasets.current.index = datasets.loaded.length - 1;
-					self.setSpeciesUrl();
-					self.setRegion();
-					console.log("Dataset " + dataset.object.species + " " + dataset.object.region + " loaded from " + dataUrl);
+					// TADkit defaults and examples are already validated
+					dataset.object.filename = filename;
+					self.add(dataset);
 					deferral.resolve(datasets);
 				});
 				return deferral.promise;
 			},
-			add: function(data) { // rename import?
+			validate: function(data) {
+				var validation = true;
+				var validJSON = JSON.parse(data);
+				// ADD LOGIC...
+				// check structure
+				// check content type
+				var validDataset = validJSON;
+				if (validation) {
+					return validDataset;
+				} else {
+					// give error message
+					// return to Project Loader page
+				}
+			},
+			add: function(dataset) { // rename import?
 				/* CHECK DATASET IS VALID */
 				var self = this;
-				var dataset = JSON.parse(data);
-				// console.log(dataset); // NOT AN ARRAY - A SINGLE DATASET
 				// var uuid = dataObj.uuid || uuid4.generate(),
 				// if (!projects.default.datasets[uuid]) {
 					datasets.loaded.push(dataset);
 					datasets.current.index = datasets.loaded.length - 1;
 					self.setSpeciesUrl();
 					self.setRegion();
+					self.init(dataset);
 					console.log("Dataset " + dataset.object.species + " " + dataset.object.region + " loaded from file.");
 				// }
-				// console.log(datasets.loaded);
 				return datasets;
 			},
-			// add: function(title) {
-			// 	projects.loaded.push(newProject);
-			// 	projects.current = projects.loaded.length - 1;
-			// 	return projects.loaded[projects.current];
-			// },
+			init: function(dataset) {
+				var self = this;
+				// var dataset = self.getDataset();
+				var data = self.getModel().data;
+				Settings.set(dataset);
+				Proximities.set(data);
+				Restraints.set(data, dataset.restraints);
+				Overlays.update(Proximities.get().distances, dataset.restraints);
+				Overlays.import(dataset.object.filename, "tsv", true);
+				console.log("Settings, Proximities, Restraints & Overlays updated.");
+			},
+			clear: function() {
+				while (datasets.loaded.length > 0) {
+					datasets.loaded.shift();
+				}
+			},
 			remove: function(index) {
 				if (index === undefined || index === false) index = datasets.current.index;
 				var dataset = datasets.loaded.indexOf(index);

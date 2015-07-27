@@ -4,39 +4,31 @@
 		.module('TADkit')
 		.controller('ProjectLoaderController', ProjectLoaderController);
 
-	function ProjectLoaderController($q, $state, $scope, $timeout, Settings, Datasets, Overlays, Ensembl, Proximities, Restraints) {
-			// console.log($scope);
-
-		$scope.addDataset = function($fileContent) {
-
-			Datasets.add($fileContent);
-			var overlay = Overlays.getOverlayById("genes");
-			var loadEnsembl = Ensembl.load(overlay, Settings.get().app.online);
-			return $q.all([overlay, loadEnsembl])
-			.then(function(results) {
-				// Recalc all related to new Dataset...
-				// Settings.init(); // dependent on Storyboards and Datasets
-				// Proximities.set(); // dependent on Datasets
-				// Restraints.set(); // dependent on Datasets
-				// Overlays.segment();
-
-				Overlays.update();
-				return results;
-			})
-			.then(function(results) {
+	function ProjectLoaderController($q, $state, $stateParams, $scope, Settings, Datasets, Overlays, Ensembl) {
+		// console.log($scope);
+		// On click load Dataset from URL Params
+		$scope.loadDatasetFromParam = function() {
+			var datasets = Datasets.load($stateParams.loadDataset);
+			return $q.all([ datasets ])
+			.then(function(results){
 				$scope.$parent.current.dataset = Datasets.getDataset();
 				$scope.$parent.current.model = Datasets.getModel();
 				$scope.$parent.current.overlay = Overlays.getOverlay();
 				// $scope.$parent.currentOverlay = Overlays.getOverlay(); //??? REMOVE
-				$state.go('dataset');
+				console.log("Dataset to load: " + $stateParams.loadDataset);			
+				$state.go('browser');
 			});
 		};
+		if ($stateParams.loadDataset) $scope.loadDatasetFromParam();
 
-		// $scope.openInput = function() {
-		// 	$timeout(function() {
-		// 		angular.element("file-input").trigger('click');
-		// 	}, 0);
-		// };
-
+		$scope.addDataset = function($fileContent) {
+			var validDataset = Datasets.validate($fileContent);
+			Datasets.add(validDataset);
+			$scope.$parent.current.dataset = Datasets.getDataset();
+			$scope.$parent.current.model = Datasets.getModel();
+			$scope.$parent.current.overlay = Overlays.getOverlay();
+			// $scope.$parent.currentOverlay = Overlays.getOverlay(); //??? REMOVE
+			$state.go('dataset');
+		};		
 	}
 })();

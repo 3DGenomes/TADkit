@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Ensembl', Ensembl);
 
-	function Ensembl($q, $http, Datasets) {
+	function Ensembl($q, $http, Settings) {
 		var ensembl = {
 			ping : 0
 		};
@@ -25,24 +25,23 @@
 				online = online || false;
 				var deferral = $q.defer();
 				var dataUrl;
-				var datasetObject = Datasets.getDataset().object;
-				var species = datasetObject.species;
-				var speciesUrl = datasetObject.speciesUrl;
-				var chromosomeIndex = 0;
-				if (datasetObject.chromosomeIndex) {
-					chromosomeIndex = datasetObject.chromosomeIndex;	
-				}
-				var chrom = datasetObject.chrom[chromosomeIndex];
-				var chromStart = datasetObject.chromStart[chromosomeIndex];
-				var chromEnd = datasetObject.chromEnd[chromosomeIndex];
+				var settings = Settings.get();
+				var species = settings.current.species;
+				var speciesUrl = settings.current.speciesUrl;
+				// var chromosomeIndex = 0;
+				// if (datasetObject.chromosomeIndex) {
+				// 	chromosomeIndex = datasetObject.chromosomeIndex;	
+				// }
+				var chrom = settings.current.chrom;
+				var chromStart = settings.current.chromStart;
+				var chromEnd = settings.current.chromEnd;
 				var self = this;
 				if (online) {
 					dataUrl = overlay.object.url[0] + speciesUrl + overlay.object.url[2] + chrom + overlay.object.url[4] + chromStart + overlay.object.url[6] + chromEnd + overlay.object.url[8];
 				} else {
-					dataUrl = "assets/json/" + speciesUrl + "-genes.json";
-					// dataUrl = "assets/json/tk-sample-genes.json";
-					// var dataUrl = "assets/json/tk-defaults-datasets2-genes.json";
+					dataUrl = "assets/examples/" + speciesUrl + "-genes.json";
 				}
+				console.log(dataUrl);
 				$http.get(dataUrl)
 				.success(function(data){
 					var genes = self.setBiotypeStyle(data);

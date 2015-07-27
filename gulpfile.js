@@ -65,6 +65,7 @@ gulp.task('scripts', function() {
 });
 
 // Transfer Vendor JS
+// ¡¡¡ LOAD ORDER IS IMPORTANT !!!
 gulp.task('assets-libs', function() {
 	return gulp.src([
 		'bower_components/angular/angular.min.js',
@@ -79,15 +80,23 @@ gulp.task('assets-libs', function() {
 		'bower_components/papaparse/papaparse.min.js',
 		'bower_components/d3/d3.min.js',
 		'bower_components/threejs/build/three.min.js',
-		'src/assets/libs-unused/TrackballControls.js',
-		'src/assets/libs-unused/OrbitControls.js',
-		'src/assets/libs-unused/stats.min.js'
+		'bower_components/threejs/examples/js/controls/TrackballControls.js',
+		'bower_components/threejs/examples/js/controls/OrbitControls.js',
+		'bower_components/threejs/examples/js/libs/stats.min.js'
 		])
 		.pipe(gulp.dest('src/assets/libs'))
-		.pipe(gulp.dest('example/assets/libs'))
 		.pipe(concat('vendors.js'))
 		// .pipe(uglify())
 		.pipe(gulp.dest('dist'))
+		.pipe(gulp.dest('example/assets/js'));
+});
+// Transfer Libs used in Services for local offline load
+gulp.task('assets-libs-services', function() {
+	return gulp.src([
+		'bower_components/d3/d3.min.js',
+		'bower_components/threejs/build/three.min.js',
+		])
+		.pipe(gulp.dest('src/assets/js'))
 		.pipe(gulp.dest('example/assets/js'));
 });
 
@@ -134,16 +143,26 @@ gulp.task('assets-img', function() {
 		])
 		.pipe(gulp.dest('example/assets/img'));
 });
-// Transfer JSON Assets
-gulp.task('assets-json', function() {
+// Transfer Defaults
+gulp.task('assets-defaults', function() {
 	return gulp.src([
-		'src/assets/json/ensembl-webcode-COLOUR.ini',
-		'src/assets/json/tk-defaults-*.json',
-		'src/assets/json/drosophila_melanogaster-*.json',
-		'src/assets/json/mycoplasma_pneumoniae_m129-*.json',
-		'src/assets/json/testdata_torusknot-tadbit.json'
+		'src/assets/defaults/*.*'
 		])
-		.pipe(gulp.dest('example/assets/json'));
+		.pipe(gulp.dest('example/assets/defaults'));
+});
+// Transfer Examples
+gulp.task('assets-examples', function() {
+	return gulp.src([
+		'src/assets/examples/dekker/ensembl-offline/*.json',
+		'src/assets/examples/dekker/jsons/*.json',
+		'src/assets/examples/dekker/marks/*.tsv'
+		// 'src/assets/examples/filion/*.*',
+		// 'src/assets/examples/trussart/*.*',
+		// 'src/assets/examples/misc/drosophila_melanogaster-*.json',
+		// 'src/assets/examples/misc/homo_sapiens-assembly-*.json',
+		// 'src/assets/examples/misc/testdata_torusknot-tadbit.json'
+		])
+		.pipe(gulp.dest('example/assets/examples'));
 });
 
 gulp.task('webserver', function() {
@@ -151,7 +170,7 @@ gulp.task('webserver', function() {
 	.pipe(webserver({
 	  host:             server.host,
 	  port:             server.port,
-	  livereload:       true,
+	  livereload:       false,
 	  directoryListing: false
 	}));
 });
@@ -167,7 +186,8 @@ gulp.task('watch', function() {
 		'src/*.js',
 		'src/*.html',
 		// 'src/assets/css/*.css',
-		'src/assets/json/*.json',
+		'src/assets/defaults/*.*',
+		'src/assets/examples/*.*',
 		'src/components/*.js',
 		'src/components/panels/*.js',
 		'src/components/panels/*.html',
@@ -188,7 +208,8 @@ gulp.task('watch', function() {
 		'assets-fonts',
 		'assets-favicon',
 		'assets-img',
-		'assets-json'
+		'assets-defaults',
+		'assets-examples'
 	]);
 	// gulp.watch('src/assets/scss/*.scss', ['sass']);
 });
@@ -199,12 +220,14 @@ gulp.task('default', [
 	'sass',
 	'scripts',
 	'assets-libs',
+	'assets-libs-services',
 	'assets-html',
 	'assets-css',
 	'assets-fonts',
 	'assets-favicon',
 	'assets-img',
-	'assets-json',
+	'assets-defaults',
+	'assets-examples',
 	'webserver',
 	'openbrowser',
 	'watch'

@@ -22,58 +22,7 @@
 				},
 				onComplete: afterShowAnimation
 			}).then(function(importedOverlays) {
-
-				// convert to function in Overlays service
-				var overlays = Overlays.get();
-				var newOverlays = [];
-				var newComponents = [];
-				var currentOverlaysIndex = overlays.loaded.length - 1;
-				angular.forEach(importedOverlays, function(overlay, key) {
-
-					var componentTemplate = Components.getComponentByType(overlay.object.type);
-					var overlayExists = false;
-					var newComponent = angular.copy(componentTemplate);
-
-					for (var i = overlays.loaded.length - 1; i >= 0; i--) {
-						// console.log(overlays.loaded[i].object.uuid);
-						// console.log(overlay.object.uuid);
-						// if (overlays.loaded[i].object.uuid == overlay.object.uuid) overlayExists = true;
-					}
-					if (!overlayExists) {
-						currentOverlaysIndex++;
-						overlay.object.state.index = currentOverlaysIndex;
-						overlay.object.state.overlaid = false;
-						newOverlays.push(overlay);
-
-						var settings = Settings.get();
-						// New component for overlay
-						newComponent.object.uuid = uuid4.generate();
-						newComponent.object.id = overlay.object.id;
-						newComponent.object.title = overlay.object.id;
-						newComponent.object.dataset = overlay.object.id;
-						newComponent.view.settings.step = overlay.object.step;
-						newComponent.view.settings.color = overlay.object.color;
-						newComponent.view.viewpoint.chromStart = settings.current.chromStart;
-						newComponent.view.viewpoint.chromEnd = settings.current.chromEnd;
-						newComponent.view.viewpoint.scale = settings.views.scale;
-						newComponent.view.viewtype = overlay.object.type + "-" + overlay.object.stepType;
-						newComponent.data = overlay.data;
-						newComponent.overlay = overlay;
-
-						// console.log(newComponent);
-						newComponents.push(newComponent);
-					}
-				});
-
-				// Add newOverlays to Overlays
-				overlays.loaded = overlays.loaded.concat(newOverlays);
-				// Generate overlay colors
-				Overlays.segment();
-
-				// Add new overlays as Components to Storyboard
-				for (var i = 0; i < newComponents.length; i++) {
-					Storyboards.addComponent("default", newComponents[i]);
-				}
+				var newOverlays = Overlays.add(importedOverlays);
 
 				$mdToast.show(
 					$mdToast.simple()
@@ -81,8 +30,7 @@
 				);
 	 			// $state.go('overlay-import-filter');	
 	 			// $state.go('browser');
-
-
+	 			
 			}, function() {
 				$mdToast.show(
 					$mdToast.simple()

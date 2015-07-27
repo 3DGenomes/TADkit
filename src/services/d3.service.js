@@ -4,8 +4,8 @@
 		.module('d3', [])
 		.factory('d3Service', d3Service);
 
-	function d3Service($document, $q, $rootScope) {
-			var online = false;
+	function d3Service($document, $q, $rootScope, Settings) {
+			var online = Settings.getOnline();
 			var d = $q.defer();
 			function onScriptLoad() {
 				// Load client in the browser
@@ -20,7 +20,7 @@
 			if (online) {
 				scriptTag.src = 'http://d3js.org/d3.v3.min.js';
 			} else {
-				scriptTag.src = 'assets/libs/d3.min.js';
+				scriptTag.src = 'assets/js/d3.min.js';
 			}
 			scriptTag.onreadystatechange = function () {
 				if (this.readyState == 'complete') onScriptLoad();

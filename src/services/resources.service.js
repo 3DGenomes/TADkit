@@ -29,7 +29,7 @@
 			// 	if (online) {
 			// 		dataUrl = ensemblRoot + "info/assembly/" + speciesUrl + "?content-type=application/json";
 			// 	} else {
-			// 		dataUrl = "assets/json/" + speciesUrl + "-assembly.json";
+			// 		dataUrl = "assets/defaults/" + speciesUrl + "-assembly.json";
 			// 	}
 			// 	$http.get(dataUrl)
 			// 	.success(function(data){
@@ -50,7 +50,7 @@
 				// dataUrl = "https://raw.githubusercontent.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini" // NOT PERMITTED
 					dataUrl = "https://cdn.rawgit.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini";
 				} else {
-					dataUrl = "assets/json/ensembl-webcode-COLOUR.ini";
+					dataUrl = "assets/defaults/ensembl-webcode-COLOUR.ini";
 
 				}
 				$http.get(dataUrl)
@@ -69,7 +69,7 @@
 			// 	if (online) {
 			// 		dataUrl = ensemblRoot + "info/biotypes/" + speciesUrl + "?content-type=application/json";
 			// 	} else {
-			// 		dataUrl = "assets/json/" + speciesUrl + "-biotypes.json";
+			// 		dataUrl = "assets/defaults/" + speciesUrl + "-biotypes.json";
 			// 	}
 			// 	$http.get(dataUrl).
 			// 	success(function(data){
