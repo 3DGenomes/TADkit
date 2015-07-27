@@ -13,7 +13,7 @@
 
 			loadTables: function(species, requestSlice) {
 				var deferral = $q.defer();
-				$http.get('assets/json/GSE22069_norm_aggregated_discretized_tiling_arrays.json')
+				$http.get('assets/defaults/GSE22069_norm_aggregated_discretized_tiling_arrays.json')
 				.success(function(data){
 					tables = data;
 					console.log("Tables for region " + requestSlice + " of " + species + " retreived from file.");
@@ -46,7 +46,7 @@
 				var dataset = [];
 				for (var i = 0; i < data.length; i++) {
 					if (data[i][id]==1) {
-						dataset.push( {"fragmentID":data[i].fragmentID, "chromosome":data[i].chromosome, "start":data[i].start, "end":data[i].end} );
+						dataset.push( {"fragmentID" : data[i].fragmentID, "chrom" : data[i].chrom, "chromStart" : data[i].chromStart, "chromEnd" : data[i].chromEnd} );
 					} else {
 						// console.log("None found in sample.");
 					}
@@ -78,10 +78,10 @@
 
 					// For every row [j]...
 					for(var j=0; j<tablesCount; j++){
-						var start = data[j].start;
-						var end = data[j].end;
+						var chromStart = data[j].chromStart;
+						var chromEnd = data[j].chromEnd;
 						 // check if overlaps current fragment [i]
-						if ( Math.max(fragmentLower, start) <= Math.min(fragmentUpper,end) ) {
+						if ( Math.max(fragmentLower, chromStart) <= Math.min(fragmentUpper, chromEnd) ) {
 								tablePresent = tableColor;
 						}
 					}

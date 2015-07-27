@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Datasets', Datasets);
 
-	function Datasets($q, $http, uuid4) {
+	function Datasets($q, $http, uuid4, Settings, Proximities, Restraints, Overlays) {
 		var datasets = {
 			loaded : [],
 			current : {
@@ -14,48 +14,71 @@
 			}
 		};
 		return {
-			load: function() {
-				var deferral = $q.defer();
-				// var source = "assets/json/testdata_torusknot-tadbit.json";
-				// var source = "assets/json/mycoplasma_pneumoniae_m129-tadbit.json";
-				var source = "assets/json/tk-defaults-datasets.json";
+			load: function(filename, clear) {
+				filename = filename || "chrX_1559_1660"; //"tk-defaults-dataset";
+				clear = clear || false;
+
 				var self = this;
-				if( datasets.loaded.length > 0 ) {
+				if (clear) self.clear();
+
+				var datapath = "defaults";
+				if (filename != "tk-defaults-dataset") datapath = "examples";
+
+				var deferral = $q.defer();
+				var dataUrl = "assets/" + datapath + "/" + filename + ".json";
+				$http.get(dataUrl)
+				.success( function(dataset) {
+					// TADkit defaults and examples are already validated
+					dataset.object.filename = filename;
+					self.add(dataset);
 					deferral.resolve(datasets);
-				} else {
-					$http.get(source)
-					.success( function(data) {
-						datasets.loaded = data;
-						datasets.current.index = datasets.loaded.length - 1;
-						// console.log(datasets.current.index);
-						// Make speicesUrl forEach...
-						datasets.loaded[datasets.current.index].object.speciesUrl = self.setSpeciesUrl(datasets.current.index);
-						console.log("Datasets (" + data.length + ") loaded from " + source);
-						deferral.resolve(datasets);
-					});
-				}
+				});
 				return deferral.promise;
 			},
-			add: function(data) { // rename import?
+			validate: function(data) {
+				var validation = true;
+				var validJSON = JSON.parse(data);
+				// ADD LOGIC...
+				// check structure
+				// check content type
+				var validDataset = validJSON;
+				if (validation) {
+					return validDataset;
+				} else {
+					// give error message
+					// return to Project Loader page
+				}
+			},
+			add: function(dataset) { // rename import?
 				/* CHECK DATASET IS VALID */
 				var self = this;
-				var dataset = JSON.parse(data);
-				// console.log(dataset); // NOT AN ARRAY - A SINGLE DATASET
 				// var uuid = dataObj.uuid || uuid4.generate(),
 				// if (!projects.default.datasets[uuid]) {
 					datasets.loaded.push(dataset);
 					datasets.current.index = datasets.loaded.length - 1;
-					datasets.loaded[datasets.current.index].object.speciesUrl = self.setSpeciesUrl(datasets.current.index);
-					console.log("Dataset \"" + datasets.loaded[datasets.current.index].object.title + "\" loaded from file.");
+					self.setSpeciesUrl();
+					self.setRegion();
+					self.init(dataset);
+					console.log("Dataset " + dataset.object.species + " " + dataset.object.region + " loaded from file.");
 				// }
-				// console.log(datasets.loaded);
 				return datasets;
 			},
-			// add: function(title) {
-			// 	projects.loaded.push(newProject);
-			// 	projects.current = projects.loaded.length - 1;
-			// 	return projects.loaded[projects.current];
-			// },
+			init: function(dataset) {
+				var self = this;
+				// var dataset = self.getDataset();
+				var data = self.getModel().data;
+				Settings.set(dataset);
+				Proximities.set(data);
+				Restraints.set(data, dataset.restraints);
+				Overlays.update(Proximities.get().distances, dataset.restraints);
+				Overlays.import(dataset.object.filename, "tsv", true);
+				console.log("Settings, Proximities, Restraints & Overlays updated.");
+			},
+			clear: function() {
+				while (datasets.loaded.length > 0) {
+					datasets.loaded.shift();
+				}
+			},
 			remove: function(index) {
 				if (index === undefined || index === false) index = datasets.current.index;
 				var dataset = datasets.loaded.indexOf(index);
@@ -64,9 +87,23 @@
 			},
 			setSpeciesUrl: function(index) {
 				if (index === undefined || index === false) index = datasets.current.index;
-				var speciesUrl = datasets.loaded[index].object.species;
-				speciesUrl = speciesUrl.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+				var species = datasets.loaded[index].object.species;
+				var speciesUrl = species.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+				datasets.loaded[index].object.speciesUrl = speciesUrl;
 				return speciesUrl;
+			},
+			setRegion: function(index) {
+				if (index === undefined || index === false) index = datasets.current.index;
+				var chromosomeIndex = 0;
+				if (datasets.loaded[index].object.chromosomeIndex) {
+					chromosomeIndex = datasets.loaded[index].object.chromosomeIndex;	
+				}
+				var chrom = datasets.loaded[index].object.chrom[chromosomeIndex];
+				var chromStart = datasets.loaded[index].object.chromStart[chromosomeIndex];
+				var chromEnd = datasets.loaded[index].object.chromEnd[chromosomeIndex];
+				var region = chrom + ":" + chromStart + "-" + chromEnd;
+				datasets.loaded[index].object.region = region;
+				return region;
 			},
 			set: function(index) {
 				if (index !== undefined || index !== false) datasets.current.index = index;
@@ -120,26 +157,7 @@
 					if (models[i].ref == ref) model = models[i];
 				}
 				return model; // array of model vertices
-			},
-			getSpeciesUrl: function(index) {
-				if (index === undefined || index === false) index = datasets.current.index;
-				var speciesUrl = datasets.loaded[index].object.speciesUrl;
-				return speciesUrl;
-			},
-			getRegion: function(index) {
-				if (index === undefined || index === false) index = datasets.current.index;
-				var chromosomeIndex = 0;
-				if (datasets.loaded[index].object.chromosomeIndex) {
-					chromosomeIndex = datasets.loaded[index].object.chromosomeIndex;	
-				}
-				var region = datasets.loaded[index].object.chromosome[chromosomeIndex] + ":" + datasets.loaded[index].object.chromStart[chromosomeIndex] + "-" + datasets.loaded[index].object.chromEnd[chromosomeIndex];
-				return region;
-			},
-			getComponents: function(index) {
-				if (index === undefined || index === false) index = datasets.current.index;
-				var components = datasets[index].components;
-				return components;
-			},
+			}
 		};
 	}
 })();

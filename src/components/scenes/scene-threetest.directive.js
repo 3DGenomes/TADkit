@@ -19,7 +19,7 @@
 				// console.log(scope);
 
 				// THREE.JS TEST
-				var viewport, camera, scene, renderer, geometry, material, mesh;
+				var viewport, camera, scene, renderer, geometry, material, network;
 				init();
 				animate();
 				function init() {
@@ -43,9 +43,9 @@
 						wireframe: false
 					});
 					// material = new THREE.MeshNormalMaterial();
-					mesh = new THREE.Mesh(geometry, material);
-					mesh.name = "testmesh";
-					scene.add(mesh);
+					network = new THREE.Mesh(geometry, material);
+					network.name = "testmesh";
+					scene.add(network);
 					if (window.WebGLRenderingContext)
  						renderer = new THREE.WebGLRenderer({alpha: true});
  					else
@@ -69,8 +69,8 @@
 					render();
 				}
 				function render() {
-					mesh.rotation.x += 0.01;
-					mesh.rotation.y += 0.02;
+					network.rotation.x += 0.01;
+					network.rotation.y += 0.02;
 				renderer.render(scene, camera);
 				}
 				// END THREE.JS TEST

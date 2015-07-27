@@ -14,7 +14,7 @@
 				var strTemplate = '<data-tk-component-' + scope.component.object.type + ' ' +
 					'id="{{component.object.id}}-' + scope.$index + '" ' +
 					'type="component.object.type" ' +
-					'title="component.object.title" ' +
+					'title="{{component.object.title}}" ' +
 					'state="component.object.state" ' + /* for scene until can check for DOM loaded */
 					'settings="settings" ' +
 					'view="component.view" ' +
@@ -26,7 +26,7 @@
 					'proximities="component.proximities" ' +
 					'overlay="component.overlay"' +
 					'toggleoverlay="toggleOverlay(index)" ' +
-					'style="margin: {{component.object.state.margin}}" ' +
+					'style="margin: {{component.object.state.margin}}; background-color: {{component.view.viewpoint.sceneColor}}" ' +
 					'class="component ' + scope.component.object.type + '">' +
 					'</data-tk-component-' + scope.component.object.type + '>';
 

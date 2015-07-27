@@ -1,23 +1,9 @@
-<div layout="column" class="fullheight">
-	<div ui-view="topbar"></div>
-	<md-content id="home" flex>
-		<div tk-component-scene-floatingtad class="floatingtad"></div>
-		<div layout="column">
-			<h2 class="tadkit-title">
-				<img alt="TADkit" src="assets/img/tadkit-logo-invert.png" />
-			</h2>
-			<h3>3D genome browser <br class="hide-for-small">and TADbit front-end.</h3>
-		</div>
-		<div layout="column" layout-align="center center">
-			<md-button ui-sref="browser" class="md-raised" layout="row" layout-align="center center">
-				<md-icon class="icon-file-upload"></md-icon>
-				<div>Open 3D Browser</div>
-			</md-button>
-			<md-button href="https://github.com/3DGenomes/TADkit/" class="md-raised" layout="row" layout-align="center center">
-				<md-icon class="icon-cloud-download"></md-icon>
-				<div>Download from GitHub</div>
-			</md-button>
-		</div>
-		<md-sidenav  ui-view="sidebaruser" class="md-sidenav-right md-whiteframe-z2" md-component-id="right"></md-sidenav>
-	</md-content>
-</div>
+here
+<section layout="row" flex class="fullheight">
+	<md-sidenav id="sidebar-left" ui-view="sidebar-left" layout-padding class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="{{ settings.app.isProject ? '$mdMedia(\'gt-md\')' : 'closed'}}"></md-sidenav>
+	<div layout="column" flex class="fullheight">
+		<div ui-view="topbar"></div>
+		<md-content id="home-content" ui-view="content" flex class="fullheight"></md-content>
+	</div>
+	<md-sidenav id="sidebar-right" ui-view="sidebar-right" layout-padding class="md-sidenav-right md-whiteframe-z2" md-component-id="right"></md-sidenav>
+</section>

@@ -9,7 +9,7 @@
 			restrict: 'EA',
 			scope: {
 				type: '=',
-				title: '=',
+				title: '@',
 				settings: '=',
 				view: '=',
 				data: '=',
@@ -137,7 +137,7 @@
 								.append("rect")
 								.attr("width", width)
 								.attr("height", height)
-								.attr('fill', 'white');
+								.style('fill', 'white');
 
 							focus = chart.append("g")
 								.attr("class", "focus");
@@ -147,7 +147,7 @@
 							// 	.append("rect")
 							// 	.attr("width", width)
 							// 	.attr("height", height)
-							// 	.attr('fill', 'white');
+							// 	.style('fill', 'white');
 
 							container = focus.append("g")
 								.attr("class", "container")
@@ -165,13 +165,13 @@
 								labels.append("text")
 									.attr("x", -18)
 									.attr("y", 8)
-									.attr("text-anchor", "right")
+									.style("text-anchor", "right")
 									.style("font-size", "10px")
 									.text("<<");
 								labels.append("text")
 									.attr("x", -18)
 									.attr("y", 18)
-									.attr("text-anchor", "right")
+									.style("text-anchor", "right")
 									.style("font-size", "10px")
 									.text(">>");
 // TODO: Use FontAwesome/IcoMoon...

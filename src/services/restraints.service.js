@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Restraints', Restraints);
 
-	function Restraints(Datasets) {
+	function Restraints() {
 		// Matrix - n x m dimensions == particleCount */
 		var restraints = {
 			dimension: 0,
@@ -22,7 +22,7 @@
 			neighbours: []
 		};
 		return {
-			set: function (settings) {
+			set: function (vertices, datasetRestraints, settings) {
 				// Generate a matrix of proximity between points
 
 				var defaults = {
@@ -31,10 +31,8 @@
 				settings = settings || {};
 				angular.extend(this, angular.copy(defaults), settings);
 
-				var vertices = Datasets.getModel().data;
 				restraints.dimension = vertices.length / 3; // 3 == xyz components of vertices
 
-				var datasetRestraints = Datasets.getDataset().restraints;
 				for (var i = 0; i < datasetRestraints.length; i++) {
 					if (datasetRestraints[i][2] == "H") restraints.harmonics.push(datasetRestraints[i]);
 					if (datasetRestraints[i][2] == "L") restraints.lowerBounds.push(datasetRestraints[i]);

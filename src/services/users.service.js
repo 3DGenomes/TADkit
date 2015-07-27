@@ -13,14 +13,14 @@
 		return {
 			load: function() {
 				var deferral = $q.defer();
-				var source = "assets/json/tk-defaults-users.json";
+				var dataUrl = "assets/defaults/tk-defaults-users.json";
 				if( users.loaded.length > 0 ) {
 					deferral.resolve(users);
 				} else {
-					$http.get(source)
+					$http.get(dataUrl)
 					.success( function(data) {
 						users.loaded = data;
-						console.log("Users (" + data.length + ") loaded from " + source);
+						console.log("Users (" + data.length + ") loaded from " + dataUrl);
 						deferral.resolve(users);
 					});
 				}

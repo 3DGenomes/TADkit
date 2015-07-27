@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Proximities', Proximities);
 
-	function Proximities(Datasets) {
+	function Proximities() {
 		// Matrix - n x m dimensions == particleCount */
 		var proximities = {
 			dimension: 0,
@@ -18,7 +18,7 @@
 			distances: []
 		};
 		return {
-			set: function (settings) {
+			set: function (vertices, settings) {
 				// Generate a matrix of proximity between points
 				// from vertices = array of point coordinates components
 				// up to minDistance = threshold for proximity
@@ -43,8 +43,7 @@
 				settings = settings || {};
 				angular.extend(this, angular.copy(defaults), settings);
 
-				var vertices = Datasets.getModel().data;
-				settings.maxDistance = this.getMaxDistance(vertices);
+				this.maxDistance = this.getMaxDistance(vertices);
 
 				var vertexpos = 0;
 				var distancepos = 0;
@@ -70,7 +69,7 @@
 						var dist = Math.sqrt( dx * dx + dy * dy + dz * dz );
 
 						// if ( dist < this.minDistance ) {
-
+							// if (i == "0" && j=="0") console.log("i:"+i+" ("+vertices[i*3]+","+vertices[i*3+1]+","+vertices[i*3+2]+") j:"+j+" ("+vertices[j*3]+","+vertices[j*3+1]+","+vertices[j*3+2]+")");
 							// FROM PARTICLE
 							positions[ vertexpos++ ] = vertices[ i * 3     ]; // from u
 							positions[ vertexpos++ ] = vertices[ i * 3 + 1 ]; // from v
@@ -87,7 +86,6 @@
 							// Can be added as 'color' to THREE.BufferGeometry
 							// using THREE.BufferAttribute to store the array
 							// but would need *6 to give RGB for each position.
-
 							var distance = (1.0 - (dist / this.maxDistance)); // .toFixed(2)
 							distances[ distancepos++ ] = distance;
 
@@ -113,7 +111,7 @@
 				current.dimension = currentParticle;
 				var dataStart = (currentParticle - 1) * proximities.dimension;
 				var dataEnd = currentParticle * proximities.dimension;
-				current.positions = proximities.positions.subarray((dataStart * 3), (dataEnd * 3));
+				current.positions = proximities.positions.subarray((dataStart * 2 * 3), (dataEnd * 2 * 3));
 				current.distances = proximities.distances.subarray(dataStart, dataEnd);
 				return current;
 			},

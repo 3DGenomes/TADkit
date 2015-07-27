@@ -25,16 +25,16 @@
 			// loadInfoAssembly: function(speciesUrl, online) { // *** UNUSED ***
 			// 	var deferral = $q.defer();
 			// 	var self = this;
-			// 	var source;
+			// 	var dataUrl;
 			// 	if (online) {
-			// 		source = ensemblRoot + "info/assembly/" + speciesUrl + "?content-type=application/json";
+			// 		dataUrl = ensemblRoot + "info/assembly/" + speciesUrl + "?content-type=application/json";
 			// 	} else {
-			// 		source = "assets/json/" + speciesUrl + "-assembly.json";
+			// 		dataUrl = "assets/defaults/" + speciesUrl + "-assembly.json";
 			// 	}
-			// 	$http.get(source)
+			// 	$http.get(dataUrl)
 			// 	.success(function(data){
-			// 		var whence = online ? "Ensembl" : "local storage";
-			// 		console.log("Assembly Info for " + speciesUrl + " retreived from " + whence + ".");
+			// 		var source = online ? "Ensembl" : "local storage";
+			// 		console.log("Assembly Info for " + speciesUrl + " retreived from " + source + ".");
 			// 		data.lengthBP = self.setLengthBP(data.top_level_region);
 			// 		console.log("Assembly length for " + speciesUrl + " = " + data.lengthBP);
 			// 		resources.assembly = data;
@@ -45,15 +45,15 @@
 			loadBiotypeColors: function() {
 				var deferral = $q.defer();
 				var online = false;//$scope.online;
-				var source;
+				var dataUrl;
 				if (online) {
-				// source = "https://raw.githubusercontent.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini" // NOT PERMITTED
-					source = "https://cdn.rawgit.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini";
+				// dataUrl = "https://raw.githubusercontent.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini" // NOT PERMITTED
+					dataUrl = "https://cdn.rawgit.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini";
 				} else {
-					source = "assets/json/ensembl-webcode-COLOUR.ini";
+					dataUrl = "assets/defaults/ensembl-webcode-COLOUR.ini";
 
 				}
-				$http.get(source)
+				$http.get(dataUrl)
 				.success(function(data){
 					var iniData = Color.colorsFromIni(data);
 					resources.featureColors = iniData;
@@ -65,13 +65,13 @@
 			},
 			// loadInfoBiotypes: function(speciesUrl) { // *** UNUSED ***
 			// 	var deferral = $q.defer();
-			// 	var source;
+			// 	var dataUrl;
 			// 	if (online) {
-			// 		source = ensemblRoot + "info/biotypes/" + speciesUrl + "?content-type=application/json";
+			// 		dataUrl = ensemblRoot + "info/biotypes/" + speciesUrl + "?content-type=application/json";
 			// 	} else {
-			// 		source = "assets/json/" + speciesUrl + "-biotypes.json";
+			// 		dataUrl = "assets/defaults/" + speciesUrl + "-biotypes.json";
 			// 	}
-			// 	$http.get(source).
+			// 	$http.get(dataUrl).
 			// 	success(function(data){
 			// 		console.log("Biotypes for " + speciesUrl + " retreived from Ensembl.");
 			// 		deferral.resolve(data);

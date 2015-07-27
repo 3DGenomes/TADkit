@@ -75,7 +75,7 @@
 
 
 			// Generate Chromatin model
-			var chromatinFiber = new THREE.Object3D(); // unmerged mesh
+			var chromatinFiber = new THREE.Object3D(); // unmerged network
 			var chromatinGeometry = new THREE.Geometry(); // to calculate merged bounds
 
 			for ( var i = 0 ; i < pathSegments; i++) {

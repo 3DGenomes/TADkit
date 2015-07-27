@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Color', Color);
 
-	function Color(colorConvert) {
+	function Color(ColorConvert) {
 		// NOTE Ideally these will all be deprecated
 		//      in favor of nbative JS, THREE or D3 functions.
 		//      Those already UNUSED are marked as such.
@@ -14,7 +14,7 @@
 			// Extract colors from (Ensembl) INI files
 			// eg. https://raw.githubusercontent.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini
 			//  OR https://cdn.rawgit.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini
-			//  OR in TADkit: assets/json/ensembl-webcode-COLOUR.ini
+			//  OR in TADkit: assets/defaults/ensembl-webcode-COLOUR.ini
 			colorsFromIni: function(data) {
 				var regex = {
 					section: /^\s*\[\s*([^\]]*)\s*\]\s*$/,
@@ -32,7 +32,7 @@
 					if(regex.param.test(line)){
 						match = line.match(regex.param);
 						if(section){
-							var hexColor = colorConvert.nameToHex( match[2] );
+							var hexColor = ColorConvert.nameToHex( match[2] );
 							colors[section][match[1]] = hexColor;
 						}else{
 							colors[match[1]] = match[2];
@@ -87,16 +87,46 @@
 				}
 				return colors;
 			},
-			// UNUSED: Generate a specific number of random colors
+			// Generate THREE Vertex Colors from array of THREE colors
+			// 
+			vertexColorsFromColors: function(colors) {
+				// Buffer Geomptry to be used as LinePieces so
+				// colors stored as one per data-position-pair
+				// so the array needs an RGB (*3) for each pair (*2)
+				// ie. each distance needs to be replicated 6 times
+				var vertexColors = new Float32Array( colors.length * 6 );
+				for (var i = colors.length - 1; i >= 0; i--) {
+					var pos = i * 6;
+					var RGB = colors[i];
+					vertexColors[pos  ] = RGB.r;
+					vertexColors[pos+1] = RGB.g;
+					vertexColors[pos+2] = RGB.b;
+					vertexColors[pos+3] = RGB.r;
+					vertexColors[pos+4] = RGB.g;
+					vertexColors[pos+5] = RGB.b;
+				}
+				return vertexColors;
+			},
+			// Generate a specific number of random colors
 			getRandomColors: function(count) {
-				var colors = [];
+				var randomColors = [];
 				for(var i=0; i<count; i++){
 					var color = "#" + Math.floor(Math.random()*16777215).toString(16);
-					colors.push(color);
+					randomColors.push(color);
 				}
-				return colors;
+				return randomColors;
 			},
-			// UNUSED: Generate a math linear gradient between to hex colors values
+			// Generate a specific number of random colors
+			getRandomRGB: function(count) {
+				var randomRGB = [];
+				for(var i=0; i<count; i++){
+					var color = "#" + Math.floor(Math.random()*16777215).toString(16);
+					var RGB = new THREE.Color(color);
+					randomRGB.push(RGB);
+				}
+				return randomRGB;
+			},
+				// UNUSED: Generate a math linear gradient between to hex colors values
 			//     Note this is NOT a L*a*b or HCL correct gradient
 			//     See Mike Bostock's D3 comments: http://bl.ocks.org/mbostock/3014589
 			getGradientColor: function(start_color, end_color, percent) {

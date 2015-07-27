@@ -9,7 +9,7 @@
 			restrict: 'EA',
 			scope: {
 				type: '=',
-				title: '=',
+				title: '@',
 				settings: '=',
 				view: '=',
 				data: '=',
@@ -133,11 +133,11 @@
 							// solid rect as background also allow mouse events everywhere 
 							defs = chart.append("defs")
 								.append("clipPath")
-								.attr("id", "clip")
+									.attr("id", "clip")
 								.append("rect")
-								.attr("width", width)
-								.attr("height", height)
-								.attr('fill', 'white');
+									.attr("width", width)
+									.attr("height", height)
+									.style('fill', 'white');
 
 							focus = chart.append("g")
 								.attr("class", "focus");
@@ -172,16 +172,16 @@
 							var focusGraph = container.selectAll("rect")
 								.data(data)
 								.enter().append("rect")
-								.attr("x", function(d, i) { return (i + 1) * stepWidth; } )
-								.attr("y", verticalOffset)
-								.attr("width", stepWidth)
-								.attr("height", nodeHeight)
-								.style("fill", nodeColor)
-								.style("fill-opacity", function(d) { return d; })
-								.style("stroke", nodeColor)
-								.style("stroke-width", 0)
-								.append("svg:title")
-								.text(function(d,i) { return i + ":" + d; });
+									.attr("x", function(d, i) { return (i + 1) * stepWidth; } )
+									.attr("y", verticalOffset)
+									.attr("width", stepWidth)
+									.attr("height", nodeHeight)
+									.style("fill", nodeColor)
+									.style("fill-opacity", function(d) { return d; })
+									.style("stroke", nodeColor)
+									.style("stroke-width", 0)
+									.append("svg:title")
+										.text(function(d,i) { return i + ":" + d; });
 
 							var highlight = chart.append("rect")
 									.attr("id", "highlight")

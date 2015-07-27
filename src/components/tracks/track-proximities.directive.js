@@ -9,7 +9,7 @@
 			restrict: 'EA',
 			scope: {
 				type: '=',
-				title: '=',
+				title: '@',
 				settings: '=',
 				view: '=',
 				data: '=',
@@ -130,7 +130,6 @@
 
 						var width = component.clientWidth - (2 * componentMargin) - margin.left - margin.right,
 							height = trackHeight - margin.top - margin.bottom;
-							console.log(height);
 						var particleWidth = (1 * width) / particlesCount;
 						xScale = d3.scale.linear()
 								.range([0, width])
@@ -170,7 +169,7 @@
 							.append("rect")
 							.attr("width", width)
 							.attr("height", height)
-							.attr('fill', 'white');
+							.style('fill', 'white');
 
 						focus = chart.append("g")
 							.attr("class", "focus");
@@ -201,7 +200,7 @@
 							.style("stroke", nodeColor)
 							.style("stroke-width", 0)
 							.append("svg:title")
-							.text(function(d,i) { return i + ":" + d; });
+								.text(function(d,i) { return i + ":" + d; });
 
 						highlight = chart.append("rect")
 								.attr("id", "highlight")
