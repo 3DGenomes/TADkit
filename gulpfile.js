@@ -99,6 +99,7 @@ gulp.task('demo-favicon', function() {
 // Transfer Libs used in Services for local offline load
 gulp.task('assets-libs', function() {
 	return gulp.src([
+		'bower_components/angular/angular.min.js.map',
 		'bower_components/d3/d3.min.js',
 		'bower_components/threejs/build/three.min.js',
 		])
