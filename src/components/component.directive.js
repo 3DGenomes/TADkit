@@ -26,7 +26,7 @@
 					'proximities="component.proximities" ' +
 					'overlay="component.overlay"' +
 					'toggleoverlay="toggleOverlay(index)" ' +
-					'style="margin: {{component.object.state.margin}}; background-color: {{component.view.viewpoint.sceneColor}}" ' +
+					'style="margin: {{component.object.state.margin}}; background-color: {{component.view.settings.background}}" ' +
 					'class="component ' + scope.component.object.type + '">' +
 					'</data-tk-component-' + scope.component.object.type + '>';
 

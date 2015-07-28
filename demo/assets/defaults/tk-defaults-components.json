@@ -29,7 +29,6 @@
 				"near" : 1,
 				"far" : 1000000,
 				"translate" : 30000,
-				"sceneColor" : "#ffffff",
 				"fog" : true,
 				"fogNear" : 0.8,
 				"fogFar" : 1.2
@@ -40,6 +39,7 @@
 			},
 			"viewtype" : "cylinderSegments",
 			"settings" : {
+				"background" : "#ffffff",
 				"margin" : "4px",
 				"padding" : {"top": "20px", "right": "40px", "bottom": "20px", "left": "40px"},
 				"lighting": {
@@ -107,7 +107,6 @@
 				"near" : 1,
 				"far" : 1000000,
 				"translate" : 30000,
-				"sceneColor" : "#ffffff",
 				"fog" : true,
 				"fogNear" : 0.8,
 				"fogFar" : 1.25
@@ -118,6 +117,7 @@
 			},
 			"viewtype" : "line",
 			"settings" : {
+				"background" : "#ffffff",
 				"heightInner" : "40px",
 				"margin" : "4px",
 				"padding" : {"top": "5px", "right": "5px", "bottom": "5px", "left": "5px"},
@@ -174,6 +174,7 @@
 			},
 			"viewtype" : "list",
 			"settings" : {
+				"background" : "#ffffff",
 				"heightInner" : "40px",
 				"margin" : "4px",
 				"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
@@ -208,6 +209,7 @@
 			},
 			"viewtype" : "linear",
 			"settings" : {
+				"background" : "#ffffff",
 				"heightInner" : "40px",
 				"margin" : "4px",
 				"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
@@ -243,6 +245,7 @@
 			},
 			"viewtype" : "step-variable",
 			"settings" : {
+				"background" : "#ffffff",
 				"heightInner" : "40px",
 				"margin" : "4px",
 				"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
@@ -278,6 +281,7 @@
 			},
 			"viewtype" : "step-fixed",
 			"settings" : {
+				"background" : "#ffffff",
 				"heightInner" : "20px",
 				"margin" : "4px",
 				"padding" : {"top": "0px", "right": "100px", "bottom": "0px", "left": "100px"},
@@ -313,6 +317,7 @@
 			},
 			"viewtype" : "step-fixed",
 			"settings" : {
+				"background" : "#ffffff",
 				"heightInner" : "40px",
 				"margin" : "4px",
 				"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
@@ -348,6 +353,7 @@
 			},
 			"viewtype" : "linear",
 			"settings" : {
+				"background" : "#ffffff",
 				"heightInner" : "80px",
 				"margin" : "0px",
 				"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
