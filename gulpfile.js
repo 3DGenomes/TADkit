@@ -3,7 +3,7 @@ var gulp = require('gulp');
 
 // Include Our Plugins
 var jshint = require('gulp-jshint');
-var sass = require('gulp-sass');
+// var sass = require('gulp-sass');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify'); // ng-min
 var rename = require('gulp-rename');
@@ -30,19 +30,8 @@ gulp.task('lint', function() {
 		.pipe(jshint.reporter('default'));
 });
 
-// Compile Our Sass
-gulp.task('sass', function() {
-	// return gulp.src('src/scss/*.scss')
-	// 	.pipe(sass({
-	// 		includePaths: ['src/assets/scss'],
-	// 		outputStyle: 'nested',
-	// 		errLogToConsole: true
-	// 	}))
-	// 	.pipe(gulp.dest('src/assets/css'));
-});
-
 // Concatenate & Minify TADkit JS
-gulp.task('scripts', function() {
+gulp.task('dist-scripts', function() {
 	return gulp.src([
 		'src/tadkit.js',
 		'src/tadkit.config.js',
@@ -66,7 +55,7 @@ gulp.task('scripts', function() {
 
 // Transfer Vendor JS
 // ¡¡¡ LOAD ORDER IS IMPORTANT !!!
-gulp.task('assets-libs', function() {
+gulp.task('dist-vendor', function() {
 	return gulp.src([
 		'bower_components/angular/angular.min.js',
 		'bower_components/angular-ui-router/release/angular-ui-router.min.js',
@@ -90,9 +79,27 @@ gulp.task('assets-libs', function() {
 		.pipe(gulp.dest('dist'))
 		.pipe(gulp.dest('demo/assets/js'));
 });
-// Transfer Libs used in Services for local offline load
-gulp.task('assets-libs-services', function() {
+
+// Transfer Demo index.html
+gulp.task('demo-index', function() {
 	return gulp.src([
+		'src/demo-index.html'
+		])
+		.pipe(rename('index.html'))
+		.pipe(gulp.dest('demo'));
+});
+// Transfer Favicon Assets
+gulp.task('demo-favicon', function() {
+	return gulp.src([
+		'src/favicon-32x32.png'
+		])
+		.pipe(gulp.dest('demo'));
+});
+
+// Transfer Libs used in Services for local offline load
+gulp.task('assets-libs', function() {
+	return gulp.src([
+		'bower_components/angular/angular.min.js.map',
 		'bower_components/d3/d3.min.js',
 		'bower_components/threejs/build/three.min.js',
 		])
@@ -112,29 +119,33 @@ gulp.task('assets-html', function() {
 		.pipe(gulp.dest('src/assets/templates'))
 		.pipe(gulp.dest('demo/assets/templates'));
 });
+
+// Compile Our Sass
+// gulp.task('assets-sass', function() {
+// 	return gulp.src('src/scss/*.scss')
+// 		.pipe(sass({
+// 			includePaths: ['src/assets/scss'],
+// 			outputStyle: 'nested',
+// 			errLogToConsole: true
+// 		}))
+// 		.pipe(gulp.dest('src/assets/css'));
+// });
 // Transfer CSS Assets
 gulp.task('assets-css', function() {
 	return gulp.src([
-		'bower_components/angular-material/angular-material.css',
+		'src/assets/css/angular-material.css',
 		'src/assets/css/tadkit.css',
 		'src/assets/css/ensembl-genes.css',
-		'src/assets/font-awesome/css/font-awesome.min.css'
 		])
 		.pipe(gulp.dest('demo/assets/css'));
 });
+
 // Transfer Fonts Assets
 gulp.task('assets-fonts', function() {
 	return gulp.src([
 		'src/assets/fonts/*.*',
 		])
 		.pipe(gulp.dest('demo/assets/fonts'));
-});
-// Transfer Favicon Assets
-gulp.task('assets-favicon', function() {
-	return gulp.src([
-		'src/favicon-32x32.png'
-		])
-		.pipe(gulp.dest('demo'));
 });
 // Transfer Image Assets
 gulp.task('assets-img', function() {
@@ -143,6 +154,7 @@ gulp.task('assets-img', function() {
 		])
 		.pipe(gulp.dest('demo/assets/img'));
 });
+
 // Transfer Defaults
 gulp.task('assets-defaults', function() {
 	return gulp.src([
@@ -201,13 +213,15 @@ gulp.task('watch', function() {
 		'src/services/*.js'
 	], [
 		'lint',
-		'sass',
-		'scripts',
+		// 'sass',
+		'dist-scripts',
+		'dist-vendor',
+		'demo-index',
+		'demo-favicon',
 		'assets-libs',
 		'assets-html',
 		'assets-css',
 		'assets-fonts',
-		'assets-favicon',
 		'assets-img',
 		'assets-defaults',
 		'assets-offline',
@@ -219,14 +233,15 @@ gulp.task('watch', function() {
 // Default Task
 gulp.task('default', [
 	'lint',
-	'sass',
-	'scripts',
+	// 'sass',
+	'dist-scripts',
+	'dist-vendor',
+	'demo-index',
+	'demo-favicon',
 	'assets-libs',
-	'assets-libs-services',
 	'assets-html',
 	'assets-css',
 	'assets-fonts',
-	'assets-favicon',
 	'assets-img',
 	'assets-defaults',
 	'assets-offline',

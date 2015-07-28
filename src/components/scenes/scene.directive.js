@@ -60,8 +60,8 @@
 							renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
 						else
 							renderer = new THREE.CanvasRenderer({alpha: true});					
-					var sceneColor = scope.view.viewpoint.sceneColor;
-					var clearColor = "0x" + sceneColor.substring(1);
+					var background = scope.view.settings.background;
+					var clearColor = "0x" + background.substring(1);
 						renderer.setClearColor( clearColor );
 						renderer.setSize( width, height );
 						renderer.autoClear = false; // To allow render overlay on top of sprited sphere
@@ -142,7 +142,7 @@
 						// FOG SCENE
 						var fogNear = cameraTranslate * scope.view.viewpoint.fogNear,
 							fogFar = cameraTranslate * scope.view.viewpoint.fogFar;
-						if (scope.view.viewpoint.fog) scene.fog = new THREE.Fog(sceneColor,fogNear,fogFar);
+						if (scope.view.viewpoint.fog) scene.fog = new THREE.Fog(background,fogNear,fogFar);
 
 						// EVENT LISTENERS / SCOPE WATCHERS
 						// window.addEventListener( 'resize', scope.onWindowResize, false );

@@ -10,6 +10,13 @@
 			"id" : "default",
 			"title" : "Default Storyboard"
 		},
+		"settings" : [
+			{
+				"background" : "#ffffff",
+				"margin" : "4px",
+				"padding" : "20px"
+			}
+		],
 		"components" : [
 			{
 				"metadata" : {
@@ -41,7 +48,6 @@
 						"near" : 1,
 						"far" : 1000000,
 						"translate" : 30000,
-						"sceneColor" : "#ffffff",
 						"fog" : true,
 						"fogNear" : 0.75,
 						"fogFar" : 1.5		
@@ -52,6 +58,7 @@
 					},
 					"viewtype" : "cylinderSegments",
 					"settings" : {
+						"background" : "#ffffff",
 						"margin" : "4px",
 						"padding" : {"top": "20px", "right": "40px", "bottom": "20px", "left": "40px"},
 						"lighting": {
@@ -121,6 +128,7 @@
 					},
 					"viewtype" : "list",
 					"settings" : {
+						"background" : "#ffffff",
 						"margin" : "4px",
 						"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
 						"example" : 1
@@ -154,6 +162,7 @@
 					},
 					"viewtype" : "linear",
 					"settings" : {
+						"background" : "#ffffff",
 						"heightInner" : "40px",
 						"margin" : "0px",
 						"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
@@ -188,6 +197,7 @@
 					},
 					"viewtype" : "linear",
 					"settings" : {
+						"background" : "#ffffff",
 						"heightInner" : "40px",
 						"margin" : "0px",
 						"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
@@ -223,6 +233,7 @@
 					},
 					"viewtype" : "linear",
 					"settings" : {
+						"background" : "#ffffff",
 						"heightInner" : "40px",
 						"margin" : "0px",
 						"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
@@ -258,6 +269,7 @@
 					},
 					"viewtype" : "linear",
 					"settings" : {
+						"background" : "#ffffff",
 						"heightInner" : "80px",
 						"margin" : "0px",
 						"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},

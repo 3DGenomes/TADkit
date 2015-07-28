@@ -5,23 +5,20 @@
 		.config(config);
 
 	function config($locationProvider, $mdThemingProvider) {
+		// Removing # from URL with HTML5 History API and
+		// add <base href="/myapp/"></base> in index.html
+		// Comment to leave # in case of server rewrites.
 		// $locationProvider.html5Mode(true);
 
 		// Material Design Themes
-
 		$mdThemingProvider.theme('default')
 			.primaryPalette('green')
 			.accentPalette('lime', {
-				'default': '500' // use shade 200 for default, and keep all other shades the same
+				'default': '500'
 			})
    			.warnPalette('red')
 			.backgroundPalette('grey');
-
 		$mdThemingProvider.theme('darkKit')
-			// .primaryPalette('green')
-			// .accentPalette('lime')
-			// .warnPalette('red')
-			// .backgroundPalette('grey')
 			.dark();
 
 	}

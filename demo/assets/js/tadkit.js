@@ -12,23 +12,20 @@
 		.config(config);
 
 	function config($locationProvider, $mdThemingProvider) {
+		// Removing # from URL with HTML5 History API and
+		// add <base href="/myapp/"></base> in index.html
+		// Comment to leave # in case of server rewrites.
 		// $locationProvider.html5Mode(true);
 
 		// Material Design Themes
-
 		$mdThemingProvider.theme('default')
 			.primaryPalette('green')
 			.accentPalette('lime', {
-				'default': '500' // use shade 200 for default, and keep all other shades the same
+				'default': '500'
 			})
    			.warnPalette('red')
 			.backgroundPalette('grey');
-
 		$mdThemingProvider.theme('darkKit')
-			// .primaryPalette('green')
-			// .accentPalette('lime')
-			// .warnPalette('red')
-			// .backgroundPalette('grey')
 			.dark();
 
 	}
@@ -41,7 +38,6 @@
 
 	function run($rootScope) {
 		$rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams, error) {
-			// throw error;
 			console.log( 'Resolve Error: ', error);
 		});
 	}
@@ -223,7 +219,7 @@
 					'proximities="component.proximities" ' +
 					'overlay="component.overlay"' +
 					'toggleoverlay="toggleOverlay(index)" ' +
-					'style="margin: {{component.object.state.margin}}; background-color: {{component.view.viewpoint.sceneColor}}" ' +
+					'style="margin: {{component.object.state.margin}}; background-color: {{component.view.settings.background}}" ' +
 					'class="component ' + scope.component.object.type + '">' +
 					'</data-tk-component-' + scope.component.object.type + '>';
 
@@ -561,8 +557,8 @@
 						renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
 					else
 						renderer = new THREE.CanvasRenderer({alpha: true});	
-					var sceneColor = scope.view.viewpoint.sceneColor;
-					var clearColor = "0x" + sceneColor.substring(1);
+					var background = scope.view.settings.background;
+					var clearColor = "0x" + background.substring(1);
 					renderer.setClearColor( clearColor );
 					renderer.setSize( width, height );
 					renderer.autoClear = false; // To allow render overlay on top of sprited sphere
@@ -1211,8 +1207,8 @@
 							renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
 						else
 							renderer = new THREE.CanvasRenderer({alpha: true});					
-					var sceneColor = scope.view.viewpoint.sceneColor;
-					var clearColor = "0x" + sceneColor.substring(1);
+					var background = scope.view.settings.background;
+					var clearColor = "0x" + background.substring(1);
 						renderer.setClearColor( clearColor );
 						renderer.setSize( width, height );
 						renderer.autoClear = false; // To allow render overlay on top of sprited sphere
@@ -1293,7 +1289,7 @@
 						// FOG SCENE
 						var fogNear = cameraTranslate * scope.view.viewpoint.fogNear,
 							fogFar = cameraTranslate * scope.view.viewpoint.fogFar;
-						if (scope.view.viewpoint.fog) scene.fog = new THREE.Fog(sceneColor,fogNear,fogFar);
+						if (scope.view.viewpoint.fog) scene.fog = new THREE.Fog(background,fogNear,fogFar);
 
 						// EVENT LISTENERS / SCOPE WATCHERS
 						// window.addEventListener( 'resize', scope.onWindowResize, false );

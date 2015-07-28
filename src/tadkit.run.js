@@ -6,7 +6,6 @@
 
 	function run($rootScope) {
 		$rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams, error) {
-			// throw error;
 			console.log( 'Resolve Error: ', error);
 		});
 	}
