@@ -309,6 +309,7 @@
 				// - segments (derived from datsets)
 				var self = this;
 				var overlaysAsync = []; // push async functions into list for subsequent processing
+				var overlaysToUpdate = [];
 				angular.forEach(overlays.loaded, function(overlay, key) {
 
 					// For Overlays with Aync Ensembl Data eg. genes
@@ -316,6 +317,7 @@
 					if (overlay.object.type == "ensembl") { // more generic than id == "genes"
 						var ensembl = Ensembl.load(overlay);
 						overlaysAsync.push(ensembl);
+						overlaysToUpdate.push(overlay);
 					}
 
 					if (overlay.object.id == "proximities") {
@@ -329,6 +331,9 @@
 				});
 				return $q.all(overlaysAsync)
 				.then(function(results) {
+					for (var i = 0; i < overlaysToUpdate.length; i++) {
+						Storyboards.update(overlaysToUpdate[i]);
+					};
 					self.segment();
 					return results;
 				});
