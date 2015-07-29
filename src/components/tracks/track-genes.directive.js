@@ -19,7 +19,6 @@
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
 				d3Service.d3().then(function(d3) {
-					// console.log(scope);
 
  					// DATA MANIPULATION >>> MOVE TO CONTROLLER
 					var data = scope.data;
@@ -80,9 +79,12 @@
 					});
 
 					// REDRAW
-					scope.$watch('data', function(newData) {
-						scope.render(newData);
-					}, true);
+					scope.$watch('data', function(newData, oldData) {
+						if ( newData !== oldData ) {
+							scope.render(newData);
+						}
+					});
+					// }, true); // FOR DEEP WATCH
  					
 					// SLIDER
 					scope.$watch('settings.current.position', function(newPosition, oldPosition) {

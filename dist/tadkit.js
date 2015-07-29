@@ -2007,7 +2007,6 @@
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
 				d3Service.d3().then(function(d3) {
-					// console.log(scope);
 
  					// DATA MANIPULATION >>> MOVE TO CONTROLLER
 					var data = scope.data;
@@ -2068,9 +2067,12 @@
 					});
 
 					// REDRAW
-					scope.$watch('data', function(newData) {
-						scope.render(newData);
-					}, true);
+					scope.$watch('data', function(newData, oldData) {
+						if ( newData !== oldData ) {
+							scope.render(newData);
+						}
+					});
+					// }, true); // FOR DEEP WATCH
  					
 					// SLIDER
 					scope.$watch('settings.current.position', function(newPosition, oldPosition) {
@@ -5182,6 +5184,7 @@
 				// - segments (derived from datsets)
 				var self = this;
 				var overlaysAsync = []; // push async functions into list for subsequent processing
+				var overlaysToUpdate = [];
 				angular.forEach(overlays.loaded, function(overlay, key) {
 
 					// For Overlays with Aync Ensembl Data eg. genes
@@ -5189,6 +5192,7 @@
 					if (overlay.object.type == "ensembl") { // more generic than id == "genes"
 						var ensembl = Ensembl.load(overlay);
 						overlaysAsync.push(ensembl);
+						overlaysToUpdate.push(overlay);
 					}
 
 					if (overlay.object.id == "proximities") {
@@ -5202,6 +5206,9 @@
 				});
 				return $q.all(overlaysAsync)
 				.then(function(results) {
+					for (var i = 0; i < overlaysToUpdate.length; i++) {
+						Storyboards.update(overlaysToUpdate[i]);
+					};
 					self.segment();
 					return results;
 				});
@@ -6386,6 +6393,53 @@
 					component.view.viewpoint.scale = scale;
 				});
 				return storyboards;
+			},
+			update: function(overlay) {
+				var self = this;
+				var components = self.getStoryboard().components;
+				// Assign data and overlays for each component by type
+				angular.forEach(components, function(component, index) {
+					// if (component.object.dataset == "default") {
+						var overlayProximities;
+						// if (component.object.type == "scene") {
+						// 	component.data = $scope.current.model.data;
+						// 	 // component.proximities required for Scenes: overlay.colors Saturation
+						// 	component.proximities = $scope.allProximities;
+						// 	component.overlay = $scope.current.overlay;
+						// 	component.overlay.state = {};
+						// 	component.overlay.object.state.index = Overlays.getCurrentIndex();
+						// } else if (component.object.type == "track-genes" || component.object.type == "panel-inspector") {
+						if (component.object.type == "track-genes" || component.object.type == "panel-inspector") {
+							component.data = overlay.data;
+							// component.overlay required for toggle
+							component.overlay = overlay;
+						}
+						// } else if (component.object.type == "track-proximities") {
+						// 	// ie only one... see note above for Calculating Proximities
+						// 	// component.data for Scenes: overlay.colors Saturation
+						// 	component.data = $scope.currentProximities;
+						// 	// component.overlay required for toggle
+						// 	//   and for Scenes: overlay.colors Hue
+						// 	overlay = Overlays.getOverlayById("proximities");
+						// 	component.overlay = overlay;
+						// } else if (component.object.type == "track-restraints") {
+						// 	// ie only one... see note above for Calculating Restraints
+						// 	// component.data for Scenes: overlay.colors Saturation
+						// 	component.data = $scope.currentRestraints;
+						// 	// component.overlay required for toggle
+						// 	//   and for Scenes: overlay.colors Hue
+						// 	overlay = Overlays.getOverlayById("restraints");
+						// 	component.overlay = overlay;
+						// }
+						// } else if (component.object.type == "track-wiggle") {
+						// 	overlay = Overlays.getOverlayById(component.object.dataset);
+						// 	component.data = overlay.data;
+						// 	component.overlay = overlay; // required for toggle
+						// } else {
+						// 	// slider and other types of component...
+						// }
+					// }
+				});
 			},
 			get: function() {
 				return storyboards;
