@@ -6215,13 +6215,6 @@
 				settings.current.chromEnd = dataset.object.chromEnd[chromosomeIndex];
 				settings.current.species = dataset.object.species;
 				settings.current.speciesUrl = dataset.object.speciesUrl;
-				// SET INITIAL position at midpoint
-				settings.current.position = settings.current.chromStart + parseInt((settings.current.chromEnd - settings.current.chromStart) * 0.5);
-				settings.current.particle = self.getParticle();
-				// AND SEGMENT IT LIES WITHIN
-				settings.current.segment = self.getSegment(settings.current.position);
-				settings.current.segmentLower = settings.current.position - (settings.current.segment * 0.5);
-				settings.current.segmentUpper = settings.current.position + (settings.current.segment * 0.5);
 				// NOTE: particle segements as lowest resolution of model
 				// instead of particleSegments as variable in TADkit
 				// i.e settings.current.particleSegments = storyboard.components[0].view.settings.chromatin.particleSegments;
@@ -6235,6 +6228,13 @@
 				// Method 1. is used as it is simpler to calculate and the data is already loaded.
 				// Also focus on particles and does not address rounding off of sequence length.
 				settings.current.segmentLength = dataset.object.resolution / settings.current.particleSegments; // base pairs
+				// SET INITIAL position at midpoint
+				settings.current.position = settings.current.chromStart + parseInt((settings.current.chromEnd - settings.current.chromStart) * 0.5);
+				settings.current.particle = self.getParticle();
+				// AND SEGMENT IT LIES WITHIN
+				settings.current.segment = self.getSegment(settings.current.position);
+				settings.current.segmentLower = settings.current.position - (settings.current.segment * 0.5);
+				settings.current.segmentUpper = settings.current.position + (settings.current.segment * 0.5);
 			},
 			add: function(setting) {
 				// // rewrite for Object
