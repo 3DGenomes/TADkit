@@ -1,3 +1,8 @@
-- load TAD from file
-- multiple views from two datasets/files
-- animation between two datasets/files
+1. In Safari, I do not see the 3D track (see fig1 attached). The rest of testing has been done with Chrome.
+2. The project loader does not work with the json/tsvs I sent. The error is “undefined” coordinates in the TADkit bar (see fig2 attached).
+3. When you have one project uploaded and try to upload a new one (via URL), TADkit adds the tracks to the previous project.
+4. The color intensity in the distance track needs to be somehow scaled so to show differences of distances, now everything is too blue.
+5. Restraint coloring does not work. When I click, all in 3D disappears.
+6. Still see borders in the gene info panel (see figs attached).
+7. The space between the tracks is still too large.
+8. The “network” representation of the chromatin does not work (you can actually remove it).
