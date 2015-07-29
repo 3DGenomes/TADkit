@@ -105,8 +105,12 @@
 				return newOverlays;
 			},
 			parse: function(data) {
+				// var delimiter = Settings.get().import.delimiter;
+				Papa.DefaultDelimiter = " ";
 				var parsedData = Papa.parse(data,{
+					// delimiter: delimiter,
 					dynamicTyping: true,
+					skipEmptyLines: true,
 					fastMode: true
 				});
 				return parsedData;

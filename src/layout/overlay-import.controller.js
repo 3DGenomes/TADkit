@@ -49,15 +49,7 @@
 		});
 
 		$scope.parseFile = function($fileContent) {
-			// Parse File for Data
-			// var delimiter = Settings.get().import.delimiter;
-			Papa.DefaultDelimiter = " ";
-			$scope.dataParsed = Papa.parse($fileContent,{
-				// delimiter: delimiter,
-				dynamicTyping: true,
-				fastMode: true
-			});
-			$scope.fileData = $scope.dataParsed.data;
+			$scope.fileData = Overlays.parse($fileContent).data;
 
 			// Selected Rows in File Data
 			// Controlled by checkboxes in overlay-import.html
