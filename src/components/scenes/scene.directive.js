@@ -24,7 +24,7 @@
 				// threeService.three().then(function(THREE) {
 					// console.log(scope);
 
-					var scene, component, viewport, stats;
+					var scene, component, viewport;
 					var camera, cameraPosition, cameraTarget, cameraTranslate;
 					var ambientLight, pointLight;
 					var playback, controls, renderer;

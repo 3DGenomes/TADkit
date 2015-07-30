@@ -22,7 +22,7 @@
 				// console.log(scope.cluster);
 				
 				var renderer;
-				var scene, viewport, stats;
+				var scene, viewport;
 				var camera, cameraPosition, cameraTarget, cameraTranslate;
 				var ambientLight, pointLight;
 				var orbit, controls, particles, cluster;
