@@ -1,5 +1,3 @@
 bower_components/
 node_modules/
-test/
-test-dashboards/
-x-dump/
+src_pre-alpha/

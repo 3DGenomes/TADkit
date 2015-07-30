@@ -57,21 +57,19 @@ gulp.task('dist-scripts', function() {
 // ¡¡¡ LOAD ORDER IS IMPORTANT !!!
 gulp.task('dist-vendor', function() {
 	return gulp.src([
-		'bower_components/angular/angular.min.js',
-		'bower_components/angular-ui-router/release/angular-ui-router.min.js',
+		'bower_components/angular/angular.js',
+		'bower_components/angular-ui-router/release/angular-ui-router.js',
 		'bower_components/angular-aria/angular-aria.js',
 		'bower_components/angular-animate/angular-animate.js',
 		'bower_components/angular-material/angular-material.js',
-		'bower_components/angular-file-upload/angular-file-upload.min.js',
-		'bower_components/flow.js/dist/flow.min.js',
-		'bower_components/ng-flow/dist/ng-flow.min.js',
-		'bower_components/angular-uuid4/angular-uuid4.min.js',
+		'bower_components/angular-file-upload/angular-file-upload.js',
+		'bower_components/ng-flow/dist/ng-flow-standalone.js',
+		'bower_components/angular-uuid4/angular-uuid4.js',
 		'bower_components/papaparse/papaparse.min.js',
 		'bower_components/d3/d3.min.js',
-		'bower_components/threejs/build/three.min.js',
+		'bower_components/threejs/build/three.js',
 		'bower_components/threejs/examples/js/controls/TrackballControls.js',
 		'bower_components/threejs/examples/js/controls/OrbitControls.js',
-		'bower_components/threejs/examples/js/libs/stats.min.js'
 		])
 		.pipe(gulp.dest('src/assets/libs'))
 		.pipe(concat('vendors.js'))
