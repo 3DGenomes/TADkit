@@ -74,7 +74,7 @@ gulp.task('dist-vendor', function() {
 		.pipe(gulp.dest('src/assets/libs'))
 		.pipe(concat('vendors.js'))
 		// .pipe(uglify())
-		.pipe(gulp.dest('dist'))
+		// .pipe(gulp.dest('dist'))
 		.pipe(gulp.dest('tadkit/assets/js'));
 });
 
