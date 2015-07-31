@@ -74,7 +74,8 @@
 				var defaultColor = overlay.palette[1];
 				var colors = [];
 				for (var i = overlay.data.length - 1; i >= 0; i--) {
-					var intensity = 1 - overlay.data[i];
+					var read = overlay.data[i];
+					var intensity = 1 - (read * read);
 					var hex = d3.interpolateHsl(featureColor, defaultColor)(intensity);
 					for(var j = 0; j < segments; j++){
 						colors.push(hex);

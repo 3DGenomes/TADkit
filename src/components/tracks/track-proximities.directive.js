@@ -196,7 +196,7 @@
 							.attr("width", particleWidth)
 							.attr("height", nodeHeight)
 							.style("fill", nodeColor)
-							.style("fill-opacity", function(d) { return d; })
+							.style("fill-opacity", function(d) { return (d * d); })
 							.style("stroke", nodeColor)
 							.style("stroke-width", 0)
 							.append("svg:title")

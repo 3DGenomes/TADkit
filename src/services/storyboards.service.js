@@ -15,7 +15,7 @@
 				var deferral = $q.defer();
 				var dataUrl = "assets/defaults/tk-defaults-storyboards.json";
 				if( storyboards.loaded.length > 0 ) {
-					console.log("Storyboards already loaded.")
+					console.log("Storyboards already loaded.");
 					deferral.resolve(storyboards);
 				} else {
 					$http.get(dataUrl)

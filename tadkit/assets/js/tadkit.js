@@ -2363,7 +2363,7 @@
 							.attr("width", particleWidth)
 							.attr("height", nodeHeight)
 							.style("fill", nodeColor)
-							.style("fill-opacity", function(d) { return d; })
+							.style("fill-opacity", function(d) { return (d * d); })
 							.style("stroke", nodeColor)
 							.style("stroke-width", 0)
 							.append("svg:title")
@@ -4832,7 +4832,7 @@
 	function Overlays($q, $http, uuid4, d3Service, Settings, Storyboards, Ensembl, Segments, Networks, Resources) {
 		var overlays = {
 			loaded : [],
-			current : {index:0,test:false}
+			current : {index:0}
 		};
 
 		return {
@@ -4869,16 +4869,7 @@
 				var dataUrl = "assets/" + datapath + "/" + filename + "." + filetype;
 				$http.get(dataUrl)
 				.success( function(fileData) {
-
-					if (overlays.current.test) {
-						// console.log("after load");
-						var importedOverlays = [];
-					} else { // only first load
-						// console.log("first load");
-						var importedOverlays = self.import(fileData,[],[],defaults);
-					}
-					// overlays.current.test = true;
-
+					var importedOverlays = self.import(fileData,[],[],defaults);
 					console.log("Overlays (" + importedOverlays.length + ") imported from " + dataUrl);
 					deferral.resolve(overlays);
 				})
@@ -6029,7 +6020,8 @@
 				var defaultColor = overlay.palette[1];
 				var colors = [];
 				for (var i = overlay.data.length - 1; i >= 0; i--) {
-					var intensity = 1 - overlay.data[i];
+					var read = overlay.data[i];
+					var intensity = 1 - (read * read);
 					var hex = d3.interpolateHsl(featureColor, defaultColor)(intensity);
 					for(var j = 0; j < segments; j++){
 						colors.push(hex);
@@ -6270,7 +6262,7 @@
 				var deferral = $q.defer();
 				var dataUrl = "assets/defaults/tk-defaults-storyboards.json";
 				if( storyboards.loaded.length > 0 ) {
-					console.log("Storyboards already loaded.")
+					console.log("Storyboards already loaded.");
 					deferral.resolve(storyboards);
 				} else {
 					$http.get(dataUrl)
