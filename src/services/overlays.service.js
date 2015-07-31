@@ -7,7 +7,7 @@
 	function Overlays($q, $http, uuid4, d3Service, Settings, Storyboards, Ensembl, Segments, Networks, Resources) {
 		var overlays = {
 			loaded : [],
-			current : {index:0,test:false}
+			current : {index:0}
 		};
 
 		return {
@@ -44,16 +44,7 @@
 				var dataUrl = "assets/" + datapath + "/" + filename + "." + filetype;
 				$http.get(dataUrl)
 				.success( function(fileData) {
-
-					if (overlays.current.test) {
-						// console.log("after load");
-						var importedOverlays = [];
-					} else { // only first load
-						// console.log("first load");
-						var importedOverlays = self.import(fileData,[],[],defaults);
-					}
-					// overlays.current.test = true;
-
+					var importedOverlays = self.import(fileData,[],[],defaults);
 					console.log("Overlays (" + importedOverlays.length + ") imported from " + dataUrl);
 					deferral.resolve(overlays);
 				})

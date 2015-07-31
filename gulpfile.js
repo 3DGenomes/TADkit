@@ -45,12 +45,12 @@ gulp.task('dist-scripts', function() {
 		'src/services/*.js',
 		])
 		.pipe(concat('tadkit.js'))
-		.pipe(gulp.dest('dist'))
-		.pipe(gulp.dest('demo/assets/js'))
+		// .pipe(gulp.dest('dist'))
+		.pipe(gulp.dest('tadkit/assets/js'))
 		.pipe(rename('tadkit.min.js'))
 		.pipe(uglify())
-		.pipe(gulp.dest('dist'))
-		.pipe(gulp.dest('demo/assets/js'));
+		// .pipe(gulp.dest('dist'))
+		.pipe(gulp.dest('tadkit/assets/js'));
 });
 
 // Transfer Vendor JS
@@ -75,23 +75,23 @@ gulp.task('dist-vendor', function() {
 		.pipe(concat('vendors.js'))
 		// .pipe(uglify())
 		.pipe(gulp.dest('dist'))
-		.pipe(gulp.dest('demo/assets/js'));
+		.pipe(gulp.dest('tadkit/assets/js'));
 });
 
 // Transfer Demo index.html
-gulp.task('demo-index', function() {
+gulp.task('app-index', function() {
 	return gulp.src([
-		'src/demo-index.html'
+		'src/tadkit-index.html'
 		])
 		.pipe(rename('index.html'))
-		.pipe(gulp.dest('demo'));
+		.pipe(gulp.dest('tadkit'));
 });
 // Transfer Favicon Assets
-gulp.task('demo-favicon', function() {
+gulp.task('app-favicon', function() {
 	return gulp.src([
 		'src/favicon-32x32.png'
 		])
-		.pipe(gulp.dest('demo'));
+		.pipe(gulp.dest('tadkit'));
 });
 
 // Transfer Libs used in Services for local offline load
@@ -102,7 +102,7 @@ gulp.task('assets-libs', function() {
 		'bower_components/threejs/build/three.min.js',
 		])
 		.pipe(gulp.dest('src/assets/js'))
-		.pipe(gulp.dest('demo/assets/js'));
+		.pipe(gulp.dest('tadkit/assets/js'));
 });
 
 // Transfer HTML Templates
@@ -115,7 +115,7 @@ gulp.task('assets-html', function() {
 		])
         // .pipe(header("<!-- This file is generated — do not edit by hand! -->\n"))
 		.pipe(gulp.dest('src/assets/templates'))
-		.pipe(gulp.dest('demo/assets/templates'));
+		.pipe(gulp.dest('tadkit/assets/templates'));
 });
 
 // Compile Our Sass
@@ -135,7 +135,7 @@ gulp.task('assets-css', function() {
 		'src/assets/css/tadkit.css',
 		'src/assets/css/ensembl-genes.css',
 		])
-		.pipe(gulp.dest('demo/assets/css'));
+		.pipe(gulp.dest('tadkit/assets/css'));
 });
 
 // Transfer Fonts Assets
@@ -143,14 +143,14 @@ gulp.task('assets-fonts', function() {
 	return gulp.src([
 		'src/assets/fonts/*.*',
 		])
-		.pipe(gulp.dest('demo/assets/fonts'));
+		.pipe(gulp.dest('tadkit/assets/fonts'));
 });
 // Transfer Image Assets
 gulp.task('assets-img', function() {
 	return gulp.src([
 		'src/assets/img/*.png'
 		])
-		.pipe(gulp.dest('demo/assets/img'));
+		.pipe(gulp.dest('tadkit/assets/img'));
 });
 
 // Transfer Defaults
@@ -158,22 +158,22 @@ gulp.task('assets-defaults', function() {
 	return gulp.src([
 		'src/assets/defaults/*.*'
 		])
-		.pipe(gulp.dest('demo/assets/defaults'));
+		.pipe(gulp.dest('tadkit/assets/defaults'));
 });
 // Transfer Offline
 gulp.task('assets-offline', function() {
 	return gulp.src([
 		'src/assets/offline/*.*'
 		])
-		.pipe(gulp.dest('demo/assets/offline'));
+		.pipe(gulp.dest('tadkit/assets/offline'));
 });
 // Transfer Examples
-gulp.task('assets-examples', function() {
-	return gulp.src([
-		'src/assets/examples/*.*'
-		])
-		.pipe(gulp.dest('demo/assets/examples'));
-});
+// gulp.task('assets-examples', function() {
+// 	return gulp.src([
+// 		'src/assets/examples/*.*'
+// 		])
+// 		.pipe(gulp.dest('tadkit/assets/examples'));
+// });
 
 gulp.task('webserver', function() {
   gulp.src( '.' )
@@ -214,8 +214,8 @@ gulp.task('watch', function() {
 		// 'sass',
 		'dist-scripts',
 		'dist-vendor',
-		'demo-index',
-		'demo-favicon',
+		'app-index',
+		'app-favicon',
 		'assets-libs',
 		'assets-html',
 		'assets-css',
@@ -223,7 +223,7 @@ gulp.task('watch', function() {
 		'assets-img',
 		'assets-defaults',
 		'assets-offline',
-		'assets-examples'
+		// 'assets-examples'
 	]);
 	// gulp.watch('src/assets/scss/*.scss', ['sass']);
 });
@@ -234,8 +234,8 @@ gulp.task('default', [
 	// 'sass',
 	'dist-scripts',
 	'dist-vendor',
-	'demo-index',
-	'demo-favicon',
+	'app-index',
+	'app-favicon',
 	'assets-libs',
 	'assets-html',
 	'assets-css',
@@ -243,7 +243,7 @@ gulp.task('default', [
 	'assets-img',
 	'assets-defaults',
 	'assets-offline',
-	'assets-examples',
+	// 'assets-examples',
 	'webserver',
 	'openbrowser',
 	'watch'
