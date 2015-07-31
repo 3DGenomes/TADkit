@@ -213,7 +213,7 @@
 					"generator" : "TADkit"
 				},
 				"object" : {
-					"uuid" : "00000000-0000-0000-0000-000000000004",
+					"uuid" : "00000000-0000-0000-0000-000000000005",
 					"id" : "h-proximities-track",
 					"title" : "Proximity",
 					"type" : "track-proximities",
@@ -249,7 +249,7 @@
 					"generator" : "TADkit"
 				},
 				"object" : {
-					"uuid" : "00000000-0000-0000-0000-000000000004",
+					"uuid" : "00000000-0000-0000-0000-000000000006",
 					"id" : "h-restraints-track",
 					"title" : "Restraints",
 					"type" : "track-restraints",

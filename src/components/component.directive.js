@@ -31,7 +31,6 @@
 					'</data-tk-component-' + scope.component.object.type + '>';
 
 				element.replaceWith($compile(strTemplate)(scope));
-
 			}
 		};
 	}

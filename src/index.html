@@ -6,7 +6,7 @@
 	<!--base href="/"-->
 	<title>TADkit</title>
 	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-	<link rel="stylesheet" href="assets/css/angular-material.css">
+	<link rel="stylesheet" href="../bower_components/angular-material/angular-material.css">
 	<link rel="stylesheet" href="assets/css/tadkit.css" />
 	<link rel="stylesheet" href="assets/css/ensembl-genes.css" />
 	
@@ -15,32 +15,28 @@
 	
 	<div data-ui-view id="main" class="fullheight"></div>
 	
-	<script src="assets/libs/angular.min.js"></script>
-	<!-- DEPENDENCIES -->
-	<script src="assets/libs/angular-ui-router.min.js"></script>
-	<script src="assets/libs/angular-aria.js"></script>
-	<script src="assets/libs/angular-animate.js"></script>
-	<script src="assets/libs/angular-material.js"></script>
-
-	<script src="assets/libs/angular-file-upload.min.js"></script>
-	<script src="assets/libs/ng-flow-standalone.min.js"></script>
-	<script src="assets/libs/angular-uuid4.min.js"></script>
-	<script src="assets/libs/papaparse.min.js"></script>
-	<script src="services/d3.service.js"></script>
-	<script src="assets/libs/d3.min.js"></script>
-	<script src="assets/libs/three.min.js"></script>
-	<script src="assets/libs/TrackballControls.js"></script>
-	<script src="assets/libs/OrbitControls.js"></script>
-
-	<!-- MAIN -->
+	<!-- VENDOR DEPENDENCIES Note: load order is important -->
+	<script src="../bower_components/angular/angular.js"></script>
+	<script src="../bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+	<script src="../bower_components/angular-aria/angular-aria.js"></script>
+	<script src="../bower_components/angular-animate/angular-animate.js"></script>
+	<script src="../bower_components/angular-material/angular-material.js"></script>
+	<script src="../bower_components/angular-file-upload/angular-file-upload.js"></script>
+	<script src="../bower_components/ng-flow/dist/ng-flow-standalone.js"></script>
+	<script src="../bower_components/angular-uuid4/angular-uuid4.js"></script>
+	<script src="../bower_components/papaparse/papaparse.js"></script>
+	<script src="../bower_components/d3/d3.js"></script>
+	<script src="../bower_components/threejs/build/three.js"></script>
+	<script src="../bower_components/threejs/examples/js/controls/TrackballControls.js"></script>
+	<script src="../bower_components/threejs/examples/js/controls/OrbitControls.js"></script>
+	<!-- MAIN TADKIT SCRIPTS -->
 	<script src="tadkit.js"></script>
 	<script src="tadkit.config.js"></script>
 	<script src="tadkit.run.js"></script>
 	<script src="tadkit.states.js"></script>
-	<!-- LAYOUT -->
-	<script src="layout/main.controller.js"></script>
+	<!-- TADKIT LAYOUT -->
 	<script src="layout/home.controller.js"></script>
-	<script src="layout/browser.controller.js"></script>
+	<script src="layout/main.controller.js"></script>
 	<script src="layout/project-content.controller.js"></script>
 	<script src="layout/project-dataset.controller.js"></script>
 	<script src="layout/project-loader.controller.js"></script>
@@ -56,14 +52,14 @@
 	<script src="layout/sidebar.browser.controller.js"></script>
 	<script src="layout/storyboard.controller.js"></script>
 	<script src="layout/storyboard-components.directive.js"></script>
-	<!-- COMPONENTS: STORYBOARD -->
+	<!-- TADKIT COMPONENTS: STORYBOARD -->
 	<script src="components/component.directive.js"></script>
-	<!-- COMPONENTS: PANELS -->
+	<!-- TADKIT COMPONENTS: PANELS -->
 	<script src="components/panels/panel-infobox.controller.js"></script>
 	<script src="components/panels/panel-infobox.directive.js"></script>
 	<script src="components/panels/panel-inspector.controller.js"></script>
 	<script src="components/panels/panel-inspector.directive.js"></script>
-	<!-- COMPONENTS: SCENES -->
+	<!-- TADKIT COMPONENTS: SCENES -->
 	<script src="components/scenes/scene.controller.js"></script>
 	<script src="components/scenes/scene-chromatin.service.js"></script>
 	<script src="components/scenes/scene-cluster.directive.js"></script>
@@ -72,7 +68,7 @@
 	<script src="components/scenes/scene-network.service.js"></script>
 	<script src="components/scenes/scene-particles.service.js"></script>
 	<script src="components/scenes/scene.directive.js"></script>
-	<!-- COMPONENTS: TRACKS -->
+	<!-- TADKIT COMPONENTS: TRACKS -->
 	<script src="components/tracks/track.controller.js"></script>
 	<script src="components/tracks/track-barchart.directive.js"></script>
 	<script src="components/tracks/track-bedgraph.directive.js"></script>
@@ -81,10 +77,11 @@
 	<script src="components/tracks/track-restraints.directive.js"></script>
 	<script src="components/tracks/track-slider.directive.js"></script>
 	<script src="components/tracks/track-wiggle.directive.js"></script>
-	<!-- SERVICES -->
+	<!-- TADKIT SERVICES -->
 	<script src="services/color.service.js"></script>
 	<script src="services/color-convert.service.js"></script>
 	<script src="services/components.service.js"></script>
+	<script src="services/d3.service.js"></script>
 	<script src="services/datasets.service.js"></script>
 	<script src="services/ensembl.service.js"></script>
 	<script src="services/init-main.service.js"></script>
