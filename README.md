@@ -11,7 +11,7 @@ between the 3D structure of the genome and its biological function.
 ###Instalation
 To install TADkit in your server or locally, you need to download the repository and move the "tadkit" folder 
 in your desired directoy. Next, point your browser to the index.html file in that directory. If you want to install it
-locally you'll need to use Chrome with the flag "--allow-file-access-from-files".
+locally you'll need to use Chrome with the flag "--allow-file-access-from-files" to run JavaScript locally (additional information for other Internet browsers [here](https://github.com/mrdoob/three.js/wiki/How-to-run-things-locally).
 
 ###How to use it
 Visualization of 3D models and overlaying of data for analysis in TADkit is achieved in three simple steps. (1) The user may import a [TADbit](http://3Dgenomes.org/tadbit/) JSON file by using the drop-in area or the file menu in the TADkit main page. (2) The user is presented with an overview of the data. Each 3D model cluster is shown as an ensemble of grey strands, with its centroid model highlighted. After selecting a cluster, the browser view opens (see figure below) with a 3D scene of the centroid of the selected cluster, along with “classic” genomic tracks. (3) Finally, the user may add additional genomic tracks to the browser by inputting them using BigWig or BedGraph formats.
