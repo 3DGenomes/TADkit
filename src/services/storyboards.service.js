@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Storyboards', Storyboards);
 
-	function Storyboards($q, $http, uuid4) {
+	function Storyboards($q, $http, uuid4, Settings, Components) {
 		var storyboards = {
 			loaded : [],
 			current : {index:0}
@@ -15,6 +15,7 @@
 				var deferral = $q.defer();
 				var dataUrl = "assets/defaults/tk-defaults-storyboards.json";
 				if( storyboards.loaded.length > 0 ) {
+					console.log("Storyboards already loaded.")
 					deferral.resolve(storyboards);
 				} else {
 					$http.get(dataUrl)
@@ -48,28 +49,60 @@
 				storyboards.current = storyboards.loaded.length - 1;
 				return storyboards;
 			},
-			addComponent: function(storyboardId, component, options) {
-				// Add a preconfigured conponent from Components - update with options if necessary
+			addComponent: function(overlay, storyboardId, options) {
 				var self = this;
 				storyboardId = storyboardId || "default";
-				options = options || [""];
+				options = options || [];
+
+				var settings = Settings.get();
+				// Add a preconfigured conponent from Components
+				// - update with options if necessary
+				var componentTemplate = Components.getComponentByType(overlay.object.type);
+				// New component for overlay
+				var newComponent = angular.copy(componentTemplate);
+					newComponent.object.uuid = uuid4.generate();
+					newComponent.object.id = overlay.object.id;
+					newComponent.object.title = overlay.object.id;
+					newComponent.object.dataset = overlay.object.id;
+					newComponent.view.settings.step = overlay.object.step;
+					newComponent.view.settings.color = overlay.object.color;
+					newComponent.view.viewpoint.chromStart = settings.current.chromStart;
+					newComponent.view.viewpoint.chromEnd = settings.current.chromEnd;
+					newComponent.view.viewpoint.scale = settings.views.scale;
+					newComponent.view.viewtype = overlay.object.type + "-" + overlay.object.stepType;
+					newComponent.data = overlay.data;
+					newComponent.overlay = overlay;
+
 				var storyboard = self.getStoryboardById(storyboardId);
-				storyboard.components.push(component);
-				return storyboard;
+				storyboard.components.push(newComponent);
+				return newComponent;
 			},
 			defaultComponents: function(storyboardId) {
 				var self = this;
 				storyboardId = storyboardId || "default";
 				var storyboard = self.getStoryboardById(storyboardId);
 				while (storyboard.components.length > 6) { // remove all except defaults
-					storyboard.components.pop();
+					console.log("popping");
+					storyboards.loaded[storyboards.current.index].components.pop();
 				}
-				return storyboard;
+				// console.log(storyboards.loaded[storyboards.current.index].components);
+				return storyboards;
 			},
 			remove: function(index) {
 				if (index === undefined || index === false) index = storyboards.current.index;
 				var storyboard = storyboards.loaded.indexOf(index);
 				storyboards.loaded.splice(storyboard, 1);
+				return storyboards;
+			},
+			removeComponentById: function(id) {
+					console.log("component");
+				var self = this;
+				if (id !== undefined || id !== false) {
+					var component = self.getComponentById(id);
+					var storyboard = self.getStoryboard();
+					storyboard.components.splice(component.index, 1);
+					console.log(component);
+				}
 				return storyboards;
 			},
 			set: function(index) {
@@ -169,6 +202,28 @@
 				}
 				// console.log(storyboard);
 				return storyboard;
+			},
+			getComponentById: function (id) {
+				var self = this;
+				var component, found;
+				var components = self.getStoryboard().components;
+				if (id !== undefined || id !== false) {
+					for (var i = components.length - 1; i >= 0; i--) {
+						console.log(components[i].object.title);
+						if (components[i].object.title === id) {
+							component = components[i];
+							component.index = i;
+							found = true;
+							console.log("Component '" + id + "' found!");
+						}
+					}
+				}
+				if (!found) {
+					component = components[0];
+					console.log("Component '" + id + "' not found: returning first.");
+				}
+				// console.log(component);
+				return component;
 			}
 		};
 	}

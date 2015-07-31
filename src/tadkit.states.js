@@ -9,24 +9,27 @@
 		
 		$stateProvider
 		// .state('home', {
-		// 	controller: 'HomeController',
-		// 	url: '/home',
+		// 	url: '/',
 		// 	views: {
-		// 		'topbar': {
-		// 			templateUrl: 'assets/templates/topbar.html',
-		// 			controller: 'TopbarController'
-		// 		},
-		// 		'sidebar-left': {
-		// 			templateUrl: 'assets/templates/sidebar.project.html',
-		// 			controller: 'SidebarProjectController'
-		// 		},
-		// 		'content': {
+		// 		'': {
 		// 			templateUrl: 'assets/templates/home.html',
 		// 			controller: 'HomeController'
 		// 		},
-		// 		'sidebar-right': {
-		// 			templateUrl: 'assets/templates/sidebar.user.html',
-		// 			controller: 'SidebarUserController'
+		// 		'topbar@home': {
+		// 			templateUrl: 'assets/templates/topbar.html',
+		// 			controller: 'TopbarController'
+		// 		},
+		// 		// 'sidebar-left': {
+		// 		// 	templateUrl: 'assets/templates/sidebar.project.html',
+		// 		// 	controller: 'SidebarProjectController'
+		// 		// },
+		// 		// 'sidebar-right': {
+		// 		// 	templateUrl: 'assets/templates/sidebar.user.html',
+		// 		// 	controller: 'SidebarUserController'
+		// 		// }
+		// 		'loader@home': {
+		// 			templateUrl: 'assets/templates/home-loader.html',
+		// 			controller: 'HomeController'
 		// 		}
 		// 	}
 		// })

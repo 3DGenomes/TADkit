@@ -21,6 +21,7 @@
 				return deferral.promise;
 			},
 			load: function(overlay) {
+				// TODO: clear odd colors while loading...
 				var deferral = $q.defer();
 				var dataUrl;
 				var settings = Settings.get();

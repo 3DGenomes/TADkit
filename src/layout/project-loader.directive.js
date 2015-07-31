@@ -15,7 +15,7 @@
 					reader.onload = function(onLoadEvent) {
 						console.log("Data Loaded");
 						scope.$apply(function() {
-       					// HERE: call the parsed function correctly (with scope AND params object)
+						// HERE: call the parsed function correctly (with scope AND params object)
 							fn(scope, {$fileContent:onLoadEvent.target.result});
 							// $state.go('dataset');
 						});

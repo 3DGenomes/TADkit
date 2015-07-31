@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Datasets', Datasets);
 
-	function Datasets($q, $http, uuid4, Settings, Proximities, Restraints, Overlays) {
+	function Datasets($q, $http, uuid4, Settings, Resources, Proximities, Restraints, Overlays) {
 		var datasets = {
 			loaded : [],
 			current : {
@@ -17,7 +17,6 @@
 			load: function(filename, clear) {
 				filename = filename || "tk-example-dataset";
 				clear = clear || false;
-
 				var self = this;
 				if (clear) self.clear();
 
@@ -35,23 +34,9 @@
 				});
 				return deferral.promise;
 			},
-			validate: function(data) {
-				var validation = true;
-				var validJSON = JSON.parse(data);
-				// ADD LOGIC...
-				// check structure
-				// check content type
-				var validDataset = validJSON;
-				if (validation) {
-					return validDataset;
-				} else {
-					// give error message
-					// return to Project Loader page
-				}
-			},
-			add: function(dataset) { // rename import?
-				/* CHECK DATASET IS VALID */
+			add: function(data) {
 				var self = this;
+				var dataset = self.validate(data);
 				// var uuid = dataObj.uuid || uuid4.generate(),
 				// if (!projects.default.datasets[uuid]) {
 					datasets.loaded.push(dataset);
@@ -63,16 +48,39 @@
 				// }
 				return datasets;
 			},
+			validate: function(data) {
+				var validDataset = {};
+				var objectType = Resources.whatIsIt(data);
+				if (objectType === "String") {
+					validDataset = JSON.parse(data);
+				} else {
+					// TODO: add specific options for Array, Object, null, etc.
+					validDataset = data;
+				}
+				var validation = true;
+				// ADD VALIDATION LOGIC...
+				// check structure
+				// check content type
+				if (validation) {
+					return validDataset;
+				} else {
+					// give error message
+					// return to Project Loader page
+				}
+			},
 			init: function(dataset) {
 				var self = this;
-				// var dataset = self.getDataset();
-				var data = self.getModel().data;
+				var currentModelData = self.getModel().data;
 				Settings.set(dataset);
-				Proximities.set(data);
-				Restraints.set(data, dataset.restraints);
+				Proximities.set(currentModelData);
+				Restraints.set(currentModelData, dataset.restraints);
 				Overlays.update(Proximities.get().distances, dataset.restraints);
-				Overlays.import(dataset.object.filename, "tsv", true);
-				console.log("Settings, Proximities, Restraints & Overlays updated.");
+				// if (dataset.object.filename) {
+					var filetype = "tsv";
+					var resetToDefaults = true;
+					Overlays.loadTSV(dataset.object.filename, filetype, resetToDefaults);	
+				// }
+				console.log("Settings, Proximities, Restraints & Overlays initialized.");
 			},
 			clear: function() {
 				while (datasets.loaded.length > 0) {
@@ -152,10 +160,13 @@
 			},
 			getModel: function(ref) { // from model ref
 				ref = ref || this.getCentroid();
-				var model, models = datasets.loaded[datasets.current.index].models;
+				var model;
+				var models = datasets.loaded[datasets.current.index].models;
+				// console.log(ref);
 				for (var i = models.length - 1; i >= 0; i--) {
 					if (models[i].ref == ref) model = models[i];
 				}
+				// console.log(model);
 				return model; // array of model vertices
 			}
 		};

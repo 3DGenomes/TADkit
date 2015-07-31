@@ -4,31 +4,40 @@
 		.module('TADkit')
 		.controller('ProjectLoaderController', ProjectLoaderController);
 
-	function ProjectLoaderController($q, $state, $stateParams, $scope, Settings, Datasets, Overlays, Ensembl) {
-		// console.log($scope);
-		// On click load Dataset from URL Params
+	function ProjectLoaderController($q, $state, $stateParams, $scope, Datasets, Overlays, Storyboards) {
+
+		$scope.updateCurrent = function() {
+			$scope.current.dataset = Datasets.getDataset();
+			$scope.current.model = Datasets.getModel();
+			$scope.current.overlay = Overlays.getOverlay();
+			$scope.current.storyboard = Storyboards.getStoryboard();
+			console.log("Current dataset, model, overlay and storyboard updated.");			
+		};
+
+		// On click load dataset from URL Params
+		// Loads local JSON and then associated TSV tracks from /examples folder
 		$scope.loadDatasetFromParam = function() {
-			var datasets = Datasets.load($stateParams.loadDataset);
-			return $q.all([ datasets ])
+			var loading = Datasets.load($stateParams.loadDataset);
+			return $q.all([ loading ])
 			.then(function(results){
-				$scope.$parent.current.dataset = Datasets.getDataset();
-				$scope.$parent.current.model = Datasets.getModel();
-				$scope.$parent.current.overlay = Overlays.getOverlay();
-				// $scope.$parent.currentOverlay = Overlays.getOverlay(); //??? REMOVE
-				console.log("Dataset to load: " + $stateParams.loadDataset);			
+				$scope.updateCurrent();
+				console.log("Dataset loaded: " + $stateParams.loadDataset);			
 				$state.go('browser');
 			});
 		};
 		if ($stateParams.loadDataset) $scope.loadDatasetFromParam();
 
+		// On dropzone (load external file)
+		// Adds JSON to current project - load TSV when in browser
 		$scope.addDataset = function($fileContent) {
-			var validDataset = Datasets.validate($fileContent);
-			Datasets.add(validDataset);
-			$scope.$parent.current.dataset = Datasets.getDataset();
-			$scope.$parent.current.model = Datasets.getModel();
-			$scope.$parent.current.overlay = Overlays.getOverlay();
-			// $scope.$parent.currentOverlay = Overlays.getOverlay(); //??? REMOVE
-			$state.go('dataset');
+			var adding = Datasets.add($fileContent);
+			return $q.all([ adding ])
+			.then(function(results){
+				$scope.updateCurrent();
+				// ADD FILENAME (SEE OVERLAY-IMPORT)
+				console.log("Dataset added."); //: " + $stateParams.loadDataset);			
+				$state.go('dataset');
+			});
 		};		
 	}
 })();

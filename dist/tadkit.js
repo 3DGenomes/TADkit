@@ -53,24 +53,27 @@
 		
 		$stateProvider
 		// .state('home', {
-		// 	controller: 'HomeController',
-		// 	url: '/home',
+		// 	url: '/',
 		// 	views: {
-		// 		'topbar': {
-		// 			templateUrl: 'assets/templates/topbar.html',
-		// 			controller: 'TopbarController'
-		// 		},
-		// 		'sidebar-left': {
-		// 			templateUrl: 'assets/templates/sidebar.project.html',
-		// 			controller: 'SidebarProjectController'
-		// 		},
-		// 		'content': {
+		// 		'': {
 		// 			templateUrl: 'assets/templates/home.html',
 		// 			controller: 'HomeController'
 		// 		},
-		// 		'sidebar-right': {
-		// 			templateUrl: 'assets/templates/sidebar.user.html',
-		// 			controller: 'SidebarUserController'
+		// 		'topbar@home': {
+		// 			templateUrl: 'assets/templates/topbar.html',
+		// 			controller: 'TopbarController'
+		// 		},
+		// 		// 'sidebar-left': {
+		// 		// 	templateUrl: 'assets/templates/sidebar.project.html',
+		// 		// 	controller: 'SidebarProjectController'
+		// 		// },
+		// 		// 'sidebar-right': {
+		// 		// 	templateUrl: 'assets/templates/sidebar.user.html',
+		// 		// 	controller: 'SidebarUserController'
+		// 		// }
+		// 		'loader@home': {
+		// 			templateUrl: 'assets/templates/home-loader.html',
+		// 			controller: 'HomeController'
 		// 		}
 		// 	}
 		// })
@@ -224,7 +227,6 @@
 					'</data-tk-component-' + scope.component.object.type + '>';
 
 				element.replaceWith($compile(strTemplate)(scope));
-
 			}
 		};
 	}
@@ -1203,11 +1205,13 @@
 						
 						// GEOMETRY: PARTICLES
 						particles = new Particles(scope.currentmodel.data, scope.currentoverlay.colors.particles, scope.view.settings.particles);
+						// particles = new Particles(scope.model.data, scope.overlay.colors.particles, scope.view.settings.particles);
 						particles.visible = scope.view.settings.particles.visible;
 						scene.add(particles);
 
 						//GEOMETRY: CHROMATIN
 						chromatin = new Chromatin(scope.currentmodel.data, scope.currentoverlay.colors.chromatin, scope.view.settings.chromatin);
+						// chromatin = new Chromatin(scope.model.data, scope.overlay.colors.chromatin, scope.view.settings.chromatin);
 						chromatin.visible = scope.view.settings.chromatin.visible;
 						scene.add(chromatin);
 						scope.view.settings.chromatin.radius = chromatin.boundingSphere.radius;
@@ -3258,16 +3262,6 @@
 	'use strict';
 	angular
 		.module('TADkit')
-		.controller('BrowserController', BrowserController);
-
-	function BrowserController ($scope){
-
-	}
-})();
-(function() {
-	'use strict';
-	angular
-		.module('TADkit')
 		.controller('HomeController', HomeController);
 
 	function HomeController ($scope){
@@ -3326,10 +3320,8 @@
 		$scope.fileTitle = "No file loaded";
 
 		$scope.$on('$viewContentLoaded', function() {
-
 			var parentElement = angular.element(document.body);
 			var stateTemplate = "assets/templates/" + $state.current.name + ".html";
-			
 			// Import Overlays Dialog
 			$mdDialog.show({
 				parent: parentElement,
@@ -3339,16 +3331,11 @@
 					overlays: $scope.$parent.overlays,
 				},
 				onComplete: afterShowAnimation
-			}).then(function(importedOverlays) {
-				var newOverlays = Overlays.add(importedOverlays);
-
+			}).then(function(importedOverlaysCount) {
 				$mdToast.show(
 					$mdToast.simple()
-					.content("Overlays (" + newOverlays.length + "/" + importedOverlays.length + ") added")
+					.content("Overlays (" + importedOverlaysCount + ") added")
 				);
-	 			// $state.go('overlay-import-filter');	
-	 			// $state.go('browser');
-	 			
 			}, function() {
 				$mdToast.show(
 					$mdToast.simple()
@@ -3356,41 +3343,32 @@
 				);
 	 			$state.go('browser');	
 			});
-
 			// When the 'enter' animation finishes...
 			function afterShowAnimation(scope, element, options) {
 				// post-show code here: DOM element focus, etc.
 				// console.log(scope);
 				console.log("showing dialog");
 			}
-
 		});
 
 		$scope.parseFile = function($fileContent) {
 			$scope.fileData = Overlays.parse($fileContent).data;
-
 			// Selected Rows in File Data
 			// Controlled by checkboxes in overlay-import.html
 			$scope.selectedRows = [];
 			var rows = $scope.fileData.length;
-			while (--rows >= 0) {$scope.selectedRows[rows] = true;}
-
+			while (--rows >= 0) {$scope.selectedRows[rows] = true;} // initially set all to selected
 			// Selected Columns in File Data
 			// Controlled by checkboxes in overlay-import.html
 			$scope.selectedCols = [];
 			var cols = $scope.fileData[0].length;
-			while (--cols >= 0) {$scope.selectedCols[cols] = true;}
-
+			while (--cols >= 0) {$scope.selectedCols[cols] = true;} // initially set all to selected
 			console.log("File Opened...");
 		};
 
 		$scope.importData = function(parsedData) {
-			// remove unwanted rows and cols
-			// var filteredData = parsedData;
-			var filteredData = Overlays.filter(parsedData, $scope.selectedRows, $scope.selectedCols);
-			$scope.overlaysAcquired = Overlays.aquire(filteredData);
-			console.log("Data Imported");
-			$mdDialog.hide($scope.overlaysAcquired);
+			$scope.importedOverlays = Overlays.import(parsedData, $scope.selectedRows, $scope.selectedCols);
+			$mdDialog.hide($scope.importedOverlays.length); // overlays count passed for dialog hide message...
 			$state.go('browser');
 		};
 
@@ -3556,17 +3534,17 @@
 				// };
 
 				var loadFile = function (file) {
-				var reader = new FileReader();
-				reader.onload = function(onLoadEvent) {
-					scope.$apply(function() {
-						// HERE: call the parsed function correctly (with scope AND params object)
-						accesor(scope, {$fileContent:onLoadEvent.target.result});
-						scope.addDataset(onLoadEvent.target.result);
-						// $state.go('dataset');
-					});
-				};
-				reader.readAsText(file);
-				console.log("File loaded...");
+					var reader = new FileReader();
+					reader.onload = function(onLoadEvent) {
+						scope.$apply(function() {
+							// HERE: call the parsed function correctly (with scope AND params object)
+							accesor(scope, {$fileContent:onLoadEvent.target.result});
+							scope.addDataset(onLoadEvent.target.result);
+							// $state.go('dataset');
+						});
+					};
+					reader.readAsText(file);
+					console.log("File loaded...");
 				};
 
 				element.bind("dragover", onDragOver)
@@ -3592,31 +3570,40 @@
 		.module('TADkit')
 		.controller('ProjectLoaderController', ProjectLoaderController);
 
-	function ProjectLoaderController($q, $state, $stateParams, $scope, Settings, Datasets, Overlays, Ensembl) {
-		// console.log($scope);
-		// On click load Dataset from URL Params
+	function ProjectLoaderController($q, $state, $stateParams, $scope, Datasets, Overlays, Storyboards) {
+
+		$scope.updateCurrent = function() {
+			$scope.current.dataset = Datasets.getDataset();
+			$scope.current.model = Datasets.getModel();
+			$scope.current.overlay = Overlays.getOverlay();
+			$scope.current.storyboard = Storyboards.getStoryboard();
+			console.log("Current dataset, model, overlay and storyboard updated.");			
+		};
+
+		// On click load dataset from URL Params
+		// Loads local JSON and then associated TSV tracks from /examples folder
 		$scope.loadDatasetFromParam = function() {
-			var datasets = Datasets.load($stateParams.loadDataset);
-			return $q.all([ datasets ])
+			var loading = Datasets.load($stateParams.loadDataset);
+			return $q.all([ loading ])
 			.then(function(results){
-				$scope.$parent.current.dataset = Datasets.getDataset();
-				$scope.$parent.current.model = Datasets.getModel();
-				$scope.$parent.current.overlay = Overlays.getOverlay();
-				// $scope.$parent.currentOverlay = Overlays.getOverlay(); //??? REMOVE
-				console.log("Dataset to load: " + $stateParams.loadDataset);			
+				$scope.updateCurrent();
+				console.log("Dataset loaded: " + $stateParams.loadDataset);			
 				$state.go('browser');
 			});
 		};
 		if ($stateParams.loadDataset) $scope.loadDatasetFromParam();
 
+		// On dropzone (load external file)
+		// Adds JSON to current project - load TSV when in browser
 		$scope.addDataset = function($fileContent) {
-			var validDataset = Datasets.validate($fileContent);
-			Datasets.add(validDataset);
-			$scope.$parent.current.dataset = Datasets.getDataset();
-			$scope.$parent.current.model = Datasets.getModel();
-			$scope.$parent.current.overlay = Overlays.getOverlay();
-			// $scope.$parent.currentOverlay = Overlays.getOverlay(); //??? REMOVE
-			$state.go('dataset');
+			var adding = Datasets.add($fileContent);
+			return $q.all([ adding ])
+			.then(function(results){
+				$scope.updateCurrent();
+				// ADD FILENAME (SEE OVERLAY-IMPORT)
+				console.log("Dataset added."); //: " + $stateParams.loadDataset);			
+				$state.go('dataset');
+			});
 		};		
 	}
 })();
@@ -3637,7 +3624,7 @@
 					reader.onload = function(onLoadEvent) {
 						console.log("Data Loaded");
 						scope.$apply(function() {
-       					// HERE: call the parsed function correctly (with scope AND params object)
+						// HERE: call the parsed function correctly (with scope AND params object)
 							fn(scope, {$fileContent:onLoadEvent.target.result});
 							// $state.go('dataset');
 						});
@@ -4472,7 +4459,7 @@
 		.module('TADkit')
 		.factory('Datasets', Datasets);
 
-	function Datasets($q, $http, uuid4, Settings, Proximities, Restraints, Overlays) {
+	function Datasets($q, $http, uuid4, Settings, Resources, Proximities, Restraints, Overlays) {
 		var datasets = {
 			loaded : [],
 			current : {
@@ -4485,7 +4472,6 @@
 			load: function(filename, clear) {
 				filename = filename || "tk-example-dataset";
 				clear = clear || false;
-
 				var self = this;
 				if (clear) self.clear();
 
@@ -4503,23 +4489,9 @@
 				});
 				return deferral.promise;
 			},
-			validate: function(data) {
-				var validation = true;
-				var validJSON = JSON.parse(data);
-				// ADD LOGIC...
-				// check structure
-				// check content type
-				var validDataset = validJSON;
-				if (validation) {
-					return validDataset;
-				} else {
-					// give error message
-					// return to Project Loader page
-				}
-			},
-			add: function(dataset) { // rename import?
-				/* CHECK DATASET IS VALID */
+			add: function(data) {
 				var self = this;
+				var dataset = self.validate(data);
 				// var uuid = dataObj.uuid || uuid4.generate(),
 				// if (!projects.default.datasets[uuid]) {
 					datasets.loaded.push(dataset);
@@ -4531,16 +4503,39 @@
 				// }
 				return datasets;
 			},
+			validate: function(data) {
+				var validDataset = {};
+				var objectType = Resources.whatIsIt(data);
+				if (objectType === "String") {
+					validDataset = JSON.parse(data);
+				} else {
+					// TODO: add specific options for Array, Object, null, etc.
+					validDataset = data;
+				}
+				var validation = true;
+				// ADD VALIDATION LOGIC...
+				// check structure
+				// check content type
+				if (validation) {
+					return validDataset;
+				} else {
+					// give error message
+					// return to Project Loader page
+				}
+			},
 			init: function(dataset) {
 				var self = this;
-				// var dataset = self.getDataset();
-				var data = self.getModel().data;
+				var currentModelData = self.getModel().data;
 				Settings.set(dataset);
-				Proximities.set(data);
-				Restraints.set(data, dataset.restraints);
+				Proximities.set(currentModelData);
+				Restraints.set(currentModelData, dataset.restraints);
 				Overlays.update(Proximities.get().distances, dataset.restraints);
-				Overlays.import(dataset.object.filename, "tsv", true);
-				console.log("Settings, Proximities, Restraints & Overlays updated.");
+				// if (dataset.object.filename) {
+					var filetype = "tsv";
+					var resetToDefaults = true;
+					Overlays.loadTSV(dataset.object.filename, filetype, resetToDefaults);	
+				// }
+				console.log("Settings, Proximities, Restraints & Overlays initialized.");
 			},
 			clear: function() {
 				while (datasets.loaded.length > 0) {
@@ -4620,10 +4615,13 @@
 			},
 			getModel: function(ref) { // from model ref
 				ref = ref || this.getCentroid();
-				var model, models = datasets.loaded[datasets.current.index].models;
+				var model;
+				var models = datasets.loaded[datasets.current.index].models;
+				// console.log(ref);
 				for (var i = models.length - 1; i >= 0; i--) {
 					if (models[i].ref == ref) model = models[i];
 				}
+				// console.log(model);
 				return model; // array of model vertices
 			}
 		};
@@ -4652,6 +4650,7 @@
 				return deferral.promise;
 			},
 			load: function(overlay) {
+				// TODO: clear odd colors while loading...
 				var deferral = $q.defer();
 				var dataUrl;
 				var settings = Settings.get();
@@ -4830,10 +4829,10 @@
 		.module('TADkit')
 		.factory('Overlays', Overlays);
 
-	function Overlays($q, $http, uuid4, d3Service, Settings, Storyboards, Components, Ensembl, Segments, Networks, Resources) {
+	function Overlays($q, $http, uuid4, d3Service, Settings, Storyboards, Ensembl, Segments, Networks, Resources) {
 		var overlays = {
 			loaded : [],
-			current : {index:0}
+			current : {index:0,test:false}
 		};
 
 		return {
@@ -4853,88 +4852,70 @@
 				}
 				return deferral.promise;
 			},
-			import: function(filename, filetype, defaults) {
+			loadTSV: function(filename, filetype, defaults) {
 				filename = filename || "tk-example-dataset";
 				filetype = filetype || "tsv";
-				defaults = defaults || false;
+				if (typeof defaults === 'undefined') defaults = true;
 
 				var self = this;
-				var datapath = "defaults";
-				if (filename != "tk-example-dataset") datapath = "examples";
+				if (defaults) {
+					self.defaults();	
+					Storyboards.defaultComponents();
+				}
 
 				var deferral = $q.defer();
+				var datapath = "defaults";
+				if (filename != "tk-example-dataset") datapath = "examples";
 				var dataUrl = "assets/" + datapath + "/" + filename + "." + filetype;
 				$http.get(dataUrl)
 				.success( function(fileData) {
-					var parsedData = self.parse(fileData).data;
-					var aquiredOverlays = self.aquire(parsedData);
-					if (defaults) self.defaults();
-					self.add(aquiredOverlays);
-					console.log("Overlays (" + aquiredOverlays.length + ") imported from " + dataUrl);
+
+					if (overlays.current.test) {
+						// console.log("after load");
+						var importedOverlays = [];
+					} else { // only first load
+						// console.log("first load");
+						var importedOverlays = self.import(fileData,[],[],defaults);
+					}
+					// overlays.current.test = true;
+
+					console.log("Overlays (" + importedOverlays.length + ") imported from " + dataUrl);
 					deferral.resolve(overlays);
+				})
+				.error(function(fileData) {
+					console.log("No associated data tracks found.");
 				});
 				return deferral.promise;
 			},
-			add: function(importedOverlays) {
+			import: function(fileData, selectedRows, selectedCols) {
 				var self = this;
-				// convert to function in Overlays service
-				var newOverlays = [];
-				var newComponents = [];
-				var currentOverlaysIndex = overlays.loaded.length - 1;
-				angular.forEach(importedOverlays, function(overlay, key) {
+				// TODO: if not valid fileData return...
+				selectedRows = selectedRows || [];
+				selectedCols = selectedCols || [];
 
-					var componentTemplate = Components.getComponentByType(overlay.object.type);
-					var overlayExists = false;
-					var newComponent = angular.copy(componentTemplate);
-
-					// for (var i = overlays.loaded.length - 1; i >= 0; i--) {
-						// console.log(overlays.loaded[i].object.uuid);
-						// console.log(overlay.object.uuid);
-						// if (overlays.loaded[i].object.uuid == overlay.object.uuid) overlayExists = true;
-					// }
-					if (!overlayExists) {
-						currentOverlaysIndex++;
-						overlay.object.state.index = currentOverlaysIndex;
-						overlay.object.state.overlaid = false;
-						newOverlays.push(overlay);
-
-						var settings = Settings.get();
-						// New component for overlay
-						newComponent.object.uuid = uuid4.generate();
-						newComponent.object.id = overlay.object.id;
-						newComponent.object.title = overlay.object.id;
-						newComponent.object.dataset = overlay.object.id;
-						newComponent.view.settings.step = overlay.object.step;
-						newComponent.view.settings.color = overlay.object.color;
-						newComponent.view.viewpoint.chromStart = settings.current.chromStart;
-						newComponent.view.viewpoint.chromEnd = settings.current.chromEnd;
-						newComponent.view.viewpoint.scale = settings.views.scale;
-						newComponent.view.viewtype = overlay.object.type + "-" + overlay.object.stepType;
-						newComponent.data = overlay.data;
-						newComponent.overlay = overlay;
-
-						// console.log(newComponent);
-						newComponents.push(newComponent);
-					}
-				});
-
-				// Add newOverlays to Overlays
-				overlays.loaded = overlays.loaded.concat(newOverlays);
-				// Generate colors arrays for new overlays
-				self.segment();
-
-				// Add new overlays as Components to Storyboard
-				for (var i = 0; i < newComponents.length; i++) {
-					Storyboards.addComponent("default", newComponents[i]);
+				var parsedData;
+				var dataType = Resources.whatIsIt(fileData);
+				if (dataType == "String") {
+					parsedData = self.parse(fileData).data;
+				} else {
+					parsedData = fileData; // already parsed to JSON object
 				}
 
-				return newOverlays;
+				var filteredData;
+				if (selectedRows.length > 0 && selectedCols.length > 0) {
+					filteredData = self.filter(parsedData, selectedRows, selectedCols);
+				} else {
+					filteredData = parsedData; // no filtering required
+				}
+
+				var aquiredOverlays = self.aquire(filteredData);
+				self.add(aquiredOverlays);
+
+				return aquiredOverlays;
 			},
 			parse: function(data) {
-				// var delimiter = Settings.get().import.delimiter;
 				Papa.DefaultDelimiter = " ";
 				var parsedData = Papa.parse(data,{
-					// delimiter: delimiter,
 					dynamicTyping: true,
 					skipEmptyLines: true,
 					fastMode: true
@@ -5070,31 +5051,33 @@
 					return acquiredOverlays;
 				// }); // End d3 Service
 			},
-			// add: function(details) {
-			// 	details = details || ["default","overlay","name","www","describe","json","0",[1]];
-			// 	var overlay = {
-			// 		metadata : {
-			// 			version : 1.0,
-			// 			type : "overlay",
-			// 			generator : "TADkit"
-			// 		},
-			// 		object : {
-			// 			uuid : uuid4.generate(),
-			// 			id : details[0],
-			// 			title : details[1],
-			// 			source : details[2],
-			// 			url : details[3],
-			// 			description : details[4],
-			// 			format : details[5],
-			// 			components : details[6]
-			// 		},
-			// 		data : details[7]
-			// 	};
-			// 	overlays.loaded.push(overlay);
-			// 	overlays.current.index = overlays.loaded.length - 1;
-			// 	console.log("Overlay \"" + overlays.loaded[overlays.current.index].object.title + "\" loaded from file.");
-			// 	return overlays;
-			// },
+			add: function(importedOverlays) {
+				var self = this;
+				// convert to function in Overlays service
+				var newOverlays = [];
+				var currentOverlaysIndex = overlays.loaded.length - 1;
+				angular.forEach(importedOverlays, function(overlay, key) {
+					var overlayExists = false;
+					// for (var i = overlays.loaded.length - 1; i >= 0; i--) {
+						// console.log(overlays.loaded[i].object.uuid);
+						// console.log(overlay.object.uuid);
+						// if (overlays.loaded[i].object.uuid == overlay.object.uuid) overlayExists = true;
+					// }
+					if (!overlayExists) {
+						currentOverlaysIndex++;
+						overlay.object.state.index = currentOverlaysIndex;
+						overlay.object.state.overlaid = false;
+						newOverlays.push(overlay);
+						Storyboards.addComponent(overlay);
+					}
+				});
+				// Add newOverlays to Overlays
+				overlays.loaded = overlays.loaded.concat(newOverlays);
+				// Generate colors arrays for new overlays
+				self.segment();
+
+				return newOverlays;
+			},
 			clear: function() {
 				while (overlays.loaded.length > 0) { // remove all overlays
 					overlays.loaded.shift();
@@ -5104,7 +5087,6 @@
 				while (overlays.loaded.length > 4) { // remove all except defaults
 					overlays.loaded.pop();
 				}
-				Storyboards.defaultComponents();
 			},
 			remove: function(index) {
 				if (index === undefined || index === false) index = overlays.current.index;
@@ -5159,7 +5141,7 @@
 				.then(function(results) {
 					for (var i = 0; i < overlaysToUpdate.length; i++) {
 						Storyboards.update(overlaysToUpdate[i]);
-					};
+					}
 					self.segment();
 					return results;
 				});
@@ -5867,6 +5849,29 @@
 				console.log(biotypes);
 				var totalbiotypes = biotypes.length;
 				console.log("Total Biotypes: %s", totalbiotypes);
+			},
+			whatIsIt: function(object) {
+				var stringConstructor = "test".constructor;
+				var arrayConstructor = [].constructor;
+				var objectConstructor = {}.constructor;
+				if (object === null) {
+					return "null";
+				}
+				else if (object === undefined) {
+					return "undefined";
+				}
+				else if (object.constructor === stringConstructor) {
+					return "String";
+				}
+				else if (object.constructor === arrayConstructor) {
+					return "Array";
+				}
+				else if (object.constructor === objectConstructor) {
+					return "Object";
+				}
+				else {
+					return "don't know";
+				}
 			}
 		};
 	}
@@ -6254,7 +6259,7 @@
 		.module('TADkit')
 		.factory('Storyboards', Storyboards);
 
-	function Storyboards($q, $http, uuid4) {
+	function Storyboards($q, $http, uuid4, Settings, Components) {
 		var storyboards = {
 			loaded : [],
 			current : {index:0}
@@ -6265,6 +6270,7 @@
 				var deferral = $q.defer();
 				var dataUrl = "assets/defaults/tk-defaults-storyboards.json";
 				if( storyboards.loaded.length > 0 ) {
+					console.log("Storyboards already loaded.")
 					deferral.resolve(storyboards);
 				} else {
 					$http.get(dataUrl)
@@ -6298,28 +6304,60 @@
 				storyboards.current = storyboards.loaded.length - 1;
 				return storyboards;
 			},
-			addComponent: function(storyboardId, component, options) {
-				// Add a preconfigured conponent from Components - update with options if necessary
+			addComponent: function(overlay, storyboardId, options) {
 				var self = this;
 				storyboardId = storyboardId || "default";
-				options = options || [""];
+				options = options || [];
+
+				var settings = Settings.get();
+				// Add a preconfigured conponent from Components
+				// - update with options if necessary
+				var componentTemplate = Components.getComponentByType(overlay.object.type);
+				// New component for overlay
+				var newComponent = angular.copy(componentTemplate);
+					newComponent.object.uuid = uuid4.generate();
+					newComponent.object.id = overlay.object.id;
+					newComponent.object.title = overlay.object.id;
+					newComponent.object.dataset = overlay.object.id;
+					newComponent.view.settings.step = overlay.object.step;
+					newComponent.view.settings.color = overlay.object.color;
+					newComponent.view.viewpoint.chromStart = settings.current.chromStart;
+					newComponent.view.viewpoint.chromEnd = settings.current.chromEnd;
+					newComponent.view.viewpoint.scale = settings.views.scale;
+					newComponent.view.viewtype = overlay.object.type + "-" + overlay.object.stepType;
+					newComponent.data = overlay.data;
+					newComponent.overlay = overlay;
+
 				var storyboard = self.getStoryboardById(storyboardId);
-				storyboard.components.push(component);
-				return storyboard;
+				storyboard.components.push(newComponent);
+				return newComponent;
 			},
 			defaultComponents: function(storyboardId) {
 				var self = this;
 				storyboardId = storyboardId || "default";
 				var storyboard = self.getStoryboardById(storyboardId);
 				while (storyboard.components.length > 6) { // remove all except defaults
-					storyboard.components.pop();
+					console.log("popping");
+					storyboards.loaded[storyboards.current.index].components.pop();
 				}
-				return storyboard;
+				// console.log(storyboards.loaded[storyboards.current.index].components);
+				return storyboards;
 			},
 			remove: function(index) {
 				if (index === undefined || index === false) index = storyboards.current.index;
 				var storyboard = storyboards.loaded.indexOf(index);
 				storyboards.loaded.splice(storyboard, 1);
+				return storyboards;
+			},
+			removeComponentById: function(id) {
+					console.log("component");
+				var self = this;
+				if (id !== undefined || id !== false) {
+					var component = self.getComponentById(id);
+					var storyboard = self.getStoryboard();
+					storyboard.components.splice(component.index, 1);
+					console.log(component);
+				}
 				return storyboards;
 			},
 			set: function(index) {
@@ -6419,6 +6457,28 @@
 				}
 				// console.log(storyboard);
 				return storyboard;
+			},
+			getComponentById: function (id) {
+				var self = this;
+				var component, found;
+				var components = self.getStoryboard().components;
+				if (id !== undefined || id !== false) {
+					for (var i = components.length - 1; i >= 0; i--) {
+						console.log(components[i].object.title);
+						if (components[i].object.title === id) {
+							component = components[i];
+							component.index = i;
+							found = true;
+							console.log("Component '" + id + "' found!");
+						}
+					}
+				}
+				if (!found) {
+					component = components[0];
+					console.log("Component '" + id + "' not found: returning first.");
+				}
+				// console.log(component);
+				return component;
 			}
 		};
 	}

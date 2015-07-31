@@ -46,17 +46,17 @@
 				// };
 
 				var loadFile = function (file) {
-				var reader = new FileReader();
-				reader.onload = function(onLoadEvent) {
-					scope.$apply(function() {
-						// HERE: call the parsed function correctly (with scope AND params object)
-						accesor(scope, {$fileContent:onLoadEvent.target.result});
-						scope.addDataset(onLoadEvent.target.result);
-						// $state.go('dataset');
-					});
-				};
-				reader.readAsText(file);
-				console.log("File loaded...");
+					var reader = new FileReader();
+					reader.onload = function(onLoadEvent) {
+						scope.$apply(function() {
+							// HERE: call the parsed function correctly (with scope AND params object)
+							accesor(scope, {$fileContent:onLoadEvent.target.result});
+							scope.addDataset(onLoadEvent.target.result);
+							// $state.go('dataset');
+						});
+					};
+					reader.readAsText(file);
+					console.log("File loaded...");
 				};
 
 				element.bind("dragover", onDragOver)

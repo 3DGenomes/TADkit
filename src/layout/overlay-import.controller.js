@@ -8,10 +8,8 @@
 		$scope.fileTitle = "No file loaded";
 
 		$scope.$on('$viewContentLoaded', function() {
-
 			var parentElement = angular.element(document.body);
 			var stateTemplate = "assets/templates/" + $state.current.name + ".html";
-			
 			// Import Overlays Dialog
 			$mdDialog.show({
 				parent: parentElement,
@@ -21,16 +19,11 @@
 					overlays: $scope.$parent.overlays,
 				},
 				onComplete: afterShowAnimation
-			}).then(function(importedOverlays) {
-				var newOverlays = Overlays.add(importedOverlays);
-
+			}).then(function(importedOverlaysCount) {
 				$mdToast.show(
 					$mdToast.simple()
-					.content("Overlays (" + newOverlays.length + "/" + importedOverlays.length + ") added")
+					.content("Overlays (" + importedOverlaysCount + ") added")
 				);
-	 			// $state.go('overlay-import-filter');	
-	 			// $state.go('browser');
-	 			
 			}, function() {
 				$mdToast.show(
 					$mdToast.simple()
@@ -38,41 +31,32 @@
 				);
 	 			$state.go('browser');	
 			});
-
 			// When the 'enter' animation finishes...
 			function afterShowAnimation(scope, element, options) {
 				// post-show code here: DOM element focus, etc.
 				// console.log(scope);
 				console.log("showing dialog");
 			}
-
 		});
 
 		$scope.parseFile = function($fileContent) {
 			$scope.fileData = Overlays.parse($fileContent).data;
-
 			// Selected Rows in File Data
 			// Controlled by checkboxes in overlay-import.html
 			$scope.selectedRows = [];
 			var rows = $scope.fileData.length;
-			while (--rows >= 0) {$scope.selectedRows[rows] = true;}
-
+			while (--rows >= 0) {$scope.selectedRows[rows] = true;} // initially set all to selected
 			// Selected Columns in File Data
 			// Controlled by checkboxes in overlay-import.html
 			$scope.selectedCols = [];
 			var cols = $scope.fileData[0].length;
-			while (--cols >= 0) {$scope.selectedCols[cols] = true;}
-
+			while (--cols >= 0) {$scope.selectedCols[cols] = true;} // initially set all to selected
 			console.log("File Opened...");
 		};
 
 		$scope.importData = function(parsedData) {
-			// remove unwanted rows and cols
-			// var filteredData = parsedData;
-			var filteredData = Overlays.filter(parsedData, $scope.selectedRows, $scope.selectedCols);
-			$scope.overlaysAcquired = Overlays.aquire(filteredData);
-			console.log("Data Imported");
-			$mdDialog.hide($scope.overlaysAcquired);
+			$scope.importedOverlays = Overlays.import(parsedData, $scope.selectedRows, $scope.selectedCols);
+			$mdDialog.hide($scope.importedOverlays.length); // overlays count passed for dialog hide message...
 			$state.go('browser');
 		};
 

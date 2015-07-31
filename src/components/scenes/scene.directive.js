@@ -105,11 +105,13 @@
 						
 						// GEOMETRY: PARTICLES
 						particles = new Particles(scope.currentmodel.data, scope.currentoverlay.colors.particles, scope.view.settings.particles);
+						// particles = new Particles(scope.model.data, scope.overlay.colors.particles, scope.view.settings.particles);
 						particles.visible = scope.view.settings.particles.visible;
 						scene.add(particles);
 
 						//GEOMETRY: CHROMATIN
 						chromatin = new Chromatin(scope.currentmodel.data, scope.currentoverlay.colors.chromatin, scope.view.settings.chromatin);
+						// chromatin = new Chromatin(scope.model.data, scope.overlay.colors.chromatin, scope.view.settings.chromatin);
 						chromatin.visible = scope.view.settings.chromatin.visible;
 						scene.add(chromatin);
 						scope.view.settings.chromatin.radius = chromatin.boundingSphere.radius;
