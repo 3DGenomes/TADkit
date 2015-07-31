@@ -167,13 +167,13 @@ gulp.task('assets-offline', function() {
 		])
 		.pipe(gulp.dest('tadkit/assets/offline'));
 });
-// Transfer Examples
-// gulp.task('assets-examples', function() {
-// 	return gulp.src([
-// 		'src/assets/examples/*.*'
-// 		])
-// 		.pipe(gulp.dest('tadkit/assets/examples'));
-// });
+// Transfer Examples Text
+gulp.task('assets-examples', function() {
+	return gulp.src([
+		'src/assets/examples/Place TADbit JSON and associated TSV files here.txt'
+		])
+		.pipe(gulp.dest('tadkit/assets/examples'));
+});
 
 gulp.task('webserver', function() {
   gulp.src( '.' )
@@ -223,7 +223,7 @@ gulp.task('watch', function() {
 		'assets-img',
 		'assets-defaults',
 		'assets-offline',
-		// 'assets-examples'
+		'assets-examples'
 	]);
 	// gulp.watch('src/assets/scss/*.scss', ['sass']);
 });
@@ -243,7 +243,7 @@ gulp.task('default', [
 	'assets-img',
 	'assets-defaults',
 	'assets-offline',
-	// 'assets-examples',
+	'assets-examples',
 	'webserver',
 	'openbrowser',
 	'watch'
