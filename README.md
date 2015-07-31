@@ -25,6 +25,6 @@ The browser view is composed by:
 * d. Stacked “classical” tracks showing: 
   * The genes found in the region covered by the current model (automatically fetched using the Ensembl REST API).
   * A linear depiction of the 3D proximity from the selected viewpoint to the rest of the model.
-  * A graph of the restraints imposed during modeling. 
+  * A graph of the restraints imposed during modeling (blue for repulsive and red for attacting restraints). 
 * e. Additional user-imported tracks.
 
