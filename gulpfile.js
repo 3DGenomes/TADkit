@@ -7,12 +7,13 @@ var jshint = require('gulp-jshint');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify'); // ng-min
 var rename = require('gulp-rename');
-var plumber   = require('gulp-plumber');
+var header = require('gulp-header');
+var plumber = require('gulp-plumber');
 var webserver = require('gulp-webserver');
-var opn       = require('opn');
+var opn = require('opn');
 var server = {
-  host: 'localhost',
-  port: '8001'
+	host: 'localhost',
+	port: '8001'
 }
 
 // Lint Task
@@ -62,18 +63,17 @@ gulp.task('dist-vendor', function() {
 		'bower_components/angular-aria/angular-aria.js',
 		'bower_components/angular-animate/angular-animate.js',
 		'bower_components/angular-material/angular-material.js',
-		'bower_components/angular-file-upload/angular-file-upload.js',
 		'bower_components/ng-flow/dist/ng-flow-standalone.js',
 		'bower_components/angular-uuid4/angular-uuid4.js',
 		'bower_components/papaparse/papaparse.min.js',
-		'bower_components/d3/d3.min.js',
-		'bower_components/threejs/build/three.js',
+		// 'bower_components/d3/d3.min.js', // see asset-libs below
+		// 'bower_components/threejs/build/three.js', // see asset-libs below
 		'bower_components/threejs/examples/js/controls/TrackballControls.js',
 		'bower_components/threejs/examples/js/controls/OrbitControls.js',
 		])
 		.pipe(gulp.dest('src/assets/libs'))
 		.pipe(concat('vendors.js'))
-		// .pipe(uglify())
+		.pipe(uglify()) // TODO: test other options eg. ng-min
 		// .pipe(gulp.dest('dist'))
 		.pipe(gulp.dest('tadkit/assets/js'));
 });
@@ -113,12 +113,12 @@ gulp.task('assets-html', function() {
 		'src/components/tracks/*.html',
 		'src/layout/*.html'
 		])
-        // .pipe(header("<!-- This file is generated — do not edit by hand! -->\n"))
+        .pipe(header("<!-- This file is generated — do not edit by hand! -->\n"))
 		.pipe(gulp.dest('src/assets/templates'))
 		.pipe(gulp.dest('tadkit/assets/templates'));
 });
 
-// Compile Our Sass
+// Compile Sass
 // gulp.task('assets-sass', function() {
 // 	return gulp.src('src/scss/*.scss')
 // 		.pipe(sass({
