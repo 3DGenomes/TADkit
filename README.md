@@ -16,7 +16,7 @@ locally you'll need to use Chrome with the flag "--allow-file-access-from-files"
 ###How to use it
 Visualization of 3D models and overlaying of data for analysis in TADkit is achieved in three simple steps. (1) The user may import a [TADbit](http://3Dgenomes.org/tadbit/) JSON file by using the drop-in area or the file menu in the TADkit main page. (2) The user is presented with an overview of the data. Each 3D model cluster is shown as an ensemble of grey strands, with its centroid model highlighted. After selecting a cluster, the browser view opens (see figure below) with a 3D scene of the centroid of the selected cluster, along with “classic” genomic tracks. (3) Finally, the user may add additional genomic tracks to the browser by inputting them using BigWig or BedGraph formats.
 
-<img src="http://3DGenomes.org/tadkit/images/tadkit_scene.png" width="800">
+<img src="https://github.com/3DGenomes/TADkit/raw/master/doc/screenshots/tadkit_scene.png" width="800">
 
 The browser view is composed by: 
 * a. Top toolbar with the model title, internal navigation links, data input link and the current genomic position.
