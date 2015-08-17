@@ -2,7 +2,7 @@
 	'use strict';
 
 	// ANGULAR APP
-	angular.module('TADkit',['ui.router','angularFileUpload','ngMaterial','flow','uuid4','d3']);
+	angular.module('TADkit',['ui.router','ngMaterial','uuid4','d3']);
 	     
 })();
 (function() {
@@ -5819,28 +5819,28 @@
 			get: function () {
 				return resources;
 			},
-			getRegionBiotypes: function (genes) {
-				// GET BIOTYPES AND SET BIOTYPE COLORS
-				var biotypes = [];
-				var featureColors = [
-					// other: 16753920
-					// protein_alignment: 255
-					// protein_coding: 12009742
-					// pseudogene: 6710886
-				];
-				var biotypesLookup = {};
-				for (var item, i = 0; item == genes[i++];) {
-					var geneBiotype = item.biotype;
-					if (!(geneBiotype in biotypesLookup)) {
-					biotypesLookup[geneBiotype] = 1;
-					biotypes.push(geneBiotype);
-					}
-				}
-				console.log("Biotypes");
-				console.log(biotypes);
-				var totalbiotypes = biotypes.length;
-				console.log("Total Biotypes: %s", totalbiotypes);
-			},
+			// getRegionBiotypes: function (genes) {
+			// 	// GET BIOTYPES AND SET BIOTYPE COLORS
+			// 	var biotypes = [];
+			// 	var featureColors = [
+			// 		// other: 16753920
+			// 		// protein_alignment: 255
+			// 		// protein_coding: 12009742
+			// 		// pseudogene: 6710886
+			// 	];
+			// 	var biotypesLookup = {};
+			// 	for (var item, i = 0; item == genes[i++];) {
+			// 		var geneBiotype = item.biotype;
+			// 		if (!(geneBiotype in biotypesLookup)) {
+			// 		biotypesLookup[geneBiotype] = 1;
+			// 		biotypes.push(geneBiotype);
+			// 		}
+			// 	}
+			// 	console.log("Biotypes");
+			// 	console.log(biotypes);
+			// 	var totalbiotypes = biotypes.length;
+			// 	console.log("Total Biotypes: %s", totalbiotypes);
+			// },
 			whatIsIt: function(object) {
 				var stringConstructor = "test".constructor;
 				var arrayConstructor = [].constructor;

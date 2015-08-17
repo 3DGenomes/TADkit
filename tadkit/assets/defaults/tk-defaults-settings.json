@@ -6,7 +6,7 @@
 	},
 	"app" : {
 		"init" : false,
-		"online" : true
+		"online" : false
 	},
 	"import" : {
 		"delimiter" : " "
