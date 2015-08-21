@@ -67,7 +67,7 @@ gulp.task('dist-vendor', function() {
 		'bower_components/angular-uuid4/angular-uuid4.js',
 		'bower_components/papaparse/papaparse.min.js',
 		// 'bower_components/d3/d3.min.js', // see asset-libs below
-		// 'bower_components/threejs/build/three.js', // see asset-libs below
+		'bower_components/threejs/build/three.js', // see asset-libs below
 		'bower_components/threejs/examples/js/controls/TrackballControls.js',
 		'bower_components/threejs/examples/js/controls/OrbitControls.js',
 		])
