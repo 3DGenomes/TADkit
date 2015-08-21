@@ -3720,6 +3720,22 @@
 	'use strict';
 	angular
 		.module('TADkit')
+		.directive('tkStoryboardComponents', tkStoryboardComponents);
+
+	function tkStoryboardComponents() {
+		return {
+			restrict:'EA',
+			templateUrl: 'assets/templates/storyboard-components.html',
+			link:function(scope, element, attrs){
+				// console.log(scope);
+			}
+		};
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
 		.controller('StoryboardController', StoryboardController);
 
 	function StoryboardController($window, $scope, Settings, Storyboards, Components, Overlays, Proximities, Restraints) {
