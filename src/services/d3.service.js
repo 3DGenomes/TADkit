@@ -5,10 +5,10 @@
 		.factory('d3Service', d3Service);
 
 	function d3Service($document, $q, $rootScope, Settings) {
-			var d = $q.defer();
+			var deferred = $q.defer();
 			function onScriptLoad() {
 				// Load client in the browser
-				$rootScope.$apply(function() { d.resolve(window.d3); });
+				$rootScope.$apply(function() { deferred.resolve(window.d3); });
 			}
 			// Create a script tag with d3 as the source
 			// and call our onScriptLoad callback when it
@@ -31,7 +31,7 @@
 			s.appendChild(scriptTag);
 
 			return {
-				d3: function() { return d.promise; }
+				load: function() { return deferred.promise; }
 			};
 	}
 })();

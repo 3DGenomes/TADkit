@@ -4,8 +4,19 @@
 		.module('TADkit')
 		.factory('Segments', Segments);
 
-	function Segments(d3Service, Color) {
+	function Segments($q, d3Service, Color) {
+		var deferred = $q.defer();
+		
+		// Check d3 Service is loaded
+		d3Service.load().then(function(d3) {
+			// console.log("loading d3");
+			deferred.resolve();
+		});
+
 		return {
+			load: function() {
+				return deferred.promise;
+			},
 			gradientHCL: function(overlay, count) {
 				// Using D3 HCL for correct perceptual model
 				// Data is an array of 2 hex colors eg. ff0000
@@ -81,7 +92,6 @@
 						colors.push(hex);
 					}
 				}
-				// console.log(colors);
 				return colors;
 			},
 			bicolorVariable: function(overlay, chromStart, segmentsCount, segmentLength) {
@@ -113,7 +123,6 @@
 					}
 					colors.push(segmentColor);
 				}
-				// console.log(colors);
 				return colors;
 			},
 			featureGraph: function(overlay, count) {
@@ -165,7 +174,6 @@
 							// if (i==3) console.log("No features in fragment " + i );
 							// if (j == 0) console.log( JSON.stringify(segmentLower)+", "+JSON.stringify(start)+" <= "+JSON.stringify(segmentUpper)+", "+JSON.stringify(end) );
 						}
-						// console.log(insegments);
 						features[j].inSegments = inSegments;
 					}
 					for(var k=0; k<featuresPresent.length; k++){
@@ -180,7 +188,6 @@
 					}
 					colors.push(color);
 				}
-				// console.log(colors);
 				return colors;
 			}
 		};

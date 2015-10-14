@@ -9,19 +9,19 @@
 
 		return {
 			load: function() {
-				var deferral = $q.defer();
+				var deferred = $q.defer();
 				var dataUrl = "assets/defaults/tk-defaults-settings.json";
 				if( Object.getOwnPropertyNames(settings).length > 0 ) {
-					deferral.resolve(settings);
+					 deferred.resolve(settings);
 				} else {
 					$http.get(dataUrl)
 					.success( function(data) {
 						settings = data;
 						console.log("Settings loaded from " + dataUrl);
-						deferral.resolve(settings);
+						 deferred.resolve(settings);
 					});
 				}
-				return deferral.promise;
+				return deferred.promise;
 			},
 			set: function(dataset) {
 				var self = this;

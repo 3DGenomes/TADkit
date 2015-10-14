@@ -11,18 +11,18 @@
 		return {
 			ping: function() {
 				console.log("Pinging Ensembl RESTful genomic data server...");
-				var deferral = $q.defer();
+				var deferred = $q.defer();
 				var dataUrl = "http://rest.ensemblgenomes.org/info/ping?content-type=application/json";
 				$http.get(dataUrl)
 				.success(function(data){
 					ensembl.ping = data.ping;
 					console.log("Ensembl RESTful is contactable.");
 				});
-				return deferral.promise;
+				return deferred.promise;
 			},
 			load: function(overlay) {
 				// TODO: clear odd colors while loading...
-				var deferral = $q.defer();
+				var deferred = $q.defer();
 				var dataUrl;
 				var settings = Settings.get();
 				var species = settings.current.species;
@@ -48,9 +48,9 @@
 					var region = chrom + ":" + chromStart + "-" + chromEnd;
 					var source = online ? "Ensembl" : "local storage";
 					console.log("Genes for " + species + " "+ region + " retreived from " + source + ".");
-					deferral.resolve(overlay);
+					 deferred.resolve(overlay);
 				});
-				return deferral.promise;
+				return deferred.promise;
 			},
 			setBiotypeStyle: function(genes) {
 				// This generates a index in lowercase to be used in CSS styling

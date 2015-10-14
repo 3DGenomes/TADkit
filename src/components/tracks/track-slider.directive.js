@@ -20,7 +20,7 @@
 			link: function(scope, element, attrs) {
 				// console.log(scope);
 
-				d3Service.d3().then(function(d3) {
+				d3Service.load().then(function(d3) {
 				
 					scope.safeApply = function(fn) {
 						var phase = this.$root.$$phase;
@@ -51,7 +51,7 @@
 					 * - component-header == children[0]
 					 * - component-body == children[3]
 					 */
-					var component = element[0];
+					var component = element[0].parentNode;
 						// console.log(component.clientWidth);
 					var viewport = element[0].children[0].children[3];
 						// console.log(viewport.clientWidth);

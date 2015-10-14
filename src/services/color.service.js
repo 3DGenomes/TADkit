@@ -5,16 +5,25 @@
 		.factory('Color', Color);
 
 	function Color(ColorConvert) {
-		// NOTE Ideally these will all be deprecated
-		//      in favor of nbative JS, THREE or D3 functions.
+		// NOTE Optionally these could all be deprecated
+		//      in favor of native JS, THREE or D3 functions.
+		//          (OR Use this as a single source for all color manipulation
+		//           whatever the external api, to ensure single load access.)
 		//      Those already UNUSED are marked as such.
 
 		return {
-
 			// Extract colors from (Ensembl) INI files
 			// eg. https://raw.githubusercontent.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini
 			//  OR https://cdn.rawgit.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini
 			//  OR in TADkit: assets/defaults/ensembl-webcode-COLOUR.ini
+			RGBObjectFromHex: function(hex) {
+				var r = ColorConvert.hexToR(hex);
+				var g = ColorConvert.hexToG(hex);
+				var b = ColorConvert.hexToB(hex);
+				var RGBObject = {"r":r,"g":g,"b":b};
+				return RGBObject;
+			},
+			// Generate 'colors list' Object from INI data
 			colorsFromIni: function(data) {
 				var regex = {
 					section: /^\s*\[\s*([^\]]*)\s*\]\s*$/,
@@ -88,7 +97,6 @@
 				return colors;
 			},
 			// Generate THREE Vertex Colors from array of THREE colors
-			// 
 			vertexColorsFromColors: function(colors) {
 				// Buffer Geomptry to be used as LinePieces so
 				// colors stored as one per data-position-pair
@@ -107,7 +115,7 @@
 				}
 				return vertexColors;
 			},
-			// Generate a specific number of random colors
+			// Generate an Array of a specific number of random colors
 			getRandomColors: function(count) {
 				var randomColors = [];
 				for(var i=0; i<count; i++){
@@ -116,7 +124,7 @@
 				}
 				return randomColors;
 			},
-			// Generate a specific number of random colors
+			// Generate an Array of a specific number of random colors
 			getRandomRGB: function(count) {
 				var randomRGB = [];
 				for(var i=0; i<count; i++){
@@ -126,7 +134,7 @@
 				}
 				return randomRGB;
 			},
-				// UNUSED: Generate a math linear gradient between to hex colors values
+			// UNUSED: Generate a math linear gradient between to hex colors values
 			//     Note this is NOT a L*a*b or HCL correct gradient
 			//     See Mike Bostock's D3 comments: http://bl.ocks.org/mbostock/3014589
 			getGradientColor: function(start_color, end_color, percent) {
