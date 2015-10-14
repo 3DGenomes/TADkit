@@ -12,19 +12,19 @@
 		
 		return {
 			load: function() {
-				var deferral = $q.defer();
+				var deferred = $q.defer();
 				var dataUrl = "assets/defaults/tk-defaults-components.json";
 				if( components.loaded.length > 0 ) {
-					deferral.resolve(components);
+					 deferred.resolve(components);
 				} else {
 					$http.get(dataUrl)
 					.success( function(data) {
 						components.loaded = data;
 						console.log("Components (" + data.length + ") loaded from " + dataUrl);
-						deferral.resolve(components);
+						 deferred.resolve(components);
 					});
 				}
-				return deferral.promise;
+				return deferred.promise;
 			},
 			add: function(details) {
 				details = details || ["","","","","","","",[]];

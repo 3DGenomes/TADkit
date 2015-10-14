@@ -12,19 +12,19 @@
 
 		return {
 			load: function() {
-				var deferral = $q.defer();
+				var deferred = $q.defer();
 				var dataUrl = "assets/defaults/tk-defaults-projects.json";
 				if( projects.loaded.length > 0 ) {
-					deferral.resolve(projects);
+					 deferred.resolve(projects);
 				} else {
 					$http.get(dataUrl)
 					.success( function(data) {
 						projects.loaded = data;
 						console.log("Projects (" + data.length + ") loaded from " + dataUrl);
-						deferral.resolve(projects);
+						 deferred.resolve(projects);
 					});
 				}
-				return deferral.promise;
+				return deferred.promise;
 			},
 			add: function(details) {
 				var newProject = {

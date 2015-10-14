@@ -12,20 +12,21 @@
 		
 		return {
 			load: function() {
-				var deferral = $q.defer();
+				var deferred = $q.defer();
 				var dataUrl = "assets/defaults/tk-defaults-storyboards.json";
 				if( storyboards.loaded.length > 0 ) {
+				console.log("if");
 					console.log("Storyboards already loaded.");
-					deferral.resolve(storyboards);
+					 deferred.resolve(storyboards);
 				} else {
 					$http.get(dataUrl)
 					.success( function(data) {
 						storyboards.loaded = data;
 						console.log("Storyboards (" + data.length + ") loaded from " + dataUrl);
-						deferral.resolve(storyboards);
+						 deferred.resolve(storyboards);
 					});
 				}
-				return deferral.promise;
+				return deferred.promise;
 			},
 			add: function(details) {
 				details = details || [""];
@@ -200,7 +201,6 @@
 					storyboard.index = storyboards.current.index;
 					console.log("Storyboard '" + id + "' not found: returning current.");
 				}
-				// console.log(storyboard);
 				return storyboard;
 			},
 			getComponentById: function (id) {
