@@ -80,8 +80,13 @@
 			},
 			defaultComponents: function(storyboardId) {
 				var self = this;
-				storyboardId = storyboardId || "default";
-				var storyboard = self.getStoryboardById(storyboardId);
+				storyboardId = storyboardId || "current";
+				var storyboard;
+				if (storyboardId == "current") {
+					storyboard = self.getStoryboard();
+				} else {
+					storyboard = self.getStoryboardById(storyboardId);					
+				}
 				while (storyboard.components.length > 6) { // remove all except defaults
 					console.log("popping");
 					storyboards.loaded[storyboards.current.index].components.pop();

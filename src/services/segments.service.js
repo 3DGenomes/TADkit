@@ -5,18 +5,18 @@
 		.factory('Segments', Segments);
 
 	function Segments($q, d3Service, Color) {
-		var deferred = $q.defer();
+		// var deferred = $q.defer();
 		
-		// Check d3 Service is loaded
-		d3Service.load().then(function(d3) {
-			// console.log("loading d3");
-			deferred.resolve();
-		});
+		// // Check D3 Service is loaded
+		// d3Service.load().then(function(d3) {
+		// 	// console.log("loading D3");
+		// 	deferred.resolve();
+		// });
 
 		return {
-			load: function() {
-				return deferred.promise;
-			},
+			// load: function() {
+			// 	return deferred.promise;
+			// },
 			gradientHCL: function(overlay, count) {
 				// Using D3 HCL for correct perceptual model
 				// Data is an array of 2 hex colors eg. ff0000
@@ -95,7 +95,6 @@
 				return colors;
 			},
 			bicolorVariable: function(overlay, chromStart, segmentsCount, segmentLength) {
-
 				var featureColor = overlay.palette[0];
 				var defaultColor = overlay.palette[1];
 
@@ -135,7 +134,6 @@
 				return vertexColors;
 			},
 			features: function(overlay, chromStart, segmentsCount, segmentLength, featureTypes) {
-
 				var features = overlay.data;
 				var colors = [];
 

@@ -132,7 +132,7 @@
 					"visible" : true
 				},
 				"cluster" : {
-					"color" : "0x000000",
+					"color" : "#000000",
 					"linewidth" : 1,
 					"transparent" : true,
 					"modelOpacity" : 0.1,

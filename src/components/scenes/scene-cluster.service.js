@@ -7,6 +7,7 @@
 	// constructor for cluster models ensemble
 	function Cluster(Color) {
 		return function( data, centroidIndex, overlay, settings ) {
+			// console.log(overlay);
 
 			var defaults = {
 				visible: true,
@@ -24,7 +25,7 @@
 				var modelComponents = data[i];
 				clusterBufferGeometry.addAttribute( 'position', new THREE.BufferAttribute( modelComponents, 3 ) );
 				var modelGeometry = getModelGeometry(modelComponents);
-				modelGeometry.colors = overlayColors;
+					modelGeometry.colors = overlayColors;
 
 				var modelColor = overlay[i];
 				var modelMaterial = new THREE.LineBasicMaterial({

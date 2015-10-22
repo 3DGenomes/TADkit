@@ -86,7 +86,6 @@
 				var segmentColor = colors[i];
 				var segmentMaterial = new THREE.MeshLambertMaterial({
 					color: segmentColor,
-					ambient: segmentColor,
 					emissive: segmentColor,
 					vertexColors: THREE.VertexColors,
 					opacity: 1.0, 
@@ -111,19 +110,35 @@
 			// chromatinFiber.add(chromatinCubic);
 
 			// Visualize Controls Nodes
-			// var particleMap = null; // render only point
-			// particleMap = THREE.ImageUtils.loadTexture("assets/img/sphere-glossy.png");
-			// var particlesMaterial = new THREE.PointCloudMaterial({
+			// var nodeMap = null; // render only point
+			// if (this.map) {
+			// 	var loader = new THREE.TextureLoader();
+			// 	loader.load(
+			// 		this.map,
+			// 		function ( texture ) {
+			// 			nodeMap = texture;
+			// 		},
+			// 		// Function called when download progresses
+			// 		function ( xhr ) {
+			// 			console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+			// 		},
+			// 		// Function called when download errors
+			// 		function ( xhr ) {
+			// 			console.log( 'An error happened' );
+			// 		}
+			// 	);
+			// }
+			// var particlesMaterial = new THREE.PointsMaterial({
 			// 	// color: "#0000ff",
    //  			vertexColors: THREE.VertexColors,
 			// 	size: 10,
 			// 	opacity: 1.0,
-			// 	// map: particleMap,
+			// 	// map: nodeMap,
 			// 	// depthTest: true,
 			// 	// alphaTest: true,
 			// 	// transparent: true
 			// });
-			// var chromatinCloud = new THREE.PointCloud(controlsGeom, particlesMaterial);
+			// var chromatinCloud = new THREE.Points(controlsGeom, particlesMaterial);
 			// chromatinFiber.add(chromatinCloud);
 
 			chromatinGeometry.computeBoundingSphere();

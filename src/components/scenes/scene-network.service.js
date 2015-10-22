@@ -10,7 +10,7 @@
 			// console.log(data);
 			// console.log(overlay);
 
-			// Uses THREE.LinePieces to generate separate lines
+			// Uses THREE.LineSegments to generate separate lines
 			// from an array of vertex pairs
 
 			var defaults = {
@@ -36,7 +36,7 @@
 			};
 			var parameters = {
 				uniforms: uniforms,
-				attributes: attributes,
+				// attributes: attributes,
 				vertexShader: document.getElementById('vertexShader').textContent,
 				fragmentShader: document.getElementById('fragmentShader').textContent,
 				vertexColors: THREE.VertexColors,
@@ -60,9 +60,25 @@
 			geometry.computeBoundingSphere();
 
 			var nodeMap = null; // render only point
-			if (this.map) nodeMap = THREE.ImageUtils.loadTexture(this.map);
+			if (this.map) {
+				var loader = new THREE.TextureLoader();
+				loader.load(
+					this.map,
+					function ( texture ) {
+						nodeMap = texture;
+					},
+					// Function called when download progresses
+					function ( xhr ) {
+						console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+					},
+					// Function called when download errors
+					function ( xhr ) {
+						console.log( 'An error happened' );
+					}
+				);
+			}
 
-			var nodesMaterial = new THREE.PointCloudMaterial({
+			var nodesMaterial = new THREE.PointsMaterial({
 				color: this.color,
     			vertexColors: THREE.VertexColors,
 				size: this.size,
@@ -74,17 +90,17 @@
 			});
 
 			// NETWORK
-			// var nodes = new THREE.PointCloud(data, nodesMaterial);
+			// var nodes = new THREE.Points(data, nodesMaterial);
 			// nodes.name = "Network Nodes";
 			
-			// var edges = new THREE.Line(geometry, shaderMaterial, THREE.LinePieces); // THREE.LinePieces = separate lines
+			// var edges = new THREE.LineSegments(geometry, shaderMaterial);
 			// edges.name = "Network Edges";
 
 			// var network = new THREE.Object3D();
 			// network.add(edges);
 			// network.add(nodes);
 			// network.boundingSphere = geometry.boundingSphere;
-			var network = new THREE.Line(geometry, shaderMaterial, THREE.LinePieces); // THREE.LinePieces = separate lines
+			var network = new THREE.LineSegments(geometry, shaderMaterial);
 			network.name = "Network Graph";
 			// console.log(network);
 			return network;

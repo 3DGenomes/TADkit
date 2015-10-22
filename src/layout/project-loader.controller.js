@@ -33,7 +33,7 @@
 			var adding = Datasets.add($fileContent);
 			return $q.all([ adding ])
 			.then(function(results){
-				$scope.updateCurrent();
+				$scope.updateCurrent(); // NEEDED? Move to function in Settings Service???
 				// ADD FILENAME (SEE OVERLAY-IMPORT)
 				console.log("Dataset added."); //: " + $stateParams.loadDataset);			
 				$state.go('dataset');

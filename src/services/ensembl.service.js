@@ -4,15 +4,19 @@
 		.module('TADkit')
 		.factory('Ensembl', Ensembl);
 
-	function Ensembl($q, $http, Settings) {
+	function Ensembl($q, $http, Settings, Color) {
 		var ensembl = {
-			ping : 0
+			root: "http://rest.ensemblgenomes.org/",
+			ping : 0,
+			assembly: {},
+			featureColors: {},
+			biotypes: {}
 		};
 		return {
 			ping: function() {
 				console.log("Pinging Ensembl RESTful genomic data server...");
 				var deferred = $q.defer();
-				var dataUrl = "http://rest.ensemblgenomes.org/info/ping?content-type=application/json";
+				var dataUrl =  ensembl.root + "info/ping?content-type=application/json";
 				$http.get(dataUrl)
 				.success(function(data){
 					ensembl.ping = data.ping;
@@ -52,6 +56,27 @@
 				});
 				return deferred.promise;
 			},
+			loadBiotypeColors: function() {
+				var deferred = $q.defer();
+				var dataUrl;
+				var online = false; // Settings.getOnline(); // Most up-to-date version not strictly necessary
+				if (online) {
+				// dataUrl = "https://raw.githubusercontent.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini" // NOT PERMITTED
+					dataUrl = "https://cdn.rawgit.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini";
+				} else {
+					dataUrl = "assets/offline/ensembl-webcode-COLOUR.ini";
+
+				}
+				$http.get(dataUrl)
+				.success(function(data){
+					var iniData = Color.colorsFromIni(data);
+					ensembl.featureColors = iniData;
+					ensembl.biotypes = iniData.gene;
+					console.log("Ensembl webcode biotype colors retrieved Ensembl.");
+					 deferred.resolve(iniData);
+				});
+				return deferred.promise;
+			},
 			setBiotypeStyle: function(genes) {
 				// This generates a index in lowercase to be used in CSS styling
 				// now running directly in segmentFeatures
@@ -61,6 +86,21 @@
 					gene.biotypeStyle = biotypeStyle;
 				});
 				return genes;
+			},
+			setLengthBP: function(top_level_region) {
+				var lengthBP = 0;
+				var regionBPs = top_level_region;
+				for (var regionBP in regionBPs) {
+					if (regionBPs.hasOwnProperty(regionBP)) {
+						for (var i = 0, j = regionBPs.length; i < j; i++) {
+							lengthBP += regionBPs[i].length;
+						}
+					}
+				}
+				return lengthBP;
+			},
+			get: function() {
+				return ensembl;
 			}
 		};
 	}

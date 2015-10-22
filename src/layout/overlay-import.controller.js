@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.controller('OverlayImportController', OverlayImportController);
 
-	function OverlayImportController ($state, $scope, $mdDialog, $mdToast, Settings, Overlays, Components, Storyboards, uuid4) {
+	function OverlayImportController ($state, $scope, $mdDialog, $mdToast, Settings, CustomTracks, Components, Storyboards, uuid4) {
 		$scope.fileTitle = "No file loaded";
 
 		$scope.$on('$viewContentLoaded', function() {
@@ -40,7 +40,7 @@
 		});
 
 		$scope.parseFile = function($fileContent) {
-			$scope.fileData = Overlays.parse($fileContent).data;
+			$scope.fileData = CustomTracks.parse($fileContent).data;
 			// Selected Rows in File Data
 			// Controlled by checkboxes in overlay-import.html
 			$scope.selectedRows = [];
@@ -55,7 +55,7 @@
 		};
 
 		$scope.importData = function(parsedData) {
-			$scope.importedOverlays = Overlays.import(parsedData, $scope.selectedRows, $scope.selectedCols);
+			$scope.importedOverlays = CustomTracks.import(parsedData, $scope.selectedRows, $scope.selectedCols);
 			$mdDialog.hide($scope.importedOverlays.length); // overlays count passed for dialog hide message...
 			$state.go('browser');
 		};

@@ -70,17 +70,19 @@
 			},
 			init: function(dataset) {
 				var self = this;
-				var currentModelData = self.getModel().data;
-				Settings.set(dataset);
-				Proximities.set(currentModelData);
-				Restraints.set(currentModelData, dataset.restraints);
-				Overlays.update(Proximities.get().distances, dataset.restraints);
-				// if (dataset.object.filename) {
-					var filetype = "tsv";
-					var resetToDefaults = true;
-					Overlays.loadTSV(dataset.object.filename, filetype, resetToDefaults);	
-				// }
-				console.log("Settings, Proximities, Restraints & Overlays initialized.");
+				// Proximities.load().then(function() {
+					var currentModelData = self.getModel().data;
+					Settings.set(dataset);
+					Proximities.set(currentModelData);
+					Restraints.set(currentModelData, dataset.restraints);
+					Overlays.update(Proximities.get().distances, dataset.restraints);
+					// if (dataset.object.filename) {
+						// var filetype = "tsv";
+						// var resetToDefaults = true;
+						// Overlays.loadTSV(dataset.object.filename, filetype, resetToDefaults);	
+					// }
+					console.log("Settings, Proximities, Restraints & Overlays initialized.");
+				// });
 			},
 			clear: function() {
 				while (datasets.loaded.length > 0) {

@@ -98,7 +98,7 @@
 			},
 			// Generate THREE Vertex Colors from array of THREE colors
 			vertexColorsFromColors: function(colors) {
-				// Buffer Geomptry to be used as LinePieces so
+				// Buffer Geomptry to be used as LineSegments so
 				// colors stored as one per data-position-pair
 				// so the array needs an RGB (*3) for each pair (*2)
 				// ie. each distance needs to be replicated 6 times

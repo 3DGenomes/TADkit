@@ -6,7 +6,7 @@
 
 	function Networks(Color) {
 		return {
-			linePiecesRGB: function(overlay, edgeCount) {
+			lineSegmentsRGB: function(overlay, edgeCount) {
 				// from an array of features colors eg. restraints
 				// from an array of color RGB Pairs to match Vertex Pairs
 				// eg. [R1,G1,B1,R2,G2,B2,R1,G1,B1,R3,G3,B3,...Rn,Gn,Bn,Rm,Gm,Bm]
@@ -38,10 +38,10 @@
 					colorPairs[pairIndex] = RGB.g; pairIndex++;
 					colorPairs[pairIndex] = RGB.b;
 				}
-				colorPairs.name = "Network LinePieces RGB";
+				colorPairs.name = "Network lineSegments RGB";
 				return colorPairs;
 			},
-			linePiecesAlpha: function(overlay, edgeCount) {
+			lineSegmentsAlpha: function(overlay, edgeCount) {
 				var self = this;
 				var alphaPairs = new Float32Array(edgeCount * 2); // ie. * 2 (vertices)
 				var defaultAlpha = 0.0;
@@ -60,7 +60,7 @@
 						alphaPairs[pairIndex] = alpha;
 					}
 				}
-				alphaPairs.name = "Network LinePieces Alphas";
+				alphaPairs.name = "Network lineSegments Alphas";
 				return alphaPairs;
 			},
 			getMatrixIndex: function(row, col, size) {

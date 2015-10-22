@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Proximities', Proximities);
 
-	function Proximities(THREEService) {
+	function Proximities($q, THREEService) {
 		// Matrix - n x m dimensions == particleCount */
 		var proximities = {
 			dimension: 0,
@@ -17,16 +17,18 @@
 			positions: [],
 			distances: []
 		};
+
 		return {
+
 			set: function (vertices, settings) {
 				// Generate a matrix of proximity between points
 				// from vertices = array of point coordinates components
 				// up to minDistance = threshold for proximity
 				// eg. [u1,v1,z1,w1,y1,z1,x1,u2,v2,w2,x2,y2,z2 ... un,vn,wn,xn,yn,zn]
 				
-				// To be used by THREE.Line( geometry, material, THREE.LinePieces )
-				// where LinePieces is the equivalent to GL_LINES in OpenGL terms.
-				// THREE.LinePieces will draw a series of pairs of segments
+				// To be used by THREE.LineSegments( geometry, material )
+				// where LineSegments is the equivalent to GL_LINES in OpenGL terms.
+				// THREE.LineSegments will draw a series of pairs of segments
 				// ie. (u1,v1,w1) to (x1,y1,z1), (u2,v2,w2) to (x2,y2,z2), etc.
 
 				// Stored in proximities object {positions:[],distances[]}
@@ -50,10 +52,10 @@
 
 				proximities.dimension = vertices.length / 3; // 3 == xyz components of vertices
 				var lines = proximities.dimension * proximities.dimension; // matrix of all against all points
-				var linePieces = lines * 2; // pairs of points to make THREE.LinePieces
+				var lineSegments = lines * 2; // pairs of points to make THREE.LineSegments
 				
 				// Matrix of positions of point pairs (*3 as xyz components)
-				var positions = new Float32Array( linePieces * 3 );
+				var positions = new Float32Array( lineSegments * 3 );
 				// Matrix of distances between point pairs
 				var distances = new Float32Array( lines );
 
@@ -98,16 +100,14 @@
 				return proximities;
 			},
 			getMaxDistance: function(vertices) {
-				THREEService.load().then(function(THREE) {
-					// Where maxDistance is the max diameter of the cluster of vertices
-					// Calculation is of distance from center to each vertex.
-					var maxDistCalc = 0;
-					var clusterGeometry = new THREE.BufferGeometry();
-					clusterGeometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-					clusterGeometry.computeBoundingSphere();
-					var clusterDiameter = Math.ceil(clusterGeometry.boundingSphere.radius * 2.0);
-					return clusterDiameter;
-				});
+				// Where maxDistance is the max diameter of the cluster of vertices
+				// Calculation is of distance from center to each vertex.
+				var maxDistCalc = 0;
+				var clusterGeometry = new THREE.BufferGeometry();
+				clusterGeometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+				clusterGeometry.computeBoundingSphere();
+				var clusterDiameter = Math.ceil(clusterGeometry.boundingSphere.radius * 2.0);
+				return clusterDiameter;
 			},
 			at: function(currentParticle) {
 				current.dimension = currentParticle;

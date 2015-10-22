@@ -5,7 +5,8 @@ var gulp = require('gulp');
 var jshint = require('gulp-jshint');
 // var sass = require('gulp-sass');
 var concat = require('gulp-concat');
-var uglify = require('gulp-uglify'); // ng-min
+var ngAnnotate = require('gulp-ng-annotate');
+var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
 var header = require('gulp-header');
 var plumber = require('gulp-plumber');
@@ -46,11 +47,12 @@ gulp.task('dist-scripts', function() {
 		'src/services/*.js'
 		])
 		.pipe(concat('tadkit.js'))
-		// .pipe(gulp.dest('dist'))
-		.pipe(gulp.dest('tadkit/assets/js'))
+		.pipe(gulp.dest('dist')) // isolated dist but requires app
+		.pipe(gulp.dest('tadkit/assets/js')) // only needed when testing
 		.pipe(rename('tadkit.min.js'))
+		.pipe(ngAnnotate())
 		.pipe(uglify())
-		// .pipe(gulp.dest('dist'))
+		.pipe(gulp.dest('dist')) // isolated dist but requires app
 		.pipe(gulp.dest('tadkit/assets/js'));
 });
 
@@ -65,12 +67,15 @@ gulp.task('dist-vendor', function() {
 		'bower_components/angular-material/angular-material.js',
 		'bower_components/ng-flow/dist/ng-flow-standalone.js',
 		'bower_components/angular-uuid4/angular-uuid4.js',
-		'bower_components/papaparse/papaparse.min.js'
+		'bower_components/papaparse/papaparse.js',
+		'bower_components/angular-d3js/dist/angular-d3js.js',
+		'bower_components/angular-threejs/dist/angular-threejs.js'
 		])
-		.pipe(gulp.dest('src/assets/libs'))
 		.pipe(concat('vendors.js'))
-		.pipe(uglify()) // TODO: test other options eg. ng-min
-		// .pipe(gulp.dest('dist'))
+		// .pipe(gulp.dest('tadkit/assets/js')) // unminified copy if needed...
+		.pipe(rename('vendors.min.js'))
+		.pipe(ngAnnotate())
+		.pipe(uglify())
 		.pipe(gulp.dest('tadkit/assets/js'));
 });
 
@@ -111,7 +116,7 @@ gulp.task('assets-html', function() {
 		'src/components/tracks/*.html',
 		'src/layout/*.html'
 		])
-        .pipe(header("<!-- This file is generated — do not edit by hand! -->\n"))
+		.pipe(header("<!-- This file is generated — do not edit by hand! -->\n"))
 		.pipe(gulp.dest('src/assets/templates'))
 		.pipe(gulp.dest('tadkit/assets/templates'));
 });
@@ -245,7 +250,4 @@ gulp.task('default', [
 	'webserver',
 	'openbrowser',
 	'watch'
-	]);
-
-
-
+]);

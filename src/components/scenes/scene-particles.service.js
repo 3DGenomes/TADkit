@@ -13,7 +13,7 @@
 				color: "#ff0000",
 				size: 200,
 				opacity: 0.8,
-				map: "assets/img/sphere-glossy.png",
+				map: "assets/img/sphere-glossy.png", // mapindex: ???
 				depthtest: true,
 				alphatest: 0.5,
 				transparent: true
@@ -31,21 +31,37 @@
 			}
 			particlesGeometry.colors = vertexColors;
 
-			var particleMap = null; // render only point
-			if (this.map) particleMap = THREE.ImageUtils.loadTexture(this.map);
+			var nodeMap = null; // render only point
+			if (this.map) {
+				var loader = new THREE.TextureLoader();
+				loader.load(
+					this.map,
+					function ( texture ) {
+						nodeMap = texture;
+					},
+					// Function called when download progresses
+					function ( xhr ) {
+						console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+					},
+					// Function called when download errors
+					function ( xhr ) {
+						console.log( 'An error happened' );
+					}
+				);
+			}
 
-			var particlesMaterial = new THREE.PointCloudMaterial({
+			var particlesMaterial = new THREE.PointsMaterial({
 				color: this.color,
     			vertexColors: THREE.VertexColors,
 				size: this.size,
 				opacity: this.opacity,
-				map: particleMap,
+				map: nodeMap,
 				depthTest: this.depthtest,
 				alphaTest: this.alphatest,
 				transparent: this.transparent
 			});
 
-			var particlesCloud = new THREE.PointCloud( particlesGeometry, particlesMaterial );
+			var particlesCloud = new THREE.Points( particlesGeometry, particlesMaterial );
 			// particlesCloud.sortParticles = true;
 			particlesCloud.name = "Particles Cloud";
 			
