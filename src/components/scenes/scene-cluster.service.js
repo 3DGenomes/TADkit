@@ -49,9 +49,11 @@
 				model.name = "model-"+ i;
 				clusterEnsemble.add(model);
 			}
-			clusterBufferGeometry.computeBoundingSphere();
-			clusterEnsemble.boundingSphere = clusterBufferGeometry.boundingSphere;
-			clusterEnsemble.BufferGeometryometry = clusterBufferGeometry;
+			clusterBufferGeometry.computeBoundingBox();
+			// clusterBufferGeometry.computeBoundingSphere();
+			clusterEnsemble.boundingBox = clusterBufferGeometry.boundingBox;
+			// clusterEnsemble.boundingSphere = clusterBufferGeometry.boundingSphere;
+			clusterEnsemble.BufferGeometry = clusterBufferGeometry;
 			clusterEnsemble.name = "Cluster Ensemble";
 			return clusterEnsemble;
 		};

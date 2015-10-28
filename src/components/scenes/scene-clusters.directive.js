@@ -63,7 +63,8 @@
 						controls = new THREE.TrackballControls(camera, renderer.domElement);
 
 						// dummy scene for clusters.boundingSphere.radius
-						var clusters = {"boundingSphere":{radius:100}}; //new Clusters();
+						var clustersBoundingBox = new THREE.Box3(); // to calculate merged bounds
+						var clustersBounds = new THREE.Sphere(); // to calculate merged bounds
 
 						angular.forEach( scope.clusters, function(cluster, index) {
 
@@ -85,12 +86,15 @@
 							scenes[index].add(bundle);
 
 							// Add to clusters.boundingSphere.radius
+							clustersBoundingBox.union(bundle.boundingBox);
+							clustersBoundingBox.getBoundingSphere(clustersBounds);
+							// console.log(JSON.stringify(clustersBounds));
 						});
 
 						// SET CAMERA ORIENTATION
-						cameraPosition = new THREE.Vector3(); //cluster.boundingSphere.center;
-						cameraTarget = new THREE.Vector3( 0,0,0 ); //cluster.boundingSphere.center;
-						cameraTranslate = clusters.boundingSphere.radius * scope.view.viewpoint.scale;
+						cameraPosition = clustersBounds.center;
+						cameraTarget = clustersBounds.center;
+						cameraTranslate = clustersBounds.radius * scope.view.viewpoint.scale;
 						scope.lookAtTarget(cameraPosition, cameraTarget, cameraTranslate);
 					};
 
@@ -109,6 +113,7 @@
 							camera.updateMatrixWorld();
 							// Controls target
 							controls.target.copy(position);
+							controls.update();
 					};
 
 					// EVENT WHICH TRIGGERS RENDER
@@ -136,15 +141,15 @@
 					var timer = 0;
 					var animframe;
 					scope.animate = function () {
-						if (timer >= 0 && timer <= 3) {
+						if (timer >= 0 && timer < 1) {
 							animframe = requestAnimationFrame( scope.animate );
 							controls.update();
 							scope.render();
 							timer++;
-							console.log("requested");
+							// console.log("AnimationFrame requested");
 						} else {
 							cancelAnimationFrame( animframe );
-							console.log("canceled");
+							// console.log("AnimationFrame canceled");
 						}
 					};
 

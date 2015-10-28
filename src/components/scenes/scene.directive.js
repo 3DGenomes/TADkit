@@ -199,15 +199,15 @@
 						var networkObj = scene.getObjectByName( "Network Graph" );
 
 						// /* Watch for Particles colors */
-						scope.$watch('currentoverlay.colors.particles', function( newColors, oldColors ) { // cant deep watch as change through set on service
-							if ( newColors !== oldColors ) {
-								// var particleCount = particlesObj.children.length;
-								// for (var i = 0; i < particleCount; i++) {
-								// 	var newParticleColor =  new THREE.Color(newOverlay.colors.particles[i]);
-								// 	particlesObj.children[i].material.color = newParticleColor;
-								// }
-							}
-						});
+						// scope.$watch('currentoverlay.colors.particles', function( newColors, oldColors ) { // cant deep watch as change through set on service
+						// 	if ( newColors !== oldColors ) {
+						// 		// var particleCount = particlesObj.children.length;
+						// 		// for (var i = 0; i < particleCount; i++) {
+						// 		// 	var newParticleColor =  new THREE.Color(newOverlay.colors.particles[i]);
+						// 		// 	particlesObj.children[i].material.color = newParticleColor;
+						// 		// }
+						// 	}
+						// });
 
 						// /* Watch for Chromatin colors */
 						scope.$watch('currentoverlay.colors.chromatin', function( newColors, oldColors ) { // cant deep watch as change through set on service

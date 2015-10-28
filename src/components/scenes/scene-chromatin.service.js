@@ -71,12 +71,10 @@
 			// Chromatin density == 1080 BP : 11nm
 			var chromatinLength = this.genomeLength * 11 / 1080;
 			this.radius = (pathLength * chromatinRadius) / chromatinLength;
-			// console.log(this.radius);
-
 
 			// Generate Chromatin model
 			var chromatinFiber = new THREE.Object3D(); // unmerged network
-			var chromatinGeometry = new THREE.Geometry(); // to calculate merged bounds
+			var chromatinBounds = new THREE.Geometry(); // to calculate merged bounds
 
 			for ( var i = 0 ; i < pathSegments; i++) {
 				// cap if end segment
@@ -93,56 +91,15 @@
 					wireframe: false
 				});
 				var segment = segmentGeometry(cubicGeom.vertices[i], cubicGeom.vertices[i+1], this );
-				chromatinGeometry.merge(segment);
+				chromatinBounds.merge(segment);
 
 				var chromatinSegment = new THREE.Mesh(segment, segmentMaterial);
 				chromatinSegment.name = "segment-" + (i + 1);
 				chromatinFiber.add(chromatinSegment);
 			}
 
-			// Visualize Controls
-			// var controlsMaterial = new THREE.LineBasicMaterial({color: "#ff0000",opacity: 0.5});
-			// var controlsOutline = new THREE.Line(controlsGeom, controlsMaterial);
-			// chromatinFiber.add(controlsOutline);
-
-			var cubicMaterial = new THREE.LineBasicMaterial({color: "#0000ff"});
-			var chromatinCubic = new THREE.Line(cubicGeom, cubicMaterial);
-			// chromatinFiber.add(chromatinCubic);
-
-			// Visualize Controls Nodes
-			// var nodeMap = null; // render only point
-			// if (this.map) {
-			// 	var loader = new THREE.TextureLoader();
-			// 	loader.load(
-			// 		this.map,
-			// 		function ( texture ) {
-			// 			nodeMap = texture;
-			// 		},
-			// 		// Function called when download progresses
-			// 		function ( xhr ) {
-			// 			console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-			// 		},
-			// 		// Function called when download errors
-			// 		function ( xhr ) {
-			// 			console.log( 'An error happened' );
-			// 		}
-			// 	);
-			// }
-			// var particlesMaterial = new THREE.PointsMaterial({
-			// 	// color: "#0000ff",
-   //  			vertexColors: THREE.VertexColors,
-			// 	size: 10,
-			// 	opacity: 1.0,
-			// 	// map: nodeMap,
-			// 	// depthTest: true,
-			// 	// alphaTest: true,
-			// 	// transparent: true
-			// });
-			// var chromatinCloud = new THREE.Points(controlsGeom, particlesMaterial);
-			// chromatinFiber.add(chromatinCloud);
-
-			chromatinGeometry.computeBoundingSphere();
-			chromatinFiber.boundingSphere = chromatinGeometry.boundingSphere;
+			chromatinBounds.computeBoundingSphere();
+			chromatinFiber.boundingSphere = chromatinBounds.boundingSphere;
 			chromatinFiber.name = "Chromatin Fiber";
 			
 			return chromatinFiber;

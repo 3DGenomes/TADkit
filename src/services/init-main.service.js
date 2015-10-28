@@ -11,7 +11,7 @@
 			var loadApp = function(results) {
 				var settings = Settings.load();
 				var components = Components.load();
-				var features = Ensembl.loadBiotypeColors();
+				var features = Ensembl.loadBiotypeColors(); // ¿speedup by loading from array rather than fetch ini?
 
 				return $q.all([settings, components, features])
 				.then(function(results) {

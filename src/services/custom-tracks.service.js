@@ -22,7 +22,7 @@
 				.success( function(fileData) {
 					var importedOverlays = self.import(fileData,[],[],defaults);
 					console.log("Overlays (" + importedOverlays.length + ") imported from " + dataUrl);
-					deferred.resolve(overlays);
+					deferred.resolve(importedOverlays);
 				})
 				.error(function(fileData) {
 					console.log("No associated data tracks found.");

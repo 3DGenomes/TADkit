@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Datasets', Datasets);
 
-	function Datasets($q, $http, uuid4, Settings, Resources, Proximities, Restraints, Overlays) {
+	function Datasets($q, $http, uuid4, Settings, Resources, Proximities, Restraints, Overlays, CustomTracks) {
 		var datasets = {
 			loaded : [],
 			current : {
@@ -77,9 +77,9 @@
 					Restraints.set(currentModelData, dataset.restraints);
 					Overlays.update(Proximities.get().distances, dataset.restraints);
 					// if (dataset.object.filename) {
-						// var filetype = "tsv";
-						// var resetToDefaults = true;
-						// Overlays.loadTSV(dataset.object.filename, filetype, resetToDefaults);	
+						var filetype = "tsv";
+						var resetToDefaults = true;
+						CustomTracks.load(dataset.object.filename, filetype, resetToDefaults);	
 					// }
 					console.log("Settings, Proximities, Restraints & Overlays initialized.");
 				// });

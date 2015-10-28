@@ -408,12 +408,10 @@
 			// Chromatin density == 1080 BP : 11nm
 			var chromatinLength = this.genomeLength * 11 / 1080;
 			this.radius = (pathLength * chromatinRadius) / chromatinLength;
-			// console.log(this.radius);
-
 
 			// Generate Chromatin model
 			var chromatinFiber = new THREE.Object3D(); // unmerged network
-			var chromatinGeometry = new THREE.Geometry(); // to calculate merged bounds
+			var chromatinBounds = new THREE.Geometry(); // to calculate merged bounds
 
 			for ( var i = 0 ; i < pathSegments; i++) {
 				// cap if end segment
@@ -430,56 +428,15 @@
 					wireframe: false
 				});
 				var segment = segmentGeometry(cubicGeom.vertices[i], cubicGeom.vertices[i+1], this );
-				chromatinGeometry.merge(segment);
+				chromatinBounds.merge(segment);
 
 				var chromatinSegment = new THREE.Mesh(segment, segmentMaterial);
 				chromatinSegment.name = "segment-" + (i + 1);
 				chromatinFiber.add(chromatinSegment);
 			}
 
-			// Visualize Controls
-			// var controlsMaterial = new THREE.LineBasicMaterial({color: "#ff0000",opacity: 0.5});
-			// var controlsOutline = new THREE.Line(controlsGeom, controlsMaterial);
-			// chromatinFiber.add(controlsOutline);
-
-			var cubicMaterial = new THREE.LineBasicMaterial({color: "#0000ff"});
-			var chromatinCubic = new THREE.Line(cubicGeom, cubicMaterial);
-			// chromatinFiber.add(chromatinCubic);
-
-			// Visualize Controls Nodes
-			// var nodeMap = null; // render only point
-			// if (this.map) {
-			// 	var loader = new THREE.TextureLoader();
-			// 	loader.load(
-			// 		this.map,
-			// 		function ( texture ) {
-			// 			nodeMap = texture;
-			// 		},
-			// 		// Function called when download progresses
-			// 		function ( xhr ) {
-			// 			console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-			// 		},
-			// 		// Function called when download errors
-			// 		function ( xhr ) {
-			// 			console.log( 'An error happened' );
-			// 		}
-			// 	);
-			// }
-			// var particlesMaterial = new THREE.PointsMaterial({
-			// 	// color: "#0000ff",
-   //  			vertexColors: THREE.VertexColors,
-			// 	size: 10,
-			// 	opacity: 1.0,
-			// 	// map: nodeMap,
-			// 	// depthTest: true,
-			// 	// alphaTest: true,
-			// 	// transparent: true
-			// });
-			// var chromatinCloud = new THREE.Points(controlsGeom, particlesMaterial);
-			// chromatinFiber.add(chromatinCloud);
-
-			chromatinGeometry.computeBoundingSphere();
-			chromatinFiber.boundingSphere = chromatinGeometry.boundingSphere;
+			chromatinBounds.computeBoundingSphere();
+			chromatinFiber.boundingSphere = chromatinBounds.boundingSphere;
 			chromatinFiber.name = "Chromatin Fiber";
 			
 			return chromatinFiber;
@@ -725,9 +682,11 @@
 				model.name = "model-"+ i;
 				clusterEnsemble.add(model);
 			}
-			clusterBufferGeometry.computeBoundingSphere();
-			clusterEnsemble.boundingSphere = clusterBufferGeometry.boundingSphere;
-			clusterEnsemble.BufferGeometryometry = clusterBufferGeometry;
+			clusterBufferGeometry.computeBoundingBox();
+			// clusterBufferGeometry.computeBoundingSphere();
+			clusterEnsemble.boundingBox = clusterBufferGeometry.boundingBox;
+			// clusterEnsemble.boundingSphere = clusterBufferGeometry.boundingSphere;
+			clusterEnsemble.BufferGeometry = clusterBufferGeometry;
 			clusterEnsemble.name = "Cluster Ensemble";
 			return clusterEnsemble;
 		};
@@ -814,7 +773,8 @@
 						controls = new THREE.TrackballControls(camera, renderer.domElement);
 
 						// dummy scene for clusters.boundingSphere.radius
-						var clusters = {"boundingSphere":{radius:100}}; //new Clusters();
+						var clustersBoundingBox = new THREE.Box3(); // to calculate merged bounds
+						var clustersBounds = new THREE.Sphere(); // to calculate merged bounds
 
 						angular.forEach( scope.clusters, function(cluster, index) {
 
@@ -836,12 +796,15 @@
 							scenes[index].add(bundle);
 
 							// Add to clusters.boundingSphere.radius
+							clustersBoundingBox.union(bundle.boundingBox);
+							clustersBoundingBox.getBoundingSphere(clustersBounds);
+							// console.log(JSON.stringify(clustersBounds));
 						});
 
 						// SET CAMERA ORIENTATION
-						cameraPosition = new THREE.Vector3(); //cluster.boundingSphere.center;
-						cameraTarget = new THREE.Vector3( 0,0,0 ); //cluster.boundingSphere.center;
-						cameraTranslate = clusters.boundingSphere.radius * scope.view.viewpoint.scale;
+						cameraPosition = clustersBounds.center;
+						cameraTarget = clustersBounds.center;
+						cameraTranslate = clustersBounds.radius * scope.view.viewpoint.scale;
 						scope.lookAtTarget(cameraPosition, cameraTarget, cameraTranslate);
 					};
 
@@ -860,6 +823,7 @@
 							camera.updateMatrixWorld();
 							// Controls target
 							controls.target.copy(position);
+							controls.update();
 					};
 
 					// EVENT WHICH TRIGGERS RENDER
@@ -887,15 +851,15 @@
 					var timer = 0;
 					var animframe;
 					scope.animate = function () {
-						if (timer >= 0 && timer <= 3) {
+						if (timer >= 0 && timer < 1) {
 							animframe = requestAnimationFrame( scope.animate );
 							controls.update();
 							scope.render();
 							timer++;
-							console.log("requested");
+							// console.log("AnimationFrame requested");
 						} else {
 							cancelAnimationFrame( animframe );
-							console.log("canceled");
+							// console.log("AnimationFrame canceled");
 						}
 					};
 
@@ -1492,15 +1456,15 @@
 						var networkObj = scene.getObjectByName( "Network Graph" );
 
 						// /* Watch for Particles colors */
-						scope.$watch('currentoverlay.colors.particles', function( newColors, oldColors ) { // cant deep watch as change through set on service
-							if ( newColors !== oldColors ) {
-								// var particleCount = particlesObj.children.length;
-								// for (var i = 0; i < particleCount; i++) {
-								// 	var newParticleColor =  new THREE.Color(newOverlay.colors.particles[i]);
-								// 	particlesObj.children[i].material.color = newParticleColor;
-								// }
-							}
-						});
+						// scope.$watch('currentoverlay.colors.particles', function( newColors, oldColors ) { // cant deep watch as change through set on service
+						// 	if ( newColors !== oldColors ) {
+						// 		// var particleCount = particlesObj.children.length;
+						// 		// for (var i = 0; i < particleCount; i++) {
+						// 		// 	var newParticleColor =  new THREE.Color(newOverlay.colors.particles[i]);
+						// 		// 	particlesObj.children[i].material.color = newParticleColor;
+						// 		// }
+						// 	}
+						// });
 
 						// /* Watch for Chromatin colors */
 						scope.$watch('currentoverlay.colors.chromatin', function( newColors, oldColors ) { // cant deep watch as change through set on service
@@ -4647,7 +4611,7 @@
 				.success( function(fileData) {
 					var importedOverlays = self.import(fileData,[],[],defaults);
 					console.log("Overlays (" + importedOverlays.length + ") imported from " + dataUrl);
-					deferred.resolve(overlays);
+					deferred.resolve(importedOverlays);
 				})
 				.error(function(fileData) {
 					console.log("No associated data tracks found.");
@@ -4826,7 +4790,7 @@
 		.module('TADkit')
 		.factory('Datasets', Datasets);
 
-	function Datasets($q, $http, uuid4, Settings, Resources, Proximities, Restraints, Overlays) {
+	function Datasets($q, $http, uuid4, Settings, Resources, Proximities, Restraints, Overlays, CustomTracks) {
 		var datasets = {
 			loaded : [],
 			current : {
@@ -4899,9 +4863,9 @@
 					Restraints.set(currentModelData, dataset.restraints);
 					Overlays.update(Proximities.get().distances, dataset.restraints);
 					// if (dataset.object.filename) {
-						// var filetype = "tsv";
-						// var resetToDefaults = true;
-						// Overlays.loadTSV(dataset.object.filename, filetype, resetToDefaults);	
+						var filetype = "tsv";
+						var resetToDefaults = true;
+						CustomTracks.load(dataset.object.filename, filetype, resetToDefaults);	
 					// }
 					console.log("Settings, Proximities, Restraints & Overlays initialized.");
 				// });
@@ -5116,7 +5080,7 @@
 			var loadApp = function(results) {
 				var settings = Settings.load();
 				var components = Components.load();
-				var features = Ensembl.loadBiotypeColors();
+				var features = Ensembl.loadBiotypeColors(); // ¿speedup by loading from array rather than fetch ini?
 
 				return $q.all([settings, components, features])
 				.then(function(results) {
