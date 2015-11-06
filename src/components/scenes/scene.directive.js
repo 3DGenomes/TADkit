@@ -44,9 +44,9 @@
 					scope.init = function () {
 
 						// VIEWPORT
-						/* component-controller == children[0]
-						 * - component-header == children[0]
-						 * - component-body == children[3]
+						/* component-controller == element[0].children[0]
+						 * - component-header == element[0].children[0].children[0]
+						 * - component-body == element[0].children[0].children[3]
 						 */
 						// component = element[0].parentNode;
 						// console.log(component.clientWidth);

@@ -20,9 +20,14 @@
 			},
 			templateUrl: 'assets/templates/scene-cluster-icon.html',
 			link: function postLink( scope, element, attrs ) {
+				/*
+				 * NOTE: this directive generates all clusters
+				 *       (rather than a single scene for each)
+				 *       for efficient use of THREEjs renderer 
+				 */
 				THREEPlugins.load(["TrackballControls","OrbitControls"]).then(function(THREE) {
 					// DOM variables
-					var container;
+					var container, elementParent;
 					var width, height, contW, contH, windowHalfX, windowHalfY;
 
 					// THREE variables
@@ -34,20 +39,37 @@
 					var controls, playback;
 					var mouseX = 0, mouseY = 0;
 
+
 					scope.init = function () {
 
 						// CONTAINER
-						/* component-controller == children[0]
-						 * - component-header == children[0]
-						 * - component-body == children[0]
+						/* component-controller == element[0].children[0]
+						 * - component-header == element[0].children[0].children[0]
+						 * - component-body == element[0].children[0].children[3]
+						 * - component-body-list == element[0].children[0].children[3].children[0]
 						 */
-						container = element[0].children[0].children[0];
+						// console.log(element[0].children[0].children[3]);
+						container = element[0].children[0].children[3].children[0];
+						// PARENT #main-content from main.html
+						elementParent = element.parent().parent()[0];
 
-						// width = container.clientWidth; // NEED TO WAIT UNTIL DOM LOADED
-						width = 800; //parseInt(scope.state.width);
-						// height = container.clientHeight;
-						height = 400; //parseInt(scope.state.height);
-						// OJO! DOM NOT READY
+						// console.log("WIDTH");
+						// console.log(JSON.stringify(elementParent.getBoundingClientRect().width));
+						// console.log(JSON.stringify(elementParent.clientWidth));
+						// console.log(JSON.stringify(scope.state.width));
+						// console.log("HEIGHT");
+						// console.log(JSON.stringify(elementParent.getBoundingClientRect().height));
+						// console.log(JSON.stringify(elementParent.clientHeight));
+						// console.log(JSON.stringify(scope.state.height));
+
+// NEED TO WAIT UNTIL DOM LOADED
+ 						// clientWidth and clientHeight ie. no margins nor padding
+						width = elementParent.clientWidth;
+						height = elementParent.clientHeight;
+
+						// width = 800; //parseInt(scope.state.width);
+						// height = 400; //parseInt(scope.state.height);
+// OJO! DOM NOT READY
 
 						// var background = scope.view.settings.background;
 						// var clearColor = "0x" + background.substring(1);
@@ -153,49 +175,86 @@
 						}
 					};
 
-					scope.render = function () {
+					scope.render = function () {					
 
-						var views = [
-							{
-								left: 0,
-								bottom: 0,
-								width: 0.5,
-								height: 1.0,
-								background: new THREE.Color().setRGB( 1.0, 1.0, 1.0 )
-							},
-							{
-								left: 0.5,
-								bottom: 0,
-								width: 0.5,
-								height: 1.0,
-								background: new THREE.Color().setRGB( 1.0, 1.0, 1.0 )
-							}
-						];
-						var viewportMargin = 60;
+						// Values from JSON
+						var colCount = 4;
+						var tileGutter = 12;
+
+						var colIndex = 0;
+						var rowIndex = 0;
+						var span = 1;
+
+						// *** Derived from Angular Material grid-list.js lines 221-267 ***
+
+						// The amount of space a single 1x1 tile would take up (either width or height), used as
+						// a basis for other calculations. This consists of taking the base size percent (as would be
+						// if evenly dividing the size between cells), and then subtracting the size of one gutter.
+						// However, since there are no gutters on the edges, each tile only uses a fration
+						// (gutterShare = numGutters / numCells) of the gutter size. (Imagine having one gutter per
+						// tile, and then breaking up the extra gutter on the edge evenly among the cells).
+						// var UNIT = $interpolate(expr('share') + '% - (' + expr('gutter') + ' * ' + expr('gutterShare') + ')');
+						// ie. UNIT = share% - (gutter * gutterShare)
+
+						// The horizontal or vertical position of a tile, e.g., the 'top' or 'left' property value.
+						// The position comes the size of a 1x1 tile plus gutter for each previous tile in the
+						// row/column (offset).
+						// var POSITION  = $interpolate('calc((' + expr('unit') + ' + ' + expr('gutter') + ') * ' + expr('offset') + ')');
+						// ie. POSITION = (UNIT + gutter) * offset
+
+						// The actual size of a tile, e.g., width or height, taking rowSpan or colSpan into account.
+						// This is computed by multiplying the base unit by the rowSpan/colSpan, and then adding back
+						// in the space that the gutter would normally have used (which was already accounted for in
+						// the base unit calculation).
+						// var DIMENSION = $interpolate('calc((' + expr('unit') + ') * ' + expr('span') + ' + (' + expr('span') + ' - 1) * ' + expr('gutter') + ')');
+						// ie. DIMENSION = UNIT * span + (span - 1) * gutter
+
+						// Fraction of the gutter size that each column takes up.
+						var hGutterShare = (colCount - 1) / colCount;
+						// Percent of the available horizontal space that one column takes up.
+						var hShare = 1 / colCount;
+
+						var sharedGutter = tileGutter * hGutterShare;
+						var viewportUnit = (width * hShare) - sharedGutter; // ie. previous column's right edge
+						var viewportWidth, viewportHeight;
+						viewportWidth = viewportHeight = viewportUnit;
+						console.log("viewportWidth: " + viewportWidth);
+						var viewportBottom = height - viewportUnit;
 
 						angular.forEach( scope.clusters, function(cluster, index) {
 
-							if ( index === 0 ) {
-								renderer.clear();
-							}
-							// renderer.setViewport(cluster.viewportX, cluster.viewportY, viewportWidth, viewportHeight););
+							if ( index === 0 ) renderer.clear();
 
-							var view = views[index];
 							var scene = scenes[index];
-							
 							// scope.updateCamera( camera, scene, mouseX, mouseY );
 							controls.update();
 
-							var viewportLeft   = Math.floor( (width  * view.left) + viewportMargin);
-							var viewportBottom = Math.floor( (height * view.bottom) + viewportMargin);
-							var viewportWidth  = Math.floor( (width  * view.width) - (viewportMargin * 2) );
-							var viewportHeight = Math.floor( (height * view.height) - (viewportMargin * 2) );
+							// var elem = container.children[index];
+							// var mdTileStyle = window.getComputedStyle(elem);
+							// var mdTileLeft = parseInt(mdTileStyle["left"]);
+							// var mdTileWidth = parseInt(mdTileStyle["width"]);
+							// var mdTilePaddingTop = parseInt(mdTileStyle["padding-top"]);
+							// var mdTileMarginTop = parseInt(mdTileStyle["margin-top"]);
+							// var viewportLeft   = mdTileLeft;
+							// var viewportBottom = height - mdTilePaddingTop + mdTileMarginTop;
+							// var viewportWidth  = mdTileWidth;
+							// var viewportHeight = mdTileWidth;
 
+							var viewportLeft = (viewportUnit + tileGutter) * index;
+
+							console.log(viewportLeft+", "+viewportBottom+", "+viewportWidth+", "+viewportHeight);
 							renderer.setViewport( viewportLeft, viewportBottom, viewportWidth, viewportHeight );
 							renderer.setScissor( viewportLeft, viewportBottom, viewportWidth, viewportHeight );
 							renderer.enableScissorTest ( true );
-							renderer.setClearColor( view.background ); // COMMENT IF NOT IN TEST MODE
+							renderer.setClearColor( "#fff000" ); // COMMENT IF NOT IN TEST MODE
 							renderer.render( scene, camera, null, true ); // forceClear == true
+
+							if ( colIndex === colCount ) {
+								colIndex = 1;
+								rowIndex++;
+							} else {
+								colIndex++;
+							}
 						});
 					};
 
@@ -205,6 +264,7 @@
 					// *** TEMP FIX for sprite load - see above lines 137-152
 					// *** ie. should render clusters directly without animation
 					scope.animate();
+
 				});
 			}
 		};
