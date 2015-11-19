@@ -21,6 +21,7 @@ var server = {
 gulp.task('lint', function() {
 	return gulp.src([
 		'src/*.js',
+		'src/shared/*.js',
 		'src/components/*.js',
 		'src/components/panels/*.js',
 		'src/components/scenes/*.js',
@@ -56,6 +57,22 @@ gulp.task('dist-scripts', function() {
 		.pipe(gulp.dest('tadkit/assets/js'));
 });
 
+// Concatenate & Minify Shared JS
+gulp.task('dist-shared', function() {
+	return gulp.src([
+		'src/shared.module.js',
+		'src/shared/*.js',
+		])
+		.pipe(concat('shared.js'))
+		.pipe(gulp.dest('dist')) // isolated dist but requires app
+		.pipe(gulp.dest('tadkit/assets/js')) // only needed when testing
+		.pipe(rename('shared.min.js'))
+		.pipe(ngAnnotate())
+		.pipe(uglify())
+		.pipe(gulp.dest('dist')) // isolated dist but requires app
+		.pipe(gulp.dest('tadkit/assets/js'));
+});
+
 // Transfer Vendor JS
 // ¡¡¡ LOAD ORDER IS IMPORTANT !!!
 gulp.task('dist-vendor', function() {
@@ -72,7 +89,7 @@ gulp.task('dist-vendor', function() {
 		'bower_components/angular-threejs/dist/angular-threejs.js'
 		])
 		.pipe(concat('vendors.js'))
-		// .pipe(gulp.dest('tadkit/assets/js')) // unminified copy if needed...
+		.pipe(gulp.dest('tadkit/assets/js'))
 		.pipe(rename('vendors.min.js'))
 		.pipe(ngAnnotate())
 		.pipe(uglify())
@@ -151,7 +168,7 @@ gulp.task('assets-fonts', function() {
 // Transfer Image Assets
 gulp.task('assets-img', function() {
 	return gulp.src([
-		'src/assets/img/*.png'
+		'src/assets/img/*.*'
 		])
 		.pipe(gulp.dest('tadkit/assets/img'));
 });
@@ -198,10 +215,7 @@ gulp.task('watch', function() {
 	gulp.watch([
 		'src/*.js',
 		'src/*.html',
-		// 'src/assets/css/*.css',
-		'src/assets/defaults/*.*',
-		'src/assets/offline/*.*',
-		'src/assets/examples/*.*',
+		'src/shared/*.js',
 		'src/components/*.js',
 		'src/components/panels/*.js',
 		'src/components/panels/*.html',
@@ -211,11 +225,16 @@ gulp.task('watch', function() {
 		'src/components/tracks/*.html',
 		'src/layout/*.js',
 		'src/layout/*.html',
-		'src/services/*.js'
+		'src/services/*.js',
+		// 'src/assets/css/*.css',
+		'src/assets/defaults/*.*',
+		'src/assets/offline/*.*',
+		'src/assets/examples/*.*'
 	], [
 		'lint',
 		// 'sass',
 		'dist-scripts',
+		'dist-shared',
 		'dist-vendor',
 		'app-index',
 		'app-favicon',
@@ -236,6 +255,7 @@ gulp.task('default', [
 	'lint',
 	// 'sass',
 	'dist-scripts',
+	'dist-shared',
 	'dist-vendor',
 	'app-index',
 	'app-favicon',
