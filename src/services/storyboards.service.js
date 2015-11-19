@@ -125,7 +125,7 @@
 					var scale = scaleOrig || 1;
 					component.view.viewpoint.chromStart = chromStart;
 					component.view.viewpoint.chromEnd = chromEnd;
-					if (component.object.type === "scene" || component.object.type === "scene-icon") {
+					if (component.object.type === "scene" || component.object.type === "scene-clusters") {
 						var angle = component.view.viewpoint.fov / 2;
 						var margin = 0.6;
 						scale = Math.tan(angle).toFixed(2) * margin;

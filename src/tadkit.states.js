@@ -8,31 +8,6 @@
 		$urlRouterProvider.otherwise("/project/loader/");
 		
 		$stateProvider
-		// .state('home', {
-		// 	url: '/',
-		// 	views: {
-		// 		'': {
-		// 			templateUrl: 'assets/templates/home.html',
-		// 			controller: 'HomeController'
-		// 		},
-		// 		'topbar@home': {
-		// 			templateUrl: 'assets/templates/topbar.html',
-		// 			controller: 'TopbarController'
-		// 		},
-		// 		// 'sidebar-left': {
-		// 		// 	templateUrl: 'assets/templates/sidebar.project.html',
-		// 		// 	controller: 'SidebarProjectController'
-		// 		// },
-		// 		// 'sidebar-right': {
-		// 		// 	templateUrl: 'assets/templates/sidebar.user.html',
-		// 		// 	controller: 'SidebarUserController'
-		// 		// }
-		// 		'loader@home': {
-		// 			templateUrl: 'assets/templates/home-loader.html',
-		// 			controller: 'HomeController'
-		// 		}
-		// 	}
-		// })
 		.state('main', {
 			controller: 'MainController',
 			abstract: true,
@@ -47,6 +22,9 @@
 		.state('project', {
 			parent: 'main',
 			url: '/project',
+			data: {
+				cssClassnames: 'main'
+			},
 			views: {
 				'topbar@main': {
 					templateUrl: 'assets/templates/topbar.html',
@@ -69,6 +47,9 @@
 		.state('loader', {
 			parent: 'project',
 			url: '/loader/:loadDataset',
+			data: {
+				cssClassnames: 'loader'
+			},
 			views: {
 				'topbar@main': {
 					templateUrl: 'assets/templates/topbar.html',
@@ -87,6 +68,9 @@
 		.state('dataset', {
 			parent: 'project',
 			url: '/dataset',
+			data: {
+				cssClassnames: 'dataset'
+			},
 			views: {
 				'content@main': {
 					templateUrl: 'assets/templates/project-dataset.html',
@@ -97,6 +81,9 @@
 		.state('overlay', {
 			parent: 'project',
 			url: '/overlay',
+			data: {
+				cssClassnames: 'overlay'
+			},
 			views: {
 				'content@main': {
 					templateUrl: 'assets/templates/project-overlay.html',
@@ -107,6 +94,9 @@
 		.state('storyboard', {
 			parent: 'project',
 			url: '/storyboard',
+			data: {
+				cssClassnames: 'storyboard'
+			},
 			views: {
 				'content@main': {
 					templateUrl: 'assets/templates/project-storyboard.html',
@@ -126,12 +116,7 @@
 					templateUrl: 'assets/templates/storyboard.html',
 					controller: 'StoryboardController'
 				}
-			},
-			// resolve: {
-			// 	'initialData': function(initBrowser) {
-			// 		return initBrowser();
-			// 	}
-			// }
+			}
 		})
 		.state('overlay-import', {
 			parent: 'browser',
@@ -141,7 +126,7 @@
 					templateUrl: 'assets/templates/overlay-import.html',
 					controller: 'OverlayImportController'
 				}
-			},
+			}
 		})
 		.state('404', {
 			url: '/404',

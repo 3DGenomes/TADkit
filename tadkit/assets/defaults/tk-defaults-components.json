@@ -85,9 +85,9 @@
 		},
 		"object" : {
 			"uuid" : "00000000-0000-0000-0000-000000000000",
-			"id" : "datasets-scene-icon",
+			"id" : "dataset-clusters",
 			"title" : "Datasets",
-			"type" : "scene-icon",
+			"type" : "scene-clusters",
 			"dataset" : "default",
 			"state" : {
 				"width" : "150px",
@@ -115,8 +115,11 @@
 				"autoRotate" : false,
 				"autoRotateSpeed" : 4.0
 			},
-			"viewtype" : "line",
+			"viewtype" : "ball-and-stick",
 			"settings" : {
+				"cols" : 4,
+				"rowHeight" : "1:1",
+				"gutter" : "12px",
 				"background" : "#ffffff",
 				"heightInner" : "40px",
 				"margin" : "4px",
@@ -125,7 +128,7 @@
 					"color" : "#ff0000",
 					"size" : 100,
 					"opacity" : 1.0,
-					"map" : "assets/img/sphere-glossy.png",
+					"map" : "particle",
 					"depthTest": true,
 					"alphaTest": 0.5,
 					"transparent": false,

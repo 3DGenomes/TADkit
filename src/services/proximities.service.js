@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Proximities', Proximities);
 
-	function Proximities($q, THREEService) {
+	function Proximities($q) {
 		// Matrix - n x m dimensions == particleCount */
 		var proximities = {
 			dimension: 0,
@@ -103,10 +103,10 @@
 				// Where maxDistance is the max diameter of the cluster of vertices
 				// Calculation is of distance from center to each vertex.
 				var maxDistCalc = 0;
-				var clusterGeometry = new THREE.BufferGeometry();
-				clusterGeometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-				clusterGeometry.computeBoundingSphere();
-				var clusterDiameter = Math.ceil(clusterGeometry.boundingSphere.radius * 2.0);
+				// var clusterGeometry = new THREE.BufferGeometry();
+				// clusterGeometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+				// clusterGeometry.computeBoundingSphere();
+				var clusterDiameter = 500; //Math.ceil(clusterGeometry.boundingSphere.radius * 2.0);
 				return clusterDiameter;
 			},
 			at: function(currentParticle) {

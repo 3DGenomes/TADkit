@@ -30,5 +30,8 @@
 		"strands" : true,
 		"margin" : "4px",
 		"position" : 0
+	},
+	"textures" : {
+		"particle" : "assets/img/sphere-glossy.png"
 	}
 }

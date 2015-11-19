@@ -18,8 +18,10 @@
 				overlay:'=',
 				mousemove: '&'
 			},
-			templateUrl: 'assets/templates/scene-cluster-icon.html',
+			templateUrl: 'assets/templates/scene-clusters.html',
 			link: function postLink( scope, element, attrs ) {
+				// console.log(scope);
+
 				/*
 				 * NOTE: this directive generates all clusters
 				 *       (rather than a single scene for each)
@@ -97,7 +99,7 @@
 							var particles, bundle;
 
 							// GEOMETRY: PARTICLES
-							particles = new Particles( cluster.data[cluster.centroidIndex], scope.view.settings.particles );
+							particles = new Particles( cluster.data[cluster.centroidIndex], scope.overlay, scope.view.settings.particles );
 							particles.visible = scope.view.settings.particles.visible;
 							scenes[index].add(particles);
 
@@ -178,11 +180,14 @@
 					scope.render = function () {					
 
 						// Values from JSON
-						var colCount = 4;
-						var tileGutter = 12;
+						var colCount = scope.view.settings.cols;
+						var rowHeight = scope.view.settings.rowHeight;
+						var rowSplit = rowHeight.split(':');
+						var rowRatio = parseInt(rowSplit[0], 10) / parseInt(rowSplit[1], 10);
+						var tileGutter = parseInt(scope.view.settings.gutter); // to remove px
 
-						var colIndex = 0;
-						var rowIndex = 0;
+						var colIndex = 1;
+						var rowIndex = 1;
 						var span = 1;
 
 						// *** Derived from Angular Material grid-list.js lines 221-267 ***
@@ -217,9 +222,8 @@
 						var sharedGutter = tileGutter * hGutterShare;
 						var viewportUnit = (width * hShare) - sharedGutter; // ie. previous column's right edge
 						var viewportWidth, viewportHeight;
-						viewportWidth = viewportHeight = viewportUnit;
-						console.log("viewportWidth: " + viewportWidth);
-						var viewportBottom = height - viewportUnit;
+						viewportWidth = viewportUnit;
+						viewportHeight = viewportWidth * rowRatio;
 
 						angular.forEach( scope.clusters, function(cluster, index) {
 
@@ -240,13 +244,13 @@
 							// var viewportWidth  = mdTileWidth;
 							// var viewportHeight = mdTileWidth;
 
-							var viewportLeft = (viewportUnit + tileGutter) * index;
+							var viewportLeft = (viewportUnit + tileGutter) * (colIndex - 1);
+							var viewportBottom = height - (viewportUnit * rowIndex);
 
-							console.log(viewportLeft+", "+viewportBottom+", "+viewportWidth+", "+viewportHeight);
 							renderer.setViewport( viewportLeft, viewportBottom, viewportWidth, viewportHeight );
 							renderer.setScissor( viewportLeft, viewportBottom, viewportWidth, viewportHeight );
 							renderer.enableScissorTest ( true );
-							renderer.setClearColor( "#fff000" ); // COMMENT IF NOT IN TEST MODE
+							renderer.setClearColor( "#ffffff" );
 							renderer.render( scene, camera, null, true ); // forceClear == true
 
 							if ( colIndex === colCount ) {
@@ -259,11 +263,13 @@
 					};
 
 					// Begin
-					scope.init();
-					// scope.render();
-					// *** TEMP FIX for sprite load - see above lines 137-152
-					// *** ie. should render clusters directly without animation
-					scope.animate();
+       				 angular.element(document).ready(function() {
+						scope.init();
+						// scope.render();
+						// *** TEMP FIX for sprite load - see above lines 137-152
+						// *** ie. should render clusters directly without animation
+						scope.animate();
+		      		});
 
 				});
 			}

@@ -2,6 +2,6 @@
 	'use strict';
 
 	// ANGULAR APP
-	angular.module('TADkit',['ui.router','ngMaterial','uuid4','d3js','threejs']);
+	angular.module('TADkit',['ui.router','ngMaterial','uuid4','d3js','threejs','shared']);
 	     
 })();

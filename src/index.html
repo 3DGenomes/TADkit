@@ -11,7 +11,7 @@
 	<link rel="stylesheet" href="assets/css/ensembl-genes.css" />
 	
 </head>
-<body ng-app="TADkit">
+<body ng-app="TADkit" route-css-classnames>
 	
 	<div data-ui-view id="main" class="fullheight"></div>
 	
@@ -28,11 +28,18 @@
 	<script src="../bower_components/angular-d3js/dist/angular-d3js.js"></script>
 	<script src="../bower_components/angular-threejs/dist/angular-threejs.js"></script>
 
+	<!-- SHARED -->
+	<script src="shared/shared.module.js"></script>
+	<script src="shared/routeCssClassnames.directive.js"></script>
+	<script src="shared/color.service.js"></script>
+	<script src="shared/color-convert.service.js"></script>
+
 	<!-- MAIN TADKIT SCRIPTS -->
 	<script src="tadkit.js"></script>
 	<script src="tadkit.config.js"></script>
 	<script src="tadkit.run.js"></script>
-	<script src="tadkit.states.js"></script>
+	<script src="tadkit.states.js"></script>ç
+
 	<!-- TADKIT LAYOUT -->
 	<script src="layout/home.controller.js"></script>
 	<script src="layout/main.controller.js"></script>
@@ -60,7 +67,6 @@
 	<!-- TADKIT COMPONENTS: SCENES -->
 	<script src="components/scenes/scene.controller.js"></script>
 	<script src="components/scenes/scene-chromatin.service.js"></script>
-	<script src="components/scenes/scene-cluster.directive.js"></script>
 	<script src="components/scenes/scene-cluster.service.js"></script>
 	<script src="components/scenes/scene-clusters.directive.js"></script>
 	<script src="components/scenes/scene-floatingtad.directive.js"></script>
@@ -77,8 +83,6 @@
 	<script src="components/tracks/track-slider.directive.js"></script>
 	<script src="components/tracks/track-wiggle.directive.js"></script>
 	<!-- TADKIT SERVICES -->
-	<script src="services/color.service.js"></script>
-	<script src="services/color-convert.service.js"></script>
 	<script src="services/components.service.js"></script>
 	<script src="services/custom-tracks.service.js"></script>
 	<script src="services/datasets.service.js"></script>

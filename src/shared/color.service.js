@@ -1,7 +1,7 @@
 (function() {
 	'use strict';
 	angular
-		.module('TADkit')
+		.module('shared')
 		.factory('Color', Color);
 
 	function Color(ColorConvert) {

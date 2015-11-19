@@ -5,15 +5,15 @@
 		.factory('Particles', Particles);
 
 	// constructor for chromatin model instances
-	function Particles() {
+	function Particles(THREETextures) {
 		return function(data, colors, settings) {
 			var defaults = {
 				particles: 0,
 				visible: true,
-				color: "#ff0000",
+				color: "#fff000",
 				size: 200,
 				opacity: 0.8,
-				map: "assets/img/sphere-glossy.png", // mapindex: ???
+				map: "particle",
 				depthtest: true,
 				alphatest: 0.5,
 				transparent: true
@@ -31,41 +31,24 @@
 			}
 			particlesGeometry.colors = vertexColors;
 
-			var nodeMap = null; // render only point
-			if (this.map) {
-				var loader = new THREE.TextureLoader();
-				loader.load(
-					this.map,
-					function ( texture ) {
-						nodeMap = texture;
-					},
-					// Function called when download progresses
-					function ( xhr ) {
-						console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-					},
-					// Function called when download errors
-					function ( xhr ) {
-						console.log( 'An error happened' );
-					}
-				);
-			}
+			var particleTexture = THREETextures.get(this.map);
 
 			var particlesMaterial = new THREE.PointsMaterial({
 				color: this.color,
     			vertexColors: THREE.VertexColors,
 				size: this.size,
 				opacity: this.opacity,
-				map: nodeMap,
+				map: particleTexture,
 				depthTest: this.depthtest,
 				alphaTest: this.alphatest,
 				transparent: this.transparent
 			});
 
-			var particlesCloud = new THREE.Points( particlesGeometry, particlesMaterial );
-			// particlesCloud.sortParticles = true;
-			particlesCloud.name = "Particles Cloud";
+			var particles = new THREE.Points( particlesGeometry, particlesMaterial );
+			// particles.sortParticles = true;
+			particles.name = "Particles";
 			
-			return particlesCloud;
+			return particles;
 		};
 	}
 	

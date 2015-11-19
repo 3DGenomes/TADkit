@@ -7,8 +7,8 @@
 	function ProjectDatasetController ($state, $scope, Datasets, Overlays, Components, Segments){
 		// console.log($scope);
 
-		// Get dataset scene icon component
-		$scope.clusterComponent = Components.getComponentById("datasets-scene-icon");
+		// Get dataset clusters scene component
+		$scope.clusterComponent = Components.getComponentById("dataset-clusters");
 
 		// Set cluster color to gradient
 		// Recalculate specifically for single segment per particle in cluster scene

@@ -4,19 +4,9 @@
 		.module('TADkit')
 		.factory('Segments', Segments);
 
-	function Segments($q, d3Service, Color) {
-		// var deferred = $q.defer();
-		
-		// // Check D3 Service is loaded
-		// d3Service.load().then(function(d3) {
-		// 	// console.log("loading D3");
-		// 	deferred.resolve();
-		// });
+	function Segments($q, Color) {
 
 		return {
-			// load: function() {
-			// 	return deferred.promise;
-			// },
 			gradientHCL: function(overlay, count) {
 				// Using D3 HCL for correct perceptual model
 				// Data is an array of 2 hex colors eg. ff0000

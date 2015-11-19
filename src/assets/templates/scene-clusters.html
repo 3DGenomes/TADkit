@@ -1,3 +1,4 @@
+<!-- This file is generated — do not edit by hand! -->
 <div ng-controller='SceneController' class="component-controller">
 	<div class="component-header">
 		<h6>{{state.title}}</h6>
@@ -17,13 +18,11 @@
 		 <md-checkbox ng-model="view.settings.chromatin.visible">Chromatin</md-checkbox>
 	</div>
 	<div>
-		<md-grid-list md-cols="4" md-row-height="1:1" md-gutter="12px">
+		<md-grid-list md-cols="{{view.settings.cols}}" md-row-height="{{view.settings.rowHeight}}" md-gutter="{{view.settings.gutter}}">
 			<md-grid-tile  ng-repeat='cluster in clusters'>
-				<md-grid-tile-header>
-					<div class="component-caption" layout="column" layout-align="center center">
-						<span class="title">Cluster {{cluster.number}}</span>
-						<span class="subtitle">({{cluster.list.length}} Model<span ng-hide="cluster.list.length == 1">s</span>)</span>
-					</div>
+				<md-grid-tile-header layout="column" layout-align="center start">
+					<h3>Cluster {{cluster.number}}</h3>
+					<h4>({{cluster.list.length}} Model<span ng-hide="cluster.list.length == 1">s</span>)</h4>
 				</md-grid-tile-header>
 			</md-grid-tile>
 		</md-grid-list>

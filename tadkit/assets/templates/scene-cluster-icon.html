@@ -18,7 +18,7 @@
 		 <md-checkbox ng-model="view.settings.chromatin.visible">Chromatin</md-checkbox>
 	</div>
 	<div>
-		<md-grid-list md-cols="4" md-row-height="1:1" md-gutter="12px">
+		<md-grid-list md-cols="{{view.settings.cols}}" md-row-height="{{view.settings.rowHeight}}" md-gutter="{{view.settings.gutter}}">
 			<md-grid-tile  ng-repeat='cluster in clusters'>
 				<md-grid-tile-header>
 					<div class="component-caption" layout="column" layout-align="center center">

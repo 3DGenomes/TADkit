@@ -77,22 +77,16 @@ md-input-container.md-icon-float>md-icon {
 	height: 48px;
 	max-height: 48px;
 }
-#tklogo {
-	z-index: 1000;
-	position: absolute;
-	padding: 0 0.7rem;
-	margin-right:1.5rem;
-	background: #333;
-}
-.tadkit-title {
+#tadkit-title {
 	line-height: 1;
 	margin: 0;
 	font-size: 2.75rem;
 }
-.tadkit-title img {
+#tadkit-title img {
 	vertical-align: inherit;
 }
 
+/*** MAIN CONTENT ***/
 
 /*** SIDEBARS ***/
 md-sidenav.md-locked-open {
@@ -116,14 +110,16 @@ md-sidenav md-list-item {
   width: 100%;
 }
 
-/*** HOME ***/
-#backdrop a {
-	color: #cb225a !important;
+/*** PROJECTS ***/
+#project-list {
 }
-#backdrop a:hover {
-	color: #fff !important;
+#project-content .tk-toolbar {
+	background-color: transparent;
+	box-shadow: none;
 }
-#home {
+
+/*** LOADER ***/
+.loader #main-content {
 	background: #4f4f58;
 	background-color: #2d2d33;
 	background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMDAlJyBoZWlnaHQ9JzEwMCUnPgoJPHJhZGlhbEdyYWRpZW50IGlkPSdnbG93JyBncmFkaWVudFVuaXRzPSd1c2VyU3BhY2VPblVzZScgY3g9JzM1MCcgY3k9JzMwMCcgcj0nNTAwJz4KCQk8c3RvcCBvZmZzZXQ9JzAlJyBzdG9wLWNvbG9yPScjOWI5YmFkJyAvPgoJCTxzdG9wIG9mZnNldD0nNjAlJyBzdG9wLWNvbG9yPScjNGY0ZjU4JyAvPgoJCTxzdG9wIG9mZnNldD0nMTAwJScgc3RvcC1jb2xvcj0nIzJkMmQzMycgLz4KCTwvcmFkaWFsR3JhZGllbnQ+Cgk8cmVjdCBmaWxsPSd1cmwoI2dsb3cpJyB4PSctMSUnIHk9Jy0xJScgd2lkdGg9JzEwMiUnIGhlaWdodD0nMTAyJScvPgo8L3N2Zz4=');
@@ -131,34 +127,13 @@ md-sidenav md-list-item {
 	position: relative;
 	padding: 30px 20px 0 20px;
 }
-#home .floatingtad {
+.loader #floating-tad {
 	width: 400px;
 	height: 400px;
 	position: absolute;
 	right: 60px;
 	top: 50px;
 	z-index: 0;
-}
-#home .logo {
-	padding: 80px 140px 20px;
-}
-#home .md-button {
-	/*min-width: 300px;*/
-	/*margin-top: 16px;*/
-	/*margin-bottom: 16px;*/
-}
-#home .md-button md-icon {
-/*	margin-left: 0;
-	margin-right: 16px;
-*/}
-
-
-/*** PROJECTS ***/
-#project-list {
-}
-#project-content .tk-toolbar {
-	background-color: transparent;
-	box-shadow: none;
 }
 .loader .md-button {
 	min-width: 300px;
@@ -184,6 +159,12 @@ md-sidenav md-list-item {
 	-webkit-box-shadow: inset 0 4px 8px rgba(0,0,0,0.4);
 	box-shadow: inset 0 4px 8px rgba(0,0,0,0.4);
 }
+
+/*** DATASET ***/
+.dataset #main-content {
+	padding: 20px;
+}
+
 
 /**
  * GENERAL
@@ -310,9 +291,16 @@ md-checkbox.md-checked .md-icon {
 	margin: 0;
 	padding: 0;
 }
-.component-caption .title {
+md-grid-list md-grid-tile md-grid-tile-header,
+md-grid-list md-grid-tile md-grid-tile-footer {
+	color: inherit;
+	background: rgba(255, 255, 255, 0.28);
 }
-.component-caption .subtitle {
+.component-caption .cluster-title {
+	display: inline-block;
+}
+.component-caption .model-count {
+	display: inline-block;
 	font-size: 0.8rem;
 }
 
