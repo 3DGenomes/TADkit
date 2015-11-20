@@ -486,7 +486,7 @@
 
 			// Convert Data (single Model / set of Particles) to Vector triplets
 			var clusterBufferGeometry = new THREE.BufferGeometry(); // to calculate merged bounds
-			var overlayColors = Color.colorsFromHex(overlay);
+			var overlayColors = Color.THREEColorsFromHex(overlay);
 
 			// Generate Cluster model
 			var clusterEnsemble = new THREE.Object3D(); // unmerged network
@@ -596,28 +596,13 @@
 						 * - component-body == element[0].children[0].children[3]
 						 * - component-body-list == element[0].children[0].children[3].children[0]
 						 */
-						// console.log(element[0].children[0].children[3]);
 						container = element[0].children[0].children[3].children[0];
 						// PARENT #main-content from main.html
 						elementParent = element.parent().parent()[0];
 
-						// console.log("WIDTH");
-						// console.log(JSON.stringify(elementParent.getBoundingClientRect().width));
-						// console.log(JSON.stringify(elementParent.clientWidth));
-						// console.log(JSON.stringify(scope.state.width));
-						// console.log("HEIGHT");
-						// console.log(JSON.stringify(elementParent.getBoundingClientRect().height));
-						// console.log(JSON.stringify(elementParent.clientHeight));
-						// console.log(JSON.stringify(scope.state.height));
-
-// NEED TO WAIT UNTIL DOM LOADED
  						// clientWidth and clientHeight ie. no margins nor padding
 						width = elementParent.clientWidth;
 						height = elementParent.clientHeight;
-
-						// width = 800; //parseInt(scope.state.width);
-						// height = 400; //parseInt(scope.state.height);
-// OJO! DOM NOT READY
 
 						// var background = scope.view.settings.background;
 						// var clearColor = "0x" + background.substring(1);
@@ -738,28 +723,6 @@
 
 						// *** Derived from Angular Material grid-list.js lines 221-267 ***
 
-						// The amount of space a single 1x1 tile would take up (either width or height), used as
-						// a basis for other calculations. This consists of taking the base size percent (as would be
-						// if evenly dividing the size between cells), and then subtracting the size of one gutter.
-						// However, since there are no gutters on the edges, each tile only uses a fration
-						// (gutterShare = numGutters / numCells) of the gutter size. (Imagine having one gutter per
-						// tile, and then breaking up the extra gutter on the edge evenly among the cells).
-						// var UNIT = $interpolate(expr('share') + '% - (' + expr('gutter') + ' * ' + expr('gutterShare') + ')');
-						// ie. UNIT = share% - (gutter * gutterShare)
-
-						// The horizontal or vertical position of a tile, e.g., the 'top' or 'left' property value.
-						// The position comes the size of a 1x1 tile plus gutter for each previous tile in the
-						// row/column (offset).
-						// var POSITION  = $interpolate('calc((' + expr('unit') + ' + ' + expr('gutter') + ') * ' + expr('offset') + ')');
-						// ie. POSITION = (UNIT + gutter) * offset
-
-						// The actual size of a tile, e.g., width or height, taking rowSpan or colSpan into account.
-						// This is computed by multiplying the base unit by the rowSpan/colSpan, and then adding back
-						// in the space that the gutter would normally have used (which was already accounted for in
-						// the base unit calculation).
-						// var DIMENSION = $interpolate('calc((' + expr('unit') + ') * ' + expr('span') + ' + (' + expr('span') + ' - 1) * ' + expr('gutter') + ')');
-						// ie. DIMENSION = UNIT * span + (span - 1) * gutter
-
 						// Fraction of the gutter size that each column takes up.
 						var hGutterShare = (colCount - 1) / colCount;
 						// Percent of the available horizontal space that one column takes up.
@@ -778,17 +741,6 @@
 							var scene = scenes[index];
 							// scope.updateCamera( camera, scene, mouseX, mouseY );
 							controls.update();
-
-							// var elem = container.children[index];
-							// var mdTileStyle = window.getComputedStyle(elem);
-							// var mdTileLeft = parseInt(mdTileStyle["left"]);
-							// var mdTileWidth = parseInt(mdTileStyle["width"]);
-							// var mdTilePaddingTop = parseInt(mdTileStyle["padding-top"]);
-							// var mdTileMarginTop = parseInt(mdTileStyle["margin-top"]);
-							// var viewportLeft   = mdTileLeft;
-							// var viewportBottom = height - mdTilePaddingTop + mdTileMarginTop;
-							// var viewportWidth  = mdTileWidth;
-							// var viewportHeight = mdTileWidth;
 
 							var viewportLeft = (viewportUnit + tileGutter) * (colIndex - 1);
 							var viewportBottom = height - (viewportUnit * rowIndex);
@@ -4578,7 +4530,7 @@
 		.module('TADkit')
 		.factory('Networks', Networks);
 
-	function Networks(Color) {
+	function Networks() {
 		return {
 			lineSegmentsRGB: function(overlay, edgeCount) {
 				// from an array of features colors eg. restraints
@@ -4652,7 +4604,7 @@
 				var RGB;
 				angular.forEach(colors, function(color, key) {
 					if (code == key) {
-						RGB = Color.RGBObjectFromHex(color);
+						RGB = new THREE.Color(color);
 					}
 				});
 				return RGB;

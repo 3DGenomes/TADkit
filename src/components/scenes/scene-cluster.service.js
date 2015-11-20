@@ -17,7 +17,7 @@
 
 			// Convert Data (single Model / set of Particles) to Vector triplets
 			var clusterBufferGeometry = new THREE.BufferGeometry(); // to calculate merged bounds
-			var overlayColors = Color.colorsFromHex(overlay);
+			var overlayColors = Color.THREEColorsFromHex(overlay);
 
 			// Generate Cluster model
 			var clusterEnsemble = new THREE.Object3D(); // unmerged network

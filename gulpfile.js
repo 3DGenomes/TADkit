@@ -61,7 +61,8 @@ gulp.task('dist-scripts', function() {
 gulp.task('dist-shared', function() {
 	return gulp.src([
 		'src/shared.module.js',
-		'src/shared/*.js',
+		'src/shared/color.js',
+		'src/shared/routeCssClassnames.directive.js'
 		])
 		.pipe(concat('shared.js'))
 		.pipe(gulp.dest('dist')) // isolated dist but requires app

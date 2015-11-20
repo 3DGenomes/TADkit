@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Networks', Networks);
 
-	function Networks(Color) {
+	function Networks() {
 		return {
 			lineSegmentsRGB: function(overlay, edgeCount) {
 				// from an array of features colors eg. restraints
@@ -78,7 +78,7 @@
 				var RGB;
 				angular.forEach(colors, function(color, key) {
 					if (code == key) {
-						RGB = Color.RGBObjectFromHex(color);
+						RGB = new THREE.Color(color);
 					}
 				});
 				return RGB;
