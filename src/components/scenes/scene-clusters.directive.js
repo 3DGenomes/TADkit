@@ -53,10 +53,11 @@
 						container = element[0].children[0].children[3].children[0];
 						// PARENT #main-content from main.html
 						elementParent = element.parent().parent()[0];
+						var elementPadding = parseInt(window.getComputedStyle(elementParent, null).getPropertyValue('padding'));
 
  						// clientWidth and clientHeight ie. no margins nor padding
-						width = elementParent.clientWidth;
-						height = elementParent.clientHeight;
+						width = elementParent.clientWidth - (elementPadding * 2);
+						height = elementParent.clientHeight - (elementPadding * 2);
 
 						// var background = scope.view.settings.background;
 						// var clearColor = "0x" + background.substring(1);

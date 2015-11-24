@@ -52,14 +52,5 @@
 		}
 		// console.log($scope.clusters);
 
-
-		// On click set selected cluster
-		$scope.selectCluster = function(index) {
-			$scope.clusterArray = Datasets.setCluster(index + 1);
-			$scope.centroidRef = Datasets.getCentroid();
-			console.log("Current Cluster: " + (index + 1) + "(Centroid Model: " + $scope.centroidRef + ")");
-			$state.go('browser');
-		};
-
 	}
 })();

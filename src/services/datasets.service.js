@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Datasets', Datasets);
 
-	function Datasets($q, $http, uuid4, Settings, Resources, Proximities, Restraints, Overlays, CustomTracks) {
+	function Datasets($q, $http, uuid4, Utils, Settings, Proximities, Restraints, Overlays, CustomTracks) {
 		var datasets = {
 			loaded : [],
 			current : {
@@ -12,6 +12,12 @@
 				cluster : 1,
 				centroid : 1
 			}
+		};
+		var clusters = {
+			loaded : [],
+			current : {
+				index : 0
+			}			
 		};
 		return {
 			load: function(filename, clear) {
@@ -50,7 +56,7 @@
 			},
 			validate: function(data) {
 				var validDataset = {};
-				var objectType = Resources.whatIsIt(data);
+				var objectType = Utils.whatIsIt(data);
 				if (objectType === "String") {
 					validDataset = JSON.parse(data);
 				} else {
@@ -94,6 +100,33 @@
 				var dataset = datasets.loaded.indexOf(index);
 				datasets.loaded.splice(dataset, 1);
 				return datasets;
+			},
+			groupClusters: function() {
+				var self = this;
+				var clusterLists = self.getClusters();
+				var models = self.getModels();
+				for (var i = clusterLists.length - 1; i >= 0; i--) {
+					var cluster = {};
+					cluster.number = i + 1;
+					cluster.list = clusterLists[i];
+					cluster.centroidIndex = cluster.list.indexOf(Datasets.getCentroid(cluster.number));
+					cluster.data = [];
+					for (var j = cluster.list.length - 1; j >= 0; j--) {
+						var modelData;
+						for (var k = models.length - 1; k >= 0; k--) {
+							var model = models[k];
+							if (parseInt(model.ref) == cluster.list[j]) {
+								modelData = model.data;
+								// console.log("Model " + model.ref + " in Cluster " + cluster.number);
+							}
+						}
+						if (modelData) {cluster.data.unshift(modelData);}
+							else {console.log("Listed model not found!");}
+					}
+					// Add cluster to cluster collection
+					clusters.unshift(cluster);
+				}
+				console.log(clusters);
 			},
 			setSpeciesUrl: function(index) {
 				if (index === undefined || index === false) index = datasets.current.index;
@@ -150,6 +183,11 @@
 				var dataset = datasets.loaded[index];
 				return dataset;
 			},
+			getClusters: function(index) {
+				if (index === undefined || index === false) index = datasets.current.index;
+				var clusters = datasets.loaded[index].clusters;
+				return clusters;
+			},
 			getCluster: function(ref) { // from cluster ref
 				ref = ref || datasets.current.cluster;
 				var cluster = datasets.loaded[datasets.current.index].clusters[ref - 1];
@@ -159,6 +197,11 @@
 				ref = ref || datasets.current.cluster;
 				var centroid = datasets.loaded[datasets.current.index].centroids[ref - 1];
 				return centroid; // single model ref
+			},
+			getModels: function(index) {
+				if (index === undefined || index === false) index = datasets.current.index;
+				var models = datasets.loaded[index].models;
+				return models;
 			},
 			getModel: function(ref) { // from model ref
 				ref = ref || this.getCentroid();

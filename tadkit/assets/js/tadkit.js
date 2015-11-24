@@ -599,10 +599,11 @@
 						container = element[0].children[0].children[3].children[0];
 						// PARENT #main-content from main.html
 						elementParent = element.parent().parent()[0];
+						var elementPadding = parseInt(window.getComputedStyle(elementParent, null).getPropertyValue('padding'));
 
  						// clientWidth and clientHeight ie. no margins nor padding
-						width = elementParent.clientWidth;
-						height = elementParent.clientHeight;
+						width = elementParent.clientWidth - (elementPadding * 2);
+						height = elementParent.clientHeight - (elementPadding * 2);
 
 						// var background = scope.view.settings.background;
 						// var clearColor = "0x" + background.substring(1);
@@ -1072,7 +1073,7 @@
 		.module('TADkit')
 		.controller('SceneController', SceneController);
 
-	function SceneController($scope) {
+	function SceneController($state, $scope, Datasets) {
 
 		$scope.optionsState = false;
 		$scope.toggleOptions = function() {
@@ -1082,6 +1083,14 @@
 		$scope.toggle = function(bool) {
 			bool = !bool;
 			console.log(bool);
+		};
+
+		// On click set selected cluster
+		$scope.selectCluster = function(index) {
+			Datasets.setCluster(index + 1);
+			var centroidRef = Datasets.getCentroid();
+			console.log("Current Cluster: " + (index + 1) + " (Centroid Model: " + centroidRef + ")");
+			$state.go('browser');
 		};
 
 		// $scope.keyControls = function (e, component) {
@@ -3479,15 +3488,6 @@
 		}
 		// console.log($scope.clusters);
 
-
-		// On click set selected cluster
-		$scope.selectCluster = function(index) {
-			$scope.clusterArray = Datasets.setCluster(index + 1);
-			$scope.centroidRef = Datasets.getCentroid();
-			console.log("Current Cluster: " + (index + 1) + "(Centroid Model: " + $scope.centroidRef + ")");
-			$state.go('browser');
-		};
-
 	}
 })();
 (function() {
@@ -4002,7 +4002,7 @@
 		.module('TADkit')
 		.factory('CustomTracks', CustomTracks);
 
-	function CustomTracks($q, $http, uuid4, Resources, Overlays) {
+	function CustomTracks($q, $http, uuid4, Utils, Overlays) {
 		// Import additional 2D/track data imported by users for use as Overlays
 
 		return {
@@ -4034,7 +4034,7 @@
 				selectedCols = selectedCols || [];
 
 				var parsedData;
-				var dataType = Resources.whatIsIt(fileData);
+				var dataType = Utils.whatIsIt(fileData);
 				if (dataType == "String") {
 					parsedData = self.parse(fileData).data;
 				} else {
@@ -4199,7 +4199,7 @@
 		.module('TADkit')
 		.factory('Datasets', Datasets);
 
-	function Datasets($q, $http, uuid4, Settings, Resources, Proximities, Restraints, Overlays, CustomTracks) {
+	function Datasets($q, $http, uuid4, Utils, Settings, Proximities, Restraints, Overlays, CustomTracks) {
 		var datasets = {
 			loaded : [],
 			current : {
@@ -4207,6 +4207,12 @@
 				cluster : 1,
 				centroid : 1
 			}
+		};
+		var clusters = {
+			loaded : [],
+			current : {
+				index : 0
+			}			
 		};
 		return {
 			load: function(filename, clear) {
@@ -4245,7 +4251,7 @@
 			},
 			validate: function(data) {
 				var validDataset = {};
-				var objectType = Resources.whatIsIt(data);
+				var objectType = Utils.whatIsIt(data);
 				if (objectType === "String") {
 					validDataset = JSON.parse(data);
 				} else {
@@ -4289,6 +4295,33 @@
 				var dataset = datasets.loaded.indexOf(index);
 				datasets.loaded.splice(dataset, 1);
 				return datasets;
+			},
+			groupClusters: function() {
+				var self = this;
+				var clusterLists = self.getClusters();
+				var models = self.getModels();
+				for (var i = clusterLists.length - 1; i >= 0; i--) {
+					var cluster = {};
+					cluster.number = i + 1;
+					cluster.list = clusterLists[i];
+					cluster.centroidIndex = cluster.list.indexOf(Datasets.getCentroid(cluster.number));
+					cluster.data = [];
+					for (var j = cluster.list.length - 1; j >= 0; j--) {
+						var modelData;
+						for (var k = models.length - 1; k >= 0; k--) {
+							var model = models[k];
+							if (parseInt(model.ref) == cluster.list[j]) {
+								modelData = model.data;
+								// console.log("Model " + model.ref + " in Cluster " + cluster.number);
+							}
+						}
+						if (modelData) {cluster.data.unshift(modelData);}
+							else {console.log("Listed model not found!");}
+					}
+					// Add cluster to cluster collection
+					clusters.unshift(cluster);
+				}
+				console.log(clusters);
 			},
 			setSpeciesUrl: function(index) {
 				if (index === undefined || index === false) index = datasets.current.index;
@@ -4345,6 +4378,11 @@
 				var dataset = datasets.loaded[index];
 				return dataset;
 			},
+			getClusters: function(index) {
+				if (index === undefined || index === false) index = datasets.current.index;
+				var clusters = datasets.loaded[index].clusters;
+				return clusters;
+			},
 			getCluster: function(ref) { // from cluster ref
 				ref = ref || datasets.current.cluster;
 				var cluster = datasets.loaded[datasets.current.index].clusters[ref - 1];
@@ -4354,6 +4392,11 @@
 				ref = ref || datasets.current.cluster;
 				var centroid = datasets.loaded[datasets.current.index].centroids[ref - 1];
 				return centroid; // single model ref
+			},
+			getModels: function(index) {
+				if (index === undefined || index === false) index = datasets.current.index;
+				var models = datasets.loaded[index].models;
+				return models;
 			},
 			getModel: function(ref) { // from model ref
 				ref = ref || this.getCentroid();
@@ -5336,40 +5379,6 @@
 			},
 			getCurrent: function() {
 				return current;
-			}
-		};
-	}
-})();
-(function() {
-	'use strict';
-	angular
-		.module('TADkit')
-		.factory('Resources', Resources);
-
-	function Resources() {
-		return {
-			whatIsIt: function(object) {
-				var stringConstructor = "test".constructor;
-				var arrayConstructor = [].constructor;
-				var objectConstructor = {}.constructor;
-				if (object === null) {
-					return "null";
-				}
-				else if (object === undefined) {
-					return "undefined";
-				}
-				else if (object.constructor === stringConstructor) {
-					return "String";
-				}
-				else if (object.constructor === arrayConstructor) {
-					return "Array";
-				}
-				else if (object.constructor === objectConstructor) {
-					return "Object";
-				}
-				else {
-					return "don't know";
-				}
 			}
 		};
 	}

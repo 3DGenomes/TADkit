@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('CustomTracks', CustomTracks);
 
-	function CustomTracks($q, $http, uuid4, Resources, Overlays) {
+	function CustomTracks($q, $http, uuid4, Utils, Overlays) {
 		// Import additional 2D/track data imported by users for use as Overlays
 
 		return {
@@ -36,7 +36,7 @@
 				selectedCols = selectedCols || [];
 
 				var parsedData;
-				var dataType = Resources.whatIsIt(fileData);
+				var dataType = Utils.whatIsIt(fileData);
 				if (dataType == "String") {
 					parsedData = self.parse(fileData).data;
 				} else {

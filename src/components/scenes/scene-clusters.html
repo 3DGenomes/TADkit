@@ -18,7 +18,7 @@
 	</div>
 	<div>
 		<md-grid-list md-cols="{{view.settings.cols}}" md-row-height="{{view.settings.rowHeight}}" md-gutter="{{view.settings.gutter}}">
-			<md-grid-tile  ng-repeat='cluster in clusters'>
+			<md-grid-tile  ng-repeat='cluster in clusters' ng-click="selectCluster($index)">
 				<md-grid-tile-header layout="column" layout-align="center start">
 					<h3>Cluster {{cluster.number}}</h3>
 					<h4>({{cluster.list.length}} Model<span ng-hide="cluster.list.length == 1">s</span>)</h4>

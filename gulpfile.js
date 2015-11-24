@@ -61,7 +61,8 @@ gulp.task('dist-scripts', function() {
 gulp.task('dist-shared', function() {
 	return gulp.src([
 		'src/shared.module.js',
-		'src/shared/color.js',
+		'src/shared/utils.service.js',
+		'src/shared/color.service.js',
 		'src/shared/routeCssClassnames.directive.js'
 		])
 		.pipe(concat('shared.js'))

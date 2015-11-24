@@ -1,10 +1,10 @@
 (function() {
 	'use strict';
 	angular
-		.module('TADkit')
-		.factory('Resources', Resources);
+		.module('shared')
+		.factory('Utils', Utils);
 
-	function Resources() {
+	function Utils() {
 		return {
 			whatIsIt: function(object) {
 				var stringConstructor = "test".constructor;
