@@ -5,10 +5,10 @@
 		.factory('Network', Network);
 
 	// create one line between each pair in dataset
-	function Network(Color, Particles, Networks) {
+	function Network(VERBOSE, $log, Color, Particles, Networks) {
 		return function(data, overlay, settings) {
-			// console.log(data);
-			// console.log(overlay);
+			if (VERBOSE) $log.debug(data);
+			if (VERBOSE) $log.debug(overlay);
 
 			// Uses THREE.LineSegments to generate separate lines
 			// from an array of vertex pairs
@@ -69,11 +69,11 @@
 					},
 					// Function called when download progresses
 					function ( xhr ) {
-						console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+						$log.info( (xhr.loaded / xhr.total * 100) + '% loaded' );
 					},
 					// Function called when download errors
 					function ( xhr ) {
-						console.log( 'An error happened' );
+						$log.error( 'An error happened' );
 					}
 				);
 			}
@@ -102,12 +102,12 @@
 			// network.boundingSphere = geometry.boundingSphere;
 			var network = new THREE.LineSegments(geometry, shaderMaterial);
 			network.name = "Network Graph";
-			// console.log(network);
+			if (VERBOSE) $log.debug(network);
 			return network;
 		};
 	}
 
-	function getVertexPairs(data, totalPairs) {
+	function getVertexPairs($log, data, totalPairs) {
 		// from an array of vertex pairs
 		// eg. [x1,y1,z1,x2,y2,z2,x3,y3,z3,...xn,yn,zn]
 		// to a matrix of all-to-all connections
@@ -125,9 +125,9 @@
 			var vertex1 = i;
 			for (var j = i + 3; j < data.length; j += 3) {
 				var vertex2 = j;
-				// console.log(pairPos);
-				// console.log(data[vertex1]+","+data[vertex1+1]+","+data[vertex1+2]);
-				// console.log(data[vertex2]+","+data[vertex2+1]+","+data[vertex2+2]);
+				$log.debug(pairPos);
+				$log.debug(data[vertex1]+","+data[vertex1+1]+","+data[vertex1+2]);
+				$log.debug(data[vertex2]+","+data[vertex2+1]+","+data[vertex2+2]);
 				// from vertex
 				vertexPairs[pairPos] = data[vertex1]; pairPos++;
 				vertexPairs[pairPos] = data[vertex1 + 1]; pairPos++;

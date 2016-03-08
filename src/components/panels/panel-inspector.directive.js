@@ -1,10 +1,10 @@
-(function() {
+	(function() {
 	'use strict';
 	angular
 		.module('TADkit')
 		.directive('tkComponentPanelInspector', tkComponentPanelInspector);
 
-	function tkComponentPanelInspector() {
+	function tkComponentPanelInspector(VERBOSE, $log) {
 		return {
 			restrict: 'EA',
 			scope: { 
@@ -16,7 +16,7 @@
 			},
 			templateUrl: 'assets/templates/panel-inspector.html',
 			link:function(scope, element, attrs){
-				// console.log(scope.data);
+				if (VERBOSE) $log.debug(scope.data);
 			}
 		};
 	}

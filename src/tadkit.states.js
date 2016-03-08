@@ -14,8 +14,8 @@
 			url: '',
 			templateUrl: 'assets/templates/main.html',
 			resolve: {
-				'initialData': function(initMain) {
-					return initMain();
+				'initialData': function(App) {
+					return new App();
 				}
 			}
 		})

@@ -48274,10 +48274,9 @@ angular.module('flow', ['flow.provider', 'flow.init', 'flow.events', 'flow.btn',
  * THREEjs https://github.com/mrdoob/three.js/
  * see http://threejs.org by mrdoob
  * @author  Mike Goodstadt  <mikegoodstadt@gmail.com>
- * @version 1.0.0
+ * @version 0.1.2
  */
- 
- (function() {
+(function() {
 	'use strict';
 	angular.module('threejs', []);
 
@@ -48285,7 +48284,7 @@ angular.module('flow', ['flow.provider', 'flow.init', 'flow.events', 'flow.btn',
 		.module('threejs')
 		.factory('THREEService', THREEService);
 
-	function THREEService($document, $q, $rootScope) {
+	function THREEService($log, $document, $q, $rootScope) {
 		var deferred = $q.defer();
 
 		// RENDER VARIABLES
@@ -48311,7 +48310,7 @@ angular.module('flow', ['flow.provider', 'flow.init', 'flow.events', 'flow.btn',
 
 		function onScriptLoad() {
 			if (!renderer) setRenderer();
-			console.log("Loaded THREE.js!");
+			$log.log("THREE.js loaded OK!");
 			$rootScope.$apply(function() {
 				deferred.resolve(window.THREE);
 			});
@@ -48349,7 +48348,7 @@ angular.module('flow', ['flow.provider', 'flow.init', 'flow.events', 'flow.btn',
 
 		return {
 			load: function() {
-				// console.log("Loading THREE.js...");
+				$log.log("THREE.js loading...");
 				return deferred.promise;
 			},
 			getRenderer: function() {
@@ -48365,16 +48364,15 @@ angular.module('flow', ['flow.provider', 'flow.init', 'flow.events', 'flow.btn',
  * THREEjs https://github.com/mrdoob/three.js/
  * see http://threejs.org by mrdoob
  * @author  Mike Goodstadt  <mikegoodstadt@gmail.com>
- * @version 1.0.0
+ * @version 0.1.2
  */
- 
- (function() {
+(function() {
 	'use strict';
 	angular
 		.module('threejs')
 		.factory('THREEPlugins', THREEPlugins);
 
-	function THREEPlugins($document, $q, $rootScope) {
+	function THREEPlugins($log, $document, $q, $rootScope) {
 		var plugins = {
 			loaded: []
 		};
@@ -48395,7 +48393,7 @@ angular.module('flow', ['flow.provider', 'flow.init', 'flow.events', 'flow.btn',
 				});
 				return $q.all(pluginsToLoad)
 				.then(function(results) {
-					if (results.length > 0) console.log("THREE.js plugins loaded: " + results);
+					if (results.length > 0) $log.info("THREE.js plugins loaded: " + results);
 					return window.THREE;
 				});
 			},
@@ -48405,7 +48403,7 @@ angular.module('flow', ['flow.provider', 'flow.init', 'flow.events', 'flow.btn',
 				function onScriptLoad() {
 					$rootScope.$apply(function() {
 						plugins.loaded.push(filename);
-						// console.log(plugins.loaded);
+						$log.debug(plugins.loaded);
 						deferred.resolve(filename);
 					});
 				}
@@ -48431,7 +48429,7 @@ angular.module('flow', ['flow.provider', 'flow.init', 'flow.events', 'flow.btn',
 					if (plugin == filename) {
 						plugins.loaded[key].pop();
 						// REMOVE DOM ELEMENT?
-						console.log("THREE.js plugin " + filename + " removed.");
+						$log.info("THREE.js plugin " + filename + " removed.");
 					}
 				});
 			}
@@ -48444,16 +48442,15 @@ angular.module('flow', ['flow.provider', 'flow.init', 'flow.events', 'flow.btn',
  * THREEjs https://github.com/mrdoob/three.js/
  * see http://threejs.org by mrdoob
  * @author  Mike Goodstadt  <mikegoodstadt@gmail.com>
- * @version 1.0.0
+ * @version 0.1.2
  */
- 
- (function() {
+(function() {
 	'use strict';
 	angular
 		.module('threejs')
 		.factory('THREETextures', THREETextures);
 
-	function THREETextures(THREEService, $document, $q, $rootScope) {
+	function THREETextures(THREEService, $log, $document, $q, $rootScope) {
 		// TODO: check if texture already loaded - add and remove from array
 		var textures = {
 			loaded: []
@@ -48461,7 +48458,7 @@ angular.module('flow', ['flow.provider', 'flow.init', 'flow.events', 'flow.btn',
 
 		return {
 			load: function(filenames) {
-				// console.log(filenames);
+				$log.debug(filenames);
 				
 				var self = this;
 				var imagesToLoad = []; // push async functions into list for subsequent processing
@@ -48477,7 +48474,7 @@ angular.module('flow', ['flow.provider', 'flow.init', 'flow.events', 'flow.btn',
 				});
 				return $q.all(imagesToLoad)
 				.then(function(results) {
-					if (results.length > 0) console.log("Images loaded: " + results);
+					if (results.length > 0) $log.debug("Images loaded: " + results);
 					return window.THREE;
 				});
 			},
@@ -48488,7 +48485,7 @@ angular.module('flow', ['flow.provider', 'flow.init', 'flow.events', 'flow.btn',
 				var textureManager = new THREE.LoadingManager();
 				textureManager.onProgress = function ( item, loaded, total ) {
 					// this gets called after any item has been loaded
-					console.log( item, loaded, total );
+					$log.debug( item, loaded, total );
 				};
 				textureManager.onLoad = function () {
 					// all textures are loaded
@@ -48502,7 +48499,7 @@ angular.module('flow', ['flow.provider', 'flow.init', 'flow.events', 'flow.btn',
 				var onProgress = function ( xhr ) {
 					if ( xhr.lengthComputable ) {
 						var percentComplete = xhr.loaded / xhr.total * 100;
-						console.log( Math.round(percentComplete, 2) + '% downloaded' );
+						$log.debug( Math.round(percentComplete, 2) + '% downloaded' );
 					}
 				};
 				var onError = function ( xhr ) {
@@ -48521,7 +48518,7 @@ angular.module('flow', ['flow.provider', 'flow.init', 'flow.events', 'flow.btn',
 					if (texture == filename) {
 						textures.loaded[key].pop();
 						// REMOVE DOM ELEMENT?
-						console.log("Removed " + filename + " texture.");
+						$log.info("Removed " + filename + " texture.");
 					}
 				});
 			},
@@ -48532,15 +48529,15 @@ angular.module('flow', ['flow.provider', 'flow.init', 'flow.events', 'flow.btn',
 						if (textures.loaded[i].name === textureName) {
 							texture = textures.loaded[i];
 							found = true;
-							// console.log("Texture \"" + textureName + "\" found!");
+							$log.info("Texture \"" + textureName + "\" found!");
 						}
 					}
 				}
 				if (!found) {
 					texture = textures.loaded[0];
-					console.log("Texture \"" + textureName + "\" not found: returning \"" + texture.name + ".\"");
+					$log.warn("Texture \"" + textureName + "\" not found: returning \"" + texture.name + ".\"");
 				}
-				// console.log(texture);
+				$log.debug(texture);
 				return texture;
 
 			}

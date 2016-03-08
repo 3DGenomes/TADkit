@@ -31,6 +31,7 @@
 			}
 			particlesGeometry.colors = vertexColors;
 
+			// OJO! ¿¿¿IS THREE module CHECKING IF TEXTURE ALREADY LOADED???
 			var particleTexture = THREETextures.get(this.map);
 
 			var particlesMaterial = new THREE.PointsMaterial({

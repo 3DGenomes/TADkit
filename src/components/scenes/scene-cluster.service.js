@@ -5,9 +5,9 @@
 		.factory('Cluster', Cluster);
 
 	// constructor for cluster models ensemble
-	function Cluster(Color) {
-		return function( data, centroidIndex, overlay, settings ) {
-			// console.log(overlay);
+	function Cluster($log, Color) {
+		return function(VERBOSE, data, centroidIndex, overlay, settings) {
+			if (VERBOSE) $log.debug(overlay);
 
 			var defaults = {
 				visible: true,

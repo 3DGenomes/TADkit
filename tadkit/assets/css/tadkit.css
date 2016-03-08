@@ -285,11 +285,12 @@ md-checkbox.md-checked .md-icon {
 	margin-top: 6px;
 }
 .component-body {
-	display: inline-block;
-/*	font-size: 0.4rem;
-*/	line-height: 0;
+/*	display: inline-block;
+	font-size: 0.4rem;
+	line-height: 0;
 	margin: 0;
 	padding: 0;
+*/
 }
 md-grid-list md-grid-tile md-grid-tile-header,
 md-grid-list md-grid-tile md-grid-tile-footer {

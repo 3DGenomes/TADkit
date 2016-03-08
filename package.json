@@ -1,8 +1,13 @@
 {
   "name": "TADkit",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Frontend Visualization Tool for TADbit",
-  "main": "index.js",
+  "main": "index.html",
+  "config": {
+    "env_alt": "development",
+    "env": "production",
+    "verbose": false
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,14 +21,21 @@
     "url": "https://github.com/3DGenomes/TADkit/issues"
   },
   "homepage": "https://github.com/3DGenomes/TADkit",
+  "dependencies": {},
   "devDependencies": {
     "gulp": "^3.8.7",
     "gulp-concat": "^2.3.4",
+    "gulp-dgeni": "^0.1.0",
+    "gulp-documentation": "^2.2.0",
     "gulp-header": "^1.2.2",
-    "gulp-jshint": "^1.8.4",
+    "gulp-jscs": "^3.0.2",
     "gulp-ng-annotate": "^1.1.0",
+    "gulp-ng-constant": "^1.1.0",
+    "gulp-ngdocs": "^0.2.13",
+    "gulp-plumber": "^1.1.0",
     "gulp-rename": "^1.2.0",
     "gulp-sass": "^2.0.4",
-    "gulp-uglify": "^1.4.2"
+    "gulp-uglify": "^1.4.2",
+    "gulp-webserver": "^0.9.1"
   }
 }

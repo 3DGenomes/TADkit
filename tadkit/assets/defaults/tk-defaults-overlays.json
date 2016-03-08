@@ -76,7 +76,7 @@
 			"source" : "TADkit",
 			"url" : "local",
 			"description" : "Single color for dynamic data.",
-			"type" : "misc",
+			"type" : "restraints",
 			"format" : "variable",
 			"components" : 2,
 			"state" : {

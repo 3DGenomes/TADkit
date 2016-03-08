@@ -4,7 +4,9 @@
 		.module('TADkit')
 		.config(config);
 
-	function config($locationProvider, $mdThemingProvider) {
+	function config(ENV, $logProvider, $locationProvider, $mdThemingProvider) {
+		$logProvider.debugEnabled(ENV === 'development');
+
 		// Removing # from URL with HTML5 History API and
 		// add <base href="/myapp/"></base> in index.html
 		// Comment to leave # in case of server rewrites.

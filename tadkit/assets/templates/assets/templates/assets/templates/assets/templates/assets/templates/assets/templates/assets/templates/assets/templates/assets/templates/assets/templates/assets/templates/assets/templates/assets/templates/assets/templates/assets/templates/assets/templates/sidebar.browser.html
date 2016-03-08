@@ -1,0 +1,29 @@
+<!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->
+<!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->
+<!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->
+<!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->
+<!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->
+<!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->
+<!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->
+<!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->
+<!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->
+<!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->
+<!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->
+<!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->
+<!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->
+<!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->
+<!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->
+<!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->
+<div id="settings" class="controls">
+<h2>SETTINGS</h2>
+	<!-- Settings for Main Track -->
+	<h3 class="right list-title">General</h3>
+	<ul class="right">
+		<li data-ng-repeat='setting in settings'>
+			<a data-ng-click="toggleSetting(setting.id)" data-ng-class="{active: setting.state}">{{setting.title}} 
+				<md-icon data-ng-hide="setting.state" class="toggle-right icon-check-box-outline-blank"></md-icon>
+				<md-icon data-ng-show="setting.state" class="toggle-right icon-check-box"></md-icon>
+			</a>
+		</li>
+	</ul>
+</div>

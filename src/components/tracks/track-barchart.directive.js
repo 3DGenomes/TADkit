@@ -1,10 +1,34 @@
 (function() {
 	'use strict';
+	/**
+	 * @ngdoc directive
+	 * @name TADkit.directive:tkComponentTrackBarchart
+	 * @scope
+	 * @restrict EA
+	 * @param {Object} type Track type.
+	 * @param {Object} title Track title.
+	 * @param {Array} settings Track settings.
+	 * @param {Array} view Track view.
+	 * @param {Array} data Track data.
+	 * @param {Array} overlay Value for toggle in template.
+	 * @param {function} toggleoverlay Toggle function in template.
+	 *
+	 * @description
+	 * Generates a d3 Barchart from the supplied data.
+
+	 * @example
+	 * <example>
+	 * 	<file name="index.html">
+	 * 		<tk-component-track-barchart></tk-component-track-barchart>
+	 * 	</file>
+	 * </example>
+	 *
+	 */
 	angular
 		.module('TADkit')
 		.directive('tkComponentTrackBarchart', tkComponentTrackBarchart);
 
-	function tkComponentTrackBarchart(d3Service, Settings) {    
+	function tkComponentTrackBarchart(VERBOSE, $log, d3Service, Settings) {    
 		return {
 			restrict: 'EA',
 			scope: {
@@ -18,7 +42,7 @@
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
-				// console.log(scope);
+				if (VERBOSE) $log.debug(scope);
 
 				d3Service.load().then(function(d3) {
 

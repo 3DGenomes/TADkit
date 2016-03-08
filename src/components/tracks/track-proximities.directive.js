@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.directive('tkComponentTrackProximities', tkComponentTrackProximities);
 
-	function tkComponentTrackProximities(d3Service, Settings) {    
+	function tkComponentTrackProximities(VERBOSE, $log, d3Service, Settings) {    
 		return {
 			restrict: 'EA',
 			scope: {
@@ -18,7 +18,7 @@
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
-				// console.log(scope);
+				if (VERBOSE) $log.debug(scope);
 
 				d3Service.load().then(function(d3) {
 

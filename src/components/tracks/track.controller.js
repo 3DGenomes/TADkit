@@ -4,10 +4,10 @@
 		.module('TADkit')
 		.controller('TrackController', TrackController);
 
-	function TrackController($scope) {
+	function TrackController($log, $scope) {
 		// if ($scope.overlay) {
-		// 	// console.log($scope.overlay.object.id);
-		// 	// console.log($scope.overlay.object.state.overlaid);
+		// 	$log.debug($scope.overlay.object.id);
+		// 	$log.debug($scope.overlay.object.state.overlaid);
 		// 	$scope.overlaid = $scope.overlay.object.state.overlaid;
 		// 	$scope.overlayOrig = Overlays.getOverlay(); // current overlay
 		// 	$scope.toggleOverlay = function(index) {

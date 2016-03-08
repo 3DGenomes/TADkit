@@ -4,23 +4,19 @@
 		.module('TADkit')
 		.directive('tkComponentSceneClusters', tkComponentSceneClusters);
 
-	function tkComponentSceneClusters(THREEService, THREEPlugins, Particles, Cluster) {
+	function tkComponentSceneClusters(VERBOSE, $log, THREEService, THREEPlugins, Particles, Cluster) {
 		return {
 			restrict: 'EA',
 			scope: { 
-				state: '=', /* for scene until can check for DOM loaded */
-				type: '=',
 				title: '@',
-				settings: '=',
 				view: '=',
-				id: '@', /*???*/
 				clusters: '=',
 				overlay:'=',
 				mousemove: '&'
 			},
 			templateUrl: 'assets/templates/scene-clusters.html',
 			link: function postLink( scope, element, attrs ) {
-				// console.log(scope);
+				if (VERBOSE) $log.debug(scope);
 
 				/*
 				 * NOTE: this directive generates all clusters
@@ -40,7 +36,8 @@
 					var ambientLight, pointLight;
 					var controls, playback;
 					var mouseX = 0, mouseY = 0;
-
+					var colCount, tileGutter;
+					var viewportUnit, viewportLeft, viewportBottom, viewportWidth, viewportHeight;
 
 					scope.init = function () {
 
@@ -65,16 +62,29 @@
 						renderer.setSize( width, height );
 						container.appendChild( renderer.domElement );
 
+						// Values from JSON
+						var rowHeight = scope.view.settings.rowHeight;
+						var rowSplit = rowHeight.split(':');
+						var rowRatio = parseInt(rowSplit[0], 10) / parseInt(rowSplit[1], 10);
+						tileGutter = parseInt(scope.view.settings.gutter); // to remove px
+						colCount = scope.view.settings.cols;
+
+						// *** Derived from Angular Material grid-list.js lines 221-267 ***
+						// Fraction of the gutter size that each column takes up.
+						var hGutterShare = (colCount - 1) / colCount;
+						// Percent of the available horizontal space that one column takes up.
+						var hShare = 1 / colCount;
+						var sharedGutter = tileGutter * hGutterShare;
+						viewportUnit = (width * hShare) - sharedGutter; // ie. previous column's right edge
+						viewportWidth = viewportUnit;
+						viewportHeight = viewportWidth * rowRatio;
+
 						// CAMERA
-						camera = new THREE.PerspectiveCamera( scope.view.viewpoint.fov, ( height / height) , scope.view.viewpoint.near, scope.view.viewpoint.far );
+						camera = new THREE.PerspectiveCamera( scope.view.viewpoint.fov, rowRatio, scope.view.viewpoint.near, scope.view.viewpoint.far );
 						camera.position.fromArray(scope.view.viewpoint.camera);
 						camera.name = "Scene Camera";
 						
 						controls = new THREE.TrackballControls(camera, renderer.domElement);
-
-						// dummy scene for clusters.boundingSphere.radius
-						var clustersBoundingBox = new THREE.Box3(); // to calculate merged bounds
-						var clustersBounds = new THREE.Sphere(); // to calculate merged bounds
 
 						angular.forEach( scope.clusters, function(cluster, index) {
 
@@ -95,16 +105,13 @@
 							bundle.name = bundle.name + " " + index;
 							scenes[index].add(bundle);
 
-							// Add to clusters.boundingSphere.radius
-							clustersBoundingBox.union(bundle.boundingBox);
-							clustersBoundingBox.getBoundingSphere(clustersBounds);
-							// console.log(JSON.stringify(clustersBounds));
 						});
 
 						// SET CAMERA ORIENTATION
-						cameraPosition = clustersBounds.center;
-						cameraTarget = clustersBounds.center;
-						cameraTranslate = clustersBounds.radius * scope.view.viewpoint.scale;
+						cameraPosition = scope.view.viewpoint.camera;
+						cameraTarget = scope.view.viewpoint.target;
+						cameraTranslate = scope.view.viewpoint.translate;
+
 						scope.lookAtTarget(cameraPosition, cameraTarget, cameraTranslate);
 					};
 
@@ -156,39 +163,17 @@
 							controls.update();
 							scope.render();
 							timer++;
-							// console.log("AnimationFrame requested");
+							$log.debug("AnimationFrame requested");
 						} else {
 							cancelAnimationFrame( animframe );
-							// console.log("AnimationFrame canceled");
+							$log.debug("AnimationFrame canceled");
 						}
 					};
 
 					scope.render = function () {					
-
-						// Values from JSON
-						var colCount = scope.view.settings.cols;
-						var rowHeight = scope.view.settings.rowHeight;
-						var rowSplit = rowHeight.split(':');
-						var rowRatio = parseInt(rowSplit[0], 10) / parseInt(rowSplit[1], 10);
-						var tileGutter = parseInt(scope.view.settings.gutter); // to remove px
-
 						var colIndex = 1;
 						var rowIndex = 1;
 						var span = 1;
-
-						// *** Derived from Angular Material grid-list.js lines 221-267 ***
-
-						// Fraction of the gutter size that each column takes up.
-						var hGutterShare = (colCount - 1) / colCount;
-						// Percent of the available horizontal space that one column takes up.
-						var hShare = 1 / colCount;
-
-						var sharedGutter = tileGutter * hGutterShare;
-						var viewportUnit = (width * hShare) - sharedGutter; // ie. previous column's right edge
-						var viewportWidth, viewportHeight;
-						viewportWidth = viewportUnit;
-						viewportHeight = viewportWidth * rowRatio;
-
 						angular.forEach( scope.clusters, function(cluster, index) {
 
 							if ( index === 0 ) renderer.clear();
@@ -213,6 +198,7 @@
 								colIndex++;
 							}
 						});
+						$log.debug(camera);
 					};
 
 					// Begin

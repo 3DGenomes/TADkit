@@ -5,8 +5,10 @@
                 "generator": "TADbit"
                 },
         "object": {
-                   "chromEnd" : [16600000.0],
+                   "uuid": "c973e81d-b558-5048-ab07-83e8dcf3cdc8",
                    "identifier" : "GSE38468",
+                   "title": "Sample TADbit data",
+                   "species" : "Drosophila melanogaster",
                    "assembly" : "DBGP 5 (dm3)",
                    "chrom" : ["chrX"],
                    "experimentType" : "Hi-C",
@@ -15,10 +17,8 @@
                    "start" : 10000,
                    "end" : 1020000,
                    "chromStart" : [15590000.0],
+                   "chromEnd" : [16600000.0],
                    "resolution" : 10000,
-                   "species" : "Drosophila melanogaster",
-                   "uuid": "c973e81d-b558-5048-ab07-83e8dcf3cdc8",
-                   "title": "Sample TADbit data",
                    "datatype": "xyz",
                    "components": 3,
                    "source": "local",

@@ -1,45 +1,19 @@
 (function() {
 	'use strict';
-	angular
-		.module('shared')
-		.factory('Utils', Utils);
-
-	function Utils() {
-		return {
-			whatIsIt: function(object) {
-				var stringConstructor = "test".constructor;
-				var arrayConstructor = [].constructor;
-				var objectConstructor = {}.constructor;
-				if (object === null) {
-					return "null";
-				}
-				else if (object === undefined) {
-					return "undefined";
-				}
-				else if (object.constructor === stringConstructor) {
-					return "String";
-				}
-				else if (object.constructor === arrayConstructor) {
-					return "Array";
-				}
-				else if (object.constructor === objectConstructor) {
-					return "Object";
-				}
-				else {
-					return "don't know";
-				}
-			}
-		};
-	}
-})();
-(function() {
-	'use strict';
+	/**
+	 * @ngdoc service
+	 * @name shared.service:Color
+	 * @module shared
+	 *
+	 * @description
+	 * Color processing beyond that covered by the THREEjs and d3js APIs.
+	 *
+	 */
 	angular
 		.module('shared')
 		.factory('Color', Color);
 
 	function Color() {
-
 		// var rootObj = this;
 		var rootObj = {};
 		rootObj.re_ = {
@@ -62,28 +36,55 @@
 		};
 		
 		return {
-			/* Test if color value is a CSS hex color value
+			/**
+			 * @ngdoc function
+			 * @name shared.service:Color#testIfHex
+			 * @methodOf shared.service:Color
+			 * @kind function
+			 *
+			 * @description
+			 * Test if color value is a CSS hex color value
+			 * see https://chromium.googlesource.com/apps/libapps/+/master/libdot/js/lib_colors.js
+			 *
 			 * @param {value} v The color value to test.
 			 * @return {boolean} true or false.
+			 *
 			 */
 			testIfHex: function(v) {
 				var isHex  = /(^[0-9A-F]{6}$)|(^[0-9A-F]{3}$)/i.test(v);
 				return isHex;
 			},
-			/* Convert RGB color triplet to CSS hex color value.
-			 * @param {string} color The RGB color to convert. eg.rgb(255,0,0)
-			 * @return {string} The corresponding CSS hex color eg. #ff0000
+			/**
+			 * @ngdoc function
+			 * @name shared.service:Color#rgbToHex
+			 * @methodOf shared.service:Color
+			 * @kind function
+			 *
+			 * @description
+			 * Convert RGB color triplet to CSS hex color value.
+			 *
+			 * @param {string} rgb The RGB color value to convert eg. "rgb(64,128,192)"
+			 * @return {string} The corresponding CSS hex color eg. "#336699"
+			 *
 			 */
-			rgbToHex: function(color) {
-					var digits = /(.*?)rgb\((\d+), (\d+), (\d+)\)/.exec(color);
-
+			rgbToHex: function(rgb) {
+					var digits = /(.*?)rgb\((\d+), (\d+), (\d+)\)/.exec(rgb);
 					var r = parseInt(digits[2]);
 					var g = parseInt(digits[3]);
 					var b = parseInt(digits[4]);
-
-				    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+					var hex = ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+				    return "#" + hex;
 			},
-			/* Convert X11 color name to CSS hex color value.
+
+			/**
+			 * @ngdoc function
+			 * @name shared.service:Color#nameToHex
+			 * @methodOf shared.service:Color
+			 * @kind function
+			 *
+			 * @description
+			 * Convert X11 color name to CSS hex color value.
+			 *
 			 * @param {string} name The color name to convert eg.red
 			 * @return {string} The corresponding CSS hex color eg.#ff0000
 			 */
@@ -110,8 +111,17 @@
 				}
 				return null;
 			},
-			/* Convert Array of CSS hex color value to Array of THREE Colors
+
+			/**
+			 * @ngdoc function
+			 * @name shared.service:Color#THREEColorsFromHex
+			 * @methodOf shared.service:Color
+			 * @kind function
+			 *
+			 * @description
+			 * Convert Array of CSS hex color value to Array of THREE Colors
 			 * eg. [#rrggbb,#rrggbb,#rrggbb,...] >>> [Color,Color,Color...]
+			 *
 			 * @param {Array} data Array of CSS hex colors.
 			 * @return {Array} The corresponding THREE Color to Array of THREE Colors
 			 */
@@ -123,8 +133,17 @@
 				}
 				return colors;
 			},
-			/* Convert Float32 Array of RGB color components (for THREE Vertex Colors) from Array of THREE Colors
+
+			/**
+			 * @ngdoc function
+			 * @name shared.service:Color#vertexColorsFromTHREEColors
+			 * @methodOf shared.service:Color
+			 * @kind function
+			 *
+			 * @description
+			 * Convert Float32 Array of RGB color components (for THREE Vertex Colors) from Array of THREE Colors
 			 * eg. [#rrggbb,#rrggbb,#rrggbb,...] >>> [Color,Color,Color...]
+			 *
 			 * @param {Array} colors Array of THREE Colors.
 			 * @return {Float32Array} Float32 Array of RGB color components
 			 */
@@ -146,11 +165,22 @@
 				}
 				return vertexColors;
 			},
-			// Extract colors from (Ensembl) INI files
-			// eg. https://raw.githubusercontent.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini
-			//  OR https://cdn.rawgit.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini
-			//  OR in TADkit: assets/defaults/ensembl-webcode-COLOUR.ini
-			// Generate 'colors list' Object from INI data
+
+			/**
+			 * @ngdoc function
+			 * @name shared.service:Color#colorsFromIni
+			 * @methodOf shared.service:Color
+			 * @kind function
+			 *
+			 * @description
+			 * Extract colors from (Ensembl) INI files
+			 * eg. https://raw.githubusercontent.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini
+			 * OR https://cdn.rawgit.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini
+			 * OR in TADkit: assets/defaults/ensembl-webcode-COLOUR.ini
+			 *
+			 * @param {value} text data.
+			 * @return {Object} Generate 'colors list' Object from INI data.
+			 */
 			colorsFromIni: function(data) {
 				var self = this;
 				var regex = {
@@ -189,6 +219,20 @@
 })();
 (function () {
 	'use strict';
+	/**
+	 * @ngdoc directive
+	 * @name shared.directive:routeCssClassnames
+	 * @scope
+	 * @restrict A
+	 * @element body
+	 * @description
+	 * Adds a Class name as class to html body.
+	 * @see http://stackoverflow.com/a/32574746/1667410
+	 *
+	 * @example
+	 *	`<body route-css-classnames>`
+	 *
+	 */
 	angular
 		.module('shared')
 		.directive('routeCssClassnames', routeCssClassnames);
@@ -218,3 +262,78 @@
 		};
 	}
 }());
+(function () {
+	'use strict';
+	/**
+	 * @ngdoc overview
+	 * @name shared
+	 * @module shared
+	 * @description
+	 * Generic Shared Module
+	 * Contains scripts which are not available on Bower
+	 * and are not app-specific but essential to the App.
+	 *
+	 * @example
+	 * `angular.module('myModule',['shared']);`
+	 *
+	 */
+	angular
+		.module('shared', []);
+}());
+(function() {
+	'use strict';
+	/**
+	 * @ngdoc service
+	 * @name shared.service:Utils
+	 * @module shared
+	 *
+	 * @description
+	 * Generic javascript utilities.
+	 *
+	 */
+	angular
+		.module('shared')
+		.factory('Utils', Utils);
+
+	function Utils() {
+		return {
+			/**
+			 * @ngdoc function
+			 * @name shared.service:Utils#whatIsIt
+			 * @methodOf shared.service:Utils
+			 * @kind function
+			 *
+			 * @description
+			 * A function that detrmines the type of object being passed.
+			 * @see http://stackoverflow.com/a/11183002/1667410
+			 *
+			 * @param {object} value to be returned.
+			 * @returns {string} description of object type
+			 * [ null | undefined | String | Array | Object | don't know ].
+			 */
+			whatIsIt: function(object) {
+				var stringConstructor = "test".constructor;
+				var arrayConstructor = [].constructor;
+				var objectConstructor = {}.constructor;
+				if (object === null) {
+					return "null";
+				}
+				else if (object === undefined) {
+					return "undefined";
+				}
+				else if (object.constructor === stringConstructor) {
+					return "String";
+				}
+				else if (object.constructor === arrayConstructor) {
+					return "Array";
+				}
+				else if (object.constructor === objectConstructor) {
+					return "Object";
+				}
+				else {
+					return "don't know";
+				}
+			}
+		};
+	}
+})();

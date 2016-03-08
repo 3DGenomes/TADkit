@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.directive('tkComponentWiggle0', tkComponentWiggle0);
 
-	function tkComponentWiggle0(d3Service) {    
+	function tkComponentWiggle0(VERBOSE, $log, d3Service) {    
 		return {
 			restrict: 'EA',
 			scope: {
@@ -19,7 +19,7 @@
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
 				d3Service.load().then(function(d3) {
-					// console.log(scope);
+					if (VERBOSE) $log.debug(scope);
 
  					// DATA MANIPULATION >>> MOVE TO CONTROLLER
 					var data = scope.data;

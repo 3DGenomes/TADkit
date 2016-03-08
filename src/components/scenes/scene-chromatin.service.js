@@ -5,9 +5,9 @@
 		.factory('Chromatin', Chromatin);
 
 	// constructor for chromatin model instances
-	function Chromatin(Paths, PathControls) {
+	function Chromatin(VERBOSE, $log, Paths, PathControls) {
 		return function(data, colors, settings) {
-			// console.log(colors);
+			if (VERBOSE) $log.debug(colors);
 
 			var defaults = {
 				visible: true,

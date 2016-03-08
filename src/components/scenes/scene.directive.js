@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.directive('tkComponentScene', tkComponentScene);
 
-	function tkComponentScene($rootScope, THREEService, THREEPlugins, Particles, Chromatin, Network) {
+	function tkComponentScene($log, $rootScope, THREEService, THREEPlugins, Particles, Chromatin, Network) {
 		return {
 			restrict: 'EA',
 			scope: { 
@@ -44,23 +44,18 @@
 					scope.init = function () {
 
 						// VIEWPORT
-						/* component-controller == element[0].children[0]
+						/* component = element[0].parentNode
+						 * component-controller == element[0].children[0]
 						 * - component-header == element[0].children[0].children[0]
 						 * - component-body == element[0].children[0].children[3]
 						 */
-						// component = element[0].parentNode;
-						// console.log(component.clientWidth);
+						
 						viewport = element[0].children[0].children[3];
-						// console.log(viewport.clientWidth);
-						// if with controller use line below
-						// viewport = element[0].children[0].children[3];
 
 						// width = component.clientWidth; // NEED TO WAIT UNTIL DOM LOADED
 						width = parseInt(scope.state.width); // USE UNTIL DOM CHECK AVAILBLE
 						// height = component.clientHeight;
 						height = parseInt(scope.state.height); // USE UNTIL DOM CHECK AVAILBLE
-						// OJO! DOM NOT READY
-						// console.log(element[0].firstChild.children[2].clientWidth);
 				
 						var background = scope.view.settings.background;
 						// var clearColor = "0x" + background.substring(1);
@@ -161,7 +156,7 @@
 						// scope.$watchGroup( componentOptions, function( newValues, oldValues ) {
 						// 	angular.forEach( newValues, function(value, index) {
 						// 		if ( newValues[index] !== oldValues[index] ) {
-						// 			console.log( value );
+						// 			$log.debug( value );
 						// 		}
 						// 	});
 						// });

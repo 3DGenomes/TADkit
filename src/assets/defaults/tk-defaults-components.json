@@ -103,10 +103,10 @@
 				"scale" : 1,
 				"camera" : [ 5000, 5000, 5000 ],
 				"target" : [ 0, 0, 0 ],
-				"fov" : 28,
+				"translate" : 500,
+				"fov" : 12,
 				"near" : 1,
 				"far" : 1000000,
-				"translate" : 30000,
 				"fog" : true,
 				"fogNear" : 0.8,
 				"fogFar" : 1.25
@@ -339,7 +339,7 @@
 			"uuid" : "00000000-0000-0000-0000-000000000004",
 			"id" : "h-restraints-track",
 			"title" : "Restraints",
-			"type" : "track-barchart",
+			"type" : "track-restraints",
 			"dataset" : "restraints",
 			"state" : {
 				"width" : "100%",

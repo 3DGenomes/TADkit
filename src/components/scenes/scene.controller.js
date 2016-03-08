@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.controller('SceneController', SceneController);
 
-	function SceneController($state, $scope, Datasets) {
+	function SceneController($log, $state, $scope, Datasets) {
 
 		$scope.optionsState = false;
 		$scope.toggleOptions = function() {
@@ -13,14 +13,14 @@
 
 		$scope.toggle = function(bool) {
 			bool = !bool;
-			console.log(bool);
+			$log.debug(bool);
 		};
 
 		// On click set selected cluster
 		$scope.selectCluster = function(index) {
 			Datasets.setCluster(index + 1);
-			var centroidRef = Datasets.getCentroid();
-			console.log("Current Cluster: " + (index + 1) + " (Centroid Model: " + centroidRef + ")");
+			var centroidRef = Datasets.getCentroidRef();
+			$log.info("Current Cluster: " + (index + 1) + " (Centroid Model: " + centroidRef + ")");
 			$state.go('browser');
 		};
 

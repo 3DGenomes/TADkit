@@ -4,12 +4,12 @@
 		.module('TADkit')
 		.directive('tkComponent', tkComponent);
 
-	function tkComponent($compile) {
+	function tkComponent(VERBOSE, $log, $compile) {
 		return {
 			restrict: 'EA',
 			// controller: 'StoryboardController',
 			link: function(scope, element, attrs) {
-				// console.log(scope);
+				if (VERBOSE) $log.debug(scope);
 
 				var strTemplate = '<data-tk-component-' + scope.component.object.type + ' ' +
 					'id="{{component.object.id}}-' + scope.$index + '" ' +
