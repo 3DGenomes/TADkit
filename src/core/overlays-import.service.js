@@ -16,42 +16,20 @@
 		.module('TADkit')
 		.factory('OverlaysImport', OverlaysImport);
 
-	function OverlaysImport($log, $q, $http, uuid4, Utils) {
+	function OverlaysImport($log, $q, $http, uuid4) {
 		// Import additional 2D/track data imported by users for use as Overlays
 
 		return {
-			load: function(filename, filetype, defaults) {
-				filename = filename || "tk-example-dataset";
-				filetype = filetype || "tsv";
-				if (typeof defaults === 'undefined') defaults = true;
-				var self = this;
-
-				var deferred = $q.defer();
-				var datapath = "defaults";
-				if (filename != "tk-example-dataset") datapath = "examples";
-				var dataUrl = "assets/" + datapath + "/" + filename + "." + filetype;
-				$http.get(dataUrl)
-				.success( function(fileData) {
-					var importedOverlays = self.import(fileData,[],[],defaults);
-					$log.debug("Overlays (" + importedOverlays.length + ") imported from " + dataUrl);
-					deferred.resolve(importedOverlays);
-				})
-				.error(function(fileData) {
-					$log.error("No associated data tracks found.");
-				});
-				return deferred.promise;
-			},
 			import: function(data, rows, cols) {
 				var self = this;
-				// TODO: if not valid data return...
+				data = data || []; // validate data???
 				rows = rows || [];
 				cols = cols || [];
 
 				// Check if data is already parsed
 				var parsedData;
-				var dataType = Utils.whatIsIt(data);
-				if (dataType == "String") {
-					parsedData = self.parse(data).data;
+				if (angular.isString(data)) {
+					parsedData = self.parse(data);
 				} else {
 					parsedData = data; // already parsed to JSON object
 				}
@@ -74,7 +52,7 @@
 					skipEmptyLines: true,
 					fastMode: true
 				});
-				return parsedData;
+				return parsedData.data;
 			},
 			filter: function(dataTable, selectedRows, selectedCols) {
 				// dataTable [[row1col1,row1col2...],[row2col1,row2col2...]...]

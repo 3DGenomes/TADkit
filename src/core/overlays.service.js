@@ -11,6 +11,7 @@
 	 * @requires https://github.com/monicao/angular-uuid4
 	 * @requires TADkit.service:OverlaysImport
 	 * @requires TADkit.service:Settings
+	 * @requires TADkit.service:Storyboards
 	 * @requires TADkit.service:FeaturesEnsembl
 	 * @requires TADkit.service:ColorsEnsembl
 	 * @requires TADkit.service:Segments
@@ -47,21 +48,35 @@
 				}
 				return deferred.promise;
 			},
-			loadFromFile: function(filename, filetype, resetToDefaults) {
-				filename = filename || "none";
+			loadFromFile: function(filename, filetype, defaults) {
+				filename = filename || "tk-example-dataset";
 				filetype = filetype || "tsv";
-				resetToDefaults = resetToDefaults || true;
-				if (filename != "none") OverlaysImport.load(filename, filetype, resetToDefaults);
-			},
-			// Fetch data from external file
-			fetch: function(fileContent) {
-				var fileData = OverlaysImport.parse(fileContent).data;
-				return fileData;
+				if (typeof defaults === 'undefined') defaults = true;
+				var self = this;
+
+				var deferred = $q.defer();
+				var datapath = "defaults";
+				if (filename != "tk-example-dataset") datapath = "examples";
+				var dataUrl = "assets/" + datapath + "/" + filename + "." + filetype;
+				$http.get(dataUrl)
+				.success( function(fileData) {
+					self.import(fileData,[],[]);
+					$log.debug("Overlays (" + fileData.length + ") imported from " + dataUrl);
+					deferred.resolve(fileData);
+				})
+				.error(function(fileData) {
+					$log.error("No associated data found.");
+				});
+				return deferred.promise;
 			},
 			// Import fetched external data as TADKit Overlays
-			import: function(parsedData, selectedRows, selectedCols) {
+			import: function(data, selectedRows, selectedCols, defaults) {
+				data = data || "none"; // Add error check
+				selectedRows = selectedRows || [];
+				selectedCols = selectedCols || [];
+				var importedOverlays = OverlaysImport.import(data, selectedRows, selectedCols);
 				var self = this;
-				var importedOverlays = OverlaysImport.import(parsedData, selectedRows, selectedCols);
+				if (defaults) self.defaults;
 				self.add(importedOverlays);
 				return importedOverlays;
 			},
@@ -73,9 +88,9 @@
 				angular.forEach(importedOverlays, function(overlay, key) {
 					var overlayExists = false;
 					// for (var i = overlays.loaded.length - 1; i >= 0; i--) {
-						$log.debug(overlays.loaded[i].object.uuid);
-						$log.debug(overlay.object.uuid);
-						// if (overlays.loaded[i].object.uuid == overlay.object.uuid) overlayExists = true;
+					// 	$log.debug(overlays.loaded[i].object.uuid);
+					// 	$log.debug(overlay.object.uuid);
+					// 	// if (overlays.loaded[i].object.uuid == overlay.object.uuid) overlayExists = true;
 					// }
 					if (!overlayExists) {
 						currentOverlaysIndex++;

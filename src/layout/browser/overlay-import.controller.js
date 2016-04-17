@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.controller('OverlayImportController', OverlayImportController);
 
-	function OverlayImportController ($log, $state, $scope, $mdDialog, $mdToast, Overlays) {
+	function OverlayImportController ($log, $state, $scope, $mdDialog, $mdToast, OverlaysImport, Overlays) {
 		$scope.fileTitle = "No file loaded";
 
 		$scope.$on('$viewContentLoaded', function() {
@@ -40,8 +40,8 @@
 		});
 
 		$scope.fetchData = function($fileContent) {
-			// Fetch fileContent to return parsed file data
-			$scope.fileData = Overlays.fetch($fileContent);
+			// Parse $fileContent user visual check in modal window
+			$scope.fileData = OverlaysImport.parse($fileContent);
 
 			// Selected Rows in File Data
 			// Controlled by checkboxes in overlay-import.html

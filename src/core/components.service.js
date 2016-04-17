@@ -167,7 +167,7 @@
 				// }
 				// component.view.viewpoint.scale = scale;
 				$log.info("Component initialized!");
-				return component;
+				return components;
 			},
 
 			/**

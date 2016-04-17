@@ -51,7 +51,8 @@ gulp.task('lint', function() {
 		])
 		// .pipe(jscs())
 		// .pipe(jscs.reporter());
-		.pipe(jshint({ devel: true }))
+		// To check UNUSED use "unused: true"
+		.pipe(jshint({ devel: true}))
 		.pipe(jshint.reporter('default'));
 });
 

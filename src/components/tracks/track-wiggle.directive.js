@@ -1,5 +1,19 @@
 (function() {
 	'use strict';
+	/**
+	 * @ngdoc directive
+	 * @name TADkit.directive:tkComponentWiggle0
+	 * @scope
+	 * @restrict EA
+	 *
+	 * @description
+	 * Track component which generates a d3 graph
+	 * from supplied BigWig (wiggle format) data.
+	 *
+	 * @example
+	 * `<div tk-component-wiggle0 type="component.object.type" title="component.object.title" settings="settings" view="component.view" data="component.data" overlay="component.overlay" toggleoverlay="toggleOverlay(index)"></div>`
+	 *
+	 */
 	angular
 		.module('TADkit')
 		.directive('tkComponentWiggle0', tkComponentWiggle0);
@@ -97,6 +111,18 @@
 						scope.update();
 					});
 
+					/**
+					 * @ngdoc function
+					 * @name TADkit.directive:tkComponentWiggle0#render
+					 * @methodOf TADkit.directive:tkComponentWiggle0
+					 * @kind function
+					 *
+					 * @description
+					 * Initial render of d3.js graph
+					 *
+					 * @param {Object} Data A colleciton of .
+					 * @returns {Object} A d3.js Object.
+					 */
 					scope.render = function(data) {
 						svg.selectAll('*').remove();
  
@@ -192,6 +218,16 @@
 									.attr("class", "highlight-follow");
 					};
 
+					/**
+					 * @ngdoc function
+					 * @name TADkit.directive:tkComponentWiggle0#update
+					 * @methodOf TADkit.directive:tkComponentWiggle0
+					 * @kind function
+					 *
+					 * @description
+					 * Updates d3.js graph
+					 *
+					 */
 					scope.update = function() {
 						// 	var width = component.clientWidth - (2 * componentMargin) - margin.left - margin.right,
 						// 		height = trackHeight - margin.top - margin.bottom;

@@ -1,5 +1,19 @@
 (function() {
 	'use strict';
+	/**
+	 * @ngdoc directive
+	 * @name TADkit.directive:tkComponent
+	 * @restrict EA
+	 *
+	 * @description
+	 * Dummy components directive that is replaced on complie
+	 * by real component directive from supplied object type.
+	 * e.g. from a array of components objects
+	 *
+	 * @example
+	 * `<div tk-component ng-repeat='component in components'></div>`
+	 *
+	 */
 	angular
 		.module('TADkit')
 		.directive('tkComponent', tkComponent);

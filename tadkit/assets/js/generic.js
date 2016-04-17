@@ -1,4 +1,4 @@
-(function() {
+	(function() {
 	'use strict';
 	/**
 	 * @ngdoc service
@@ -196,7 +196,7 @@
 	 * @restrict A
 	 * @element body
 	 * @description
-	 * Adds a Class name as class to html body.
+	 * Add a Class name as class to html body.
 	 * @see http://stackoverflow.com/a/32574746/1667410
 	 *
 	 * @example

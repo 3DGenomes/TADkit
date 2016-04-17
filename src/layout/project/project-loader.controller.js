@@ -29,6 +29,7 @@
 		// On dropzone (load external file)
 		// Adds JSON to current project - load TSV when in browser
 		$scope.addDataset = function($fileContent) {
+			$log.info($fileContent);
 			var adding = Datasets.add($fileContent);
 			return $q.all([ adding ])
 			.then(function(results){

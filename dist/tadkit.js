@@ -489,7 +489,7 @@ angular.module("TADkit")
 				// }
 				// component.view.viewpoint.scale = scale;
 				$log.info("Component initialized!");
-				return component;
+				return components;
 			},
 
 			/**
@@ -642,14 +642,13 @@ angular.module("TADkit")
 	 * @requires https://code.angularjs.org/1.3.16/docs/api/ng/service/$q
 	 * @requires https://code.angularjs.org/1.3.16/docs/api/ng/service/$http
 	 * @requires https://github.com/monicao/angular-uuid4
-	 * @requires generic.service:Utils
 	 *
 	 */
 	angular
 		.module('TADkit')
 		.factory('Datasets', Datasets);
 
-	function Datasets(VERBOSE, $log, $q, $http, uuid4, Utils) {
+	function Datasets(VERBOSE, $log, $q, $http, uuid4) {
 		var datasets = {
 			loaded : [],
 			current : {
@@ -721,15 +720,15 @@ angular.module("TADkit")
 			 */
 			add: function(data) {
 				var self = this;
-				var dataset = self.validate(data);
+				self.validate(data);
+				// in case invalid...?
+				self.format(data);
 				// var uuid = dataObj.uuid || uuid4.generate(),
 				// if (!projects.default.datasets[uuid]) {
-					datasets.loaded.push(dataset);
+					datasets.loaded.push(data);
 					datasets.current.index = datasets.loaded.length - 1;
-					self.setSpeciesUrl();
-					self.setRegion();
 					self.groupClusters();
-					$log.info("Dataset " + dataset.object.species + " " + dataset.object.region + " loaded from file.");
+					$log.info("Dataset " + data.object.species + " " + data.object.region + " loaded from file.");
 				// }
 				return datasets;
 			},
@@ -748,13 +747,14 @@ angular.module("TADkit")
 			 */
 			validate: function(data) {
 				var validDataset = {};
-				var objectType = Utils.whatIsIt(data);
-				if (objectType === "String") {
+				if (angular.isString(data)) {
 					validDataset = JSON.parse(data);
 				} else {
 					// TODO: add specific options for Array, Object, null, etc.
 					validDataset = data;
 				}
+
+
 				var validation = true;
 				// ADD VALIDATION LOGIC...
 				// check structure
@@ -765,6 +765,28 @@ angular.module("TADkit")
 					// give error message
 					// return to Project Loader page
 				}
+			},
+
+			/**
+			 * @ngdoc function
+			 * @name TADkit.service:Datasets#format
+			 * @methodOf TADkit.service:Datasets
+			 * @kind function
+			 *
+			 * @description
+			 * Formats data for dataset.
+			 *
+			 * @returns {Object} Formatted data.
+			 */
+			format: function(data) {
+				var species = data.object.species;
+				var speciesUrl = species.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+				data.object.speciesUrl = speciesUrl;
+				for (var i = data.object.chrom.length - 1; i >= 0; i--) {
+					data.object.chrom[i].toLowerCase();
+				}
+				data.object.region = data.object.chrom + ":" + data.object.chromStart + "-" + data.object.chromEnd;
+				return data;
 			},
 
 			/**
@@ -810,34 +832,13 @@ angular.module("TADkit")
 
 			/**
 			 * @ngdoc function
-			 * @name TADkit.service:Datasets#setSpeciesUrl
-			 * @methodOf TADkit.service:Datasets
-			 * @kind function
-			 *
-			 * @description
-			 * Converts species data to valid URL (lowercase alphanumeric + underscores).
-			 *
-			 * @requires $log
-			 *
-			 * @param {number} [index] Index of dataset.
-			 * @returns {string} String of URL formatted species data.
-			 */
-			setSpeciesUrl: function(index) {
-				if (index === undefined || index === false) index = datasets.current.index;
-				var species = datasets.loaded[index].object.species;
-				var speciesUrl = species.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-				datasets.loaded[index].object.speciesUrl = speciesUrl;
-				return speciesUrl;
-			},
-
-			/**
-			 * @ngdoc function
 			 * @name TADkit.service:Datasets#setRegion
 			 * @methodOf TADkit.service:Datasets
 			 * @kind function
 			 *
 			 * @description
 			 * Combines chromosome, chromStart and chromEnd into genomic region e.g "x:1-1000".
+			 * Sets as current region array for first or supplied index of chromsomes in dataset.
 			 *
 			 * @requires $log
 			 *
@@ -1186,7 +1187,7 @@ angular.module("TADkit")
 		.module('TADkit')
 		.factory('Init', Init);
 
-	function Init($log, $q, Users, Projects, Datasets, Overlays, Storyboards, Settings, Proximities, Restraints, ColorsEnsembl) {
+	function Init($log, $q, Users, Projects, Datasets, Overlays, OverlaysImport, Storyboards, Settings, Proximities, Restraints, ColorsEnsembl) {
 
 		/**
 		 * @ngdoc function
@@ -1249,9 +1250,9 @@ angular.module("TADkit")
 			var datasetDimension = currentModelData.length / 3; // 3 == xyz components of vertices
 			var restraints = Restraints.set(currentDataset.restraints, datasetDimension);
 
-			// Update Overlays for initialized Dataset
+			// Update Overlays for initialized Dataset.
 			var overlaysUpdate = Overlays.update(distances, restraints);
-			// Load example TSV for initial/current Dataset
+			// Load and import example TSV for initial/current Dataset.
 			var overlaysFile = Overlays.loadFromFile(currentDataset.object.filename);
 
 			return $q.all([overlaysUpdate, overlaysFile])
@@ -1319,42 +1320,20 @@ angular.module("TADkit")
 		.module('TADkit')
 		.factory('OverlaysImport', OverlaysImport);
 
-	function OverlaysImport($log, $q, $http, uuid4, Utils) {
+	function OverlaysImport($log, $q, $http, uuid4) {
 		// Import additional 2D/track data imported by users for use as Overlays
 
 		return {
-			load: function(filename, filetype, defaults) {
-				filename = filename || "tk-example-dataset";
-				filetype = filetype || "tsv";
-				if (typeof defaults === 'undefined') defaults = true;
-				var self = this;
-
-				var deferred = $q.defer();
-				var datapath = "defaults";
-				if (filename != "tk-example-dataset") datapath = "examples";
-				var dataUrl = "assets/" + datapath + "/" + filename + "." + filetype;
-				$http.get(dataUrl)
-				.success( function(fileData) {
-					var importedOverlays = self.import(fileData,[],[],defaults);
-					$log.debug("Overlays (" + importedOverlays.length + ") imported from " + dataUrl);
-					deferred.resolve(importedOverlays);
-				})
-				.error(function(fileData) {
-					$log.error("No associated data tracks found.");
-				});
-				return deferred.promise;
-			},
 			import: function(data, rows, cols) {
 				var self = this;
-				// TODO: if not valid data return...
+				data = data || []; // validate data???
 				rows = rows || [];
 				cols = cols || [];
 
 				// Check if data is already parsed
 				var parsedData;
-				var dataType = Utils.whatIsIt(data);
-				if (dataType == "String") {
-					parsedData = self.parse(data).data;
+				if (angular.isString(data)) {
+					parsedData = self.parse(data);
 				} else {
 					parsedData = data; // already parsed to JSON object
 				}
@@ -1377,7 +1356,7 @@ angular.module("TADkit")
 					skipEmptyLines: true,
 					fastMode: true
 				});
-				return parsedData;
+				return parsedData.data;
 			},
 			filter: function(dataTable, selectedRows, selectedCols) {
 				// dataTable [[row1col1,row1col2...],[row2col1,row2col2...]...]
@@ -1523,6 +1502,7 @@ angular.module("TADkit")
 	 * @requires https://github.com/monicao/angular-uuid4
 	 * @requires TADkit.service:OverlaysImport
 	 * @requires TADkit.service:Settings
+	 * @requires TADkit.service:Storyboards
 	 * @requires TADkit.service:FeaturesEnsembl
 	 * @requires TADkit.service:ColorsEnsembl
 	 * @requires TADkit.service:Segments
@@ -1559,21 +1539,35 @@ angular.module("TADkit")
 				}
 				return deferred.promise;
 			},
-			loadFromFile: function(filename, filetype, resetToDefaults) {
-				filename = filename || "none";
+			loadFromFile: function(filename, filetype, defaults) {
+				filename = filename || "tk-example-dataset";
 				filetype = filetype || "tsv";
-				resetToDefaults = resetToDefaults || true;
-				if (filename != "none") OverlaysImport.load(filename, filetype, resetToDefaults);
-			},
-			// Fetch data from external file
-			fetch: function(fileContent) {
-				var fileData = OverlaysImport.parse(fileContent).data;
-				return fileData;
+				if (typeof defaults === 'undefined') defaults = true;
+				var self = this;
+
+				var deferred = $q.defer();
+				var datapath = "defaults";
+				if (filename != "tk-example-dataset") datapath = "examples";
+				var dataUrl = "assets/" + datapath + "/" + filename + "." + filetype;
+				$http.get(dataUrl)
+				.success( function(fileData) {
+					self.import(fileData,[],[]);
+					$log.debug("Overlays (" + fileData.length + ") imported from " + dataUrl);
+					deferred.resolve(fileData);
+				})
+				.error(function(fileData) {
+					$log.error("No associated data found.");
+				});
+				return deferred.promise;
 			},
 			// Import fetched external data as TADKit Overlays
-			import: function(parsedData, selectedRows, selectedCols) {
+			import: function(data, selectedRows, selectedCols, defaults) {
+				data = data || "none"; // Add error check
+				selectedRows = selectedRows || [];
+				selectedCols = selectedCols || [];
+				var importedOverlays = OverlaysImport.import(data, selectedRows, selectedCols);
 				var self = this;
-				var importedOverlays = OverlaysImport.import(parsedData, selectedRows, selectedCols);
+				if (defaults) self.defaults;
 				self.add(importedOverlays);
 				return importedOverlays;
 			},
@@ -1585,9 +1579,9 @@ angular.module("TADkit")
 				angular.forEach(importedOverlays, function(overlay, key) {
 					var overlayExists = false;
 					// for (var i = overlays.loaded.length - 1; i >= 0; i--) {
-						$log.debug(overlays.loaded[i].object.uuid);
-						$log.debug(overlay.object.uuid);
-						// if (overlays.loaded[i].object.uuid == overlay.object.uuid) overlayExists = true;
+					// 	$log.debug(overlays.loaded[i].object.uuid);
+					// 	$log.debug(overlay.object.uuid);
+					// 	// if (overlays.loaded[i].object.uuid == overlay.object.uuid) overlayExists = true;
 					// }
 					if (!overlayExists) {
 						currentOverlaysIndex++;
@@ -2365,6 +2359,20 @@ angular.module("TADkit")
 })();
 (function() {
 	'use strict';
+	/**
+	 * @ngdoc directive
+	 * @name TADkit.directive:tkComponent
+	 * @restrict EA
+	 *
+	 * @description
+	 * Dummy components directive that is replaced on complie
+	 * by real component directive from supplied object type.
+	 * e.g. from a array of components objects
+	 *
+	 * @example
+	 * `<div tk-component ng-repeat='component in components'></div>`
+	 *
+	 */
 	angular
 		.module('TADkit')
 		.directive('tkComponent', tkComponent);
@@ -5217,6 +5225,20 @@ angular.module("TADkit")
 })();
 (function() {
 	'use strict';
+	/**
+	 * @ngdoc directive
+	 * @name TADkit.directive:tkComponentWiggle0
+	 * @scope
+	 * @restrict EA
+	 *
+	 * @description
+	 * Track component which generates a d3 graph
+	 * from supplied BigWig (wiggle format) data.
+	 *
+	 * @example
+	 * `<div tk-component-wiggle0 type="component.object.type" title="component.object.title" settings="settings" view="component.view" data="component.data" overlay="component.overlay" toggleoverlay="toggleOverlay(index)"></div>`
+	 *
+	 */
 	angular
 		.module('TADkit')
 		.directive('tkComponentWiggle0', tkComponentWiggle0);
@@ -5314,6 +5336,18 @@ angular.module("TADkit")
 						scope.update();
 					});
 
+					/**
+					 * @ngdoc function
+					 * @name TADkit.directive:tkComponentWiggle0#render
+					 * @methodOf TADkit.directive:tkComponentWiggle0
+					 * @kind function
+					 *
+					 * @description
+					 * Initial render of d3.js graph
+					 *
+					 * @param {Object} Data A colleciton of .
+					 * @returns {Object} A d3.js Object.
+					 */
 					scope.render = function(data) {
 						svg.selectAll('*').remove();
  
@@ -5409,6 +5443,16 @@ angular.module("TADkit")
 									.attr("class", "highlight-follow");
 					};
 
+					/**
+					 * @ngdoc function
+					 * @name TADkit.directive:tkComponentWiggle0#update
+					 * @methodOf TADkit.directive:tkComponentWiggle0
+					 * @kind function
+					 *
+					 * @description
+					 * Updates d3.js graph
+					 *
+					 */
 					scope.update = function() {
 						// 	var width = component.clientWidth - (2 * componentMargin) - margin.left - margin.right,
 						// 		height = trackHeight - margin.top - margin.bottom;
@@ -5467,7 +5511,7 @@ angular.module("TADkit")
 		.module('TADkit')
 		.controller('OverlayImportController', OverlayImportController);
 
-	function OverlayImportController ($log, $state, $scope, $mdDialog, $mdToast, Overlays) {
+	function OverlayImportController ($log, $state, $scope, $mdDialog, $mdToast, OverlaysImport, Overlays) {
 		$scope.fileTitle = "No file loaded";
 
 		$scope.$on('$viewContentLoaded', function() {
@@ -5503,8 +5547,8 @@ angular.module("TADkit")
 		});
 
 		$scope.fetchData = function($fileContent) {
-			// Fetch fileContent to return parsed file data
-			$scope.fileData = Overlays.fetch($fileContent);
+			// Parse $fileContent user visual check in modal window
+			$scope.fileData = OverlaysImport.parse($fileContent);
 
 			// Selected Rows in File Data
 			// Controlled by checkboxes in overlay-import.html
@@ -5882,6 +5926,7 @@ angular.module("TADkit")
 		// On dropzone (load external file)
 		// Adds JSON to current project - load TSV when in browser
 		$scope.addDataset = function($fileContent) {
+			$log.info($fileContent);
 			var adding = Datasets.add($fileContent);
 			return $q.all([ adding ])
 			.then(function(results){

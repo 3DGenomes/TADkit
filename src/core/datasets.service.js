@@ -9,14 +9,13 @@
 	 * @requires https://code.angularjs.org/1.3.16/docs/api/ng/service/$q
 	 * @requires https://code.angularjs.org/1.3.16/docs/api/ng/service/$http
 	 * @requires https://github.com/monicao/angular-uuid4
-	 * @requires generic.service:Utils
 	 *
 	 */
 	angular
 		.module('TADkit')
 		.factory('Datasets', Datasets);
 
-	function Datasets(VERBOSE, $log, $q, $http, uuid4, Utils) {
+	function Datasets(VERBOSE, $log, $q, $http, uuid4) {
 		var datasets = {
 			loaded : [],
 			current : {
@@ -88,15 +87,15 @@
 			 */
 			add: function(data) {
 				var self = this;
-				var dataset = self.validate(data);
+				self.validate(data);
+				// in case invalid...?
+				self.format(data);
 				// var uuid = dataObj.uuid || uuid4.generate(),
 				// if (!projects.default.datasets[uuid]) {
-					datasets.loaded.push(dataset);
+					datasets.loaded.push(data);
 					datasets.current.index = datasets.loaded.length - 1;
-					self.setSpeciesUrl();
-					self.setRegion();
 					self.groupClusters();
-					$log.info("Dataset " + dataset.object.species + " " + dataset.object.region + " loaded from file.");
+					$log.info("Dataset " + data.object.species + " " + data.object.region + " loaded from file.");
 				// }
 				return datasets;
 			},
@@ -115,13 +114,14 @@
 			 */
 			validate: function(data) {
 				var validDataset = {};
-				var objectType = Utils.whatIsIt(data);
-				if (objectType === "String") {
+				if (angular.isString(data)) {
 					validDataset = JSON.parse(data);
 				} else {
 					// TODO: add specific options for Array, Object, null, etc.
 					validDataset = data;
 				}
+
+
 				var validation = true;
 				// ADD VALIDATION LOGIC...
 				// check structure
@@ -132,6 +132,28 @@
 					// give error message
 					// return to Project Loader page
 				}
+			},
+
+			/**
+			 * @ngdoc function
+			 * @name TADkit.service:Datasets#format
+			 * @methodOf TADkit.service:Datasets
+			 * @kind function
+			 *
+			 * @description
+			 * Formats data for dataset.
+			 *
+			 * @returns {Object} Formatted data.
+			 */
+			format: function(data) {
+				var species = data.object.species;
+				var speciesUrl = species.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+				data.object.speciesUrl = speciesUrl;
+				for (var i = data.object.chrom.length - 1; i >= 0; i--) {
+					data.object.chrom[i].toLowerCase();
+				}
+				data.object.region = data.object.chrom + ":" + data.object.chromStart + "-" + data.object.chromEnd;
+				return data;
 			},
 
 			/**
@@ -177,34 +199,13 @@
 
 			/**
 			 * @ngdoc function
-			 * @name TADkit.service:Datasets#setSpeciesUrl
-			 * @methodOf TADkit.service:Datasets
-			 * @kind function
-			 *
-			 * @description
-			 * Converts species data to valid URL (lowercase alphanumeric + underscores).
-			 *
-			 * @requires $log
-			 *
-			 * @param {number} [index] Index of dataset.
-			 * @returns {string} String of URL formatted species data.
-			 */
-			setSpeciesUrl: function(index) {
-				if (index === undefined || index === false) index = datasets.current.index;
-				var species = datasets.loaded[index].object.species;
-				var speciesUrl = species.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-				datasets.loaded[index].object.speciesUrl = speciesUrl;
-				return speciesUrl;
-			},
-
-			/**
-			 * @ngdoc function
 			 * @name TADkit.service:Datasets#setRegion
 			 * @methodOf TADkit.service:Datasets
 			 * @kind function
 			 *
 			 * @description
 			 * Combines chromosome, chromStart and chromEnd into genomic region e.g "x:1-1000".
+			 * Sets as current region array for first or supplied index of chromsomes in dataset.
 			 *
 			 * @requires $log
 			 *

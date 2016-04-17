@@ -28,7 +28,7 @@ NG_DOCS={
       "type": "service",
       "moduleName": "bioinformatics",
       "shortDescription": "Import and manage Genomic features (eg. genes) from Ensembl etc.",
-      "keywords": "16 address adds angularjs api array base bioinformatics biotype biotypestyle check color css data emsembl ensebl ensembl features featuresensembl format function genes genomic https idenify import length lengthbp lengths level list load lowercase manage object online org overlay pair path ping pings property regions requesting separators server service setbiotypestyle setlengthbp status sums supplied top top_level_region url"
+      "keywords": "16 add address angularjs api array base bioinformatics biotype biotypestyle check color css data emsembl ensebl ensembl features featuresensembl format function genes genomic https idenify import length lengthbp lengths level list load lowercase manage object online org overlay pair path ping property regions requesting separators server service setbiotypestyle setlengthbp status sum supplied top top_level_region url"
     },
     {
       "section": "api",
@@ -45,8 +45,8 @@ NG_DOCS={
       "shortName": "routeCssClassnames",
       "type": "directive",
       "moduleName": "generic",
-      "shortDescription": "Adds a Class name as class to html body.",
-      "keywords": "adds api body class directive generic html http route-css-classnames routecssclassnames"
+      "shortDescription": "Add a Class name as class to html body.",
+      "keywords": "add api body class directive generic html http route-css-classnames routecssclassnames"
     },
     {
       "section": "api",
@@ -104,12 +104,30 @@ NG_DOCS={
     },
     {
       "section": "api",
+      "id": "TADkit.directive:tkComponent",
+      "shortName": "tkComponent",
+      "type": "directive",
+      "moduleName": "TADkit",
+      "shortDescription": "Dummy components directive that is replaced on complie",
+      "keywords": "api array complie component components directive dummy ea ng-repeat object objects real replaced supplied tadkit tk-component tkcomponent type"
+    },
+    {
+      "section": "api",
       "id": "TADkit.directive:tkComponentTrackBarchart",
       "shortName": "tkComponentTrackBarchart",
       "type": "directive",
       "moduleName": "TADkit",
       "shortDescription": "Generates a d3 Barchart from the supplied data.",
       "keywords": "api barchart d3 data directive ea function generates html overlay settings supplied tadkit template title tkcomponenttrackbarchart toggle toggleoverlay track type view"
+    },
+    {
+      "section": "api",
+      "id": "TADkit.directive:tkComponentWiggle0",
+      "shortName": "tkComponentWiggle0",
+      "type": "directive",
+      "moduleName": "TADkit",
+      "shortDescription": "Track component which generates a d3 graph",
+      "keywords": "api bigwig colleciton component d3 data directive ea format function generates graph initial js object overlay render settings supplied tadkit title tk-component-wiggle0 tkcomponentwiggle0 toggleoverlay track type update updates view"
     },
     {
       "section": "api",
@@ -136,7 +154,7 @@ NG_DOCS={
       "type": "service",
       "moduleName": "TADkit",
       "shortDescription": "Datasets of Projects.",
-      "keywords": "$http $log $q 1-1000 16 add adds alphanumeric angularjs api array centroid chromend chromosome chromstart clear clears cluster clusters combines converts current data dataset datasets datset default extension file filename formatted function generic genomic getcentroidref getcluster getclustergroups getclustermodels getgroupedclusters getmodel getmodeldata getmodels group groupclusters groups https json load loaded loads mdoel model models newly object org projects promise reference region remove removes resolved service set setcentroid setcluster setmodel setregion sets setspeciesurl species string supplied tadkit type underscores url utils valid validate validates vertices waits"
+      "keywords": "$http $log $q 1-1000 16 add adds angularjs api array centroid chromend chromosome chromsomes chromstart clear clears cluster clusters combines current data dataset datasets datset default extension file filename format formats formatted function genomic getcentroidref getcluster getclustergroups getclustermodels getgroupedclusters getmodel getmodeldata getmodels group groupclusters groups https json load loaded loads mdoel model models newly object org projects promise reference region remove removes resolved service set setcentroid setcluster setmodel setregion sets string supplied tadkit type validate validates vertices waits"
     },
     {
       "section": "api",
@@ -154,7 +172,7 @@ NG_DOCS={
       "type": "service",
       "moduleName": "TADkit",
       "shortDescription": "Overlays of Projects.",
-      "keywords": "16 angularjs api colorsensembl featuresensembl https networks org overlays overlaysimport projects segments service settings tadkit"
+      "keywords": "16 angularjs api colorsensembl featuresensembl https networks org overlays overlaysimport projects segments service settings storyboards tadkit"
     },
     {
       "section": "api",

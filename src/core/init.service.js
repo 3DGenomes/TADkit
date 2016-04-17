@@ -21,7 +21,7 @@
 		.module('TADkit')
 		.factory('Init', Init);
 
-	function Init($log, $q, Users, Projects, Datasets, Overlays, Storyboards, Settings, Proximities, Restraints, ColorsEnsembl) {
+	function Init($log, $q, Users, Projects, Datasets, Overlays, OverlaysImport, Storyboards, Settings, Proximities, Restraints, ColorsEnsembl) {
 
 		/**
 		 * @ngdoc function
@@ -84,9 +84,9 @@
 			var datasetDimension = currentModelData.length / 3; // 3 == xyz components of vertices
 			var restraints = Restraints.set(currentDataset.restraints, datasetDimension);
 
-			// Update Overlays for initialized Dataset
+			// Update Overlays for initialized Dataset.
 			var overlaysUpdate = Overlays.update(distances, restraints);
-			// Load example TSV for initial/current Dataset
+			// Load and import example TSV for initial/current Dataset.
 			var overlaysFile = Overlays.loadFromFile(currentDataset.object.filename);
 
 			return $q.all([overlaysUpdate, overlaysFile])

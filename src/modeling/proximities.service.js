@@ -148,7 +148,7 @@
 			 * @kind function
 			 *
 			 * @description
-			 * Gets the proximities (for a given particle/position if supplied).
+			 * Get the proximities (for a given particle/position if supplied).
 			 *
 			 * @param {number} [particle] Particle.
 			 * @returns {Object} A collection of model proximities.
@@ -174,7 +174,7 @@
 			 * @kind function
 			 *
 			 * @description
-			 * Gets the model proximities for the current particle/position.
+			 * Get the model proximities for the current particle/position.
 			 *
 			 * @return {Object} The collection of model proximities.
 			 */

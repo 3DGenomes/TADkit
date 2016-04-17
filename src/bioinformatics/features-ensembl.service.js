@@ -33,7 +33,7 @@
 			 * @kind function
 			 *
 			 * @description
-			 * Pings the Ensebl server to check if it is online
+			 * Ping the Ensebl server to check if it is online
 			 * Use before requesting data.
 			 * @link https://github.com/Ensembl/ensembl-rest/wiki/Writing-Your-First-Client
 			 *
@@ -105,7 +105,7 @@
 			 * @kind function
 			 *
 			 * @description
-			 * Adds property biotypeStyle as biotype in lowercase.
+			 * Add property biotypeStyle as biotype in lowercase.
 			 * Used to idenify and color for CSS.
 			 *
 			 * @param {Object} genes Genes list (see FeaturesEnsembl.load).
@@ -129,7 +129,7 @@
 			 * @kind function
 			 *
 			 * @description
-			 * Sums base pair lengths from top level regions.
+			 * Sum base pair lengths from top level regions.
 			 *
 			 * @param {Object} top_level_region Genes list (see FeaturesEnsembl.load).
 			 * @return {number} lengthBP Length.
