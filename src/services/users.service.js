@@ -12,19 +12,19 @@
 
 		return {
 			load: function() {
-				var deferral = $q.defer();
+				var deferred = $q.defer();
 				var dataUrl = "assets/defaults/tk-defaults-users.json";
 				if( users.loaded.length > 0 ) {
-					deferral.resolve(users);
+					 deferred.resolve(users);
 				} else {
 					$http.get(dataUrl)
 					.success( function(data) {
 						users.loaded = data;
 						console.log("Users (" + data.length + ") loaded from " + dataUrl);
-						deferral.resolve(users);
+						 deferred.resolve(users);
 					});
 				}
-				return deferral.promise;
+				return deferred.promise;
 			},
 			add: function(details) {
 				details = details || ["id", "Name Surname", "email@company.com", "Group", "edit", ["default"]];

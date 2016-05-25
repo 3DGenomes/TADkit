@@ -20,7 +20,7 @@
 			link: function(scope, element, attrs) {
 				// console.log(scope);
 
-				d3Service.d3().then(function(d3) {
+				d3Service.load().then(function(d3) {
 				
 					scope.safeApply = function(fn) {
 						var phase = this.$root.$$phase;
