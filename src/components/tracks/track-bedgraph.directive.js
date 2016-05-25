@@ -18,7 +18,7 @@
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
-				d3Service.d3().then(function(d3) {
+				d3Service.load().then(function(d3) {
 					// console.log(scope);
 
  					// DATA MANIPULATION >>> MOVE TO CONTROLLER
@@ -57,6 +57,8 @@
 						verticalOffset = (trackHeight - nodeHeight) * 0.5,
 						nodePadding = 0,
 						nodeColor = scope.view.settings.color;
+					var spectrum = false;
+					if (angular.isArray(nodeColor)) spectrum = true;
 
 					// VIEWPORT
 					/* component-controller == children[0]
@@ -177,12 +179,12 @@
 								.attr("width", function(d) { return Math.ceil(xScale(d.end) - xScale(d.start)); })
 								.attr("height", nodeHeight)
 								.attr("class", function(d) { if (d.read == 1) return scope.title; } )
-								// .style("fill", nodeColor)
-								// .style("fill-opacity", function(d) { return d.read; })
-								// .style("stroke", nodeColor)
-								// .style("stroke-width", 0)
+								.style("fill", function(d,i) { if (spectrum) {return nodeColor[i];} else {return nodeColor;} })
+								.style("fill-opacity", function(d) { return d.read; })
+								.style("stroke", function(d,i) { if (spectrum) {return nodeColor[i];} else {return nodeColor;} })
+								.style("stroke-width", 0)
 								.append("svg:title")
-								.text(function(d,i) { return d.start + ":" + d.end + "(" + d.read + ")"; });
+								.text(function(d,i) { return d.start + ":" + d.end + " (" + d.read + ")"; });
 
 							var highlight = chart.append("rect")
 									.attr("id", "highlight")

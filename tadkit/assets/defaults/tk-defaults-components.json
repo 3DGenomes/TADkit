@@ -64,7 +64,7 @@
 				"chromatin" : {
 					"particleSegments" : 5,
 					"curveSegments" : 1,
-					"radius" : 15,
+					"radius" : 10,
 					"radiusSegments" : 16,
 					"endcap" : false,
 					"pathClosed" : false,

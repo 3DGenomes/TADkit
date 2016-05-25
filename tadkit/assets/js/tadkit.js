@@ -11,7 +11,7 @@
 		.module('TADkit')
 		.config(config);
 
-	function config($locationProvider, $mdThemingProvider) {
+	function config($locationProvider, $mdThemingProvider, $provide) {
 		// Removing # from URL with HTML5 History API and
 		// add <base href="/myapp/"></base> in index.html
 		// Comment to leave # in case of server rewrites.
@@ -23,10 +23,24 @@
 			.accentPalette('lime', {
 				'default': '500'
 			})
-   			.warnPalette('red')
+				.warnPalette('red')
 			.backgroundPalette('grey');
 		$mdThemingProvider.theme('darkKit')
 			.dark();
+
+		$provide.decorator('mdButtonDirective', ['$delegate',
+			function ($delegate) {
+				var getTemplate = $delegate[0].template;
+				$delegate[0].template = function ($element, $attrs) {
+					if ($attrs.type === 'file') {
+						return '<label class="md-button" ng-transclude></label>';
+					} else {
+						return getTemplate($element, $attrs);
+					}
+				};
+				return $delegate;
+			}
+		]);
 
 	}
 })();
@@ -1746,7 +1760,7 @@
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
-				d3Service.d3().then(function(d3) {
+				d3Service.load().then(function(d3) {
 					// console.log(scope);
 
  					// DATA MANIPULATION >>> MOVE TO CONTROLLER
@@ -1785,6 +1799,8 @@
 						verticalOffset = (trackHeight - nodeHeight) * 0.5,
 						nodePadding = 0,
 						nodeColor = scope.view.settings.color;
+					var spectrum = false;
+					if (angular.isArray(nodeColor)) spectrum = true;
 
 					// VIEWPORT
 					/* component-controller == children[0]
@@ -1905,12 +1921,12 @@
 								.attr("width", function(d) { return Math.ceil(xScale(d.end) - xScale(d.start)); })
 								.attr("height", nodeHeight)
 								.attr("class", function(d) { if (d.read == 1) return scope.title; } )
-								// .style("fill", nodeColor)
-								// .style("fill-opacity", function(d) { return d.read; })
-								// .style("stroke", nodeColor)
-								// .style("stroke-width", 0)
+								.style("fill", function(d,i) { if (spectrum) {return nodeColor[i];} else {return nodeColor;} })
+								.style("fill-opacity", function(d) { return d.read; })
+								.style("stroke", function(d,i) { if (spectrum) {return nodeColor[i];} else {return nodeColor;} })
+								.style("stroke-width", 0)
 								.append("svg:title")
-								.text(function(d,i) { return d.start + ":" + d.end + "(" + d.read + ")"; });
+								.text(function(d,i) { return d.start + ":" + d.end + " (" + d.read + ")"; });
 
 							var highlight = chart.append("rect")
 									.attr("id", "highlight")
@@ -3317,8 +3333,11 @@
 		.controller('OverlayImportController', OverlayImportController);
 
 	function OverlayImportController ($state, $scope, $mdDialog, $mdToast, Settings, Overlays, Components, Storyboards, uuid4) {
-		$scope.fileTitle = "No file loaded";
-
+		$scope.filetitle = "No file loaded";
+		$scope.style = {
+						"width" : "chromatinNM",
+						"color" : "categorical"
+					}
 		$scope.$on('$viewContentLoaded', function() {
 			var parentElement = angular.element(document.body);
 			var stateTemplate = "assets/templates/" + $state.current.name + ".html";
@@ -3332,22 +3351,22 @@
 				},
 				onComplete: afterShowAnimation
 			}).then(function(importedOverlaysCount) {
-				$mdToast.show(
-					$mdToast.simple()
-					.content("Overlays (" + importedOverlaysCount + ") added")
-				);
+				// $mdToast.show(
+				// 	$mdToast.simple()
+				// 	.content("Overlays (" + importedOverlaysCount + ") added")
+				// );
 			}, function() {
-				$mdToast.show(
-					$mdToast.simple()
-					.content('cancelled')
-				);
+				// $mdToast.show(
+				// 	$mdToast.simple()
+				// 	.content('cancelled')
+				// );
 	 			$state.go('browser');	
 			});
 			// When the 'enter' animation finishes...
 			function afterShowAnimation(scope, element, options) {
 				// post-show code here: DOM element focus, etc.
 				// console.log(scope);
-				console.log("showing dialog");
+				console.log("Showing file dialog...");
 			}
 		});
 
@@ -3367,7 +3386,7 @@
 		};
 
 		$scope.importData = function(parsedData) {
-			$scope.importedOverlays = Overlays.import(parsedData, $scope.selectedRows, $scope.selectedCols);
+			$scope.importedOverlays = Overlays.import(parsedData, $scope.selectedRows, $scope.selectedCols, $scope.style);
 			$mdDialog.hide($scope.importedOverlays.length); // overlays count passed for dialog hide message...
 			$state.go('browser');
 		};
@@ -3870,8 +3889,8 @@
 		// var rootObj = this;
 		var rootObj = {};
 		rootObj.re_ = {
-		  // An X11 "rgb:ddd/ddd/ddd" value.
-		  x11rgb: /^\s*rgb:([a-f0-9]{1,4})\/([a-f0-9]{1,4})\/([a-f0-9]{1,4})\s*$/i,
+			// An X11 "rgb:ddd/ddd/ddd" value.
+			x11rgb: /^\s*rgb:([a-f0-9]{1,4})\/([a-f0-9]{1,4})\/([a-f0-9]{1,4})\s*$/i,
 		};		
 		/**
 		 * Named colors according to the stock X11 rgb.txt file.
@@ -3887,7 +3906,7 @@
 			"contigblue2": "rgb(173, 216, 230)", // FROM ENSEMBL DOCS = LIGHT BLUE
 			"border:grey70": "rgb(179, 179, 179)", // FROM ENSEMBL ERROR? = GREY70
 			// X11 COLOR NAMES
-		  "aliceblue": "rgb(240, 248, 255)", "antiquewhite": "rgb(250, 235, 215)", "antiquewhite1": "rgb(255, 239, 219)", "antiquewhite2": "rgb(238, 223, 204)", "antiquewhite3": "rgb(205, 192, 176)", "antiquewhite4": "rgb(139, 131, 120)", "aquamarine": "rgb(127, 255, 212)", "aquamarine1": "rgb(127, 255, 212)", "aquamarine2": "rgb(118, 238, 198)", "aquamarine3": "rgb(102, 205, 170)", "aquamarine4": "rgb(69, 139, 116)", "azure": "rgb(240, 255, 255)", "azure1": "rgb(240, 255, 255)", "azure2": "rgb(224, 238, 238)", "azure3": "rgb(193, 205, 205)", "azure4": "rgb(131, 139, 139)", "beige": "rgb(245, 245, 220)", "bisque": "rgb(255, 228, 196)", "bisque1": "rgb(255, 228, 196)", "bisque2": "rgb(238, 213, 183)", "bisque3": "rgb(205, 183, 158)", "bisque4": "rgb(139, 125, 107)", "black": "rgb(0, 0, 0)", "blanchedalmond": "rgb(255, 235, 205)", "blue": "rgb(0, 0, 255)", "blue1": "rgb(0, 0, 255)", "blue2": "rgb(0, 0, 238)", "blue3": "rgb(0, 0, 205)", "blue4": "rgb(0, 0, 139)", "blueviolet": "rgb(138, 43, 226)", "brown": "rgb(165, 42, 42)", "brown1": "rgb(255, 64, 64)", "brown2": "rgb(238, 59, 59)", "brown3": "rgb(205, 51, 51)", "brown4": "rgb(139, 35, 35)", "burlywood": "rgb(222, 184, 135)", "burlywood1": "rgb(255, 211, 155)", "burlywood2": "rgb(238, 197, 145)", "burlywood3": "rgb(205, 170, 125)", "burlywood4": "rgb(139, 115, 85)", "cadetblue": "rgb(95, 158, 160)", "cadetblue1": "rgb(152, 245, 255)", "cadetblue2": "rgb(142, 229, 238)", "cadetblue3": "rgb(122, 197, 205)", "cadetblue4": "rgb(83, 134, 139)", "chartreuse": "rgb(127, 255, 0)", "chartreuse1": "rgb(127, 255, 0)", "chartreuse2": "rgb(118, 238, 0)", "chartreuse3": "rgb(102, 205, 0)", "chartreuse4": "rgb(69, 139, 0)", "chocolate": "rgb(210, 105, 30)", "chocolate1": "rgb(255, 127, 36)", "chocolate2": "rgb(238, 118, 33)", "chocolate3": "rgb(205, 102, 29)", "chocolate4": "rgb(139, 69, 19)", "coral": "rgb(255, 127, 80)", "coral1": "rgb(255, 114, 86)", "coral2": "rgb(238, 106, 80)", "coral3": "rgb(205, 91, 69)", "coral4": "rgb(139, 62, 47)", "cornflowerblue": "rgb(100, 149, 237)", "cornsilk": "rgb(255, 248, 220)", "cornsilk1": "rgb(255, 248, 220)", "cornsilk2": "rgb(238, 232, 205)", "cornsilk3": "rgb(205, 200, 177)", "cornsilk4": "rgb(139, 136, 120)", "cyan": "rgb(0, 255, 255)", "cyan1": "rgb(0, 255, 255)", "cyan2": "rgb(0, 238, 238)", "cyan3": "rgb(0, 205, 205)", "cyan4": "rgb(0, 139, 139)", "darkblue": "rgb(0, 0, 139)", "darkcyan": "rgb(0, 139, 139)", "darkgoldenrod": "rgb(184, 134, 11)", "darkgoldenrod1": "rgb(255, 185, 15)", "darkgoldenrod2": "rgb(238, 173, 14)", "darkgoldenrod3": "rgb(205, 149, 12)", "darkgoldenrod4": "rgb(139, 101, 8)", "darkgray": "rgb(169, 169, 169)", "darkgreen": "rgb(0, 100, 0)", "darkgrey": "rgb(169, 169, 169)", "darkkhaki": "rgb(189, 183, 107)", "darkmagenta": "rgb(139, 0, 139)", "darkolivegreen": "rgb(85, 107, 47)", "darkolivegreen1": "rgb(202, 255, 112)", "darkolivegreen2": "rgb(188, 238, 104)", "darkolivegreen3": "rgb(162, 205, 90)", "darkolivegreen4": "rgb(110, 139, 61)", "darkorange": "rgb(255, 140, 0)", "darkorange1": "rgb(255, 127, 0)", "darkorange2": "rgb(238, 118, 0)", "darkorange3": "rgb(205, 102, 0)", "darkorange4": "rgb(139, 69, 0)", "darkorchid": "rgb(153, 50, 204)", "darkorchid1": "rgb(191, 62, 255)", "darkorchid2": "rgb(178, 58, 238)", "darkorchid3": "rgb(154, 50, 205)", "darkorchid4": "rgb(104, 34, 139)", "darkred": "rgb(139, 0, 0)", "darksalmon": "rgb(233, 150, 122)", "darkseagreen": "rgb(143, 188, 143)", "darkseagreen1": "rgb(193, 255, 193)", "darkseagreen2": "rgb(180, 238, 180)", "darkseagreen3": "rgb(155, 205, 155)", "darkseagreen4": "rgb(105, 139, 105)", "darkslateblue": "rgb(72, 61, 139)", "darkslategray": "rgb(47, 79, 79)", "darkslategray1": "rgb(151, 255, 255)", "darkslategray2": "rgb(141, 238, 238)", "darkslategray3": "rgb(121, 205, 205)", "darkslategray4": "rgb(82, 139, 139)", "darkslategrey": "rgb(47, 79, 79)", "darkturquoise": "rgb(0, 206, 209)", "darkviolet": "rgb(148, 0, 211)", "debianred": "rgb(215, 7, 81)", "deeppink": "rgb(255, 20, 147)", "deeppink1": "rgb(255, 20, 147)", "deeppink2": "rgb(238, 18, 137)", "deeppink3": "rgb(205, 16, 118)", "deeppink4": "rgb(139, 10, 80)", "deepskyblue": "rgb(0, 191, 255)", "deepskyblue1": "rgb(0, 191, 255)", "deepskyblue2": "rgb(0, 178, 238)", "deepskyblue3": "rgb(0, 154, 205)", "deepskyblue4": "rgb(0, 104, 139)", "dimgray": "rgb(105, 105, 105)", "dimgrey": "rgb(105, 105, 105)", "dodgerblue": "rgb(30, 144, 255)", "dodgerblue1": "rgb(30, 144, 255)", "dodgerblue2": "rgb(28, 134, 238)", "dodgerblue3": "rgb(24, 116, 205)", "dodgerblue4": "rgb(16, 78, 139)", "firebrick": "rgb(178, 34, 34)", "firebrick1": "rgb(255, 48, 48)", "firebrick2": "rgb(238, 44, 44)", "firebrick3": "rgb(205, 38, 38)", "firebrick4": "rgb(139, 26, 26)", "floralwhite": "rgb(255, 250, 240)", "forestgreen": "rgb(34, 139, 34)", "gainsboro": "rgb(220, 220, 220)", "ghostwhite": "rgb(248, 248, 255)", "gold": "rgb(255, 215, 0)", "gold1": "rgb(255, 215, 0)", "gold2": "rgb(238, 201, 0)", "gold3": "rgb(205, 173, 0)", "gold4": "rgb(139, 117, 0)", "goldenrod": "rgb(218, 165, 32)", "goldenrod1": "rgb(255, 193, 37)", "goldenrod2": "rgb(238, 180, 34)", "goldenrod3": "rgb(205, 155, 29)", "goldenrod4": "rgb(139, 105, 20)", "gray": "rgb(190, 190, 190)", "gray0": "rgb(0, 0, 0)", "gray1": "rgb(3, 3, 3)", "gray10": "rgb(26, 26, 26)", "gray100": "rgb(255, 255, 255)", "gray11": "rgb(28, 28, 28)", "gray12": "rgb(31, 31, 31)", "gray13": "rgb(33, 33, 33)", "gray14": "rgb(36, 36, 36)", "gray15": "rgb(38, 38, 38)", "gray16": "rgb(41, 41, 41)", "gray17": "rgb(43, 43, 43)", "gray18": "rgb(46, 46, 46)", "gray19": "rgb(48, 48, 48)", "gray2": "rgb(5, 5, 5)", "gray20": "rgb(51, 51, 51)", "gray21": "rgb(54, 54, 54)", "gray22": "rgb(56, 56, 56)", "gray23": "rgb(59, 59, 59)", "gray24": "rgb(61, 61, 61)", "gray25": "rgb(64, 64, 64)", "gray26": "rgb(66, 66, 66)", "gray27": "rgb(69, 69, 69)", "gray28": "rgb(71, 71, 71)", "gray29": "rgb(74, 74, 74)", "gray3": "rgb(8, 8, 8)", "gray30": "rgb(77, 77, 77)", "gray31": "rgb(79, 79, 79)", "gray32": "rgb(82, 82, 82)", "gray33": "rgb(84, 84, 84)", "gray34": "rgb(87, 87, 87)", "gray35": "rgb(89, 89, 89)", "gray36": "rgb(92, 92, 92)", "gray37": "rgb(94, 94, 94)", "gray38": "rgb(97, 97, 97)", "gray39": "rgb(99, 99, 99)", "gray4": "rgb(10, 10, 10)", "gray40": "rgb(102, 102, 102)", "gray41": "rgb(105, 105, 105)", "gray42": "rgb(107, 107, 107)", "gray43": "rgb(110, 110, 110)", "gray44": "rgb(112, 112, 112)", "gray45": "rgb(115, 115, 115)", "gray46": "rgb(117, 117, 117)", "gray47": "rgb(120, 120, 120)", "gray48": "rgb(122, 122, 122)", "gray49": "rgb(125, 125, 125)", "gray5": "rgb(13, 13, 13)", "gray50": "rgb(127, 127, 127)", "gray51": "rgb(130, 130, 130)", "gray52": "rgb(133, 133, 133)", "gray53": "rgb(135, 135, 135)", "gray54": "rgb(138, 138, 138)", "gray55": "rgb(140, 140, 140)", "gray56": "rgb(143, 143, 143)", "gray57": "rgb(145, 145, 145)", "gray58": "rgb(148, 148, 148)", "gray59": "rgb(150, 150, 150)", "gray6": "rgb(15, 15, 15)", "gray60": "rgb(153, 153, 153)", "gray61": "rgb(156, 156, 156)", "gray62": "rgb(158, 158, 158)", "gray63": "rgb(161, 161, 161)", "gray64": "rgb(163, 163, 163)", "gray65": "rgb(166, 166, 166)", "gray66": "rgb(168, 168, 168)", "gray67": "rgb(171, 171, 171)", "gray68": "rgb(173, 173, 173)", "gray69": "rgb(176, 176, 176)", "gray7": "rgb(18, 18, 18)", "gray70": "rgb(179, 179, 179)", "gray71": "rgb(181, 181, 181)", "gray72": "rgb(184, 184, 184)", "gray73": "rgb(186, 186, 186)", "gray74": "rgb(189, 189, 189)", "gray75": "rgb(191, 191, 191)", "gray76": "rgb(194, 194, 194)", "gray77": "rgb(196, 196, 196)", "gray78": "rgb(199, 199, 199)", "gray79": "rgb(201, 201, 201)", "gray8": "rgb(20, 20, 20)", "gray80": "rgb(204, 204, 204)", "gray81": "rgb(207, 207, 207)", "gray82": "rgb(209, 209, 209)", "gray83": "rgb(212, 212, 212)", "gray84": "rgb(214, 214, 214)", "gray85": "rgb(217, 217, 217)", "gray86": "rgb(219, 219, 219)", "gray87": "rgb(222, 222, 222)", "gray88": "rgb(224, 224, 224)", "gray89": "rgb(227, 227, 227)", "gray9": "rgb(23, 23, 23)", "gray90": "rgb(229, 229, 229)", "gray91": "rgb(232, 232, 232)", "gray92": "rgb(235, 235, 235)", "gray93": "rgb(237, 237, 237)", "gray94": "rgb(240, 240, 240)", "gray95": "rgb(242, 242, 242)", "gray96": "rgb(245, 245, 245)", "gray97": "rgb(247, 247, 247)", "gray98": "rgb(250, 250, 250)", "gray99": "rgb(252, 252, 252)", "green": "rgb(0, 255, 0)", "green1": "rgb(0, 255, 0)", "green2": "rgb(0, 238, 0)", "green3": "rgb(0, 205, 0)", "green4": "rgb(0, 139, 0)", "greenyellow": "rgb(173, 255, 47)", "grey": "rgb(190, 190, 190)", "grey0": "rgb(0, 0, 0)", "grey1": "rgb(3, 3, 3)", "grey10": "rgb(26, 26, 26)", "grey100": "rgb(255, 255, 255)", "grey11": "rgb(28, 28, 28)", "grey12": "rgb(31, 31, 31)", "grey13": "rgb(33, 33, 33)", "grey14": "rgb(36, 36, 36)", "grey15": "rgb(38, 38, 38)", "grey16": "rgb(41, 41, 41)", "grey17": "rgb(43, 43, 43)", "grey18": "rgb(46, 46, 46)", "grey19": "rgb(48, 48, 48)", "grey2": "rgb(5, 5, 5)", "grey20": "rgb(51, 51, 51)", "grey21": "rgb(54, 54, 54)", "grey22": "rgb(56, 56, 56)", "grey23": "rgb(59, 59, 59)", "grey24": "rgb(61, 61, 61)", "grey25": "rgb(64, 64, 64)", "grey26": "rgb(66, 66, 66)", "grey27": "rgb(69, 69, 69)", "grey28": "rgb(71, 71, 71)", "grey29": "rgb(74, 74, 74)", "grey3": "rgb(8, 8, 8)", "grey30": "rgb(77, 77, 77)", "grey31": "rgb(79, 79, 79)", "grey32": "rgb(82, 82, 82)", "grey33": "rgb(84, 84, 84)", "grey34": "rgb(87, 87, 87)", "grey35": "rgb(89, 89, 89)", "grey36": "rgb(92, 92, 92)", "grey37": "rgb(94, 94, 94)", "grey38": "rgb(97, 97, 97)", "grey39": "rgb(99, 99, 99)", "grey4": "rgb(10, 10, 10)", "grey40": "rgb(102, 102, 102)", "grey41": "rgb(105, 105, 105)", "grey42": "rgb(107, 107, 107)", "grey43": "rgb(110, 110, 110)", "grey44": "rgb(112, 112, 112)", "grey45": "rgb(115, 115, 115)", "grey46": "rgb(117, 117, 117)", "grey47": "rgb(120, 120, 120)", "grey48": "rgb(122, 122, 122)", "grey49": "rgb(125, 125, 125)", "grey5": "rgb(13, 13, 13)", "grey50": "rgb(127, 127, 127)", "grey51": "rgb(130, 130, 130)", "grey52": "rgb(133, 133, 133)", "grey53": "rgb(135, 135, 135)", "grey54": "rgb(138, 138, 138)", "grey55": "rgb(140, 140, 140)", "grey56": "rgb(143, 143, 143)", "grey57": "rgb(145, 145, 145)", "grey58": "rgb(148, 148, 148)", "grey59": "rgb(150, 150, 150)", "grey6": "rgb(15, 15, 15)", "grey60": "rgb(153, 153, 153)", "grey61": "rgb(156, 156, 156)", "grey62": "rgb(158, 158, 158)", "grey63": "rgb(161, 161, 161)", "grey64": "rgb(163, 163, 163)", "grey65": "rgb(166, 166, 166)", "grey66": "rgb(168, 168, 168)", "grey67": "rgb(171, 171, 171)", "grey68": "rgb(173, 173, 173)", "grey69": "rgb(176, 176, 176)", "grey7": "rgb(18, 18, 18)", "grey70": "rgb(179, 179, 179)", "grey71": "rgb(181, 181, 181)", "grey72": "rgb(184, 184, 184)", "grey73": "rgb(186, 186, 186)", "grey74": "rgb(189, 189, 189)", "grey75": "rgb(191, 191, 191)", "grey76": "rgb(194, 194, 194)", "grey77": "rgb(196, 196, 196)", "grey78": "rgb(199, 199, 199)", "grey79": "rgb(201, 201, 201)", "grey8": "rgb(20, 20, 20)", "grey80": "rgb(204, 204, 204)", "grey81": "rgb(207, 207, 207)", "grey82": "rgb(209, 209, 209)", "grey83": "rgb(212, 212, 212)", "grey84": "rgb(214, 214, 214)", "grey85": "rgb(217, 217, 217)", "grey86": "rgb(219, 219, 219)", "grey87": "rgb(222, 222, 222)", "grey88": "rgb(224, 224, 224)", "grey89": "rgb(227, 227, 227)", "grey9": "rgb(23, 23, 23)", "grey90": "rgb(229, 229, 229)", "grey91": "rgb(232, 232, 232)", "grey92": "rgb(235, 235, 235)", "grey93": "rgb(237, 237, 237)", "grey94": "rgb(240, 240, 240)", "grey95": "rgb(242, 242, 242)", "grey96": "rgb(245, 245, 245)", "grey97": "rgb(247, 247, 247)", "grey98": "rgb(250, 250, 250)", "grey99": "rgb(252, 252, 252)", "honeydew": "rgb(240, 255, 240)", "honeydew1": "rgb(240, 255, 240)", "honeydew2": "rgb(224, 238, 224)", "honeydew3": "rgb(193, 205, 193)", "honeydew4": "rgb(131, 139, 131)", "hotpink": "rgb(255, 105, 180)", "hotpink1": "rgb(255, 110, 180)", "hotpink2": "rgb(238, 106, 167)", "hotpink3": "rgb(205, 96, 144)", "hotpink4": "rgb(139, 58, 98)", "indianred": "rgb(205, 92, 92)", "indianred1": "rgb(255, 106, 106)", "indianred2": "rgb(238, 99, 99)", "indianred3": "rgb(205, 85, 85)", "indianred4": "rgb(139, 58, 58)", "ivory": "rgb(255, 255, 240)", "ivory1": "rgb(255, 255, 240)", "ivory2": "rgb(238, 238, 224)", "ivory3": "rgb(205, 205, 193)", "ivory4": "rgb(139, 139, 131)", "khaki": "rgb(240, 230, 140)", "khaki1": "rgb(255, 246, 143)", "khaki2": "rgb(238, 230, 133)", "khaki3": "rgb(205, 198, 115)", "khaki4": "rgb(139, 134, 78)", "lavender": "rgb(230, 230, 250)", "lavenderblush": "rgb(255, 240, 245)", "lavenderblush1": "rgb(255, 240, 245)", "lavenderblush2": "rgb(238, 224, 229)", "lavenderblush3": "rgb(205, 193, 197)", "lavenderblush4": "rgb(139, 131, 134)", "lawngreen": "rgb(124, 252, 0)", "lemonchiffon": "rgb(255, 250, 205)", "lemonchiffon1": "rgb(255, 250, 205)", "lemonchiffon2": "rgb(238, 233, 191)", "lemonchiffon3": "rgb(205, 201, 165)", "lemonchiffon4": "rgb(139, 137, 112)", "lightblue": "rgb(173, 216, 230)", "lightblue1": "rgb(191, 239, 255)", "lightblue2": "rgb(178, 223, 238)", "lightblue3": "rgb(154, 192, 205)", "lightblue4": "rgb(104, 131, 139)", "lightcoral": "rgb(240, 128, 128)", "lightcyan": "rgb(224, 255, 255)", "lightcyan1": "rgb(224, 255, 255)", "lightcyan2": "rgb(209, 238, 238)", "lightcyan3": "rgb(180, 205, 205)", "lightcyan4": "rgb(122, 139, 139)", "lightgoldenrod": "rgb(238, 221, 130)", "lightgoldenrod1": "rgb(255, 236, 139)", "lightgoldenrod2": "rgb(238, 220, 130)", "lightgoldenrod3": "rgb(205, 190, 112)", "lightgoldenrod4": "rgb(139, 129, 76)", "lightgoldenrodyellow": "rgb(250, 250, 210)", "lightgray": "rgb(211, 211, 211)", "lightgreen": "rgb(144, 238, 144)", "lightgrey": "rgb(211, 211, 211)", "lightpink": "rgb(255, 182, 193)", "lightpink1": "rgb(255, 174, 185)", "lightpink2": "rgb(238, 162, 173)", "lightpink3": "rgb(205, 140, 149)", "lightpink4": "rgb(139, 95, 101)", "lightsalmon": "rgb(255, 160, 122)", "lightsalmon1": "rgb(255, 160, 122)", "lightsalmon2": "rgb(238, 149, 114)", "lightsalmon3": "rgb(205, 129, 98)", "lightsalmon4": "rgb(139, 87, 66)", "lightseagreen": "rgb(32, 178, 170)", "lightskyblue": "rgb(135, 206, 250)", "lightskyblue1": "rgb(176, 226, 255)", "lightskyblue2": "rgb(164, 211, 238)", "lightskyblue3": "rgb(141, 182, 205)", "lightskyblue4": "rgb(96, 123, 139)", "lightslateblue": "rgb(132, 112, 255)", "lightslategray": "rgb(119, 136, 153)", "lightslategrey": "rgb(119, 136, 153)", "lightsteelblue": "rgb(176, 196, 222)", "lightsteelblue1": "rgb(202, 225, 255)", "lightsteelblue2": "rgb(188, 210, 238)", "lightsteelblue3": "rgb(162, 181, 205)", "lightsteelblue4": "rgb(110, 123, 139)", "lightyellow": "rgb(255, 255, 224)", "lightyellow1": "rgb(255, 255, 224)", "lightyellow2": "rgb(238, 238, 209)", "lightyellow3": "rgb(205, 205, 180)", "lightyellow4": "rgb(139, 139, 122)", "limegreen": "rgb(50, 205, 50)", "linen": "rgb(250, 240, 230)", "magenta": "rgb(255, 0, 255)", "magenta1": "rgb(255, 0, 255)", "magenta2": "rgb(238, 0, 238)", "magenta3": "rgb(205, 0, 205)", "magenta4": "rgb(139, 0, 139)", "maroon": "rgb(176, 48, 96)", "maroon1": "rgb(255, 52, 179)", "maroon2": "rgb(238, 48, 167)", "maroon3": "rgb(205, 41, 144)", "maroon4": "rgb(139, 28, 98)", "mediumaquamarine": "rgb(102, 205, 170)", "mediumblue": "rgb(0, 0, 205)", "mediumorchid": "rgb(186, 85, 211)", "mediumorchid1": "rgb(224, 102, 255)", "mediumorchid2": "rgb(209, 95, 238)", "mediumorchid3": "rgb(180, 82, 205)", "mediumorchid4": "rgb(122, 55, 139)", "mediumpurple": "rgb(147, 112, 219)", "mediumpurple1": "rgb(171, 130, 255)", "mediumpurple2": "rgb(159, 121, 238)", "mediumpurple3": "rgb(137, 104, 205)", "mediumpurple4": "rgb(93, 71, 139)", "mediumseagreen": "rgb(60, 179, 113)", "mediumslateblue": "rgb(123, 104, 238)", "mediumspringgreen": "rgb(0, 250, 154)", "mediumturquoise": "rgb(72, 209, 204)", "mediumvioletred": "rgb(199, 21, 133)", "midnightblue": "rgb(25, 25, 112)", "mintcream": "rgb(245, 255, 250)", "mistyrose": "rgb(255, 228, 225)", "mistyrose1": "rgb(255, 228, 225)", "mistyrose2": "rgb(238, 213, 210)", "mistyrose3": "rgb(205, 183, 181)", "mistyrose4": "rgb(139, 125, 123)", "moccasin": "rgb(255, 228, 181)", "navajowhite": "rgb(255, 222, 173)", "navajowhite1": "rgb(255, 222, 173)", "navajowhite2": "rgb(238, 207, 161)", "navajowhite3": "rgb(205, 179, 139)", "navajowhite4": "rgb(139, 121, 94)", "navy": "rgb(0, 0, 128)", "navyblue": "rgb(0, 0, 128)", "oldlace": "rgb(253, 245, 230)", "olivedrab": "rgb(107, 142, 35)", "olivedrab1": "rgb(192, 255, 62)", "olivedrab2": "rgb(179, 238, 58)", "olivedrab3": "rgb(154, 205, 50)", "olivedrab4": "rgb(105, 139, 34)", "orange": "rgb(255, 165, 0)", "orange1": "rgb(255, 165, 0)", "orange2": "rgb(238, 154, 0)", "orange3": "rgb(205, 133, 0)", "orange4": "rgb(139, 90, 0)", "orangered": "rgb(255, 69, 0)", "orangered1": "rgb(255, 69, 0)", "orangered2": "rgb(238, 64, 0)", "orangered3": "rgb(205, 55, 0)", "orangered4": "rgb(139, 37, 0)", "orchid": "rgb(218, 112, 214)", "orchid1": "rgb(255, 131, 250)", "orchid2": "rgb(238, 122, 233)", "orchid3": "rgb(205, 105, 201)", "orchid4": "rgb(139, 71, 137)", "palegoldenrod": "rgb(238, 232, 170)", "palegreen": "rgb(152, 251, 152)", "palegreen1": "rgb(154, 255, 154)", "palegreen2": "rgb(144, 238, 144)", "palegreen3": "rgb(124, 205, 124)", "palegreen4": "rgb(84, 139, 84)", "paleturquoise": "rgb(175, 238, 238)", "paleturquoise1": "rgb(187, 255, 255)", "paleturquoise2": "rgb(174, 238, 238)", "paleturquoise3": "rgb(150, 205, 205)", "paleturquoise4": "rgb(102, 139, 139)", "palevioletred": "rgb(219, 112, 147)", "palevioletred1": "rgb(255, 130, 171)", "palevioletred2": "rgb(238, 121, 159)", "palevioletred3": "rgb(205, 104, 137)", "palevioletred4": "rgb(139, 71, 93)", "papayawhip": "rgb(255, 239, 213)", "peachpuff": "rgb(255, 218, 185)", "peachpuff1": "rgb(255, 218, 185)", "peachpuff2": "rgb(238, 203, 173)", "peachpuff3": "rgb(205, 175, 149)", "peachpuff4": "rgb(139, 119, 101)", "peru": "rgb(205, 133, 63)", "pink": "rgb(255, 192, 203)", "pink1": "rgb(255, 181, 197)", "pink2": "rgb(238, 169, 184)", "pink3": "rgb(205, 145, 158)", "pink4": "rgb(139, 99, 108)", "plum": "rgb(221, 160, 221)", "plum1": "rgb(255, 187, 255)", "plum2": "rgb(238, 174, 238)", "plum3": "rgb(205, 150, 205)", "plum4": "rgb(139, 102, 139)", "powderblue": "rgb(176, 224, 230)", "purple": "rgb(160, 32, 240)", "purple1": "rgb(155, 48, 255)", "purple2": "rgb(145, 44, 238)", "purple3": "rgb(125, 38, 205)", "purple4": "rgb(85, 26, 139)", "red": "rgb(255, 0, 0)", "red1": "rgb(255, 0, 0)", "red2": "rgb(238, 0, 0)", "red3": "rgb(205, 0, 0)", "red4": "rgb(139, 0, 0)", "rosybrown": "rgb(188, 143, 143)", "rosybrown1": "rgb(255, 193, 193)", "rosybrown2": "rgb(238, 180, 180)", "rosybrown3": "rgb(205, 155, 155)", "rosybrown4": "rgb(139, 105, 105)", "royalblue": "rgb(65, 105, 225)", "royalblue1": "rgb(72, 118, 255)", "royalblue2": "rgb(67, 110, 238)", "royalblue3": "rgb(58, 95, 205)", "royalblue4": "rgb(39, 64, 139)", "saddlebrown": "rgb(139, 69, 19)", "salmon": "rgb(250, 128, 114)", "salmon1": "rgb(255, 140, 105)", "salmon2": "rgb(238, 130, 98)", "salmon3": "rgb(205, 112, 84)", "salmon4": "rgb(139, 76, 57)", "sandybrown": "rgb(244, 164, 96)", "seagreen": "rgb(46, 139, 87)", "seagreen1": "rgb(84, 255, 159)", "seagreen2": "rgb(78, 238, 148)", "seagreen3": "rgb(67, 205, 128)", "seagreen4": "rgb(46, 139, 87)", "seashell": "rgb(255, 245, 238)", "seashell1": "rgb(255, 245, 238)", "seashell2": "rgb(238, 229, 222)", "seashell3": "rgb(205, 197, 191)", "seashell4": "rgb(139, 134, 130)", "sienna": "rgb(160, 82, 45)", "sienna1": "rgb(255, 130, 71)", "sienna2": "rgb(238, 121, 66)", "sienna3": "rgb(205, 104, 57)", "sienna4": "rgb(139, 71, 38)", "skyblue": "rgb(135, 206, 235)", "skyblue1": "rgb(135, 206, 255)", "skyblue2": "rgb(126, 192, 238)", "skyblue3": "rgb(108, 166, 205)", "skyblue4": "rgb(74, 112, 139)", "slateblue": "rgb(106, 90, 205)", "slateblue1": "rgb(131, 111, 255)", "slateblue2": "rgb(122, 103, 238)", "slateblue3": "rgb(105, 89, 205)", "slateblue4": "rgb(71, 60, 139)", "slategray": "rgb(112, 128, 144)", "slategray1": "rgb(198, 226, 255)", "slategray2": "rgb(185, 211, 238)", "slategray3": "rgb(159, 182, 205)", "slategray4": "rgb(108, 123, 139)", "slategrey": "rgb(112, 128, 144)", "snow": "rgb(255, 250, 250)", "snow1": "rgb(255, 250, 250)", "snow2": "rgb(238, 233, 233)", "snow3": "rgb(205, 201, 201)", "snow4": "rgb(139, 137, 137)", "springgreen": "rgb(0, 255, 127)", "springgreen1": "rgb(0, 255, 127)", "springgreen2": "rgb(0, 238, 118)", "springgreen3": "rgb(0, 205, 102)", "springgreen4": "rgb(0, 139, 69)", "steelblue": "rgb(70, 130, 180)", "steelblue1": "rgb(99, 184, 255)", "steelblue2": "rgb(92, 172, 238)", "steelblue3": "rgb(79, 148, 205)", "steelblue4": "rgb(54, 100, 139)", "tan": "rgb(210, 180, 140)", "tan1": "rgb(255, 165, 79)", "tan2": "rgb(238, 154, 73)", "tan3": "rgb(205, 133, 63)", "tan4": "rgb(139, 90, 43)", "thistle": "rgb(216, 191, 216)", "thistle1": "rgb(255, 225, 255)", "thistle2": "rgb(238, 210, 238)", "thistle3": "rgb(205, 181, 205)", "thistle4": "rgb(139, 123, 139)", "tomato": "rgb(255, 99, 71)", "tomato1": "rgb(255, 99, 71)", "tomato2": "rgb(238, 92, 66)", "tomato3": "rgb(205, 79, 57)", "tomato4": "rgb(139, 54, 38)", "turquoise": "rgb(64, 224, 208)", "turquoise1": "rgb(0, 245, 255)", "turquoise2": "rgb(0, 229, 238)", "turquoise3": "rgb(0, 197, 205)", "turquoise4": "rgb(0, 134, 139)", "violet": "rgb(238, 130, 238)", "violetred": "rgb(208, 32, 144)", "violetred1": "rgb(255, 62, 150)", "violetred2": "rgb(238, 58, 140)", "violetred3": "rgb(205, 50, 120)", "violetred4": "rgb(139, 34, 82)", "wheat": "rgb(245, 222, 179)", "wheat1": "rgb(255, 231, 186)", "wheat2": "rgb(238, 216, 174)", "wheat3": "rgb(205, 186, 150)", "wheat4": "rgb(139, 126, 102)", "white": "rgb(255, 255, 255)", "whitesmoke": "rgb(245, 245, 245)", "yellow": "rgb(255, 255, 0)", "yellow1": "rgb(255, 255, 0)", "yellow2": "rgb(238, 238, 0)", "yellow3": "rgb(205, 205, 0)", "yellow4": "rgb(139, 139, 0)", "yellowgreen": "rgb(154, 205, 50)"
+			"aliceblue": "rgb(240, 248, 255)", "antiquewhite": "rgb(250, 235, 215)", "antiquewhite1": "rgb(255, 239, 219)", "antiquewhite2": "rgb(238, 223, 204)", "antiquewhite3": "rgb(205, 192, 176)", "antiquewhite4": "rgb(139, 131, 120)", "aquamarine": "rgb(127, 255, 212)", "aquamarine1": "rgb(127, 255, 212)", "aquamarine2": "rgb(118, 238, 198)", "aquamarine3": "rgb(102, 205, 170)", "aquamarine4": "rgb(69, 139, 116)", "azure": "rgb(240, 255, 255)", "azure1": "rgb(240, 255, 255)", "azure2": "rgb(224, 238, 238)", "azure3": "rgb(193, 205, 205)", "azure4": "rgb(131, 139, 139)", "beige": "rgb(245, 245, 220)", "bisque": "rgb(255, 228, 196)", "bisque1": "rgb(255, 228, 196)", "bisque2": "rgb(238, 213, 183)", "bisque3": "rgb(205, 183, 158)", "bisque4": "rgb(139, 125, 107)", "black": "rgb(0, 0, 0)", "blanchedalmond": "rgb(255, 235, 205)", "blue": "rgb(0, 0, 255)", "blue1": "rgb(0, 0, 255)", "blue2": "rgb(0, 0, 238)", "blue3": "rgb(0, 0, 205)", "blue4": "rgb(0, 0, 139)", "blueviolet": "rgb(138, 43, 226)", "brown": "rgb(165, 42, 42)", "brown1": "rgb(255, 64, 64)", "brown2": "rgb(238, 59, 59)", "brown3": "rgb(205, 51, 51)", "brown4": "rgb(139, 35, 35)", "burlywood": "rgb(222, 184, 135)", "burlywood1": "rgb(255, 211, 155)", "burlywood2": "rgb(238, 197, 145)", "burlywood3": "rgb(205, 170, 125)", "burlywood4": "rgb(139, 115, 85)", "cadetblue": "rgb(95, 158, 160)", "cadetblue1": "rgb(152, 245, 255)", "cadetblue2": "rgb(142, 229, 238)", "cadetblue3": "rgb(122, 197, 205)", "cadetblue4": "rgb(83, 134, 139)", "chartreuse": "rgb(127, 255, 0)", "chartreuse1": "rgb(127, 255, 0)", "chartreuse2": "rgb(118, 238, 0)", "chartreuse3": "rgb(102, 205, 0)", "chartreuse4": "rgb(69, 139, 0)", "chocolate": "rgb(210, 105, 30)", "chocolate1": "rgb(255, 127, 36)", "chocolate2": "rgb(238, 118, 33)", "chocolate3": "rgb(205, 102, 29)", "chocolate4": "rgb(139, 69, 19)", "coral": "rgb(255, 127, 80)", "coral1": "rgb(255, 114, 86)", "coral2": "rgb(238, 106, 80)", "coral3": "rgb(205, 91, 69)", "coral4": "rgb(139, 62, 47)", "cornflowerblue": "rgb(100, 149, 237)", "cornsilk": "rgb(255, 248, 220)", "cornsilk1": "rgb(255, 248, 220)", "cornsilk2": "rgb(238, 232, 205)", "cornsilk3": "rgb(205, 200, 177)", "cornsilk4": "rgb(139, 136, 120)", "cyan": "rgb(0, 255, 255)", "cyan1": "rgb(0, 255, 255)", "cyan2": "rgb(0, 238, 238)", "cyan3": "rgb(0, 205, 205)", "cyan4": "rgb(0, 139, 139)", "darkblue": "rgb(0, 0, 139)", "darkcyan": "rgb(0, 139, 139)", "darkgoldenrod": "rgb(184, 134, 11)", "darkgoldenrod1": "rgb(255, 185, 15)", "darkgoldenrod2": "rgb(238, 173, 14)", "darkgoldenrod3": "rgb(205, 149, 12)", "darkgoldenrod4": "rgb(139, 101, 8)", "darkgray": "rgb(169, 169, 169)", "darkgreen": "rgb(0, 100, 0)", "darkgrey": "rgb(169, 169, 169)", "darkkhaki": "rgb(189, 183, 107)", "darkmagenta": "rgb(139, 0, 139)", "darkolivegreen": "rgb(85, 107, 47)", "darkolivegreen1": "rgb(202, 255, 112)", "darkolivegreen2": "rgb(188, 238, 104)", "darkolivegreen3": "rgb(162, 205, 90)", "darkolivegreen4": "rgb(110, 139, 61)", "darkorange": "rgb(255, 140, 0)", "darkorange1": "rgb(255, 127, 0)", "darkorange2": "rgb(238, 118, 0)", "darkorange3": "rgb(205, 102, 0)", "darkorange4": "rgb(139, 69, 0)", "darkorchid": "rgb(153, 50, 204)", "darkorchid1": "rgb(191, 62, 255)", "darkorchid2": "rgb(178, 58, 238)", "darkorchid3": "rgb(154, 50, 205)", "darkorchid4": "rgb(104, 34, 139)", "darkred": "rgb(139, 0, 0)", "darksalmon": "rgb(233, 150, 122)", "darkseagreen": "rgb(143, 188, 143)", "darkseagreen1": "rgb(193, 255, 193)", "darkseagreen2": "rgb(180, 238, 180)", "darkseagreen3": "rgb(155, 205, 155)", "darkseagreen4": "rgb(105, 139, 105)", "darkslateblue": "rgb(72, 61, 139)", "darkslategray": "rgb(47, 79, 79)", "darkslategray1": "rgb(151, 255, 255)", "darkslategray2": "rgb(141, 238, 238)", "darkslategray3": "rgb(121, 205, 205)", "darkslategray4": "rgb(82, 139, 139)", "darkslategrey": "rgb(47, 79, 79)", "darkturquoise": "rgb(0, 206, 209)", "darkviolet": "rgb(148, 0, 211)", "debianred": "rgb(215, 7, 81)", "deeppink": "rgb(255, 20, 147)", "deeppink1": "rgb(255, 20, 147)", "deeppink2": "rgb(238, 18, 137)", "deeppink3": "rgb(205, 16, 118)", "deeppink4": "rgb(139, 10, 80)", "deepskyblue": "rgb(0, 191, 255)", "deepskyblue1": "rgb(0, 191, 255)", "deepskyblue2": "rgb(0, 178, 238)", "deepskyblue3": "rgb(0, 154, 205)", "deepskyblue4": "rgb(0, 104, 139)", "dimgray": "rgb(105, 105, 105)", "dimgrey": "rgb(105, 105, 105)", "dodgerblue": "rgb(30, 144, 255)", "dodgerblue1": "rgb(30, 144, 255)", "dodgerblue2": "rgb(28, 134, 238)", "dodgerblue3": "rgb(24, 116, 205)", "dodgerblue4": "rgb(16, 78, 139)", "firebrick": "rgb(178, 34, 34)", "firebrick1": "rgb(255, 48, 48)", "firebrick2": "rgb(238, 44, 44)", "firebrick3": "rgb(205, 38, 38)", "firebrick4": "rgb(139, 26, 26)", "floralwhite": "rgb(255, 250, 240)", "forestgreen": "rgb(34, 139, 34)", "gainsboro": "rgb(220, 220, 220)", "ghostwhite": "rgb(248, 248, 255)", "gold": "rgb(255, 215, 0)", "gold1": "rgb(255, 215, 0)", "gold2": "rgb(238, 201, 0)", "gold3": "rgb(205, 173, 0)", "gold4": "rgb(139, 117, 0)", "goldenrod": "rgb(218, 165, 32)", "goldenrod1": "rgb(255, 193, 37)", "goldenrod2": "rgb(238, 180, 34)", "goldenrod3": "rgb(205, 155, 29)", "goldenrod4": "rgb(139, 105, 20)", "gray": "rgb(190, 190, 190)", "gray0": "rgb(0, 0, 0)", "gray1": "rgb(3, 3, 3)", "gray10": "rgb(26, 26, 26)", "gray100": "rgb(255, 255, 255)", "gray11": "rgb(28, 28, 28)", "gray12": "rgb(31, 31, 31)", "gray13": "rgb(33, 33, 33)", "gray14": "rgb(36, 36, 36)", "gray15": "rgb(38, 38, 38)", "gray16": "rgb(41, 41, 41)", "gray17": "rgb(43, 43, 43)", "gray18": "rgb(46, 46, 46)", "gray19": "rgb(48, 48, 48)", "gray2": "rgb(5, 5, 5)", "gray20": "rgb(51, 51, 51)", "gray21": "rgb(54, 54, 54)", "gray22": "rgb(56, 56, 56)", "gray23": "rgb(59, 59, 59)", "gray24": "rgb(61, 61, 61)", "gray25": "rgb(64, 64, 64)", "gray26": "rgb(66, 66, 66)", "gray27": "rgb(69, 69, 69)", "gray28": "rgb(71, 71, 71)", "gray29": "rgb(74, 74, 74)", "gray3": "rgb(8, 8, 8)", "gray30": "rgb(77, 77, 77)", "gray31": "rgb(79, 79, 79)", "gray32": "rgb(82, 82, 82)", "gray33": "rgb(84, 84, 84)", "gray34": "rgb(87, 87, 87)", "gray35": "rgb(89, 89, 89)", "gray36": "rgb(92, 92, 92)", "gray37": "rgb(94, 94, 94)", "gray38": "rgb(97, 97, 97)", "gray39": "rgb(99, 99, 99)", "gray4": "rgb(10, 10, 10)", "gray40": "rgb(102, 102, 102)", "gray41": "rgb(105, 105, 105)", "gray42": "rgb(107, 107, 107)", "gray43": "rgb(110, 110, 110)", "gray44": "rgb(112, 112, 112)", "gray45": "rgb(115, 115, 115)", "gray46": "rgb(117, 117, 117)", "gray47": "rgb(120, 120, 120)", "gray48": "rgb(122, 122, 122)", "gray49": "rgb(125, 125, 125)", "gray5": "rgb(13, 13, 13)", "gray50": "rgb(127, 127, 127)", "gray51": "rgb(130, 130, 130)", "gray52": "rgb(133, 133, 133)", "gray53": "rgb(135, 135, 135)", "gray54": "rgb(138, 138, 138)", "gray55": "rgb(140, 140, 140)", "gray56": "rgb(143, 143, 143)", "gray57": "rgb(145, 145, 145)", "gray58": "rgb(148, 148, 148)", "gray59": "rgb(150, 150, 150)", "gray6": "rgb(15, 15, 15)", "gray60": "rgb(153, 153, 153)", "gray61": "rgb(156, 156, 156)", "gray62": "rgb(158, 158, 158)", "gray63": "rgb(161, 161, 161)", "gray64": "rgb(163, 163, 163)", "gray65": "rgb(166, 166, 166)", "gray66": "rgb(168, 168, 168)", "gray67": "rgb(171, 171, 171)", "gray68": "rgb(173, 173, 173)", "gray69": "rgb(176, 176, 176)", "gray7": "rgb(18, 18, 18)", "gray70": "rgb(179, 179, 179)", "gray71": "rgb(181, 181, 181)", "gray72": "rgb(184, 184, 184)", "gray73": "rgb(186, 186, 186)", "gray74": "rgb(189, 189, 189)", "gray75": "rgb(191, 191, 191)", "gray76": "rgb(194, 194, 194)", "gray77": "rgb(196, 196, 196)", "gray78": "rgb(199, 199, 199)", "gray79": "rgb(201, 201, 201)", "gray8": "rgb(20, 20, 20)", "gray80": "rgb(204, 204, 204)", "gray81": "rgb(207, 207, 207)", "gray82": "rgb(209, 209, 209)", "gray83": "rgb(212, 212, 212)", "gray84": "rgb(214, 214, 214)", "gray85": "rgb(217, 217, 217)", "gray86": "rgb(219, 219, 219)", "gray87": "rgb(222, 222, 222)", "gray88": "rgb(224, 224, 224)", "gray89": "rgb(227, 227, 227)", "gray9": "rgb(23, 23, 23)", "gray90": "rgb(229, 229, 229)", "gray91": "rgb(232, 232, 232)", "gray92": "rgb(235, 235, 235)", "gray93": "rgb(237, 237, 237)", "gray94": "rgb(240, 240, 240)", "gray95": "rgb(242, 242, 242)", "gray96": "rgb(245, 245, 245)", "gray97": "rgb(247, 247, 247)", "gray98": "rgb(250, 250, 250)", "gray99": "rgb(252, 252, 252)", "green": "rgb(0, 255, 0)", "green1": "rgb(0, 255, 0)", "green2": "rgb(0, 238, 0)", "green3": "rgb(0, 205, 0)", "green4": "rgb(0, 139, 0)", "greenyellow": "rgb(173, 255, 47)", "grey": "rgb(190, 190, 190)", "grey0": "rgb(0, 0, 0)", "grey1": "rgb(3, 3, 3)", "grey10": "rgb(26, 26, 26)", "grey100": "rgb(255, 255, 255)", "grey11": "rgb(28, 28, 28)", "grey12": "rgb(31, 31, 31)", "grey13": "rgb(33, 33, 33)", "grey14": "rgb(36, 36, 36)", "grey15": "rgb(38, 38, 38)", "grey16": "rgb(41, 41, 41)", "grey17": "rgb(43, 43, 43)", "grey18": "rgb(46, 46, 46)", "grey19": "rgb(48, 48, 48)", "grey2": "rgb(5, 5, 5)", "grey20": "rgb(51, 51, 51)", "grey21": "rgb(54, 54, 54)", "grey22": "rgb(56, 56, 56)", "grey23": "rgb(59, 59, 59)", "grey24": "rgb(61, 61, 61)", "grey25": "rgb(64, 64, 64)", "grey26": "rgb(66, 66, 66)", "grey27": "rgb(69, 69, 69)", "grey28": "rgb(71, 71, 71)", "grey29": "rgb(74, 74, 74)", "grey3": "rgb(8, 8, 8)", "grey30": "rgb(77, 77, 77)", "grey31": "rgb(79, 79, 79)", "grey32": "rgb(82, 82, 82)", "grey33": "rgb(84, 84, 84)", "grey34": "rgb(87, 87, 87)", "grey35": "rgb(89, 89, 89)", "grey36": "rgb(92, 92, 92)", "grey37": "rgb(94, 94, 94)", "grey38": "rgb(97, 97, 97)", "grey39": "rgb(99, 99, 99)", "grey4": "rgb(10, 10, 10)", "grey40": "rgb(102, 102, 102)", "grey41": "rgb(105, 105, 105)", "grey42": "rgb(107, 107, 107)", "grey43": "rgb(110, 110, 110)", "grey44": "rgb(112, 112, 112)", "grey45": "rgb(115, 115, 115)", "grey46": "rgb(117, 117, 117)", "grey47": "rgb(120, 120, 120)", "grey48": "rgb(122, 122, 122)", "grey49": "rgb(125, 125, 125)", "grey5": "rgb(13, 13, 13)", "grey50": "rgb(127, 127, 127)", "grey51": "rgb(130, 130, 130)", "grey52": "rgb(133, 133, 133)", "grey53": "rgb(135, 135, 135)", "grey54": "rgb(138, 138, 138)", "grey55": "rgb(140, 140, 140)", "grey56": "rgb(143, 143, 143)", "grey57": "rgb(145, 145, 145)", "grey58": "rgb(148, 148, 148)", "grey59": "rgb(150, 150, 150)", "grey6": "rgb(15, 15, 15)", "grey60": "rgb(153, 153, 153)", "grey61": "rgb(156, 156, 156)", "grey62": "rgb(158, 158, 158)", "grey63": "rgb(161, 161, 161)", "grey64": "rgb(163, 163, 163)", "grey65": "rgb(166, 166, 166)", "grey66": "rgb(168, 168, 168)", "grey67": "rgb(171, 171, 171)", "grey68": "rgb(173, 173, 173)", "grey69": "rgb(176, 176, 176)", "grey7": "rgb(18, 18, 18)", "grey70": "rgb(179, 179, 179)", "grey71": "rgb(181, 181, 181)", "grey72": "rgb(184, 184, 184)", "grey73": "rgb(186, 186, 186)", "grey74": "rgb(189, 189, 189)", "grey75": "rgb(191, 191, 191)", "grey76": "rgb(194, 194, 194)", "grey77": "rgb(196, 196, 196)", "grey78": "rgb(199, 199, 199)", "grey79": "rgb(201, 201, 201)", "grey8": "rgb(20, 20, 20)", "grey80": "rgb(204, 204, 204)", "grey81": "rgb(207, 207, 207)", "grey82": "rgb(209, 209, 209)", "grey83": "rgb(212, 212, 212)", "grey84": "rgb(214, 214, 214)", "grey85": "rgb(217, 217, 217)", "grey86": "rgb(219, 219, 219)", "grey87": "rgb(222, 222, 222)", "grey88": "rgb(224, 224, 224)", "grey89": "rgb(227, 227, 227)", "grey9": "rgb(23, 23, 23)", "grey90": "rgb(229, 229, 229)", "grey91": "rgb(232, 232, 232)", "grey92": "rgb(235, 235, 235)", "grey93": "rgb(237, 237, 237)", "grey94": "rgb(240, 240, 240)", "grey95": "rgb(242, 242, 242)", "grey96": "rgb(245, 245, 245)", "grey97": "rgb(247, 247, 247)", "grey98": "rgb(250, 250, 250)", "grey99": "rgb(252, 252, 252)", "honeydew": "rgb(240, 255, 240)", "honeydew1": "rgb(240, 255, 240)", "honeydew2": "rgb(224, 238, 224)", "honeydew3": "rgb(193, 205, 193)", "honeydew4": "rgb(131, 139, 131)", "hotpink": "rgb(255, 105, 180)", "hotpink1": "rgb(255, 110, 180)", "hotpink2": "rgb(238, 106, 167)", "hotpink3": "rgb(205, 96, 144)", "hotpink4": "rgb(139, 58, 98)", "indianred": "rgb(205, 92, 92)", "indianred1": "rgb(255, 106, 106)", "indianred2": "rgb(238, 99, 99)", "indianred3": "rgb(205, 85, 85)", "indianred4": "rgb(139, 58, 58)", "ivory": "rgb(255, 255, 240)", "ivory1": "rgb(255, 255, 240)", "ivory2": "rgb(238, 238, 224)", "ivory3": "rgb(205, 205, 193)", "ivory4": "rgb(139, 139, 131)", "khaki": "rgb(240, 230, 140)", "khaki1": "rgb(255, 246, 143)", "khaki2": "rgb(238, 230, 133)", "khaki3": "rgb(205, 198, 115)", "khaki4": "rgb(139, 134, 78)", "lavender": "rgb(230, 230, 250)", "lavenderblush": "rgb(255, 240, 245)", "lavenderblush1": "rgb(255, 240, 245)", "lavenderblush2": "rgb(238, 224, 229)", "lavenderblush3": "rgb(205, 193, 197)", "lavenderblush4": "rgb(139, 131, 134)", "lawngreen": "rgb(124, 252, 0)", "lemonchiffon": "rgb(255, 250, 205)", "lemonchiffon1": "rgb(255, 250, 205)", "lemonchiffon2": "rgb(238, 233, 191)", "lemonchiffon3": "rgb(205, 201, 165)", "lemonchiffon4": "rgb(139, 137, 112)", "lightblue": "rgb(173, 216, 230)", "lightblue1": "rgb(191, 239, 255)", "lightblue2": "rgb(178, 223, 238)", "lightblue3": "rgb(154, 192, 205)", "lightblue4": "rgb(104, 131, 139)", "lightcoral": "rgb(240, 128, 128)", "lightcyan": "rgb(224, 255, 255)", "lightcyan1": "rgb(224, 255, 255)", "lightcyan2": "rgb(209, 238, 238)", "lightcyan3": "rgb(180, 205, 205)", "lightcyan4": "rgb(122, 139, 139)", "lightgoldenrod": "rgb(238, 221, 130)", "lightgoldenrod1": "rgb(255, 236, 139)", "lightgoldenrod2": "rgb(238, 220, 130)", "lightgoldenrod3": "rgb(205, 190, 112)", "lightgoldenrod4": "rgb(139, 129, 76)", "lightgoldenrodyellow": "rgb(250, 250, 210)", "lightgray": "rgb(211, 211, 211)", "lightgreen": "rgb(144, 238, 144)", "lightgrey": "rgb(211, 211, 211)", "lightpink": "rgb(255, 182, 193)", "lightpink1": "rgb(255, 174, 185)", "lightpink2": "rgb(238, 162, 173)", "lightpink3": "rgb(205, 140, 149)", "lightpink4": "rgb(139, 95, 101)", "lightsalmon": "rgb(255, 160, 122)", "lightsalmon1": "rgb(255, 160, 122)", "lightsalmon2": "rgb(238, 149, 114)", "lightsalmon3": "rgb(205, 129, 98)", "lightsalmon4": "rgb(139, 87, 66)", "lightseagreen": "rgb(32, 178, 170)", "lightskyblue": "rgb(135, 206, 250)", "lightskyblue1": "rgb(176, 226, 255)", "lightskyblue2": "rgb(164, 211, 238)", "lightskyblue3": "rgb(141, 182, 205)", "lightskyblue4": "rgb(96, 123, 139)", "lightslateblue": "rgb(132, 112, 255)", "lightslategray": "rgb(119, 136, 153)", "lightslategrey": "rgb(119, 136, 153)", "lightsteelblue": "rgb(176, 196, 222)", "lightsteelblue1": "rgb(202, 225, 255)", "lightsteelblue2": "rgb(188, 210, 238)", "lightsteelblue3": "rgb(162, 181, 205)", "lightsteelblue4": "rgb(110, 123, 139)", "lightyellow": "rgb(255, 255, 224)", "lightyellow1": "rgb(255, 255, 224)", "lightyellow2": "rgb(238, 238, 209)", "lightyellow3": "rgb(205, 205, 180)", "lightyellow4": "rgb(139, 139, 122)", "limegreen": "rgb(50, 205, 50)", "linen": "rgb(250, 240, 230)", "magenta": "rgb(255, 0, 255)", "magenta1": "rgb(255, 0, 255)", "magenta2": "rgb(238, 0, 238)", "magenta3": "rgb(205, 0, 205)", "magenta4": "rgb(139, 0, 139)", "maroon": "rgb(176, 48, 96)", "maroon1": "rgb(255, 52, 179)", "maroon2": "rgb(238, 48, 167)", "maroon3": "rgb(205, 41, 144)", "maroon4": "rgb(139, 28, 98)", "mediumaquamarine": "rgb(102, 205, 170)", "mediumblue": "rgb(0, 0, 205)", "mediumorchid": "rgb(186, 85, 211)", "mediumorchid1": "rgb(224, 102, 255)", "mediumorchid2": "rgb(209, 95, 238)", "mediumorchid3": "rgb(180, 82, 205)", "mediumorchid4": "rgb(122, 55, 139)", "mediumpurple": "rgb(147, 112, 219)", "mediumpurple1": "rgb(171, 130, 255)", "mediumpurple2": "rgb(159, 121, 238)", "mediumpurple3": "rgb(137, 104, 205)", "mediumpurple4": "rgb(93, 71, 139)", "mediumseagreen": "rgb(60, 179, 113)", "mediumslateblue": "rgb(123, 104, 238)", "mediumspringgreen": "rgb(0, 250, 154)", "mediumturquoise": "rgb(72, 209, 204)", "mediumvioletred": "rgb(199, 21, 133)", "midnightblue": "rgb(25, 25, 112)", "mintcream": "rgb(245, 255, 250)", "mistyrose": "rgb(255, 228, 225)", "mistyrose1": "rgb(255, 228, 225)", "mistyrose2": "rgb(238, 213, 210)", "mistyrose3": "rgb(205, 183, 181)", "mistyrose4": "rgb(139, 125, 123)", "moccasin": "rgb(255, 228, 181)", "navajowhite": "rgb(255, 222, 173)", "navajowhite1": "rgb(255, 222, 173)", "navajowhite2": "rgb(238, 207, 161)", "navajowhite3": "rgb(205, 179, 139)", "navajowhite4": "rgb(139, 121, 94)", "navy": "rgb(0, 0, 128)", "navyblue": "rgb(0, 0, 128)", "oldlace": "rgb(253, 245, 230)", "olivedrab": "rgb(107, 142, 35)", "olivedrab1": "rgb(192, 255, 62)", "olivedrab2": "rgb(179, 238, 58)", "olivedrab3": "rgb(154, 205, 50)", "olivedrab4": "rgb(105, 139, 34)", "orange": "rgb(255, 165, 0)", "orange1": "rgb(255, 165, 0)", "orange2": "rgb(238, 154, 0)", "orange3": "rgb(205, 133, 0)", "orange4": "rgb(139, 90, 0)", "orangered": "rgb(255, 69, 0)", "orangered1": "rgb(255, 69, 0)", "orangered2": "rgb(238, 64, 0)", "orangered3": "rgb(205, 55, 0)", "orangered4": "rgb(139, 37, 0)", "orchid": "rgb(218, 112, 214)", "orchid1": "rgb(255, 131, 250)", "orchid2": "rgb(238, 122, 233)", "orchid3": "rgb(205, 105, 201)", "orchid4": "rgb(139, 71, 137)", "palegoldenrod": "rgb(238, 232, 170)", "palegreen": "rgb(152, 251, 152)", "palegreen1": "rgb(154, 255, 154)", "palegreen2": "rgb(144, 238, 144)", "palegreen3": "rgb(124, 205, 124)", "palegreen4": "rgb(84, 139, 84)", "paleturquoise": "rgb(175, 238, 238)", "paleturquoise1": "rgb(187, 255, 255)", "paleturquoise2": "rgb(174, 238, 238)", "paleturquoise3": "rgb(150, 205, 205)", "paleturquoise4": "rgb(102, 139, 139)", "palevioletred": "rgb(219, 112, 147)", "palevioletred1": "rgb(255, 130, 171)", "palevioletred2": "rgb(238, 121, 159)", "palevioletred3": "rgb(205, 104, 137)", "palevioletred4": "rgb(139, 71, 93)", "papayawhip": "rgb(255, 239, 213)", "peachpuff": "rgb(255, 218, 185)", "peachpuff1": "rgb(255, 218, 185)", "peachpuff2": "rgb(238, 203, 173)", "peachpuff3": "rgb(205, 175, 149)", "peachpuff4": "rgb(139, 119, 101)", "peru": "rgb(205, 133, 63)", "pink": "rgb(255, 192, 203)", "pink1": "rgb(255, 181, 197)", "pink2": "rgb(238, 169, 184)", "pink3": "rgb(205, 145, 158)", "pink4": "rgb(139, 99, 108)", "plum": "rgb(221, 160, 221)", "plum1": "rgb(255, 187, 255)", "plum2": "rgb(238, 174, 238)", "plum3": "rgb(205, 150, 205)", "plum4": "rgb(139, 102, 139)", "powderblue": "rgb(176, 224, 230)", "purple": "rgb(160, 32, 240)", "purple1": "rgb(155, 48, 255)", "purple2": "rgb(145, 44, 238)", "purple3": "rgb(125, 38, 205)", "purple4": "rgb(85, 26, 139)", "red": "rgb(255, 0, 0)", "red1": "rgb(255, 0, 0)", "red2": "rgb(238, 0, 0)", "red3": "rgb(205, 0, 0)", "red4": "rgb(139, 0, 0)", "rosybrown": "rgb(188, 143, 143)", "rosybrown1": "rgb(255, 193, 193)", "rosybrown2": "rgb(238, 180, 180)", "rosybrown3": "rgb(205, 155, 155)", "rosybrown4": "rgb(139, 105, 105)", "royalblue": "rgb(65, 105, 225)", "royalblue1": "rgb(72, 118, 255)", "royalblue2": "rgb(67, 110, 238)", "royalblue3": "rgb(58, 95, 205)", "royalblue4": "rgb(39, 64, 139)", "saddlebrown": "rgb(139, 69, 19)", "salmon": "rgb(250, 128, 114)", "salmon1": "rgb(255, 140, 105)", "salmon2": "rgb(238, 130, 98)", "salmon3": "rgb(205, 112, 84)", "salmon4": "rgb(139, 76, 57)", "sandybrown": "rgb(244, 164, 96)", "seagreen": "rgb(46, 139, 87)", "seagreen1": "rgb(84, 255, 159)", "seagreen2": "rgb(78, 238, 148)", "seagreen3": "rgb(67, 205, 128)", "seagreen4": "rgb(46, 139, 87)", "seashell": "rgb(255, 245, 238)", "seashell1": "rgb(255, 245, 238)", "seashell2": "rgb(238, 229, 222)", "seashell3": "rgb(205, 197, 191)", "seashell4": "rgb(139, 134, 130)", "sienna": "rgb(160, 82, 45)", "sienna1": "rgb(255, 130, 71)", "sienna2": "rgb(238, 121, 66)", "sienna3": "rgb(205, 104, 57)", "sienna4": "rgb(139, 71, 38)", "skyblue": "rgb(135, 206, 235)", "skyblue1": "rgb(135, 206, 255)", "skyblue2": "rgb(126, 192, 238)", "skyblue3": "rgb(108, 166, 205)", "skyblue4": "rgb(74, 112, 139)", "slateblue": "rgb(106, 90, 205)", "slateblue1": "rgb(131, 111, 255)", "slateblue2": "rgb(122, 103, 238)", "slateblue3": "rgb(105, 89, 205)", "slateblue4": "rgb(71, 60, 139)", "slategray": "rgb(112, 128, 144)", "slategray1": "rgb(198, 226, 255)", "slategray2": "rgb(185, 211, 238)", "slategray3": "rgb(159, 182, 205)", "slategray4": "rgb(108, 123, 139)", "slategrey": "rgb(112, 128, 144)", "snow": "rgb(255, 250, 250)", "snow1": "rgb(255, 250, 250)", "snow2": "rgb(238, 233, 233)", "snow3": "rgb(205, 201, 201)", "snow4": "rgb(139, 137, 137)", "springgreen": "rgb(0, 255, 127)", "springgreen1": "rgb(0, 255, 127)", "springgreen2": "rgb(0, 238, 118)", "springgreen3": "rgb(0, 205, 102)", "springgreen4": "rgb(0, 139, 69)", "steelblue": "rgb(70, 130, 180)", "steelblue1": "rgb(99, 184, 255)", "steelblue2": "rgb(92, 172, 238)", "steelblue3": "rgb(79, 148, 205)", "steelblue4": "rgb(54, 100, 139)", "tan": "rgb(210, 180, 140)", "tan1": "rgb(255, 165, 79)", "tan2": "rgb(238, 154, 73)", "tan3": "rgb(205, 133, 63)", "tan4": "rgb(139, 90, 43)", "thistle": "rgb(216, 191, 216)", "thistle1": "rgb(255, 225, 255)", "thistle2": "rgb(238, 210, 238)", "thistle3": "rgb(205, 181, 205)", "thistle4": "rgb(139, 123, 139)", "tomato": "rgb(255, 99, 71)", "tomato1": "rgb(255, 99, 71)", "tomato2": "rgb(238, 92, 66)", "tomato3": "rgb(205, 79, 57)", "tomato4": "rgb(139, 54, 38)", "turquoise": "rgb(64, 224, 208)", "turquoise1": "rgb(0, 245, 255)", "turquoise2": "rgb(0, 229, 238)", "turquoise3": "rgb(0, 197, 205)", "turquoise4": "rgb(0, 134, 139)", "violet": "rgb(238, 130, 238)", "violetred": "rgb(208, 32, 144)", "violetred1": "rgb(255, 62, 150)", "violetred2": "rgb(238, 58, 140)", "violetred3": "rgb(205, 50, 120)", "violetred4": "rgb(139, 34, 82)", "wheat": "rgb(245, 222, 179)", "wheat1": "rgb(255, 231, 186)", "wheat2": "rgb(238, 216, 174)", "wheat3": "rgb(205, 186, 150)", "wheat4": "rgb(139, 126, 102)", "white": "rgb(255, 255, 255)", "whitesmoke": "rgb(245, 245, 245)", "yellow": "rgb(255, 255, 0)", "yellow1": "rgb(255, 255, 0)", "yellow2": "rgb(238, 238, 0)", "yellow3": "rgb(205, 205, 0)", "yellow4": "rgb(139, 139, 0)", "yellowgreen": "rgb(154, 205, 50)"
 		};
 		
 		return {
@@ -3931,73 +3950,76 @@
 					var g = parseInt(digits[3]);
 					var b = parseInt(digits[4]);
 
-				    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+						return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 			},
 
+			hueToRgb: function(p, q, t) {
+				if (t < 0) t += 1;
+				if (t > 1) t -= 1;
+				if (t < 1/6) return p + (q - p) * 6 * t;
+				if (t < 1/2) return q;
+				if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+				return p;
+			},
+
+			// HSL to RGB converter
+			// http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript
+			hslToRgb: function(h, s, l) {
+				var self = this;
+				var r, g, b;
+
+				// normalize hue orientation between 0 and 360 degrees
+				h = h % 360;
+				if (h < 0)
+					h += 360;
+				h = ~~h / 360;
+
+				if (s < 0)
+					s = 0;
+				else if (s > 100)
+					s = 100;
+				s = ~~s / 100;
+
+				if (l < 0)
+					l = 0;
+				else if (l > 100)
+					l = 100;
+				l = ~~l / 100;
+
+				if (s === 0) {
+					r = g = b = l; // achromatic
+				} else {
+					var q = l < 0.5 ?
+						l * (1 + s) :
+						l + s - l * s;
+					var p = 2 * l - q;
+					r = self.hueToRgb(p, q, h + 1/3);
+					g = self.hueToRgb(p, q, h);
+					b = self.hueToRgb(p, q, h - 1/3);
+				}
+
+				return [~~(r * 255), ~~(g * 255), ~~(b * 255)];
+			},
+
+			//https://github.com/jakubpawlowicz/clean-css/blob/master/lib/colors/hsl-to-hex.js
+			// http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript
 			hslToHex: function(data) {
-				//https://github.com/jakubpawlowicz/clean-css/blob/master/lib/colors/hsl-to-hex.js
-				  // HSL to RGB converter. Both methods adapted from:
-				  // http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript
-				  var hslToRgb = function(h, s, l) {
-				    var r, g, b;
+				var self = this;
+				return {
+					process: function() {
+						return data.replace(/hsl\((-?\d+),(-?\d+)%?,(-?\d+)%?\)/g, function(match, hue, saturation, lightness) {
+							var asRgb = self.hslToRgb(hue, saturation, lightness);
+							var redAsHex = asRgb[0].toString(16);
+							var greenAsHex = asRgb[1].toString(16);
+							var blueAsHex = asRgb[2].toString(16);
 
-				    // normalize hue orientation b/w 0 and 360 degrees
-				    h = h % 360;
-				    if (h < 0)
-				      h += 360;
-				    h = ~~h / 360;
-
-				    if (s < 0)
-				      s = 0;
-				    else if (s > 100)
-				      s = 100;
-				    s = ~~s / 100;
-
-				    if (l < 0)
-				      l = 0;
-				    else if (l > 100)
-				      l = 100;
-				    l = ~~l / 100;
-
-				    if (s === 0) {
-				      r = g = b = l; // achromatic
-				    } else {
-				      var q = l < 0.5 ?
-				        l * (1 + s) :
-				        l + s - l * s;
-				      var p = 2 * l - q;
-				      r = hueToRgb(p, q, h + 1/3);
-				      g = hueToRgb(p, q, h);
-				      b = hueToRgb(p, q, h - 1/3);
-				    }
-
-				    return [~~(r * 255), ~~(g * 255), ~~(b * 255)];
-				  };
-
-				  var hueToRgb = function(p, q, t) {
-				    if (t < 0) t += 1;
-				    if (t > 1) t -= 1;
-				    if (t < 1/6) return p + (q - p) * 6 * t;
-				    if (t < 1/2) return q;
-				    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-				    return p;
-				  };
-
-				  return {
-				    process: function() {
-				      return data.replace(/hsl\((-?\d+),(-?\d+)%?,(-?\d+)%?\)/g, function(match, hue, saturation, lightness) {
-				        var asRgb = hslToRgb(hue, saturation, lightness);
-				        var redAsHex = asRgb[0].toString(16);
-				        var greenAsHex = asRgb[1].toString(16);
-				        var blueAsHex = asRgb[2].toString(16);
-
-				        return '#' +
-				          ((redAsHex.length == 1 ? '0' : '') + redAsHex) +
-				          ((greenAsHex.length == 1 ? '0' : '') + greenAsHex) +
-				          ((blueAsHex.length == 1 ? '0' : '') + blueAsHex);
-				      });
-				    }
-				  };
+							return '#' +
+								((redAsHex.length == 1 ? '0' : '') + redAsHex) +
+								((greenAsHex.length == 1 ? '0' : '') + greenAsHex) +
+								((blueAsHex.length == 1 ? '0' : '') + blueAsHex);
+						});
+					}
+				};
 			},
 
 			nameToHex: function(name) {
@@ -4075,17 +4097,29 @@
 				ary.splice(0, 1);
 				return rootObj.arrayToRGBA(ary.map(scale));
 			},
-			hexToRGB: function(hex) {
-				var RGB = [];
-				RGB.push(hexToR(hex));
-				RGB.push(hexToG(hex));
-				RGB.push(hexToB(hex));
-				return RGB;
+			stripHash: function(hex) {
+				return (hex.charAt(0)=="#") ? hex.substring(1,7):hex;
 			},
-			hexToR: function(hex) {return parseInt((cutHex(hex)).substring(0,2),16);},
-			hexToG: function(hex) {return parseInt((cutHex(hex)).substring(2,4),16);},
-			hexToB: function(hex) {return parseInt((cutHex(hex)).substring(4,6),16);},
-			cutHex: function(hex) {return (hex.charAt(0)=="#") ? hex.substring(1,7):hex;}	
+			hexToR: function(hex) {
+				var self = this;
+				return parseInt((self.stripHash(hex)).substring(0,2),16);
+			},
+			hexToG: function(hex) {
+				var self = this;
+				return parseInt((self.stripHash(hex)).substring(2,4),16);
+			},
+			hexToB: function(hex) {
+				var self = this;
+				return parseInt((self.stripHash(hex)).substring(4,6),16);
+			},
+			hexToRGB: function(hex) {
+				var self = this;
+				var RGB = [];
+				RGB.push(self.hexToR(hex));
+				RGB.push(self.hexToG(hex));
+				RGB.push(self.hexToB(hex));
+				return RGB;
+			}
 		};
 	}
 })();
@@ -4096,16 +4130,25 @@
 		.factory('Color', Color);
 
 	function Color(ColorConvert) {
-		// NOTE Ideally these will all be deprecated
-		//      in favor of nbative JS, THREE or D3 functions.
+		// NOTE Optionally these could all be deprecated
+		//      in favor of native JS, THREE or D3 functions.
+		//          (OR Use this as a single source for all color manipulation
+		//           whatever the external api, to ensure single load access.)
 		//      Those already UNUSED are marked as such.
 
 		return {
-
 			// Extract colors from (Ensembl) INI files
 			// eg. https://raw.githubusercontent.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini
 			//  OR https://cdn.rawgit.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini
 			//  OR in TADkit: assets/defaults/ensembl-webcode-COLOUR.ini
+			RGBObjectFromHex: function(hex) {
+				var r = ColorConvert.hexToR(hex);
+				var g = ColorConvert.hexToG(hex);
+				var b = ColorConvert.hexToB(hex);
+				var RGBObject = {"r":r,"g":g,"b":b};
+				return RGBObject;
+			},
+			// Generate 'colors list' Object from INI data
 			colorsFromIni: function(data) {
 				var regex = {
 					section: /^\s*\[\s*([^\]]*)\s*\]\s*$/,
@@ -4179,7 +4222,6 @@
 				return colors;
 			},
 			// Generate THREE Vertex Colors from array of THREE colors
-			// 
 			vertexColorsFromColors: function(colors) {
 				// Buffer Geomptry to be used as LinePieces so
 				// colors stored as one per data-position-pair
@@ -4198,7 +4240,7 @@
 				}
 				return vertexColors;
 			},
-			// Generate a specific number of random colors
+			// Generate an Array of a specific number of random colors
 			getRandomColors: function(count) {
 				var randomColors = [];
 				for(var i=0; i<count; i++){
@@ -4207,7 +4249,42 @@
 				}
 				return randomColors;
 			},
-			// Generate a specific number of random colors
+			getRandomQualitativeHex: function(){
+				var golden_ratio_conjugate = 0.618033988749895;
+				var h = Math.random();
+				return function(){
+					h += golden_ratio_conjugate;
+					h %= 1;
+					return ColorConvert.hslToHex(h, 0.5, 0.60);
+				};
+			},
+			// Generate an Array of a specific number of random Qualitative colors using the Golden Ratio
+			// Adapted from http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
+			getQualitativeColors: function(count) {
+				var qualitativeColors = [];
+				var timeout = count * count;
+
+				for(var i=0; i<count; i++){
+					var color = getRandomQualitativeHex();
+
+					// Check if exists in array
+					var colorUnique = true;
+					for (var j = qualitativeColors.length - 1; j >= 0; j--) {
+						if (qualitativeColors[j] == color) colorUnique = false;
+					}
+
+					if (colorUnique) {
+						qualitativeColors.push(color);
+						timeout = count * count;
+					} else {
+						i--;
+						timeout--;
+					}
+				}
+
+				return qualitativeColors;
+			},
+			// Generate an Array of a specific number of random colors
 			getRandomRGB: function(count) {
 				var randomRGB = [];
 				for(var i=0; i<count; i++){
@@ -4217,7 +4294,7 @@
 				}
 				return randomRGB;
 			},
-				// UNUSED: Generate a math linear gradient between to hex colors values
+			// UNUSED: Generate a math linear gradient between to hex colors values
 			//     Note this is NOT a L*a*b or HCL correct gradient
 			//     See Mike Bostock's D3 comments: http://bl.ocks.org/mbostock/3014589
 			getGradientColor: function(start_color, end_color, percent) {
@@ -4821,20 +4898,20 @@
 
 		return {
 			load: function() {
-				var deferral = $q.defer();
+				var deferred = $q.defer();
 				var dataUrl = "assets/defaults/tk-defaults-overlays.json";
 				if( overlays.loaded.length > 0 ) {
-					deferral.resolve(overlays);
+					 deferred.resolve(overlays);
 				} else {
 					$http.get(dataUrl)
 					.success( function(data) {
 						overlays.loaded = data;
 						// overlays.current.index = overlays.loaded.length - 1;
 						console.log("Overlays (" + data.length + ") loaded from " + dataUrl);
-						deferral.resolve(overlays);
+						 deferred.resolve(overlays);
 					});
 				}
-				return deferral.promise;
+				return deferred.promise;
 			},
 			loadTSV: function(filename, filetype, defaults) {
 				filename = filename || "tk-example-dataset";
@@ -4847,26 +4924,27 @@
 					Storyboards.defaultComponents();
 				}
 
-				var deferral = $q.defer();
+				var deferred = $q.defer();
 				var datapath = "defaults";
 				if (filename != "tk-example-dataset") datapath = "examples";
 				var dataUrl = "assets/" + datapath + "/" + filename + "." + filetype;
 				$http.get(dataUrl)
 				.success( function(fileData) {
-					var importedOverlays = self.import(fileData,[],[],defaults);
+					var importedOverlays = self.import(fileData,[],[]);
 					console.log("Overlays (" + importedOverlays.length + ") imported from " + dataUrl);
-					deferral.resolve(overlays);
+					deferred.resolve(overlays);
 				})
 				.error(function(fileData) {
 					console.log("No associated data tracks found.");
 				});
-				return deferral.promise;
+				return deferred.promise;
 			},
-			import: function(fileData, selectedRows, selectedCols) {
+			import: function(fileData, selectedRows, selectedCols, style) {
 				var self = this;
 				// TODO: if not valid fileData return...
 				selectedRows = selectedRows || [];
 				selectedCols = selectedCols || [];
+				style = style || {"width" : "chromatinNM", "color" : "categorical"};
 
 				var parsedData;
 				var dataType = Resources.whatIsIt(fileData);
@@ -4876,14 +4954,16 @@
 					parsedData = fileData; // already parsed to JSON object
 				}
 
+				var validatedData = self.validate(parsedData);
+
 				var filteredData;
 				if (selectedRows.length > 0 && selectedCols.length > 0) {
-					filteredData = self.filter(parsedData, selectedRows, selectedCols);
+					filteredData = self.filter(validatedData, selectedRows, selectedCols);
 				} else {
-					filteredData = parsedData; // no filtering required
+					filteredData = validatedData; // no filtering required
 				}
 
-				var aquiredOverlays = self.aquire(filteredData);
+				var aquiredOverlays = self.aquire(filteredData, style);
 				self.add(aquiredOverlays);
 
 				return aquiredOverlays;
@@ -4896,6 +4976,37 @@
 					fastMode: true
 				});
 				return parsedData;
+			},
+			validate: function(data) {
+				var valid = true;
+				var rows = data.length;
+				var cols = data[0].length;
+				var validatedData;
+				// make array of col types
+				// if isNumber also check if integer or float
+				// 	if col2 integer check that is higher than col1
+				// 		if yes use as coordinates... but check with User feedback
+				// 		if not classify as value... but check with User feedback
+
+				// check with User feedback... first row pulldown
+
+				// for (var i = 0; i < rows; i++) {
+				// 	var newRow = [];
+				// 	if (selectedRows[i]) {
+				// 		for (var j = 0; j < cols; j++) {
+				// 			if (selectedCols[j]) newRow.push(dataTable[i][j]); // else column not added
+				// 		}
+				// 		filteredData.push(newRow);
+				// 	} // else row not added
+				// 	valid = true;
+				// }
+				validatedData = data;
+				if (valid) {
+					return validatedData;
+				} else {
+					// give error message
+					// return to Project Loader page
+				}
 			},
 			filter: function(dataTable, selectedRows, selectedCols) {
 				// dataTable [[row1col1,row1col2...],[row2col1,row2col2...]...]
@@ -4914,117 +5025,177 @@
 				}
 				return filteredData;
 			},
-			aquire: function(data) {
-				// d3Service.d3().then(function(d3) {
-					// var colorRange = ["#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff"];
-					var colorFilion = ["#227c4f","#e71818","#8ece0d","#6666ff","#424242"];
-					var colorRange = d3.scale.category20();
+			aquire: function(data, style) {
+				// var colorRange = ["#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff"];
+				var colorFilion = ["#227c4f","#e71818","#8ece0d","#6666ff","#424242"];
+				// D3 Categorical Color Ranges
+				var colorRange = [];
 
-					// columns to overlays
-					// skip row 1 = headers ie. length - 2
-					// skip colums 1 and 2 = coords ie. length - 3
-					var acquiredOverlays = [];
-					// check for bigwig data the step and start
-					// var step = 1; // override below if fixed
-					// if none find which is start and end eg. Marie's and Filion's data
-					// cycle through first lineto determine columns
-					// create as BedGraph
-					var headerRow = 0;
-					var firstDataRow = 1;
-					var startColumn = 0;
-					var endColumn = 1;
-					var colsCount = data[headerRow].length;
+				if (style.color == "gradient") {
+					// ???
+				} else { // categorical
+					// d3.scale.category20()
+					  colorRange.push("#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c", "#98df8a", "#d62728", "#ff9896", "#9467bd", "#c5b0d5", "#8c564b", "#c49c94", "#e377c2", "#f7b6d2", "#7f7f7f", "#c7c7c7", "#bcbd22", "#dbdb8d", "#17becf", "#9edae5");
+					// d3.scale.category20b()
+					  colorRange.push("#393b79", "#5254a3", "#6b6ecf", "#9c9ede", "#637939", "#8ca252", "#b5cf6b", "#cedb9c", "#8c6d31", "#bd9e39", "#e7ba52", "#e7cb94", "#843c39", "#ad494a", "#d6616b", "#e7969c", "#7b4173", "#a55194", "#ce6dbd", "#de9ed6");
+					// d3.scale.category20c()
+					  colorRange.push("#3182bd", "#6baed6", "#9ecae1", "#c6dbef", "#e6550d", "#fd8d3c", "#fdae6b", "#fdd0a2", "#31a354", "#74c476", "#a1d99b", "#c7e9c0", "#756bb1", "#9e9ac8", "#bcbddc", "#dadaeb", "#636363", "#969696", "#bdbdbd", "#d9d9d9");
+				}
 
-					// Check if fixed steps
-					var step = data[firstDataRow][endColumn] - data[firstDataRow][startColumn] + 1; // get step from chromEnd to chromStart
-					var step2 = data[firstDataRow+1][endColumn] - data[firstDataRow+1][startColumn] + 1; // check next row
-					var type, format, stepType;
-					if (step == step2) {
-						type = "wiggle_0";
-						format = "fixed";
-						stepType = "fixed";
-					} else {
-						type = "bedgraph";
-						format = "variable";
-						stepType = "variable";
-					}
+				// columns to overlays
+				// skip row 1 = headers ie. length - 2
+				// skip colums 1 and 2 = coords ie. length - 3
+				var acquiredOverlays = [];
+				// check for bigwig data the step and start
+				// var step = 1; // override below if fixed
+				// if none find which is start and end eg. Marie's and Filion's data
+				// cycle through first lineto determine columns
+				// create as BedGraph
+				var headerRow = 0;
+				var firstDataRow = 1;
+				var startColumn = 0;
+				var endColumn = 1;
+				var rowsCount = data.length;
+				var colsCount = data[headerRow].length;
 
-					// Check if Filion proteins ie. chromatin colors
-					var filion = false;
-					if (colsCount == 7){
-						var filionProteins = 0;
-						for (var h = 2; h < colsCount; h++) { // h=2 to skip start and end cols
-							var header = data[headerRow][h].toLowerCase();
-							if (header=="hp1" || header=="brm" || header=="mrg15" || header=="pc" || header=="h1") filionProteins++;
-						}
-						if (filionProteins == 5) filion = true;
-					}
+				// Check if fixed steps
+				var step = data[firstDataRow][endColumn] - data[firstDataRow][startColumn] + 1; // get step from chromEnd to chromStart
+				var step2 = data[firstDataRow+1][endColumn] - data[firstDataRow+1][startColumn] + 1; // check next row
+				var stepped = false;
+				if (step == step2) stepped = true;
 
-					for (var i = colsCount - 1; i >= 2; i--) { // i >= 2 to skip, start and end columns
-						var colored;
-						if (filion) {
-							colored = colorFilion[i-2];
-						} else {
-							colored = colorRange(i);
-						}				
-						acquiredOverlays.unshift(
-							{
-								"metadata": {
-									"version" : 1.0,
-									"type" : "overlay",
-									"generator" : "TADkit"
-								},
-								"object" : {
-									"uuid" : uuid4.generate(),
-									"id" : data[headerRow][i],
-									"title" : data[headerRow][i],
-									"source" : "Research output",
-									"url" : "local",
-									"description" : "center_label", //also BigWig description (track title): "User Supplied Track"
-									"type" : type, //also BigWig type
-									"format" : format,
-									"components" : 2,
-									"name" : data[headerRow][i], //BigWig: "User Track"
-									"visibility" : "full", //BigWig: "full", "dense" or "hide"
-									"color" : colored, // random from D3.js function. NOTE: convert to RGB for BigWig: eg. 255,255,255
-									"altColor" : "#cccccc", // light grey gives best 3D render vis. NOTE: convert to RGB for BigWig: eg. 128,128,128
-									"priority" : "100", //BigWig: 100
-									"stepType" : stepType, //BigWig: "variable" or "fixed"
-									"chrom" : "", //BigWig: derive from dataset...???
-									"start" : data[firstDataRow][startColumn], //BigWig
-									"step" : step, //BigWig
-									"state" : {
-										"index" : 0, // make real index???
-										"overlaid" : false
-									}
-								},
-								"palette" : [colored,"#cccccc"],
-								"data" : [],
-								"colors" : {
-									"particles" : [],
-									"chromatin" : [],
-									"network" : {
-										"RGB" : [],
-										"alpha" : []
-									}
+				// Check for data spacing
+				var space = data[firstDataRow+1][startColumn] - data[firstDataRow][startColumn];
+				var space2 = data[firstDataRow+2][startColumn] - data[firstDataRow+1][startColumn];
+				var spaced = false;
+				if (space == space2) spaced = true;
+
+				var type, format, stepType;
+				var colorSpectrum = [];
+
+				if (stepped && spaced) {
+					type = "wiggle_0";
+					format = "fixed"; // and if variable...?
+					stepType = "fixed";
+
+				} else {
+					type = "bedgraph";
+					format = "bicolor";
+					stepType = "variable";
+
+					// Test values if Boolean or range of values
+					for (var f = data.length - 1; f >= 1; f--) {
+						var checkValue = data[f][2];
+						if (checkValue > 0) {
+							if (checkValue >= 1) {
+								colorSpectrum.push(colorRange[checkValue]);
+								if (checkValue > 1) {
+									format = "spectrum";
 								}
 							}
-						);
-						// convert column data to array
-						for (var j = data.length - 1; j >= 1; j--) { // j >= 1 to skip first header row
-							if (format == "variable") {
-								acquiredOverlays[0].data.unshift({
-									"start" : data[j][startColumn],
-									"end" : data[j][endColumn],
-									"read" : data[j][i]
-								});
-							} else {
-								acquiredOverlays[0].data.unshift(data[j][i]);
-							}				
 						}
 					}
-					return acquiredOverlays;
-				// }); // End d3 Service
+
+				}
+
+				/* For bedgraph data, where no value given in col3
+				 * assume all indicate peaks/true reads
+				 * insert a Boolean value of 1 for each read row
+				 */ 
+				if (colsCount == 2) {
+					// skip first header row
+					data[0].push("Peaks");
+					for (var g = firstDataRow; g < rowsCount; g++) {
+						// add
+						data[g].push(1);
+					}
+					// console.log("No read values - col3 added, all 1 (true).");
+					// console.log(data);
+				} else {
+					// console.log("Read values already included in col3.");
+				}
+
+				// Check if Filion proteins ie. chromatin colors
+				var filion = false;
+				if (colsCount == 7) filion = true; // TEMP validation pending improvement
+				if (filion){
+					var filionProteins = 0;
+					for (var h = 2; h < colsCount; h++) { // h=2 to skip start and end cols
+						var header = data[headerRow][h].toLowerCase();
+						if (header=="hp1" || header=="brm" || header=="mrg15" || header=="pc" || header=="h1") filionProteins++;
+					}
+					if (filionProteins == 5) filion = true;
+				}
+
+				for (var i = colsCount - 1; i >= 2; i--) { // i >= 2 to skip, start and end columns
+					var colored, palette;
+					if (filion) {
+						colored = colorFilion[i-2];
+						palette = [colored,"#cccccc"];
+					} else if (format == "spectrum") {
+						colored = colorSpectrum;
+						palette = colorSpectrum;
+					} else {
+						colored = colorRange[i];
+						palette = [colored,"#cccccc"];
+					}				
+					acquiredOverlays.unshift(
+						{
+							"metadata": {
+								"version" : 1.0,
+								"type" : "overlay",
+								"generator" : "TADkit"
+							},
+							"object" : {
+								"uuid" : uuid4.generate(),
+								"id" : data[headerRow][i],
+								"title" : data[headerRow][i],
+								"source" : "Research output",
+								"url" : "local",
+								"description" : "center_label", //also BigWig description (track title): "User Supplied Track"
+								"type" : type, //also BigWig type
+								"format" : format, // used to specify track directive (see component.directive.js)
+								"components" : 2,
+								"name" : data[headerRow][i], //BigWig: "User Track"
+								"visibility" : "full", //BigWig: "full", "dense" or "hide"
+								"color" : colored, // random from D3.js function. NOTE: convert to RGB for BigWig: eg. 255,255,255
+								"altColor" : "#cccccc", // light grey gives best 3D render vis. NOTE: convert to RGB for BigWig: eg. 128,128,128
+								"priority" : "100", //BigWig: 100
+								"stepType" : stepType, //BigWig: "variable" or "fixed"
+								"chrom" : "", //BigWig: derive from dataset...???
+								"start" : data[firstDataRow][startColumn], //BigWig
+								"step" : step, //BigWig
+								"state" : {
+									"index" : 0, // make real index???
+									"overlaid" : false
+								}
+							},
+							"palette" : palette,
+							"data" : [],
+							"colors" : {
+								"particles" : [],
+								"chromatin" : [],
+								"network" : {
+									"RGB" : [],
+									"alpha" : []
+								}
+							}
+						}
+					);
+					// convert column data to array
+					for (var j = data.length - 1; j >= 1; j--) { // j >= 1 to skip first header row
+						if (format == "variable" || format == "bicolor" || format == "spectrum") {
+							acquiredOverlays[0].data.unshift({
+								"start" : data[j][startColumn],
+								"end" : data[j][endColumn],
+								"read" : data[j][i]
+							});
+						} else {
+							acquiredOverlays[0].data.unshift(data[j][i]);
+						}				
+					}
+				}
+				return acquiredOverlays;
 			},
 			add: function(importedOverlays) {
 				var self = this;
@@ -5123,63 +5294,72 @@
 
 			},
 			segment: function() {
-				var settings = Settings.get();
 				var self = this; // SYNChronous functions...
-				angular.forEach(overlays.loaded, function(overlay, key) {
-					// check if colors already exist (for chromatin as principal set) or number of segments have changed
-					var test = true;
-					if (test) {
-					// if (!overlay.colors.chromatin || overlay.colors.chromatin.length === 0) { // ??? || (overlay.colors.chromatin && segmentsCount != settings.segmentsCount)
-						// run function based on object type
-						var type = overlay.object.type;
-						var format = overlay.object.format;
-						if (type == "gradient" && format == "hex") {
-							// palette must contain 2 hex values
-							overlay.colors.particles = Segments.gradientHCL(overlay, settings.current.particlesCount);
-							overlay.colors.chromatin = Segments.gradientHCL(overlay, settings.current.segmentsCount);
-							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
-							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
-						} else if (type == "wiggle_0" && format == "fixed") {
-							// OJO! create additional option for format = "bigwig-variable"
-							overlay.colors.particles = Segments.bicolor(overlay, settings.current.particlesCount);
-							overlay.colors.chromatin = Segments.bicolor(overlay, settings.current.segmentsCount);
-							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
-							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
-						} else if (type == "wiggle_0" && format == "variable") {
-							// To Do...
-						} else if (type == "bedgraph") {
-							overlay.colors.particles = Segments.bicolorVariable(overlay, settings.current.chromStart, settings.current.particlesCount, 1);
-							overlay.colors.chromatin = Segments.bicolorVariable(overlay, settings.current.chromStart, settings.current.segmentsCount, settings.current.segmentLength);
-							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
-							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
-						} else if (type == "matrix") {
-							// Distances are per edge so just convert to color
-							overlay.colors.particlesMatrix = Segments.matrix(overlay, 1); // ie. per particle
-							overlay.colors.chromatinMatrix = Segments.matrix(overlay, settings.current.particleSegments);
-							overlay.colors.networkMatrix = overlay.colors.particlesMatrix; // ie. also color network edges by matrix
-							self.at(1, settings.current.particlesCount, settings.current.particleSegments);
-						} else if (type == "misc" && format == "variable") { // eg. restraints
-							overlay.colors.particles = [];
-							overlay.colors.chromatin = [];
-							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
-							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
-						} else if (type == "ensembl" && format == "json") {
-							// data must have .start and .end
-							var features = Resources.get().biotypes;
-							var singleSegment = 1;
-							overlay.colors.particles = Segments.features(overlay, settings.current.chromStart, settings.current.particlesCount, singleSegment, features);
-							overlay.colors.chromatin = Segments.features(overlay, settings.current.chromStart, settings.current.segmentsCount, settings.current.segmentLength, features);
-							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
-							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
+				Segments.load().then(function() {
+					var settings = Settings.get();
+					angular.forEach(overlays.loaded, function(overlay, key) {
+						// check if colors already exist (for chromatin as principal set) or number of segments have changed
+						var test = true;
+						if (test) {
+						// if (!overlay.colors.chromatin || overlay.colors.chromatin.length === 0) { // ??? || (overlay.colors.chromatin && segmentsCount != settings.segmentsCount)
+							// run function based on object type
+							var type = overlay.object.type;
+							var format = overlay.object.format;
+							if (type == "gradient" && format == "hex") {
+								// palette must contain 2 hex values
+								overlay.colors.particles = Segments.gradientHCL(overlay, settings.current.particlesCount);
+								overlay.colors.chromatin = Segments.gradientHCL(overlay, settings.current.segmentsCount);
+								overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
+								overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
+							} else if (type == "wiggle_0" && format == "fixed") {
+								// OJO! create additional option for format = "bigwig-variable"
+								overlay.colors.particles = Segments.bicolor(overlay, settings.current.particlesCount);
+								overlay.colors.chromatin = Segments.bicolor(overlay, settings.current.segmentsCount);
+								overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
+								overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
+							} else if (type == "wiggle_0" && format == "variable") {
+								// To Do...
+							} else if (type == "bedgraph" && format == "bicolor") {
+								// data must have .start and .end
+								overlay.colors.particles = Segments.bicolorVariable(overlay, settings.current.chromStart, settings.current.particlesCount, 1);
+								overlay.colors.chromatin = Segments.bicolorVariable(overlay, settings.current.chromStart, settings.current.segmentsCount, settings.current.segmentLength);
+								overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
+								overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
+							} else if (type == "bedgraph" && format == "spectrum") {
+								// data must have .start and .end
+								overlay.colors.particles = Segments.spectrumVariable(overlay, settings.current.chromStart, settings.current.particlesCount, 1);
+								overlay.colors.chromatin = Segments.spectrumVariable(overlay, settings.current.chromStart, settings.current.segmentsCount, settings.current.segmentLength);
+								overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
+								overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
+							} else if (type == "matrix") {
+								// Distances are per edge so just convert to color
+								overlay.colors.particlesMatrix = Segments.matrix(overlay, 1); // ie. per particle
+								overlay.colors.chromatinMatrix = Segments.matrix(overlay, settings.current.particleSegments);
+								overlay.colors.networkMatrix = overlay.colors.particlesMatrix; // ie. also color network edges by matrix
+								self.at(1, settings.current.particlesCount, settings.current.particleSegments);
+							} else if (type == "misc" && format == "variable") { // eg. restraints
+								overlay.colors.particles = [];
+								overlay.colors.chromatin = [];
+								overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
+								overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
+							} else if (type == "ensembl" && format == "json") {
+								// data must have .start and .end
+								var features = Resources.get().biotypes;
+								var singleSegment = 1;
+								overlay.colors.particles = Segments.features(overlay, settings.current.chromStart, settings.current.particlesCount, singleSegment, features);
+								overlay.colors.chromatin = Segments.features(overlay, settings.current.chromStart, settings.current.segmentsCount, settings.current.segmentLength, features);
+								overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
+								overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
+							}
+
+						} else {
+							// already segmented
+							console.log("Overlay '" + overlay.object.title + "' already segmented as color array matching current dataset length");
 						}
 
-					} else {
-						// already segmented
-						console.log("Overlay '" + overlay.object.title + "' already segmented as color array matching current dataset length");
-					}
-
+					});
+					return overlays;
 				});
-				return overlays;
 			},
 			at: function(currentParticle) {
 				var settings = Settings.get();
@@ -5745,7 +5925,7 @@
 				return lengthBP;
 			},
 			// loadInfoAssembly: function(speciesUrl, online) { // *** UNUSED ***
-			// 	var deferral = $q.defer();
+			// 	var deferred = $q.defer();
 			// 	var self = this;
 			// 	var dataUrl;
 			// 	if (online) {
@@ -5760,12 +5940,12 @@
 			// 		data.lengthBP = self.setLengthBP(data.top_level_region);
 			// 		console.log("Assembly length for " + speciesUrl + " = " + data.lengthBP);
 			// 		resources.assembly = data;
-			// 		deferral.resolve(data);
+			// 		 deferred.resolve(data);
 			// 	});
-			// 	return deferral.promise;
+			// 	return deferred.promise;
 			// },
 			loadBiotypeColors: function() {
-				var deferral = $q.defer();
+				var deferred = $q.defer();
 				var dataUrl;
 				var online = false; // Settings.getOnline(); // Most up-to-date version not strictly necessary
 				if (online) {
@@ -5781,12 +5961,12 @@
 					resources.featureColors = iniData;
 					resources.biotypes = iniData.gene;
 					console.log("Ensembl webcode biotype colors retrieved Ensembl.");
-					deferral.resolve(iniData);
+					 deferred.resolve(iniData);
 				});
-				return deferral.promise;
+				return deferred.promise;
 			},
 			// loadInfoBiotypes: function(speciesUrl) { // *** UNUSED ***
-			// 	var deferral = $q.defer();
+			// 	var deferred = $q.defer();
 			// 	var dataUrl;
 			// 	if (online) {
 			// 		dataUrl = ensemblRoot + "info/biotypes/" + speciesUrl + "?content-type=application/json";
@@ -5796,9 +5976,9 @@
 			// 	$http.get(dataUrl).
 			// 	success(function(data){
 			// 		console.log("Biotypes for " + speciesUrl + " retreived from Ensembl.");
-			// 		deferral.resolve(data);
+			// 		 deferred.resolve(data);
 			// 	});
-			// 	return deferral.promise;
+			// 	return deferred.promise;
 			// },
 			get: function () {
 				return resources;
@@ -5934,8 +6114,19 @@
 		.module('TADkit')
 		.factory('Segments', Segments);
 
-	function Segments(d3Service, Color) {
+	function Segments($q, d3Service, Color) {
+		var deferred = $q.defer();
+		
+		// Check d3 Service is loaded
+		d3Service.load().then(function(d3) {
+			// console.log("loading d3");
+			deferred.resolve();
+		});
+
 		return {
+			load: function() {
+				return deferred.promise;
+			},
 			gradientHCL: function(overlay, count) {
 				// Using D3 HCL for correct perceptual model
 				// Data is an array of 2 hex colors eg. ff0000
@@ -6011,7 +6202,6 @@
 						colors.push(hex);
 					}
 				}
-				// console.log(colors);
 				return colors;
 			},
 			bicolorVariable: function(overlay, chromStart, segmentsCount, segmentLength) {
@@ -6027,7 +6217,7 @@
 					var segmentUpper = segmentLower + segmentLength;
 					var featuresCount = features.length;
 
-					// For every feaeture [j]...
+					// For every feature [j]...
 					for(var j=0; j < featuresCount; j++){
 						var start = features[j].start;
 						var end = features[j].end;
@@ -6043,7 +6233,36 @@
 					}
 					colors.push(segmentColor);
 				}
-				// console.log(colors);
+				return colors;
+			},
+			spectrumVariable: function(overlay, chromStart, segmentsCount, segmentLength) {
+
+				var features = overlay.data;
+				var colors = [];
+				var segmentColorDefault = "#eeeeee";
+				var segmentColor = "#000000";
+
+				// For every segment
+				for(var i=0; i < segmentsCount; i++){
+					segmentColor = segmentColorDefault;
+					var segmentLower = chromStart + (segmentLength * i);
+					var segmentUpper = segmentLower + segmentLength;
+					var featuresCount = features.length;
+
+					// For every feaeture [j]...
+					for(var j=0; j < featuresCount; j++){
+						var start = features[j].start;
+						var end = features[j].end;
+
+						 // check if overlaps current fragment [i]
+						if ( Math.max(segmentLower, start) <= Math.min(segmentUpper,end) ) {
+								segmentColor = overlay.palette[j];
+								console.log("j: " + j);
+								console.log("segmentColor: " + segmentColor);
+						}
+					}
+					colors.push(segmentColor);
+				}
 				return colors;
 			},
 			featureGraph: function(overlay, count) {
@@ -6095,7 +6314,6 @@
 							// if (i==3) console.log("No features in fragment " + i );
 							// if (j == 0) console.log( JSON.stringify(segmentLower)+", "+JSON.stringify(start)+" <= "+JSON.stringify(segmentUpper)+", "+JSON.stringify(end) );
 						}
-						// console.log(insegments);
 						features[j].inSegments = inSegments;
 					}
 					for(var k=0; k<featuresPresent.length; k++){
@@ -6110,7 +6328,6 @@
 					}
 					colors.push(color);
 				}
-				// console.log(colors);
 				return colors;
 			}
 		};
@@ -6127,25 +6344,25 @@
 
 		return {
 			load: function() {
-				var deferral = $q.defer();
+				var deferred = $q.defer();
 				var dataUrl = "assets/defaults/tk-defaults-settings.json";
 				if( Object.getOwnPropertyNames(settings).length > 0 ) {
-					deferral.resolve(settings);
+					 deferred.resolve(settings);
 				} else {
 					$http.get(dataUrl)
 					.success( function(data) {
 						settings = data;
 						console.log("Settings loaded from " + dataUrl);
-						deferral.resolve(settings);
+						 deferred.resolve(settings);
 					});
 				}
-				return deferral.promise;
+				return deferred.promise;
 			},
 			set: function(dataset) {
 				var self = this;
 				var chromosomeIndex = 0;
 				if (dataset.object.chromosomeIndex) { chromosomeIndex = dataset.object.chromosomeIndex;	}
-				settings.current.chrom = dataset.object.chrom[chromosomeIndex];
+				settings.current.chrom = dataset.object.chrom[chromosomeIndex].toLowerCase();
 				settings.current.chromStart = dataset.object.chromStart[chromosomeIndex];
 				settings.current.chromEnd = dataset.object.chromEnd[chromosomeIndex];
 				settings.current.species = dataset.object.species;

@@ -5,8 +5,11 @@
 		.controller('OverlayImportController', OverlayImportController);
 
 	function OverlayImportController ($state, $scope, $mdDialog, $mdToast, Settings, Overlays, Components, Storyboards, uuid4) {
-		$scope.fileTitle = "No file loaded";
-
+		$scope.filetitle = "No file loaded";
+		$scope.style = {
+						"width" : "chromatinNM",
+						"color" : "categorical"
+					}
 		$scope.$on('$viewContentLoaded', function() {
 			var parentElement = angular.element(document.body);
 			var stateTemplate = "assets/templates/" + $state.current.name + ".html";
@@ -20,22 +23,22 @@
 				},
 				onComplete: afterShowAnimation
 			}).then(function(importedOverlaysCount) {
-				$mdToast.show(
-					$mdToast.simple()
-					.content("Overlays (" + importedOverlaysCount + ") added")
-				);
+				// $mdToast.show(
+				// 	$mdToast.simple()
+				// 	.content("Overlays (" + importedOverlaysCount + ") added")
+				// );
 			}, function() {
-				$mdToast.show(
-					$mdToast.simple()
-					.content('cancelled')
-				);
+				// $mdToast.show(
+				// 	$mdToast.simple()
+				// 	.content('cancelled')
+				// );
 	 			$state.go('browser');	
 			});
 			// When the 'enter' animation finishes...
 			function afterShowAnimation(scope, element, options) {
 				// post-show code here: DOM element focus, etc.
 				// console.log(scope);
-				console.log("showing dialog");
+				console.log("Showing file dialog...");
 			}
 		});
 
@@ -55,7 +58,7 @@
 		};
 
 		$scope.importData = function(parsedData) {
-			$scope.importedOverlays = Overlays.import(parsedData, $scope.selectedRows, $scope.selectedCols);
+			$scope.importedOverlays = Overlays.import(parsedData, $scope.selectedRows, $scope.selectedCols, $scope.style);
 			$mdDialog.hide($scope.importedOverlays.length); // overlays count passed for dialog hide message...
 			$state.go('browser');
 		};
