@@ -19,11 +19,11 @@
 				// console.log(scope);
 
 				// THREE.JS TEST
-				var container, camera, scene, renderer, geometry, material, network;
+				var viewport, camera, scene, renderer, geometry, material, network;
 				init();
 				animate();
 				function init() {
-					container =  element[0];
+					viewport =  element[0];
 					scene = new THREE.Scene();
 					camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
 					camera.position.z = 500;
@@ -51,7 +51,7 @@
  					else
 						renderer = new THREE.CanvasRenderer({alpha: true});
 					renderer.setSize(window.innerWidth, window.innerHeight);
-					container.appendChild(renderer.domElement);
+					viewport.appendChild(renderer.domElement);
 					// console.log(scene);
 
 					var chromatinObj = scene.getObjectByName( "testmesh" );

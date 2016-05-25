@@ -23,16 +23,16 @@
 				var datapath = "defaults";
 				if (filename != "tk-example-dataset") datapath = "examples";
 
-				var deferred = $q.defer();
+				var deferral = $q.defer();
 				var dataUrl = "assets/" + datapath + "/" + filename + ".json";
 				$http.get(dataUrl)
 				.success( function(dataset) {
 					// TADkit defaults and examples are already validated
 					dataset.object.filename = filename;
 					self.add(dataset);
-					deferred.resolve(datasets);
+					deferral.resolve(datasets);
 				});
-				return deferred.promise;
+				return deferral.promise;
 			},
 			add: function(data) {
 				var self = this;

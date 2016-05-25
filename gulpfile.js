@@ -25,7 +25,7 @@ gulp.task('lint', function() {
 		'src/components/scenes/*.js',
 		'src/components/tracks/*.js',
 		'src/layout/*.js',
-		'src/services/*.js'
+		'src/services/*.js',
 		])
 		.pipe(jshint({ devel: true }))
 		.pipe(jshint.reporter('default'));
@@ -43,7 +43,7 @@ gulp.task('dist-scripts', function() {
 		'src/components/scenes/*.js',
 		'src/components/tracks/*.js',
 		'src/layout/*.js',
-		'src/services/*.js'
+		'src/services/*.js',
 		])
 		.pipe(concat('tadkit.js'))
 		// .pipe(gulp.dest('dist'))
@@ -65,7 +65,11 @@ gulp.task('dist-vendor', function() {
 		'bower_components/angular-material/angular-material.js',
 		'bower_components/ng-flow/dist/ng-flow-standalone.js',
 		'bower_components/angular-uuid4/angular-uuid4.js',
-		'bower_components/papaparse/papaparse.min.js'
+		'bower_components/papaparse/papaparse.min.js',
+		// 'bower_components/d3/d3.min.js', // see asset-libs below
+		'bower_components/threejs/build/three.js', // see asset-libs below
+		'bower_components/threejs/examples/js/controls/TrackballControls.js',
+		'bower_components/threejs/examples/js/controls/OrbitControls.js',
 		])
 		.pipe(gulp.dest('src/assets/libs'))
 		.pipe(concat('vendors.js'))
@@ -96,8 +100,6 @@ gulp.task('assets-libs', function() {
 		'bower_components/angular/angular.min.js.map',
 		'bower_components/d3/d3.min.js',
 		'bower_components/threejs/build/three.min.js',
-		'bower_components/threejs/examples/js/controls/TrackballControls.js',
-		'bower_components/threejs/examples/js/controls/OrbitControls.js'
 		])
 		.pipe(gulp.dest('src/assets/js'))
 		.pipe(gulp.dest('tadkit/assets/js'));
@@ -131,7 +133,7 @@ gulp.task('assets-css', function() {
 	return gulp.src([
 		'src/assets/css/angular-material.css',
 		'src/assets/css/tadkit.css',
-		'src/assets/css/ensembl-genes.css'
+		'src/assets/css/ensembl-genes.css',
 		])
 		.pipe(gulp.dest('tadkit/assets/css'));
 });
@@ -139,7 +141,7 @@ gulp.task('assets-css', function() {
 // Transfer Fonts Assets
 gulp.task('assets-fonts', function() {
 	return gulp.src([
-		'src/assets/fonts/*.*'
+		'src/assets/fonts/*.*',
 		])
 		.pipe(gulp.dest('tadkit/assets/fonts'));
 });

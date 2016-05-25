@@ -12,20 +12,20 @@
 
 		return {
 			load: function() {
-				var deferred = $q.defer();
+				var deferral = $q.defer();
 				var dataUrl = "assets/defaults/tk-defaults-overlays.json";
 				if( overlays.loaded.length > 0 ) {
-					 deferred.resolve(overlays);
+					deferral.resolve(overlays);
 				} else {
 					$http.get(dataUrl)
 					.success( function(data) {
 						overlays.loaded = data;
 						// overlays.current.index = overlays.loaded.length - 1;
 						console.log("Overlays (" + data.length + ") loaded from " + dataUrl);
-						 deferred.resolve(overlays);
+						deferral.resolve(overlays);
 					});
 				}
-				return deferred.promise;
+				return deferral.promise;
 			},
 			loadTSV: function(filename, filetype, defaults) {
 				filename = filename || "tk-example-dataset";
@@ -38,7 +38,7 @@
 					Storyboards.defaultComponents();
 				}
 
-				var deferred = $q.defer();
+				var deferral = $q.defer();
 				var datapath = "defaults";
 				if (filename != "tk-example-dataset") datapath = "examples";
 				var dataUrl = "assets/" + datapath + "/" + filename + "." + filetype;
@@ -46,12 +46,12 @@
 				.success( function(fileData) {
 					var importedOverlays = self.import(fileData,[],[],defaults);
 					console.log("Overlays (" + importedOverlays.length + ") imported from " + dataUrl);
-					deferred.resolve(overlays);
+					deferral.resolve(overlays);
 				})
 				.error(function(fileData) {
 					console.log("No associated data tracks found.");
 				});
-				return deferred.promise;
+				return deferral.promise;
 			},
 			import: function(fileData, selectedRows, selectedCols) {
 				var self = this;
@@ -106,115 +106,116 @@
 				return filteredData;
 			},
 			aquire: function(data) {
-				// var colorRange = ["#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff"];
-				var colorFilion = ["#227c4f","#e71818","#8ece0d","#6666ff","#424242"];
-				// Categorical Color Ragess e.g. d3.scale.category20()
-				var colorRange = ["#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c", "#98df8a", "#d62728", "#ff9896", "#9467bd", "#c5b0d5", "#8c564b", "#c49c94", "#e377c2", "#f7b6d2", "#7f7f7f", "#c7c7c7", "#bcbd22", "#dbdb8d", "#17becf", "#9edae5"];
+				// d3Service.d3().then(function(d3) {
+					// var colorRange = ["#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff"];
+					var colorFilion = ["#227c4f","#e71818","#8ece0d","#6666ff","#424242"];
+					var colorRange = d3.scale.category20();
 
-				// columns to overlays
-				// skip row 1 = headers ie. length - 2
-				// skip colums 1 and 2 = coords ie. length - 3
-				var acquiredOverlays = [];
-				// check for bigwig data the step and start
-				// var step = 1; // override below if fixed
-				// if none find which is start and end eg. Marie's and Filion's data
-				// cycle through first lineto determine columns
-				// create as BedGraph
-				var headerRow = 0;
-				var firstDataRow = 1;
-				var startColumn = 0;
-				var endColumn = 1;
-				var colsCount = data[headerRow].length;
+					// columns to overlays
+					// skip row 1 = headers ie. length - 2
+					// skip colums 1 and 2 = coords ie. length - 3
+					var acquiredOverlays = [];
+					// check for bigwig data the step and start
+					// var step = 1; // override below if fixed
+					// if none find which is start and end eg. Marie's and Filion's data
+					// cycle through first lineto determine columns
+					// create as BedGraph
+					var headerRow = 0;
+					var firstDataRow = 1;
+					var startColumn = 0;
+					var endColumn = 1;
+					var colsCount = data[headerRow].length;
 
-				// Check if fixed steps
-				var step = data[firstDataRow][endColumn] - data[firstDataRow][startColumn] + 1; // get step from chromEnd to chromStart
-				var step2 = data[firstDataRow+1][endColumn] - data[firstDataRow+1][startColumn] + 1; // check next row
-				var type, format, stepType;
-				if (step == step2) {
-					type = "wiggle_0";
-					format = "fixed";
-					stepType = "fixed";
-				} else {
-					type = "bedgraph";
-					format = "variable";
-					stepType = "variable";
-				}
-
-				// Check if Filion proteins ie. chromatin colors
-				var filion = false;
-				if (colsCount == 7){
-					var filionProteins = 0;
-					for (var h = 2; h < colsCount; h++) { // h=2 to skip start and end cols
-						var header = data[headerRow][h].toLowerCase();
-						if (header=="hp1" || header=="brm" || header=="mrg15" || header=="pc" || header=="h1") filionProteins++;
-					}
-					if (filionProteins == 5) filion = true;
-				}
-
-				for (var i = colsCount - 1; i >= 2; i--) { // i >= 2 to skip, start and end columns
-					var colored;
-					if (filion) {
-						colored = colorFilion[i-2];
+					// Check if fixed steps
+					var step = data[firstDataRow][endColumn] - data[firstDataRow][startColumn] + 1; // get step from chromEnd to chromStart
+					var step2 = data[firstDataRow+1][endColumn] - data[firstDataRow+1][startColumn] + 1; // check next row
+					var type, format, stepType;
+					if (step == step2) {
+						type = "wiggle_0";
+						format = "fixed";
+						stepType = "fixed";
 					} else {
-						colored = colorRange[i];
-					}				
-					acquiredOverlays.unshift(
-						{
-							"metadata": {
-								"version" : 1.0,
-								"type" : "overlay",
-								"generator" : "TADkit"
-							},
-							"object" : {
-								"uuid" : uuid4.generate(),
-								"id" : data[headerRow][i],
-								"title" : data[headerRow][i],
-								"source" : "Research output",
-								"url" : "local",
-								"description" : "center_label", //also BigWig description (track title): "User Supplied Track"
-								"type" : type, //also BigWig type
-								"format" : format,
-								"components" : 2,
-								"name" : data[headerRow][i], //BigWig: "User Track"
-								"visibility" : "full", //BigWig: "full", "dense" or "hide"
-								"color" : colored, // random from D3.js function. NOTE: convert to RGB for BigWig: eg. 255,255,255
-								"altColor" : "#cccccc", // light grey gives best 3D render vis. NOTE: convert to RGB for BigWig: eg. 128,128,128
-								"priority" : "100", //BigWig: 100
-								"stepType" : stepType, //BigWig: "variable" or "fixed"
-								"chrom" : "", //BigWig: derive from dataset...???
-								"start" : data[firstDataRow][startColumn], //BigWig
-								"step" : step, //BigWig
-								"state" : {
-									"index" : 0, // make real index???
-									"overlaid" : false
-								}
-							},
-							"palette" : [colored,"#cccccc"],
-							"data" : [],
-							"colors" : {
-								"particles" : [],
-								"chromatin" : [],
-								"network" : {
-									"RGB" : [],
-									"alpha" : []
+						type = "bedgraph";
+						format = "variable";
+						stepType = "variable";
+					}
+
+					// Check if Filion proteins ie. chromatin colors
+					var filion = false;
+					if (colsCount == 7){
+						var filionProteins = 0;
+						for (var h = 2; h < colsCount; h++) { // h=2 to skip start and end cols
+							var header = data[headerRow][h].toLowerCase();
+							if (header=="hp1" || header=="brm" || header=="mrg15" || header=="pc" || header=="h1") filionProteins++;
+						}
+						if (filionProteins == 5) filion = true;
+					}
+
+					for (var i = colsCount - 1; i >= 2; i--) { // i >= 2 to skip, start and end columns
+						var colored;
+						if (filion) {
+							colored = colorFilion[i-2];
+						} else {
+							colored = colorRange(i);
+						}				
+						acquiredOverlays.unshift(
+							{
+								"metadata": {
+									"version" : 1.0,
+									"type" : "overlay",
+									"generator" : "TADkit"
+								},
+								"object" : {
+									"uuid" : uuid4.generate(),
+									"id" : data[headerRow][i],
+									"title" : data[headerRow][i],
+									"source" : "Research output",
+									"url" : "local",
+									"description" : "center_label", //also BigWig description (track title): "User Supplied Track"
+									"type" : type, //also BigWig type
+									"format" : format,
+									"components" : 2,
+									"name" : data[headerRow][i], //BigWig: "User Track"
+									"visibility" : "full", //BigWig: "full", "dense" or "hide"
+									"color" : colored, // random from D3.js function. NOTE: convert to RGB for BigWig: eg. 255,255,255
+									"altColor" : "#cccccc", // light grey gives best 3D render vis. NOTE: convert to RGB for BigWig: eg. 128,128,128
+									"priority" : "100", //BigWig: 100
+									"stepType" : stepType, //BigWig: "variable" or "fixed"
+									"chrom" : "", //BigWig: derive from dataset...???
+									"start" : data[firstDataRow][startColumn], //BigWig
+									"step" : step, //BigWig
+									"state" : {
+										"index" : 0, // make real index???
+										"overlaid" : false
+									}
+								},
+								"palette" : [colored,"#cccccc"],
+								"data" : [],
+								"colors" : {
+									"particles" : [],
+									"chromatin" : [],
+									"network" : {
+										"RGB" : [],
+										"alpha" : []
+									}
 								}
 							}
+						);
+						// convert column data to array
+						for (var j = data.length - 1; j >= 1; j--) { // j >= 1 to skip first header row
+							if (format == "variable") {
+								acquiredOverlays[0].data.unshift({
+									"start" : data[j][startColumn],
+									"end" : data[j][endColumn],
+									"read" : data[j][i]
+								});
+							} else {
+								acquiredOverlays[0].data.unshift(data[j][i]);
+							}				
 						}
-					);
-					// convert column data to array
-					for (var j = data.length - 1; j >= 1; j--) { // j >= 1 to skip first header row
-						if (format == "variable") {
-							acquiredOverlays[0].data.unshift({
-								"start" : data[j][startColumn],
-								"end" : data[j][endColumn],
-								"read" : data[j][i]
-							});
-						} else {
-							acquiredOverlays[0].data.unshift(data[j][i]);
-						}				
 					}
-				}
-				return acquiredOverlays;
+					return acquiredOverlays;
+				// }); // End d3 Service
 			},
 			add: function(importedOverlays) {
 				var self = this;
@@ -313,65 +314,63 @@
 
 			},
 			segment: function() {
+				var settings = Settings.get();
 				var self = this; // SYNChronous functions...
-				Segments.load().then(function() {
-					var settings = Settings.get();
-					angular.forEach(overlays.loaded, function(overlay, key) {
-						// check if colors already exist (for chromatin as principal set) or number of segments have changed
-						var test = true;
-						if (test) {
-						// if (!overlay.colors.chromatin || overlay.colors.chromatin.length === 0) { // ??? || (overlay.colors.chromatin && segmentsCount != settings.segmentsCount)
-							// run function based on object type
-							var type = overlay.object.type;
-							var format = overlay.object.format;
-							if (type == "gradient" && format == "hex") {
-								// palette must contain 2 hex values
-								overlay.colors.particles = Segments.gradientHCL(overlay, settings.current.particlesCount);
-								overlay.colors.chromatin = Segments.gradientHCL(overlay, settings.current.segmentsCount);
-								overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
-								overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
-							} else if (type == "wiggle_0" && format == "fixed") {
-								// OJO! create additional option for format = "bigwig-variable"
-								overlay.colors.particles = Segments.bicolor(overlay, settings.current.particlesCount);
-								overlay.colors.chromatin = Segments.bicolor(overlay, settings.current.segmentsCount);
-								overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
-								overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
-							} else if (type == "wiggle_0" && format == "variable") {
-								// To Do...
-							} else if (type == "bedgraph") {
-								overlay.colors.particles = Segments.bicolorVariable(overlay, settings.current.chromStart, settings.current.particlesCount, 1);
-								overlay.colors.chromatin = Segments.bicolorVariable(overlay, settings.current.chromStart, settings.current.segmentsCount, settings.current.segmentLength);
-								overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
-								overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
-							} else if (type == "matrix") {
-								// Distances are per edge so just convert to color
-								overlay.colors.particlesMatrix = Segments.matrix(overlay, 1); // ie. per particle
-								overlay.colors.chromatinMatrix = Segments.matrix(overlay, settings.current.particleSegments);
-								overlay.colors.networkMatrix = overlay.colors.particlesMatrix; // ie. also color network edges by matrix
-								self.at(1, settings.current.particlesCount, settings.current.particleSegments);
-							} else if (type == "misc" && format == "variable") { // eg. restraints
-								overlay.colors.particles = [];
-								overlay.colors.chromatin = [];
-								overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
-								overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
-							} else if (type == "ensembl" && format == "json") {
-								// data must have .start and .end
-								var features = Resources.get().biotypes;
-								var singleSegment = 1;
-								overlay.colors.particles = Segments.features(overlay, settings.current.chromStart, settings.current.particlesCount, singleSegment, features);
-								overlay.colors.chromatin = Segments.features(overlay, settings.current.chromStart, settings.current.segmentsCount, settings.current.segmentLength, features);
-								overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
-								overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
-							}
-
-						} else {
-							// already segmented
-							console.log("Overlay '" + overlay.object.title + "' already segmented as color array matching current dataset length");
+				angular.forEach(overlays.loaded, function(overlay, key) {
+					// check if colors already exist (for chromatin as principal set) or number of segments have changed
+					var test = true;
+					if (test) {
+					// if (!overlay.colors.chromatin || overlay.colors.chromatin.length === 0) { // ??? || (overlay.colors.chromatin && segmentsCount != settings.segmentsCount)
+						// run function based on object type
+						var type = overlay.object.type;
+						var format = overlay.object.format;
+						if (type == "gradient" && format == "hex") {
+							// palette must contain 2 hex values
+							overlay.colors.particles = Segments.gradientHCL(overlay, settings.current.particlesCount);
+							overlay.colors.chromatin = Segments.gradientHCL(overlay, settings.current.segmentsCount);
+							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
+							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
+						} else if (type == "wiggle_0" && format == "fixed") {
+							// OJO! create additional option for format = "bigwig-variable"
+							overlay.colors.particles = Segments.bicolor(overlay, settings.current.particlesCount);
+							overlay.colors.chromatin = Segments.bicolor(overlay, settings.current.segmentsCount);
+							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
+							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
+						} else if (type == "wiggle_0" && format == "variable") {
+							// To Do...
+						} else if (type == "bedgraph") {
+							overlay.colors.particles = Segments.bicolorVariable(overlay, settings.current.chromStart, settings.current.particlesCount, 1);
+							overlay.colors.chromatin = Segments.bicolorVariable(overlay, settings.current.chromStart, settings.current.segmentsCount, settings.current.segmentLength);
+							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
+							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
+						} else if (type == "matrix") {
+							// Distances are per edge so just convert to color
+							overlay.colors.particlesMatrix = Segments.matrix(overlay, 1); // ie. per particle
+							overlay.colors.chromatinMatrix = Segments.matrix(overlay, settings.current.particleSegments);
+							overlay.colors.networkMatrix = overlay.colors.particlesMatrix; // ie. also color network edges by matrix
+							self.at(1, settings.current.particlesCount, settings.current.particleSegments);
+						} else if (type == "misc" && format == "variable") { // eg. restraints
+							overlay.colors.particles = [];
+							overlay.colors.chromatin = [];
+							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
+							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
+						} else if (type == "ensembl" && format == "json") {
+							// data must have .start and .end
+							var features = Resources.get().biotypes;
+							var singleSegment = 1;
+							overlay.colors.particles = Segments.features(overlay, settings.current.chromStart, settings.current.particlesCount, singleSegment, features);
+							overlay.colors.chromatin = Segments.features(overlay, settings.current.chromStart, settings.current.segmentsCount, settings.current.segmentLength, features);
+							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
+							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
 						}
 
-					});
-					return overlays;
+					} else {
+						// already segmented
+						console.log("Overlay '" + overlay.object.title + "' already segmented as color array matching current dataset length");
+					}
+
 				});
+				return overlays;
 			},
 			at: function(currentParticle) {
 				var settings = Settings.get();

@@ -18,7 +18,7 @@
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
-				d3Service.load().then(function(d3) {
+				d3Service.d3().then(function(d3) {
 
  					// DATA MANIPULATION >>> MOVE TO CONTROLLER
 					var data = scope.data;

@@ -20,11 +20,16 @@
 				var self = this;
 				var featuresCount = overlay.data.length;
 				var colorPairs = new Float32Array(edgeCount * 6); // ie. * 2 (vertices) * 3 (RGB)
+				var defaultRGB = new THREE.Color("#000000");
+				for (var h = colorPairs.length - 1; h >= 0; h--) {
+					colorPairs[i] = defaultRGB;
+				}
+				var randomRGB = Color.getRandomRGB(featuresCount);
 				for (var i = 0; i < featuresCount; i++) {
 					var particle1 = overlay.data[i][0];
 					var particle2 = overlay.data[i][1];
 					var pairIndex = self.getMatrixIndex(particle1, particle2, edgeCount) * 6;
-					var RGB = {"r":0.5,"g":0.5,"b":0.5};
+					var RGB = randomRGB[i];
 					if (overlay.object.id == "restraints"){
 						var restraintsColors = {"H":"#4CAF50","L":"#0000ff","U":"#ff00ff","C":"#00ff00"};
 						RGB = self.getFeatureRGB(overlay.data[i][2], restraintsColors);
@@ -39,6 +44,7 @@
 					colorPairs[pairIndex] = RGB.b;
 				}
 				colorPairs.name = "Network LinePieces RGB";
+				// console.log(colorPairs);
 				return colorPairs;
 			},
 			linePiecesAlpha: function(overlay, edgeCount) {
@@ -61,6 +67,7 @@
 					}
 				}
 				alphaPairs.name = "Network LinePieces Alphas";
+				// console.log(alphaPairs);
 				return alphaPairs;
 			},
 			getMatrixIndex: function(row, col, size) {
@@ -78,7 +85,7 @@
 				var RGB;
 				angular.forEach(colors, function(color, key) {
 					if (code == key) {
-						RGB = Color.RGBObjectFromHex(color);
+						RGB = new THREE.Color(color);
 					}
 				});
 				return RGB;

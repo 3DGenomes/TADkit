@@ -2,7 +2,7 @@
 	'use strict';
 
 	// ANGULAR APP
-	angular.module('TADkit',['ui.router','ngMaterial','uuid4','d3','THREE','THREEPlugins']);
+	angular.module('TADkit',['ui.router','ngMaterial','uuid4','d3']);
 	     
 })();
 (function() {
@@ -516,7 +516,7 @@
 		.module('TADkit')
 		.directive('tkComponentSceneCluster', tkComponentSceneCluster);
 
-	function tkComponentSceneCluster(THREEService, THREEPlugins, Particles, Cluster) {
+	function tkComponentSceneCluster(Particles, Cluster) {
 		return {
 			restrict: 'EA',
 			scope: { 
@@ -531,134 +531,116 @@
 			},
 			templateUrl: 'assets/templates/scene-cluster-icon.html',
 			link: function postLink( scope, element, attrs ) {
-				THREEService.load().then(function(THREE) {
-					THREEPlugins.load(["TrackballControls","OrbitControls"]).then(function(THREE) {
-						// console.log(scope);
+				// console.log(scope.cluster);
+				
+				var renderer;
+				var scene, viewport;
+				var camera, cameraPosition, cameraTarget, cameraTranslate;
+				var ambientLight, pointLight;
+				var orbit, controls, particles, cluster;
+				var width, height, contW, contH, windowHalfX, windowHalfY;
 
-						// DOM variables
-						var container;
-						var width, height, contW, contH, windowHalfX, windowHalfY;
+				scope.init = function () {
 
-						// THREE variables
-						var renderer = THREEService.getRenderer();
-						// var scene; // Use window["scene" + scope.cluster.number]
-						var camera, cameraPosition, cameraTarget, cameraTranslate;
-						var ambientLight, pointLight;
-						var controls, playback;
+					// VIEWPORT
+					/* component-controller == children[0]
+					 * - component-header == children[0]
+					 * - component-body == children[0]
+					 */
+					viewport = element[0].children[0].children[0];
+					// width = viewport.clientWidth; // NEED TO WAIT UNTIL DOM LOADED
+					width = parseInt(scope.state.width);
+					// height = viewport.clientHeight;
+					height = parseInt(scope.state.height);
+					// OJO! DOM NOT READY
+					// console.log(element[0].firstChild.children[2].clientWidth);
 
-						// TADkit variables
-						var particles, cluster;
+					if (window.WebGLRenderingContext)
+						renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
+					else
+						renderer = new THREE.CanvasRenderer({alpha: true});	
+					var background = scope.view.settings.background;
+					var clearColor = "0x" + background.substring(1);
+					renderer.setClearColor( clearColor );
+					renderer.setSize( width, height );
+					renderer.autoClear = false; // To allow render overlay on top of sprited sphere
+					renderer.setSize( width, height );
+					viewport.appendChild( renderer.domElement );
 
-						scope.init = function () {
+					// SCENE
+					scene = new THREE.Scene();
 
-							// CONTAINER
-							/* component-controller == children[0]
-							 * - component-header == children[0]
-							 * - component-body == children[0]
-							 */
-							container = element[0].children[0].children[0];
-							// element.id prefix length = "datasets-scene-icon-" = 20 characters
-							var elementNumber = element[0].id.substring(20,element[0].id.length);
-							console.log(elementNumber);
-							console.log(scope.cluster.number);
-							// width = container.clientWidth; // NEED TO WAIT UNTIL DOM LOADED
-							width = parseInt(scope.state.width);
-							// height = container.clientHeight;
-							height = parseInt(scope.state.height);
-							// OJO! DOM NOT READY
-							// console.log(element[0].firstChild.children[2].clientWidth);
+					// CAMERA
+					camera = new THREE.PerspectiveCamera( scope.view.viewpoint.fov, ( width / height) , scope.view.viewpoint.near, scope.view.viewpoint.far );
+					camera.position.fromArray(scope.view.viewpoint.camera);
+					camera.name = "Scene Camera";
+					
+					// CONTROLS
+					orbit = new THREE.OrbitControls(camera, renderer.domElement);
+					orbit.autoRotate = scope.view.controls.autoRotate;
+					orbit.autoRotateSpeed = scope.view.controls.autoRotateSpeed;
+					orbit.noZoom = true;
+					orbit.noRotate = true;
+					orbit.noPan = true;
+					orbit.noKeys = true;
+					controls = new THREE.TrackballControls(camera, renderer.domElement);
+					controls.noZoom = true;
+					controls.noRotate = true;
+					controls.noPan = true;
+					
+					// GEOMETRY: PARTICLES
+					particles = new Particles( scope.cluster.data[scope.cluster.centroidIndex], scope.view.settings.particles );
+					particles.visible = scope.view.settings.particles.visible;
+					scene.add(particles);
 
-							// var background = scope.view.settings.background;
-							// var clearColor = "0x" + background.substring(1);
-							// renderer.setClearColor( clearColor );
-							renderer.setSize( width, height );
-							if (scope.cluster.number == 1) {
-								container.appendChild( renderer.domElement );
-							}
+					//GEOMETRY: CLUSTER
+					cluster = new Cluster( scope.cluster.data, scope.cluster.centroidIndex, scope.overlay, scope.view.settings.cluster );
+					cluster.visible = scope.view.settings.cluster.visible;
+					cluster.name = cluster.name + " " + scope.id.match(/\d+/)[0];
+					scene.add(cluster);
 
-							// SCENE
-							window["scene" + scope.cluster.number] = new THREE.Scene();
+					// SET CAMERA ORIENTATION
+					cameraPosition = new THREE.Vector3(); //cluster.boundingSphere.center;
+					cameraTarget = new THREE.Vector3( 0,0,0 ); //cluster.boundingSphere.center;
+					cameraTranslate = cluster.boundingSphere.radius * scope.view.viewpoint.scale;
+					scope.lookAtTarget(cameraPosition, cameraTarget, cameraTranslate);
 
-							// CAMERA
-							camera = new THREE.PerspectiveCamera( scope.view.viewpoint.fov, ( width / height) , scope.view.viewpoint.near, scope.view.viewpoint.far );
-							camera.position.fromArray(scope.view.viewpoint.camera);
-							camera.name = "Scene Camera";
-							
-							// CONTROLS
-							// Use TrackballControls for interaction
-							controls = new THREE.TrackballControls(camera, renderer.domElement);
-							controls.noZoom = true;
-							controls.noRotate = true;
-							controls.noPan = true;
-							// Use OrbitControls for autoRotate
-							playback = new THREE.OrbitControls(camera, renderer.domElement);
-							playback.autoRotate = scope.view.controls.autoRotate;
-							playback.autoRotateSpeed = scope.view.controls.autoRotateSpeed;
-							// interaction FALSE so as not to conflict with controls
-							playback.noZoom = true;
-							playback.noRotate = true;
-							playback.noPan = true;
-							playback.noKeys = true;
-							
-							// GEOMETRY: PARTICLES
-							particles = new Particles( scope.cluster.data[scope.cluster.centroidIndex], scope.view.settings.particles );
-							particles.visible = scope.view.settings.particles.visible;
-							window["scene" + scope.cluster.number].add(particles);
+				};
 
-							//GEOMETRY: CLUSTER
-							cluster = new Cluster( scope.cluster.data, scope.cluster.centroidIndex, scope.overlay, scope.view.settings.cluster );
-							cluster.visible = scope.view.settings.cluster.visible;
-							cluster.name = cluster.name + " " + scope.id.match(/\d+/)[0];
-							window["scene" + scope.cluster.number].add(cluster);
+				scope.lookAtTarget = function (position, target, translate) {
+						position = position || new THREE.Vector3( 50000, 50000, 50000 );
+						var origin = new THREE.Vector3(0,0,0);
+						target = target || origin;
+						translate = translate || 500;
+						// Target on Origin and Translate back
+						// (creates consistent view orientation)
+						camera.position.set(position.x, position.y, position.z);
+						camera.lookAt(origin);
+						camera.translateZ(translate);
+						// Retarget on target
+						camera.lookAt(target);
+						camera.updateMatrixWorld();
+						// Controls target
+						controls.target.copy(position);
+				};
 
-							// SET CAMERA ORIENTATION
-							cameraPosition = new THREE.Vector3(); //cluster.boundingSphere.center;
-							cameraTarget = new THREE.Vector3( 0,0,0 ); //cluster.boundingSphere.center;
-							cameraTranslate = cluster.boundingSphere.radius * scope.view.viewpoint.scale;
-							scope.lookAtTarget(cameraPosition, cameraTarget, cameraTranslate);
+				// -----------------------------------
+				// Draw and Animate
+				// -----------------------------------
+				scope.animate = function () {
+					requestAnimationFrame( scope.animate );
+					orbit.update();
+					controls.update();
+					scope.render();
+				};
 
-						};
+				scope.render = function () {
+					renderer.render( scene, camera );
+				};
 
-						scope.lookAtTarget = function (position, target, translate) {
-								position = position || new THREE.Vector3( 50000, 50000, 50000 );
-								var origin = new THREE.Vector3(0,0,0);
-								target = target || origin;
-								translate = translate || 500;
-								// Target on Origin and Translate back
-								// (creates consistent view orientation)
-								camera.position.set(position.x, position.y, position.z);
-								camera.lookAt(origin);
-								camera.translateZ(translate);
-								// Retarget on target
-								camera.lookAt(target);
-								camera.updateMatrixWorld();
-								// Controls target
-								controls.target.copy(position);
-						};
-
-						// -----------------------------------
-						// Draw and Animate
-						// -----------------------------------
-						scope.animate = function () {
-							requestAnimationFrame( scope.animate );
-							playback.update();
-							controls.update();
-							scope.render();
-						};
-
-						scope.render = function () {
-							if (scope.cluster.number == 1) {
-								renderer.clear();
-							}
-							renderer.render( window["scene" + scope.cluster.number], camera );
-						};
-
-						// Begin
-						scope.init();
-						scope.animate();
-
-					});
-				});
+				// Begin
+				scope.init();
+				scope.animate();
 			}
 		};
 	}
@@ -742,269 +724,70 @@
 	'use strict';
 	angular
 		.module('TADkit')
-		.directive('tkComponentSceneClusters', tkComponentSceneClusters);
-
-	function tkComponentSceneClusters(THREEService, THREEPlugins, Particles, Cluster) {
-		return {
-			restrict: 'EA',
-			scope: { 
-				state: '=', /* for scene until can check for DOM loaded */
-				type: '=',
-				title: '@',
-				settings: '=',
-				view: '=',
-				id: '@', /*???*/
-				clusters: '=',
-				overlay:'=',
-				mousemove: '&'
-			},
-			templateUrl: 'assets/templates/scene-cluster-icon.html',
-			link: function postLink( scope, element, attrs ) {
-				THREEService.load().then(function(THREE) {
-					THREEPlugins.load(["TrackballControls","OrbitControls"]).then(function(THREE) {
-						// console.log(scope);
-
-						// DOM variables
-						var container;
-						var width, height, contW, contH, windowHalfX, windowHalfY;
-
-						// THREE variables
-						var renderer = THREEService.getRenderer();
-
-						var scenes = [];
-						var camera, cameraPosition, cameraTarget, cameraTranslate;
-						var ambientLight, pointLight;
-						var controls, playback;
-						var mouseX = 0, mouseY = 0;
-
-						scope.init = function () {
-
-							// CONTAINER
-							/* component-controller == children[0]
-							 * - component-header == children[0]
-							 * - component-body == children[0]
-							 */
-							container = element[0].children[0].children[0];
-
-							// width = container.clientWidth; // NEED TO WAIT UNTIL DOM LOADED
-							width = 800; //parseInt(scope.state.width);
-							// height = container.clientHeight;
-							height = 400; //parseInt(scope.state.height);
-							// OJO! DOM NOT READY
-
-							// var background = scope.view.settings.background;
-							// var clearColor = "0x" + background.substring(1);
-							// renderer.setClearColor( clearColor );
-							renderer.setSize( width, height );
-							container.appendChild( renderer.domElement );
-
-							// CAMERA
-							camera = new THREE.PerspectiveCamera( scope.view.viewpoint.fov, ( height / height) , scope.view.viewpoint.near, scope.view.viewpoint.far );
-							camera.position.fromArray(scope.view.viewpoint.camera);
-							camera.name = "Scene Camera";
-							
-							controls = new THREE.TrackballControls(camera, renderer.domElement);
-
-							// dummy scene for clusters.boundingSphere.radius
-							var clusters = {"boundingSphere":{radius:100}}; //new Clusters();
-
-							angular.forEach( scope.clusters, function(cluster, index) {
-
-								// SCENE
-								scenes[index] = new THREE.Scene();
-
-								// TADkit variables
-								var particles, bundle;
-
-								// GEOMETRY: PARTICLES
-								particles = new Particles( cluster.data[cluster.centroidIndex], scope.view.settings.particles );
-								particles.visible = scope.view.settings.particles.visible;
-								scenes[index].add(particles);
-
-								//GEOMETRY: CLUSTER
-								bundle = new Cluster( cluster.data, cluster.centroidIndex, scope.overlay, scope.view.settings.cluster );
-								bundle.visible = scope.view.settings.cluster.visible;
-								bundle.name = bundle.name + " " + index;
-								scenes[index].add(bundle);
-
-								// Add to clusters.boundingSphere.radius
-							});
-
-							// SET CAMERA ORIENTATION
-							cameraPosition = new THREE.Vector3(); //cluster.boundingSphere.center;
-							cameraTarget = new THREE.Vector3( 0,0,0 ); //cluster.boundingSphere.center;
-							cameraTranslate = clusters.boundingSphere.radius * scope.view.viewpoint.scale;
-							scope.lookAtTarget(cameraPosition, cameraTarget, cameraTranslate);
-						};
-
-						scope.lookAtTarget = function (position, target, translate) {
-								position = position || new THREE.Vector3( 50000, 50000, 50000 );
-								var origin = new THREE.Vector3(0,0,0);
-								target = target || origin;
-								translate = translate || 500;
-								// Target on Origin and Translate back
-								// (creates consistent view orientation)
-								camera.position.set(position.x, position.y, position.z);
-								camera.lookAt(origin);
-								camera.translateZ(translate);
-								// Retarget on target
-								camera.lookAt(target);
-								camera.updateMatrixWorld();
-								// Controls target
-								controls.target.copy(position);
-						};
-
-						// EVENT WHICH TRIGGERS RENDER
-						element.on('mousemove', function(event) {
-							mouseX = ( event.clientX - width / 2 );
-							// mouseY = ( event.clientX - width / 2 );
-							scope.render();
-						});
-
-						scope.updateCamera = function( camera, scene, mouseX, mouseY ) {
-
-							// *** CHANGE TO CIRCLE CURRENT cameraTarget ****
-
-							camera.position.x += mouseX * 0.5;
-							camera.position.x = Math.max( Math.min( camera.position.x, 4000 ), -4000 );
-							// camera.position.y += mouseY * 0.5;
-							// camera.position.y = Math.max( Math.min( camera.position.y, 4000 ), -4000 );
-
-							camera.lookAt( scene.position );
-						};
-
-						scope.render = function () {
-
-							var views = [
-								{
-									left: 0,
-									bottom: 0,
-									width: 0.5,
-									height: 1.0,
-									background: new THREE.Color().setRGB( 1.0, 1.0, 1.0 )
-								},
-								{
-									left: 0.5,
-									bottom: 0,
-									width: 0.5,
-									height: 1.0,
-									background: new THREE.Color().setRGB( 1.0, 1.0, 1.0 )
-								}
-							];
-							var viewportMargin = 60;
-
-							angular.forEach( scope.clusters, function(cluster, index) {
-
-								if ( index === 0 ) {
-									renderer.clear();
-								}
-								// renderer.setViewport(cluster.viewportX, cluster.viewportY, viewportWidth, viewportHeight););
-
-								var view = views[index];
-								var scene = scenes[index];
-								
-								scope.updateCamera( camera, scene, mouseX, mouseY );
-
-								var viewportLeft   = Math.floor( (width  * view.left) + viewportMargin);
-								var viewportBottom = Math.floor( (height * view.bottom) + viewportMargin);
-								var viewportWidth  = Math.floor( (width  * view.width) - (viewportMargin * 2) );
-								var viewportHeight = Math.floor( (height * view.height) - (viewportMargin * 2) );
-
-								renderer.setViewport( viewportLeft, viewportBottom, viewportWidth, viewportHeight );
-								renderer.setScissor( viewportLeft, viewportBottom, viewportWidth, viewportHeight );
-								renderer.enableScissorTest ( true );
-								renderer.setClearColor( view.background ); // COMMENT IF NOT IN TEST MODE
-								renderer.render( scene, camera, null, true ); // forceClear == true
-							});
-						};
-
-						// Begin
-						scope.init();
-						scope.render();
-
-					});
-				});
-			}
-		};
-	}
-})();
-
-(function() {
-	'use strict';
-	angular
-		.module('TADkit')
 		.directive('tkComponentSceneFloatingtad', tkComponentSceneFloatingtad);
 
-	function tkComponentSceneFloatingtad($rootScope, THREEService, THREEPlugins) {
+	function tkComponentSceneFloatingtad() {
 		return {
 			restrict: 'EA',
 			link: function(scope, element, attrs) {
-				THREEService.load().then(function(THREE) {
-					THREEPlugins.load(["TrackballControls"]).then(function(THREE) {
+				var viewport, viewsize, camera, scene, renderer, geometry, material, network, controls;
+				init();
+				animate();
+				function init() {
+					viewport =  element[0];
+					viewsize = viewport.clientWidth;
 
-						var container, viewsize, camera, scene;
-						var geometry, material, network, controls;
-						var renderer = THREEService.getRenderer();
-						var animation;
+					scene = new THREE.Scene();
 
-						scope.init = function() {
-							container =  element[0];
-							viewsize = container.clientWidth;
+					camera = new THREE.PerspectiveCamera( 50, 1, 150, 650 );
+					camera.position.z = 500;
+					scene.add(camera);
 
-							renderer.setSize( viewsize, viewsize );
-							container.appendChild( renderer.domElement );
+					geometry = new THREE.TorusKnotGeometry( 100, 30, 100, 16 );
 
-							scene = new THREE.Scene();
+					// GENERATE TEST GEOMETRY
+					// var torusgeom = new THREE.TorusKnotGeometry( 100, 10, 36, 1 );
+					// var testgeom = torusgeom.vertices;
+					// for (var i = testgeom.length - 1; i >= 0; i--) {
+					// 	testgeom[i].x = parseInt(testgeom[i].x.toFixed(2));
+					// 	testgeom[i].y = parseInt(testgeom[i].y.toFixed(2));
+					// 	testgeom[i].z = parseInt(testgeom[i].z.toFixed(2));
+					// };
+					// console.log(JSON.stringify(testgeom));
 
-							camera = new THREE.PerspectiveCamera( 50, 1, 150, 650 );
-							camera.position.z = 500;
-							scene.add(camera);
-
-							geometry = new THREE.TorusKnotGeometry( 100, 30, 100, 16 );
-
-							material = new THREE.MeshDepthMaterial({
-								color: 0x666666,
-								wireframe: true,
-								wireframeLinewidth: 1
-							});
-
-							network = new THREE.Mesh( geometry, material );
-							network.name = "Floating TAD";
-							scene.add(network);
-								
-							controls = new THREE.TrackballControls( camera, renderer.domElement );
-							controls.minDistance = 450;
-							controls.maxDistance = 550;
-
-						};
-
-						// -----------------------------------
-						// Event listeners
-						// -----------------------------------
-						$rootScope.$on('$stateChangeStart', function() {
-							cancelAnimationFrame( animation );
-						});
-
-						// -----------------------------------
-						// Draw and Animate
-						// -----------------------------------
-						scope.animate = function() {
-							animation = requestAnimationFrame( scope.animate );
-							controls.update();
-							scope.render();
-						};
-
-						scope.render = function() {
-							network.rotation.x += 0.006;
-							network.rotation.y += 0.006;
-							renderer.render( scene, camera, null, true ); // forceClear == true
-						};
-
-						scope.init();
-						scope.animate();
-
+					material = new THREE.MeshDepthMaterial({
+						color: 0x666666,
+						wireframe: true,
+						wireframeLinewidth: 1
 					});
-				});
+
+					network = new THREE.Mesh( geometry, material );
+					network.name = "Floating TAD";
+					scene.add(network);
+
+					if (window.WebGLRenderingContext)
+ 						renderer = new THREE.WebGLRenderer({alpha: true});
+ 					else
+						renderer = new THREE.CanvasRenderer({alpha: true});
+						
+					renderer.setSize( viewsize, viewsize );
+					viewport.appendChild( renderer.domElement );
+
+					controls = new THREE.TrackballControls( camera, renderer.domElement );
+					controls.minDistance = 450;
+					controls.maxDistance = 550;
+
+				}
+				function animate() {
+					requestAnimationFrame(animate);
+				controls.update();
+					render();
+				}
+				function render() {
+					network.rotation.x += 0.006;
+					network.rotation.y += 0.006;
+					renderer.render(scene, camera);
+				}
 			}
 		};
 	}
@@ -1230,11 +1013,11 @@
 				// console.log(scope);
 
 				// THREE.JS TEST
-				var container, camera, scene, renderer, geometry, material, network;
+				var viewport, camera, scene, renderer, geometry, material, network;
 				init();
 				animate();
 				function init() {
-					container =  element[0];
+					viewport =  element[0];
 					scene = new THREE.Scene();
 					camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
 					camera.position.z = 500;
@@ -1262,7 +1045,7 @@
  					else
 						renderer = new THREE.CanvasRenderer({alpha: true});
 					renderer.setSize(window.innerWidth, window.innerHeight);
-					container.appendChild(renderer.domElement);
+					viewport.appendChild(renderer.domElement);
 					// console.log(scene);
 
 					var chromatinObj = scene.getObjectByName( "testmesh" );
@@ -1321,7 +1104,7 @@
 		.module('TADkit')
 		.directive('tkComponentScene', tkComponentScene);
 
-	function tkComponentScene($rootScope, THREEService, THREEPlugins, Particles, Chromatin, Network) {
+	function tkComponentScene(Particles, Chromatin, Network, Settings, Networks) {
 		return {
 			restrict: 'EA',
 			scope: { 
@@ -1338,287 +1121,274 @@
 			},
 			templateUrl: 'assets/templates/scene.html',
 			link: function postLink(scope, element, attrs) {
-				THREEService.load().then(function(THREE) {
-					THREEPlugins.load(["TrackballControls","OrbitControls"]).then(function(THREE) {
-						// console.log(scope);
+				// threeService.three().then(function(THREE) {
+					// console.log(scope);
 
-						// DOM variables
-						var component, viewport;
-						var width, height, contW, contH, windowHalfX, windowHalfY;
+					var scene, component, viewport;
+					var camera, cameraPosition, cameraTarget, cameraTranslate;
+					var ambientLight, pointLight;
+					var playback, controls, renderer;
+					var particles, chromatin, network;
+					var width, height, contW, contH, windowHalfX, windowHalfY;
 
-						// THREE variables
-						var renderer = THREEService.getRenderer();
-						var animation;
+					var particleOriginalColor = new THREE.Color();
+					var positionOriginalColor = new THREE.Color();
+					var highlightColor = new THREE.Color("rgb(0,0,0)"); // add to scene component
 
-						var scene;
-						var camera, cameraPosition, cameraTarget, cameraTranslate;
-						var ambientLight, pointLight;
-						var autoplay, controls;
+					scope.init = function () {
 
-						// TADkit variables
-						var particles, chromatin, network;
-						var particleOriginalColor = new THREE.Color();
-						var positionOriginalColor = new THREE.Color();
-						var highlightColor = new THREE.Color("rgb(0,0,0)"); // add to scene component
+						// VIEWPORT
+						/* component-controller == children[0]
+						 * - component-header == children[0]
+						 * - component-body == children[3]
+						 */
+						// component = element[0].parentNode;
+						// console.log(component.clientWidth);
+						viewport = element[0].children[0].children[3];
+						// console.log(viewport.clientWidth);
+						// if with controller use line below
+						// viewport = element[0].children[0].children[3];
 
-						scope.init = function () {
+						// width = component.clientWidth; // NEED TO WAIT UNTIL DOM LOADED
+						width = parseInt(scope.state.width); // USE UNTIL DOM CHECK AVAILBLE
+						// height = component.clientHeight;
+						height = parseInt(scope.state.height); // USE UNTIL DOM CHECK AVAILBLE
+						// OJO! DOM NOT READY
+						// console.log(element[0].firstChild.children[2].clientWidth);
 
-							// VIEWPORT
-							/* component-controller == children[0]
-							 * - component-header == children[0]
-							 * - component-body == children[3]
-							 */
-							// component = element[0].parentNode;
-							// console.log(component.clientWidth);
-							viewport = element[0].children[0].children[3];
-							// console.log(viewport.clientWidth);
-							// if with controller use line below
-							// viewport = element[0].children[0].children[3];
+						if (window.WebGLRenderingContext)
+							renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
+						else
+							renderer = new THREE.CanvasRenderer({alpha: true});					
+					var background = scope.view.settings.background;
+					var clearColor = "0x" + background.substring(1);
+						renderer.setClearColor( clearColor );
+						renderer.setSize( width, height );
+						renderer.autoClear = false; // To allow render overlay on top of sprited sphere
+						viewport.appendChild( renderer.domElement );
 
-							// width = component.clientWidth; // NEED TO WAIT UNTIL DOM LOADED
-							width = parseInt(scope.state.width); // USE UNTIL DOM CHECK AVAILBLE
-							// height = component.clientHeight;
-							height = parseInt(scope.state.height); // USE UNTIL DOM CHECK AVAILBLE
-							// OJO! DOM NOT READY
-							// console.log(element[0].firstChild.children[2].clientWidth);
-					
-							var background = scope.view.settings.background;
-							// var clearColor = "0x" + background.substring(1);
-							// renderer.setClearColor( clearColor );
-							renderer.setSize( width, height );
-							viewport.appendChild( renderer.domElement );
+						// SCENE
+						scene = new THREE.Scene();
 
-							// SCENE
-							scene = new THREE.Scene();
+						// CAMERA
+						camera = new THREE.PerspectiveCamera( scope.view.viewpoint.fov, ( width / height) , scope.view.viewpoint.near, scope.view.viewpoint.far );
+						camera.position.fromArray(scope.view.viewpoint.camera);
+						camera.name = "Scene Camera";
+						scene.add(camera);
+	
+						// CONTROLS
+						// Use TrackballControls for interaction
+						controls = new THREE.TrackballControls(camera, renderer.domElement);
+						// Use OrbitControls for autoRotate
+						playback = new THREE.OrbitControls(camera, renderer.domElement);
+						playback.autoRotate = scope.view.controls.autoRotate;
+						playback.autoRotateSpeed = scope.view.controls.autoRotateSpeed;
+						// interaction FALSE so as not to conflict with controls
+						playback.noZoom = true;
+						playback.noRotate = true;
+						playback.noPan = true;
+						playback.noKeys = true;
 
-							// CAMERA
-							camera = new THREE.PerspectiveCamera( scope.view.viewpoint.fov, ( width / height) , scope.view.viewpoint.near, scope.view.viewpoint.far );
-							camera.position.fromArray(scope.view.viewpoint.camera);
-							camera.name = "Scene Camera";
-							scene.add(camera);
-		
-							// CONTROLS
-							// Use TrackballControls for interaction
-							controls = new THREE.TrackballControls(camera, renderer.domElement);
-							// Use OrbitControls for autoRotate
-							autoplay = new THREE.OrbitControls(camera, renderer.domElement);
-							autoplay.autoRotate = scope.view.controls.autoRotate;
-							autoplay.autoRotateSpeed = scope.view.controls.autoRotateSpeed;
-							// interaction FALSE so as not to conflict with controls
-							autoplay.noZoom = true;
-							autoplay.noRotate = true;
-							autoplay.noPan = true;
-							autoplay.noKeys = true;
+						// AXIS
+						// TODO: Make local axisHelper
+						var axisHelper = new THREE.AxisHelper( scope.view.settings.axis.size );
+						axisHelper.visible = scope.view.settings.axis.visible;
+						axisHelper.name = "Axis";
+						scene.add( axisHelper );
 
-							// AXIS
-							// TODO: Make local axisHelper
-							var axisHelper = new THREE.AxisHelper( scope.view.settings.axis.size );
-							axisHelper.visible = scope.view.settings.axis.visible;
-							axisHelper.name = "Axis";
-							scene.add( axisHelper );
+						// LIGHTS
+						// Ambient
+						var ambientColor = scope.view.settings.lighting.ambient;
+						ambientLight = new THREE.AmbientLight(ambientColor);
+						ambientLight.name = "Scene Ambient Light";
+						// scene.add(ambientLight);
+						
+						// GEOMETRY: PARTICLES
+						particles = new Particles(scope.currentmodel.data, scope.currentoverlay.colors.particles, scope.view.settings.particles);
+						// particles = new Particles(scope.model.data, scope.overlay.colors.particles, scope.view.settings.particles);
+						particles.visible = scope.view.settings.particles.visible;
+						scene.add(particles);
 
-							// LIGHTS
-							// Ambient
-							var ambientColor = scope.view.settings.lighting.ambient;
-							ambientLight = new THREE.AmbientLight(ambientColor);
-							ambientLight.name = "Scene Ambient Light";
-							// scene.add(ambientLight);
-							
-							// GEOMETRY: PARTICLES
-							particles = new Particles(scope.currentmodel.data, scope.currentoverlay.colors.particles, scope.view.settings.particles);
-							// particles = new Particles(scope.model.data, scope.overlay.colors.particles, scope.view.settings.particles);
-							particles.visible = scope.view.settings.particles.visible;
-							scene.add(particles);
+						//GEOMETRY: CHROMATIN
+						chromatin = new Chromatin(scope.currentmodel.data, scope.currentoverlay.colors.chromatin, scope.view.settings.chromatin);
+						// chromatin = new Chromatin(scope.model.data, scope.overlay.colors.chromatin, scope.view.settings.chromatin);
+						chromatin.visible = scope.view.settings.chromatin.visible;
+						scene.add(chromatin);
+						scope.view.settings.chromatin.radius = chromatin.boundingSphere.radius;
 
-							//GEOMETRY: CHROMATIN
-							chromatin = new Chromatin(scope.currentmodel.data, scope.currentoverlay.colors.chromatin, scope.view.settings.chromatin);
-							// chromatin = new Chromatin(scope.model.data, scope.overlay.colors.chromatin, scope.view.settings.chromatin);
-							chromatin.visible = scope.view.settings.chromatin.visible;
-							scene.add(chromatin);
-							scope.view.settings.chromatin.radius = chromatin.boundingSphere.radius;
+						// GEOMETRY: MESH
+						// network = new Network(scope.proximities.positions, scope.proximities.distances, scope.view.settings.network);
+						network = new Network(scope.data, scope.overlay.colors.network, scope.view.settings.network);
+						network.visible = scope.view.settings.network.visible;
+						scene.add(network);
 
-							// GEOMETRY: MESH
-							// network = new Network(scope.proximities.positions, scope.proximities.distances, scope.view.settings.network);
-							network = new Network(scope.data, scope.overlay.colors.network, scope.view.settings.network);
-							network.visible = scope.view.settings.network.visible;
-							scene.add(network);
+						// UPDATE CAMERA TARGET
+						cameraPosition = chromatin.boundingSphere.center;
+						cameraTarget = chromatin.boundingSphere.center;
+						cameraTranslate = chromatin.boundingSphere.radius * scope.view.viewpoint.scale;
+						scope.lookAtTAD(cameraPosition, cameraTarget, cameraTranslate);
 
-							// UPDATE CAMERA TARGET
-							cameraPosition = chromatin.boundingSphere.center;
-							cameraTarget = chromatin.boundingSphere.center;
-							cameraTranslate = chromatin.boundingSphere.radius * scope.view.viewpoint.scale;
-							scope.lookAtTAD(cameraPosition, cameraTarget, cameraTranslate);
+						// Point
+						var pointColor = scope.view.settings.lighting.color;
+						var pointIntensity = scope.view.settings.lighting.intensity;
+						pointLight = new THREE.PointLight(pointColor, pointIntensity);
+						pointLight.name = "Scene Light";
+						camera.add(pointLight);
+						var lightOffset = cameraTranslate * 0.5; // Up and to the left
+						pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
+						// Point Light Helper
+						var sphereSize = 100;
+						var pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
+						// scene.add(pointLightHelper);
+						
+						// FOG SCENE
+						var fogNear = cameraTranslate * scope.view.viewpoint.fogNear,
+							fogFar = cameraTranslate * scope.view.viewpoint.fogFar;
+						if (scope.view.viewpoint.fog) scene.fog = new THREE.Fog(background,fogNear,fogFar);
 
-							// Point
-							var pointColor = scope.view.settings.lighting.color;
-							var pointIntensity = scope.view.settings.lighting.intensity;
-							pointLight = new THREE.PointLight(pointColor, pointIntensity);
-							pointLight.name = "Scene Light";
-							camera.add(pointLight);
-							var lightOffset = cameraTranslate * 0.5; // Up and to the left
-							pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
-							// Point Light Helper
-							var sphereSize = 100;
-							var pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
-							// scene.add(pointLightHelper);
-							
-							// FOG SCENE
-							var fogNear = cameraTranslate * scope.view.viewpoint.fogNear,
-								fogFar = cameraTranslate * scope.view.viewpoint.fogFar;
-							if (scope.view.viewpoint.fog) scene.fog = new THREE.Fog(background,fogNear,fogFar);
+						// EVENT LISTENERS / SCOPE WATCHERS
+						// window.addEventListener( 'resize', scope.onWindowResize, false );
 
-							// EVENT LISTENERS / SCOPE WATCHERS
-							// window.addEventListener( 'resize', scope.onWindowResize, false );
+						/* Watch for changes */
 
-							/* Watch for changes */
-
-							// var componentOptions = [
-							// 	 'view.settings.particles.visible',
-							// 	 'view.settings.chromatin.visible',
-							// 	 'view.controls.autoRotate',
-							// 	 'view.settings.axis.visible'
-							// 	 ];
-							// scope.$watchGroup( componentOptions, function( newValues, oldValues ) {
-							// 	angular.forEach( newValues, function(value, index) {
-							// 		if ( newValues[index] !== oldValues[index] ) {
-							// 			console.log( value );
-							// 		}
-							// 	});
-							// });
-
-						// FIX: NOT REDRAWING SCENE IF THE ONLY VISBLE OBJECT IS TOGGLED OFF
-							scope.$watch('view.controls.autoRotate', function( newValue, oldValue ) {
-								if ( newValue !== oldValue ) {
-									// autoplay.autoRotate = !autoplay.autoRotate;
-									autoplay.autoRotate = scope.view.controls.autoRotate;
-								}
-							});
-							scope.$watch('view.settings.axis.visible', function( newValue, oldValue ) {
-								if ( newValue !== oldValue ) {
-									axisHelper.visible = !axisHelper.visible;
-								}
-							});
-							scope.$watch('view.settings.particles.visible', function( newValue, oldValue ) {
-								if ( newValue !== oldValue ) {
-									particles.visible = !particles.visible;
-								}
-							});
-							scope.$watch('view.settings.chromatin.visible', function( newValue, oldValue ) {
-								if ( newValue !== oldValue ) {
-									chromatin.visible = !chromatin.visible;
-								}
-							});
-							scope.$watch('view.settings.network.visible', function( newValue, oldValue ) {
-								if ( newValue !== oldValue ) {
-									network.visible = !network.visible;
-								}
-							});
-
-							var particlesObj = scene.getObjectByName( "Particles Cloud" );
-							var chromatinObj = scene.getObjectByName( "Chromatin Fiber" );
-							var networkObj = scene.getObjectByName( "Network Graph" );
-
-							// /* Watch for Particles colors */
-							scope.$watch('currentoverlay.colors.particles', function( newColors, oldColors ) { // cant deep watch as change through set on service
-								if ( newColors !== oldColors ) {
-									// var particleCount = particlesObj.children.length;
-									// for (var i = 0; i < particleCount; i++) {
-									// 	var newParticleColor =  new THREE.Color(newOverlay.colors.particles[i]);
-									// 	particlesObj.children[i].material.color = newParticleColor;
-									// }
-								}
-							});
-
-							// /* Watch for Chromatin colors */
-							scope.$watch('currentoverlay.colors.chromatin', function( newColors, oldColors ) { // cant deep watch as change through set on service
-								if ( newColors !== oldColors ) {
-									var chromatinCount = chromatinObj.children.length;
-									for (var i = 0; i < chromatinCount; i++) {
-										var newChromatinColor =  new THREE.Color(newColors[i]);
-										chromatinObj.children[i].material.color = newChromatinColor;
-										chromatinObj.children[i].material.ambient = newChromatinColor;
-										chromatinObj.children[i].material.emissive = newChromatinColor;
-									}
-								}
-							});
-
-							// /* Watch for Network colors */
-							scope.$watch('currentoverlay.colors.network', function( newColors, oldColors ) { // cant deep watch as change through set on service
-								if ( newColors !== oldColors ) {
-									networkObj.geometry.addAttribute( 'color', new THREE.BufferAttribute( newColors.RGB, 3 ) );
-									networkObj.geometry.addAttribute( 'alpha', new THREE.BufferAttribute( newColors.alpha, 1 ) );
-								}
-							});
-
-							/* Watch for Browser-wide Position updates */
-							scope.$watch('settings.current.particle', function( newParticle, oldParticle ) {
-								if ( newParticle !== oldParticle ) {
-
-									// SET PARTICLE CURSOR COLOR
-									if (particleOriginalColor) particlesObj.geometry.colors[(oldParticle - 1)] = particleOriginalColor;
-									particleOriginalColor = particlesObj.geometry.colors[(newParticle - 1)];
-									particlesObj.geometry.colors[(newParticle - 1)] = highlightColor;
-									particlesObj.geometry.colorsNeedUpdate = true;
-								}
-							});
-
-							/* Watch for Browser-wide Position updates */
-							scope.$watch('settings.current.segment', function( newSegment, oldSegment ) {
-								if ( newSegment !== oldSegment ) {
-
-									// SET CHROMATIN CURSOR COLOR								
-									var segmentPrevious = chromatinObj.getObjectByName( "segment-" + oldSegment );
-									if (positionOriginalColor) {
-										segmentPrevious.material.color = positionOriginalColor;
-										segmentPrevious.material.ambient = positionOriginalColor;
-										segmentPrevious.material.emissive = positionOriginalColor;
-									}
-
-									var segmentCurrent = chromatinObj.getObjectByName( "segment-" + newSegment );
-									positionOriginalColor = segmentCurrent.material.color;
-
-									segmentCurrent.material.color = highlightColor;
-									segmentCurrent.material.ambient = highlightColor;
-									segmentCurrent.material.emissive = highlightColor;
-								}
-							});
-
-						};
-
-						// -----------------------------------
-						// Event listeners
-						// -----------------------------------
-						scope.onWindowResize = function () {
-							scope.resizeCanvas();
-						};
-
-						$rootScope.$on('$stateChangeStart', function() {
-							cancelAnimationFrame( animation );
-						});
-
-						// element.on('mousemove', function(event) {
-						// 	// mouseX = ( event.clientX - width / 2 );
-						// 	// mouseY = ( event.clientX - width / 2 );
-						// 	scope.animate();
+						// var componentOptions = [
+						// 	 'view.settings.particles.visible',
+						// 	 'view.settings.chromatin.visible',
+						// 	 'view.controls.autoRotate',
+						// 	 'view.settings.axis.visible'
+						// 	 ];
+						// scope.$watchGroup( componentOptions, function( newValues, oldValues ) {
+						// 	angular.forEach( newValues, function(value, index) {
+						// 		if ( newValues[index] !== oldValues[index] ) {
+						// 			console.log( value );
+						// 		}
+						// 	});
 						// });
 
-						// -----------------------------------
-						// Updates
-						// -----------------------------------
-						scope.resizeCanvas = function () {
+					// FIX: NOT REDRAWING SCENE IF THE ONLY VISBLE OBJECT IS TOGGLED OFF
+						scope.$watch('view.controls.autoRotate', function( newValue, oldValue ) {
+							if ( newValue !== oldValue ) {
+								// playback.autoRotate = !playback.autoRotate;
+								playback.autoRotate = scope.view.controls.autoRotate;
+							}
+						});
+						scope.$watch('view.settings.axis.visible', function( newValue, oldValue ) {
+							if ( newValue !== oldValue ) {
+								axisHelper.visible = !axisHelper.visible;
+							}
+						});
+						scope.$watch('view.settings.particles.visible', function( newValue, oldValue ) {
+							if ( newValue !== oldValue ) {
+								particles.visible = !particles.visible;
+							}
+						});
+						scope.$watch('view.settings.chromatin.visible', function( newValue, oldValue ) {
+							if ( newValue !== oldValue ) {
+								chromatin.visible = !chromatin.visible;
+							}
+						});
+						scope.$watch('view.settings.network.visible', function( newValue, oldValue ) {
+							if ( newValue !== oldValue ) {
+								network.visible = !network.visible;
+							}
+						});
 
-							contW = viewport.parentNode.clientWidth * 0.66;
-							contH = contW * 0.66;
-							windowHalfX = contW / 2;
-							windowHalfY = contH / 2;
+						var particlesObj = scene.getObjectByName( "Particles Cloud" );
+						var chromatinObj = scene.getObjectByName( "Chromatin Fiber" );
+						var networkObj = scene.getObjectByName( "Network Graph" );
 
-							camera.aspect = contW / contH;
-							camera.updateProjectionMatrix();
+						// /* Watch for Particles colors */
+						scope.$watch('currentoverlay.colors.particles', function( newColors, oldColors ) { // cant deep watch as change through set on service
+							if ( newColors !== oldColors ) {
+								// var particleCount = particlesObj.children.length;
+								// for (var i = 0; i < particleCount; i++) {
+								// 	var newParticleColor =  new THREE.Color(newOverlay.colors.particles[i]);
+								// 	particlesObj.children[i].material.color = newParticleColor;
+								// }
+							}
+						});
 
-							renderer.setSize( contW, contH );
-						};
+						// /* Watch for Chromatin colors */
+						scope.$watch('currentoverlay.colors.chromatin', function( newColors, oldColors ) { // cant deep watch as change through set on service
+							if ( newColors !== oldColors ) {
+								var chromatinCount = chromatinObj.children.length;
+								for (var i = 0; i < chromatinCount; i++) {
+									var newChromatinColor =  new THREE.Color(newColors[i]);
+									chromatinObj.children[i].material.color = newChromatinColor;
+									chromatinObj.children[i].material.ambient = newChromatinColor;
+									chromatinObj.children[i].material.emissive = newChromatinColor;
+								}
+							}
+						});
 
-						scope.lookAtTAD = function (position, target, translate) {
+						// /* Watch for Network colors */
+						scope.$watch('currentoverlay.colors.network', function( newColors, oldColors ) { // cant deep watch as change through set on service
+							if ( newColors !== oldColors ) {
+								networkObj.geometry.addAttribute( 'color', new THREE.BufferAttribute( newColors.RGB, 3 ) );
+								networkObj.geometry.addAttribute( 'alpha', new THREE.BufferAttribute( newColors.alpha, 1 ) );
+							}
+						});
+
+						/* Watch for Browser-wide Position updates */
+						scope.$watch('settings.current.particle', function( newParticle, oldParticle ) {
+							if ( newParticle !== oldParticle ) {
+
+								// SET PARTICLE CURSOR COLOR
+								if (particleOriginalColor) particlesObj.geometry.colors[(oldParticle - 1)] = particleOriginalColor;
+								particleOriginalColor = particlesObj.geometry.colors[(newParticle - 1)];
+								particlesObj.geometry.colors[(newParticle - 1)] = highlightColor;
+								particlesObj.geometry.colorsNeedUpdate = true;
+							}
+						});
+
+						/* Watch for Browser-wide Position updates */
+						scope.$watch('settings.current.segment', function( newSegment, oldSegment ) {
+							if ( newSegment !== oldSegment ) {
+
+								// SET CHROMATIN CURSOR COLOR								
+								var segmentPrevious = chromatinObj.getObjectByName( "segment-" + oldSegment );
+								if (positionOriginalColor) {
+									segmentPrevious.material.color = positionOriginalColor;
+									segmentPrevious.material.ambient = positionOriginalColor;
+									segmentPrevious.material.emissive = positionOriginalColor;
+								}
+
+								var segmentCurrent = chromatinObj.getObjectByName( "segment-" + newSegment );
+								positionOriginalColor = segmentCurrent.material.color;
+
+								segmentCurrent.material.color = highlightColor;
+								segmentCurrent.material.ambient = highlightColor;
+								segmentCurrent.material.emissive = highlightColor;
+							}
+						});
+
+					};
+
+					// -----------------------------------
+					// Event listeners
+					// -----------------------------------
+					
+					scope.onWindowResize = function () {
+						scope.resizeCanvas();
+					};
+
+					// -----------------------------------
+					// Updates
+					// -----------------------------------
+					scope.resizeCanvas = function () {
+
+						contW = viewport.parentNode.clientWidth * 0.66;
+						contH = contW * 0.66;
+						windowHalfX = contW / 2;
+						windowHalfY = contH / 2;
+
+						camera.aspect = contW / contH;
+						camera.updateProjectionMatrix();
+
+						renderer.setSize( contW, contH );
+					};
+
+					scope.lookAtTAD = function (position, target, translate) {
 							position = position || new THREE.Vector3( 50000, 50000, 50000 );
 							var origin = new THREE.Vector3(0,0,0);
 							target = target || origin;
@@ -1633,27 +1403,26 @@
 							camera.updateMatrixWorld();
 							// Controls target
 							controls.target.copy(position);
-						};
+					};
 
-						// -----------------------------------
-						// Draw and Animate
-						// -----------------------------------
-						scope.animate = function () {
-							animation = requestAnimationFrame( scope.animate );
-							// autoplay.update();
-							controls.update();
-							scope.render();
-						};
+					// -----------------------------------
+					// Draw and Animate
+					// -----------------------------------
+					scope.animate = function () {
+						requestAnimationFrame( scope.animate );
+						playback.update();
+						controls.update();
+						scope.render();
+					};
 
-						scope.render = function () {
-							renderer.render( scene, camera, null, true ); // forceClear == true
-						};
+					scope.render = function () {
+						renderer.render( scene, camera );
+					};
 
-						// Begin
-						scope.init();
-						scope.animate();
-					});
-				});
+					// Begin
+					scope.init();
+					scope.animate();
+				// });
 			}
 		};
 	}
@@ -1681,7 +1450,7 @@
 			link: function(scope, element, attrs) {
 				// console.log(scope);
 
-				d3Service.load().then(function(d3) {
+				d3Service.d3().then(function(d3) {
 
 					scope.safeApply = function(fn) {
 						var phase = this.$root.$$phase;
@@ -1977,7 +1746,7 @@
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
-				d3Service.load().then(function(d3) {
+				d3Service.d3().then(function(d3) {
 					// console.log(scope);
 
  					// DATA MANIPULATION >>> MOVE TO CONTROLLER
@@ -2192,7 +1961,7 @@
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
-				d3Service.load().then(function(d3) {
+				d3Service.d3().then(function(d3) {
 
  					// DATA MANIPULATION >>> MOVE TO CONTROLLER
 					var data = scope.data;
@@ -2418,7 +2187,7 @@
 			link: function(scope, element, attrs) {
 				// console.log(scope);
 
-				d3Service.load().then(function(d3) {
+				d3Service.d3().then(function(d3) {
 
 					scope.safeApply = function(fn) {
 						var phase = this.$root.$$phase;
@@ -2669,7 +2438,7 @@
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
 
-				d3Service.load().then(function(d3) {
+				d3Service.d3().then(function(d3) {
 
 					scope.safeApply = function(fn) {
 						var phase = this.$root.$$phase;
@@ -3056,7 +2825,7 @@
 			link: function(scope, element, attrs) {
 				// console.log(scope);
 
-				d3Service.load().then(function(d3) {
+				d3Service.d3().then(function(d3) {
 				
 					scope.safeApply = function(fn) {
 						var phase = this.$root.$$phase;
@@ -3263,7 +3032,7 @@
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
-				d3Service.load().then(function(d3) {
+				d3Service.d3().then(function(d3) {
 					// console.log(scope);
 
  					// DATA MANIPULATION >>> MOVE TO CONTROLLER
@@ -4094,159 +3863,6 @@
 (function() {
 	'use strict';
 	angular
-		.module('THREEPlugins', [])
-		.factory('THREEPlugins', THREEPlugins);
-
-	function THREEPlugins(THREEService, $document, $q, $rootScope) {
-		// check if THREEService is loaded
-		// check if plugin already loaded - add and remove form array
-		var plugins = {
-			loaded: []
-		};
-
-		return {
-			load: function(filenames) {
-				var self = this;
-				var pluginsToLoad = []; // push async functions into list for subsequent processing
-				angular.forEach(filenames, function(filename, key) {
-					var newPlugin = true;
-					for (var i = plugins.loaded.length - 1; i >= 0; i--) {
-						if (plugins.loaded[key] == filename) {
-							newPlugin = false;
-							// console.log("THREE.js plugin " + filename + " already loaded.");
-							// return;
-						}
-					}
-					if (newPlugin) {
-						var loadPlugin = self.add(filename);
-						pluginsToLoad.push(loadPlugin);
-					}
-				});
-				// if none in pluginsToLoad...?
-				return $q.all(pluginsToLoad)
-				.then(function(results) {
-					console.log("THREE.js plugins loaded: " + results); //if none...?
-					return window.THREE;
-				});
-			},
-			add: function(filename) {
-				var deferred = $q.defer();
-
-				function onScriptLoad() {
-					$rootScope.$apply(function() {
-						plugins.loaded.push(filename);
-						// console.log(plugins.loaded);
-						deferred.resolve(filename);
-					});
-				}
-
-				var pluginTag = $document[0].createElement('script');
-					pluginTag.type = 'text/javascript';
-					pluginTag.src = 'assets/js/' + filename + '.js';
-					pluginTag.async = true;
-					pluginTag.onreadystatechange = function () {
-						if (this.readyState == 'complete') {
-							onScriptLoad();
-						}
-					};
-					pluginTag.onload = onScriptLoad;
-
-				var t = $document[0].getElementsByTagName('body')[0];
-					t.appendChild(pluginTag);
-
-				return deferred.promise;
-			},
-			remove: function(filename) {
-				angular.forEach(plugins.loaded, function(plugin, key) {
-					if (plugin == filename) {
-						plugins.loaded[key].pop();
-						// REMOVE DOM ELEMENT?
-						console.log("THREE.js plugin " + filename + " removed.");
-					}
-				});
-			}
-		};
-	}
-})();
-(function() {
-	'use strict';
-	angular
-		.module('THREE', [])
-		.factory('THREEService', THREEService);
-
-	function THREEService($document, $q, $rootScope, Settings) {
-		var deferred = $q.defer();
-
-		// RENDER VARIABLES
-		var renderer;
-			
-		function setRenderer() {
-			if (window.WebGLRenderingContext) {
-				renderer = new THREE.WebGLRenderer({
-					alpha: true,
-					antialias: true
-				});
-			} else {
-				renderer = new THREE.CanvasRenderer({
-					alpha: true
-				});					
-			}
-			renderer.setPixelRatio( window.devicePixelRatio );
-			// var clearColor = "0x000000";
-			// 	renderer.setClearColor( clearColor, 0.0 ); // defaults: 0x000000, 0.0
-			// renderer.setSize( 100, 100 );
-			// renderer.autoClear = false; // To allow render overlay on top of sprited sphere
-		}
-
-		function onScriptLoad() {
-			if (!renderer) setRenderer();
-			$rootScope.$apply(function() { deferred.resolve(window.THREE); });
-		}
-
-		// Create a script tag with ThreeJS as the source
-		// and call our onScriptLoad callback when it
-		// has been loaded
-		var scriptTag = $document[0].createElement('script');
-		scriptTag.type = 'text/javascript';
-		scriptTag.async = true;
-		var online = Settings.getOnline();
-		if (online) {
-			scriptTag.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.min.js';
-		} else {
-			scriptTag.src = 'assets/js/three.min.js';
-		}
-		scriptTag.onreadystatechange = function () {
-			if (this.readyState == 'complete') {
-				onScriptLoad();	
-			}
-		};
-		scriptTag.onload = onScriptLoad;
-
-		var s = $document[0].getElementsByTagName('body')[0];
-		s.appendChild(scriptTag);
-
-		function resetRenderer() {
-			// Reset when switching between eg. dataset and browser
-			// setSize in each directive resets view to full size
-			// no view independent reset availible for scissor so can only set ScissorTest to false
-			renderer.enableScissorTest ( false );
-			renderer.setClearColor( 0x000000, 0.0 );
-		}
-
-		return {
-			load: function() {
-				return deferred.promise;
-			},
-			getRenderer: function() {
-				resetRenderer();
-				return renderer;
-			}
-		};
-	}
-})();
-(function() {
-	'use strict';
-	angular
 		.module('TADkit')
 		.service('ColorConvert', ColorConvert);
 
@@ -4459,29 +4075,17 @@
 				ary.splice(0, 1);
 				return rootObj.arrayToRGBA(ary.map(scale));
 			},
-			stripHash: function(hex) {
-				return (hex.charAt(0)=="#") ? hex.substring(1,7):hex;
-			},
-			hexToR: function(hex) {
-				var self = this;
-				return parseInt((self.stripHash(hex)).substring(0,2),16);
-			},
-			hexToG: function(hex) {
-				var self = this;
-				return parseInt((self.stripHash(hex)).substring(2,4),16);
-			},
-			hexToB: function(hex) {
-				var self = this;
-				return parseInt((self.stripHash(hex)).substring(4,6),16);
-			},
 			hexToRGB: function(hex) {
-				var self = this;
 				var RGB = [];
-				RGB.push(self.hexToR(hex));
-				RGB.push(self.hexToG(hex));
-				RGB.push(self.hexToB(hex));
+				RGB.push(hexToR(hex));
+				RGB.push(hexToG(hex));
+				RGB.push(hexToB(hex));
 				return RGB;
-			}
+			},
+			hexToR: function(hex) {return parseInt((cutHex(hex)).substring(0,2),16);},
+			hexToG: function(hex) {return parseInt((cutHex(hex)).substring(2,4),16);},
+			hexToB: function(hex) {return parseInt((cutHex(hex)).substring(4,6),16);},
+			cutHex: function(hex) {return (hex.charAt(0)=="#") ? hex.substring(1,7):hex;}	
 		};
 	}
 })();
@@ -4492,25 +4096,16 @@
 		.factory('Color', Color);
 
 	function Color(ColorConvert) {
-		// NOTE Optionally these could all be deprecated
-		//      in favor of native JS, THREE or D3 functions.
-		//          (OR Use this as a single source for all color manipulation
-		//           whatever the external api, to ensure single load access.)
+		// NOTE Ideally these will all be deprecated
+		//      in favor of nbative JS, THREE or D3 functions.
 		//      Those already UNUSED are marked as such.
 
 		return {
+
 			// Extract colors from (Ensembl) INI files
 			// eg. https://raw.githubusercontent.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini
 			//  OR https://cdn.rawgit.com/Ensembl/ensembl-webcode/release/75/conf/ini-files/COLOUR.ini
 			//  OR in TADkit: assets/defaults/ensembl-webcode-COLOUR.ini
-			RGBObjectFromHex: function(hex) {
-				var r = ColorConvert.hexToR(hex);
-				var g = ColorConvert.hexToG(hex);
-				var b = ColorConvert.hexToB(hex);
-				var RGBObject = {"r":r,"g":g,"b":b};
-				return RGBObject;
-			},
-			// Generate 'colors list' Object from INI data
 			colorsFromIni: function(data) {
 				var regex = {
 					section: /^\s*\[\s*([^\]]*)\s*\]\s*$/,
@@ -4584,6 +4179,7 @@
 				return colors;
 			},
 			// Generate THREE Vertex Colors from array of THREE colors
+			// 
 			vertexColorsFromColors: function(colors) {
 				// Buffer Geomptry to be used as LinePieces so
 				// colors stored as one per data-position-pair
@@ -4602,7 +4198,7 @@
 				}
 				return vertexColors;
 			},
-			// Generate an Array of a specific number of random colors
+			// Generate a specific number of random colors
 			getRandomColors: function(count) {
 				var randomColors = [];
 				for(var i=0; i<count; i++){
@@ -4611,7 +4207,7 @@
 				}
 				return randomColors;
 			},
-			// Generate an Array of a specific number of random colors
+			// Generate a specific number of random colors
 			getRandomRGB: function(count) {
 				var randomRGB = [];
 				for(var i=0; i<count; i++){
@@ -4621,7 +4217,7 @@
 				}
 				return randomRGB;
 			},
-			// UNUSED: Generate a math linear gradient between to hex colors values
+				// UNUSED: Generate a math linear gradient between to hex colors values
 			//     Note this is NOT a L*a*b or HCL correct gradient
 			//     See Mike Bostock's D3 comments: http://bl.ocks.org/mbostock/3014589
 			getGradientColor: function(start_color, end_color, percent) {
@@ -4686,19 +4282,19 @@
 		
 		return {
 			load: function() {
-				var deferred = $q.defer();
+				var deferral = $q.defer();
 				var dataUrl = "assets/defaults/tk-defaults-components.json";
 				if( components.loaded.length > 0 ) {
-					 deferred.resolve(components);
+					deferral.resolve(components);
 				} else {
 					$http.get(dataUrl)
 					.success( function(data) {
 						components.loaded = data;
 						console.log("Components (" + data.length + ") loaded from " + dataUrl);
-						 deferred.resolve(components);
+						deferral.resolve(components);
 					});
 				}
-				return deferred.promise;
+				return deferral.promise;
 			},
 			add: function(details) {
 				details = details || ["","","","","","","",[]];
@@ -4811,10 +4407,10 @@
 		.factory('d3Service', d3Service);
 
 	function d3Service($document, $q, $rootScope, Settings) {
-			var deferred = $q.defer();
+			var d = $q.defer();
 			function onScriptLoad() {
 				// Load client in the browser
-				$rootScope.$apply(function() { deferred.resolve(window.d3); });
+				$rootScope.$apply(function() { d.resolve(window.d3); });
 			}
 			// Create a script tag with d3 as the source
 			// and call our onScriptLoad callback when it
@@ -4837,7 +4433,7 @@
 			s.appendChild(scriptTag);
 
 			return {
-				load: function() { return deferred.promise; }
+				d3: function() { return d.promise; }
 			};
 	}
 })();
@@ -4866,16 +4462,16 @@
 				var datapath = "defaults";
 				if (filename != "tk-example-dataset") datapath = "examples";
 
-				var deferred = $q.defer();
+				var deferral = $q.defer();
 				var dataUrl = "assets/" + datapath + "/" + filename + ".json";
 				$http.get(dataUrl)
 				.success( function(dataset) {
 					// TADkit defaults and examples are already validated
 					dataset.object.filename = filename;
 					self.add(dataset);
-					deferred.resolve(datasets);
+					deferral.resolve(datasets);
 				});
-				return deferred.promise;
+				return deferral.promise;
 			},
 			add: function(data) {
 				var self = this;
@@ -5028,18 +4624,18 @@
 		return {
 			ping: function() {
 				console.log("Pinging Ensembl RESTful genomic data server...");
-				var deferred = $q.defer();
+				var deferral = $q.defer();
 				var dataUrl = "http://rest.ensemblgenomes.org/info/ping?content-type=application/json";
 				$http.get(dataUrl)
 				.success(function(data){
 					ensembl.ping = data.ping;
 					console.log("Ensembl RESTful is contactable.");
 				});
-				return deferred.promise;
+				return deferral.promise;
 			},
 			load: function(overlay) {
 				// TODO: clear odd colors while loading...
-				var deferred = $q.defer();
+				var deferral = $q.defer();
 				var dataUrl;
 				var settings = Settings.get();
 				var species = settings.current.species;
@@ -5065,9 +4661,9 @@
 					var region = chrom + ":" + chromStart + "-" + chromEnd;
 					var source = online ? "Ensembl" : "local storage";
 					console.log("Genes for " + species + " "+ region + " retreived from " + source + ".");
-					 deferred.resolve(overlay);
+					deferral.resolve(overlay);
 				});
-				return deferred.promise;
+				return deferral.promise;
 			},
 			setBiotypeStyle: function(genes) {
 				// This generates a index in lowercase to be used in CSS styling
@@ -5094,13 +4690,13 @@
 			var settings = Settings.load();
 			var users = Users.load();
 			var projects = Projects.load();
+			var datasets = Datasets.load();
 			var overlays = Overlays.load();
 			var components = Components.load();
 			var storyboards = Storyboards.load();
-			var datasets = Datasets.load(); // dependent on Storyboards.loaded
 			var featureColors = Resources.loadBiotypeColors();
 
-			return $q.all([settings, users, projects, overlays, components, storyboards, datasets, featureColors])
+			return $q.all([settings, users, projects, datasets, overlays, components, storyboards, featureColors])
 			.then(function(results){
 				return {
 					settings: results[0],
@@ -5138,11 +4734,16 @@
 				var self = this;
 				var featuresCount = overlay.data.length;
 				var colorPairs = new Float32Array(edgeCount * 6); // ie. * 2 (vertices) * 3 (RGB)
+				var defaultRGB = new THREE.Color("#000000");
+				for (var h = colorPairs.length - 1; h >= 0; h--) {
+					colorPairs[i] = defaultRGB;
+				}
+				var randomRGB = Color.getRandomRGB(featuresCount);
 				for (var i = 0; i < featuresCount; i++) {
 					var particle1 = overlay.data[i][0];
 					var particle2 = overlay.data[i][1];
 					var pairIndex = self.getMatrixIndex(particle1, particle2, edgeCount) * 6;
-					var RGB = {"r":0.5,"g":0.5,"b":0.5};
+					var RGB = randomRGB[i];
 					if (overlay.object.id == "restraints"){
 						var restraintsColors = {"H":"#4CAF50","L":"#0000ff","U":"#ff00ff","C":"#00ff00"};
 						RGB = self.getFeatureRGB(overlay.data[i][2], restraintsColors);
@@ -5157,6 +4758,7 @@
 					colorPairs[pairIndex] = RGB.b;
 				}
 				colorPairs.name = "Network LinePieces RGB";
+				// console.log(colorPairs);
 				return colorPairs;
 			},
 			linePiecesAlpha: function(overlay, edgeCount) {
@@ -5179,6 +4781,7 @@
 					}
 				}
 				alphaPairs.name = "Network LinePieces Alphas";
+				// console.log(alphaPairs);
 				return alphaPairs;
 			},
 			getMatrixIndex: function(row, col, size) {
@@ -5196,7 +4799,7 @@
 				var RGB;
 				angular.forEach(colors, function(color, key) {
 					if (code == key) {
-						RGB = Color.RGBObjectFromHex(color);
+						RGB = new THREE.Color(color);
 					}
 				});
 				return RGB;
@@ -5218,20 +4821,20 @@
 
 		return {
 			load: function() {
-				var deferred = $q.defer();
+				var deferral = $q.defer();
 				var dataUrl = "assets/defaults/tk-defaults-overlays.json";
 				if( overlays.loaded.length > 0 ) {
-					 deferred.resolve(overlays);
+					deferral.resolve(overlays);
 				} else {
 					$http.get(dataUrl)
 					.success( function(data) {
 						overlays.loaded = data;
 						// overlays.current.index = overlays.loaded.length - 1;
 						console.log("Overlays (" + data.length + ") loaded from " + dataUrl);
-						 deferred.resolve(overlays);
+						deferral.resolve(overlays);
 					});
 				}
-				return deferred.promise;
+				return deferral.promise;
 			},
 			loadTSV: function(filename, filetype, defaults) {
 				filename = filename || "tk-example-dataset";
@@ -5244,7 +4847,7 @@
 					Storyboards.defaultComponents();
 				}
 
-				var deferred = $q.defer();
+				var deferral = $q.defer();
 				var datapath = "defaults";
 				if (filename != "tk-example-dataset") datapath = "examples";
 				var dataUrl = "assets/" + datapath + "/" + filename + "." + filetype;
@@ -5252,12 +4855,12 @@
 				.success( function(fileData) {
 					var importedOverlays = self.import(fileData,[],[],defaults);
 					console.log("Overlays (" + importedOverlays.length + ") imported from " + dataUrl);
-					deferred.resolve(overlays);
+					deferral.resolve(overlays);
 				})
 				.error(function(fileData) {
 					console.log("No associated data tracks found.");
 				});
-				return deferred.promise;
+				return deferral.promise;
 			},
 			import: function(fileData, selectedRows, selectedCols) {
 				var self = this;
@@ -5312,115 +4915,116 @@
 				return filteredData;
 			},
 			aquire: function(data) {
-				// var colorRange = ["#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff"];
-				var colorFilion = ["#227c4f","#e71818","#8ece0d","#6666ff","#424242"];
-				// Categorical Color Ragess e.g. d3.scale.category20()
-				var colorRange = ["#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c", "#98df8a", "#d62728", "#ff9896", "#9467bd", "#c5b0d5", "#8c564b", "#c49c94", "#e377c2", "#f7b6d2", "#7f7f7f", "#c7c7c7", "#bcbd22", "#dbdb8d", "#17becf", "#9edae5"];
+				// d3Service.d3().then(function(d3) {
+					// var colorRange = ["#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff","#ff0000","#00ff00","#0000ff"];
+					var colorFilion = ["#227c4f","#e71818","#8ece0d","#6666ff","#424242"];
+					var colorRange = d3.scale.category20();
 
-				// columns to overlays
-				// skip row 1 = headers ie. length - 2
-				// skip colums 1 and 2 = coords ie. length - 3
-				var acquiredOverlays = [];
-				// check for bigwig data the step and start
-				// var step = 1; // override below if fixed
-				// if none find which is start and end eg. Marie's and Filion's data
-				// cycle through first lineto determine columns
-				// create as BedGraph
-				var headerRow = 0;
-				var firstDataRow = 1;
-				var startColumn = 0;
-				var endColumn = 1;
-				var colsCount = data[headerRow].length;
+					// columns to overlays
+					// skip row 1 = headers ie. length - 2
+					// skip colums 1 and 2 = coords ie. length - 3
+					var acquiredOverlays = [];
+					// check for bigwig data the step and start
+					// var step = 1; // override below if fixed
+					// if none find which is start and end eg. Marie's and Filion's data
+					// cycle through first lineto determine columns
+					// create as BedGraph
+					var headerRow = 0;
+					var firstDataRow = 1;
+					var startColumn = 0;
+					var endColumn = 1;
+					var colsCount = data[headerRow].length;
 
-				// Check if fixed steps
-				var step = data[firstDataRow][endColumn] - data[firstDataRow][startColumn] + 1; // get step from chromEnd to chromStart
-				var step2 = data[firstDataRow+1][endColumn] - data[firstDataRow+1][startColumn] + 1; // check next row
-				var type, format, stepType;
-				if (step == step2) {
-					type = "wiggle_0";
-					format = "fixed";
-					stepType = "fixed";
-				} else {
-					type = "bedgraph";
-					format = "variable";
-					stepType = "variable";
-				}
-
-				// Check if Filion proteins ie. chromatin colors
-				var filion = false;
-				if (colsCount == 7){
-					var filionProteins = 0;
-					for (var h = 2; h < colsCount; h++) { // h=2 to skip start and end cols
-						var header = data[headerRow][h].toLowerCase();
-						if (header=="hp1" || header=="brm" || header=="mrg15" || header=="pc" || header=="h1") filionProteins++;
-					}
-					if (filionProteins == 5) filion = true;
-				}
-
-				for (var i = colsCount - 1; i >= 2; i--) { // i >= 2 to skip, start and end columns
-					var colored;
-					if (filion) {
-						colored = colorFilion[i-2];
+					// Check if fixed steps
+					var step = data[firstDataRow][endColumn] - data[firstDataRow][startColumn] + 1; // get step from chromEnd to chromStart
+					var step2 = data[firstDataRow+1][endColumn] - data[firstDataRow+1][startColumn] + 1; // check next row
+					var type, format, stepType;
+					if (step == step2) {
+						type = "wiggle_0";
+						format = "fixed";
+						stepType = "fixed";
 					} else {
-						colored = colorRange[i];
-					}				
-					acquiredOverlays.unshift(
-						{
-							"metadata": {
-								"version" : 1.0,
-								"type" : "overlay",
-								"generator" : "TADkit"
-							},
-							"object" : {
-								"uuid" : uuid4.generate(),
-								"id" : data[headerRow][i],
-								"title" : data[headerRow][i],
-								"source" : "Research output",
-								"url" : "local",
-								"description" : "center_label", //also BigWig description (track title): "User Supplied Track"
-								"type" : type, //also BigWig type
-								"format" : format,
-								"components" : 2,
-								"name" : data[headerRow][i], //BigWig: "User Track"
-								"visibility" : "full", //BigWig: "full", "dense" or "hide"
-								"color" : colored, // random from D3.js function. NOTE: convert to RGB for BigWig: eg. 255,255,255
-								"altColor" : "#cccccc", // light grey gives best 3D render vis. NOTE: convert to RGB for BigWig: eg. 128,128,128
-								"priority" : "100", //BigWig: 100
-								"stepType" : stepType, //BigWig: "variable" or "fixed"
-								"chrom" : "", //BigWig: derive from dataset...???
-								"start" : data[firstDataRow][startColumn], //BigWig
-								"step" : step, //BigWig
-								"state" : {
-									"index" : 0, // make real index???
-									"overlaid" : false
-								}
-							},
-							"palette" : [colored,"#cccccc"],
-							"data" : [],
-							"colors" : {
-								"particles" : [],
-								"chromatin" : [],
-								"network" : {
-									"RGB" : [],
-									"alpha" : []
+						type = "bedgraph";
+						format = "variable";
+						stepType = "variable";
+					}
+
+					// Check if Filion proteins ie. chromatin colors
+					var filion = false;
+					if (colsCount == 7){
+						var filionProteins = 0;
+						for (var h = 2; h < colsCount; h++) { // h=2 to skip start and end cols
+							var header = data[headerRow][h].toLowerCase();
+							if (header=="hp1" || header=="brm" || header=="mrg15" || header=="pc" || header=="h1") filionProteins++;
+						}
+						if (filionProteins == 5) filion = true;
+					}
+
+					for (var i = colsCount - 1; i >= 2; i--) { // i >= 2 to skip, start and end columns
+						var colored;
+						if (filion) {
+							colored = colorFilion[i-2];
+						} else {
+							colored = colorRange(i);
+						}				
+						acquiredOverlays.unshift(
+							{
+								"metadata": {
+									"version" : 1.0,
+									"type" : "overlay",
+									"generator" : "TADkit"
+								},
+								"object" : {
+									"uuid" : uuid4.generate(),
+									"id" : data[headerRow][i],
+									"title" : data[headerRow][i],
+									"source" : "Research output",
+									"url" : "local",
+									"description" : "center_label", //also BigWig description (track title): "User Supplied Track"
+									"type" : type, //also BigWig type
+									"format" : format,
+									"components" : 2,
+									"name" : data[headerRow][i], //BigWig: "User Track"
+									"visibility" : "full", //BigWig: "full", "dense" or "hide"
+									"color" : colored, // random from D3.js function. NOTE: convert to RGB for BigWig: eg. 255,255,255
+									"altColor" : "#cccccc", // light grey gives best 3D render vis. NOTE: convert to RGB for BigWig: eg. 128,128,128
+									"priority" : "100", //BigWig: 100
+									"stepType" : stepType, //BigWig: "variable" or "fixed"
+									"chrom" : "", //BigWig: derive from dataset...???
+									"start" : data[firstDataRow][startColumn], //BigWig
+									"step" : step, //BigWig
+									"state" : {
+										"index" : 0, // make real index???
+										"overlaid" : false
+									}
+								},
+								"palette" : [colored,"#cccccc"],
+								"data" : [],
+								"colors" : {
+									"particles" : [],
+									"chromatin" : [],
+									"network" : {
+										"RGB" : [],
+										"alpha" : []
+									}
 								}
 							}
+						);
+						// convert column data to array
+						for (var j = data.length - 1; j >= 1; j--) { // j >= 1 to skip first header row
+							if (format == "variable") {
+								acquiredOverlays[0].data.unshift({
+									"start" : data[j][startColumn],
+									"end" : data[j][endColumn],
+									"read" : data[j][i]
+								});
+							} else {
+								acquiredOverlays[0].data.unshift(data[j][i]);
+							}				
 						}
-					);
-					// convert column data to array
-					for (var j = data.length - 1; j >= 1; j--) { // j >= 1 to skip first header row
-						if (format == "variable") {
-							acquiredOverlays[0].data.unshift({
-								"start" : data[j][startColumn],
-								"end" : data[j][endColumn],
-								"read" : data[j][i]
-							});
-						} else {
-							acquiredOverlays[0].data.unshift(data[j][i]);
-						}				
 					}
-				}
-				return acquiredOverlays;
+					return acquiredOverlays;
+				// }); // End d3 Service
 			},
 			add: function(importedOverlays) {
 				var self = this;
@@ -5519,65 +5123,63 @@
 
 			},
 			segment: function() {
+				var settings = Settings.get();
 				var self = this; // SYNChronous functions...
-				Segments.load().then(function() {
-					var settings = Settings.get();
-					angular.forEach(overlays.loaded, function(overlay, key) {
-						// check if colors already exist (for chromatin as principal set) or number of segments have changed
-						var test = true;
-						if (test) {
-						// if (!overlay.colors.chromatin || overlay.colors.chromatin.length === 0) { // ??? || (overlay.colors.chromatin && segmentsCount != settings.segmentsCount)
-							// run function based on object type
-							var type = overlay.object.type;
-							var format = overlay.object.format;
-							if (type == "gradient" && format == "hex") {
-								// palette must contain 2 hex values
-								overlay.colors.particles = Segments.gradientHCL(overlay, settings.current.particlesCount);
-								overlay.colors.chromatin = Segments.gradientHCL(overlay, settings.current.segmentsCount);
-								overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
-								overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
-							} else if (type == "wiggle_0" && format == "fixed") {
-								// OJO! create additional option for format = "bigwig-variable"
-								overlay.colors.particles = Segments.bicolor(overlay, settings.current.particlesCount);
-								overlay.colors.chromatin = Segments.bicolor(overlay, settings.current.segmentsCount);
-								overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
-								overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
-							} else if (type == "wiggle_0" && format == "variable") {
-								// To Do...
-							} else if (type == "bedgraph") {
-								overlay.colors.particles = Segments.bicolorVariable(overlay, settings.current.chromStart, settings.current.particlesCount, 1);
-								overlay.colors.chromatin = Segments.bicolorVariable(overlay, settings.current.chromStart, settings.current.segmentsCount, settings.current.segmentLength);
-								overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
-								overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
-							} else if (type == "matrix") {
-								// Distances are per edge so just convert to color
-								overlay.colors.particlesMatrix = Segments.matrix(overlay, 1); // ie. per particle
-								overlay.colors.chromatinMatrix = Segments.matrix(overlay, settings.current.particleSegments);
-								overlay.colors.networkMatrix = overlay.colors.particlesMatrix; // ie. also color network edges by matrix
-								self.at(1, settings.current.particlesCount, settings.current.particleSegments);
-							} else if (type == "misc" && format == "variable") { // eg. restraints
-								overlay.colors.particles = [];
-								overlay.colors.chromatin = [];
-								overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
-								overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
-							} else if (type == "ensembl" && format == "json") {
-								// data must have .start and .end
-								var features = Resources.get().biotypes;
-								var singleSegment = 1;
-								overlay.colors.particles = Segments.features(overlay, settings.current.chromStart, settings.current.particlesCount, singleSegment, features);
-								overlay.colors.chromatin = Segments.features(overlay, settings.current.chromStart, settings.current.segmentsCount, settings.current.segmentLength, features);
-								overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
-								overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
-							}
-
-						} else {
-							// already segmented
-							console.log("Overlay '" + overlay.object.title + "' already segmented as color array matching current dataset length");
+				angular.forEach(overlays.loaded, function(overlay, key) {
+					// check if colors already exist (for chromatin as principal set) or number of segments have changed
+					var test = true;
+					if (test) {
+					// if (!overlay.colors.chromatin || overlay.colors.chromatin.length === 0) { // ??? || (overlay.colors.chromatin && segmentsCount != settings.segmentsCount)
+						// run function based on object type
+						var type = overlay.object.type;
+						var format = overlay.object.format;
+						if (type == "gradient" && format == "hex") {
+							// palette must contain 2 hex values
+							overlay.colors.particles = Segments.gradientHCL(overlay, settings.current.particlesCount);
+							overlay.colors.chromatin = Segments.gradientHCL(overlay, settings.current.segmentsCount);
+							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
+							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
+						} else if (type == "wiggle_0" && format == "fixed") {
+							// OJO! create additional option for format = "bigwig-variable"
+							overlay.colors.particles = Segments.bicolor(overlay, settings.current.particlesCount);
+							overlay.colors.chromatin = Segments.bicolor(overlay, settings.current.segmentsCount);
+							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
+							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
+						} else if (type == "wiggle_0" && format == "variable") {
+							// To Do...
+						} else if (type == "bedgraph") {
+							overlay.colors.particles = Segments.bicolorVariable(overlay, settings.current.chromStart, settings.current.particlesCount, 1);
+							overlay.colors.chromatin = Segments.bicolorVariable(overlay, settings.current.chromStart, settings.current.segmentsCount, settings.current.segmentLength);
+							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
+							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
+						} else if (type == "matrix") {
+							// Distances are per edge so just convert to color
+							overlay.colors.particlesMatrix = Segments.matrix(overlay, 1); // ie. per particle
+							overlay.colors.chromatinMatrix = Segments.matrix(overlay, settings.current.particleSegments);
+							overlay.colors.networkMatrix = overlay.colors.particlesMatrix; // ie. also color network edges by matrix
+							self.at(1, settings.current.particlesCount, settings.current.particleSegments);
+						} else if (type == "misc" && format == "variable") { // eg. restraints
+							overlay.colors.particles = [];
+							overlay.colors.chromatin = [];
+							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
+							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
+						} else if (type == "ensembl" && format == "json") {
+							// data must have .start and .end
+							var features = Resources.get().biotypes;
+							var singleSegment = 1;
+							overlay.colors.particles = Segments.features(overlay, settings.current.chromStart, settings.current.particlesCount, singleSegment, features);
+							overlay.colors.chromatin = Segments.features(overlay, settings.current.chromStart, settings.current.segmentsCount, settings.current.segmentLength, features);
+							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
+							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
 						}
 
-					});
-					return overlays;
+					} else {
+						// already segmented
+						console.log("Overlay '" + overlay.object.title + "' already segmented as color array matching current dataset length");
+					}
+
 				});
+				return overlays;
 			},
 			at: function(currentParticle) {
 				var settings = Settings.get();
@@ -5928,19 +5530,19 @@
 
 		return {
 			load: function() {
-				var deferred = $q.defer();
+				var deferral = $q.defer();
 				var dataUrl = "assets/defaults/tk-defaults-projects.json";
 				if( projects.loaded.length > 0 ) {
-					 deferred.resolve(projects);
+					deferral.resolve(projects);
 				} else {
 					$http.get(dataUrl)
 					.success( function(data) {
 						projects.loaded = data;
 						console.log("Projects (" + data.length + ") loaded from " + dataUrl);
-						 deferred.resolve(projects);
+						deferral.resolve(projects);
 					});
 				}
-				return deferred.promise;
+				return deferral.promise;
 			},
 			add: function(details) {
 				var newProject = {
@@ -5998,7 +5600,7 @@
 		.module('TADkit')
 		.factory('Proximities', Proximities);
 
-	function Proximities(THREEService) {
+	function Proximities() {
 		// Matrix - n x m dimensions == particleCount */
 		var proximities = {
 			dimension: 0,
@@ -6092,16 +5694,14 @@
 				return proximities;
 			},
 			getMaxDistance: function(vertices) {
-				THREEService.load().then(function(THREE) {
-					// Where maxDistance is the max diameter of the cluster of vertices
-					// Calculation is of distance from center to each vertex.
-					var maxDistCalc = 0;
-					var clusterGeometry = new THREE.BufferGeometry();
-					clusterGeometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-					clusterGeometry.computeBoundingSphere();
-					var clusterDiameter = Math.ceil(clusterGeometry.boundingSphere.radius * 2.0);
-					return clusterDiameter;
-				});
+				// Where maxDistance is the max diameter of the cluster of vertices
+				// Calculation is of distance from center to each vertex.
+				var maxDistCalc = 0;
+				var clusterGeometry = new THREE.BufferGeometry();
+				clusterGeometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+				clusterGeometry.computeBoundingSphere();
+				var clusterDiameter = Math.ceil(clusterGeometry.boundingSphere.radius * 2.0);
+				return clusterDiameter;
 			},
 			at: function(currentParticle) {
 				current.dimension = currentParticle;
@@ -6145,7 +5745,7 @@
 				return lengthBP;
 			},
 			// loadInfoAssembly: function(speciesUrl, online) { // *** UNUSED ***
-			// 	var deferred = $q.defer();
+			// 	var deferral = $q.defer();
 			// 	var self = this;
 			// 	var dataUrl;
 			// 	if (online) {
@@ -6160,12 +5760,12 @@
 			// 		data.lengthBP = self.setLengthBP(data.top_level_region);
 			// 		console.log("Assembly length for " + speciesUrl + " = " + data.lengthBP);
 			// 		resources.assembly = data;
-			// 		 deferred.resolve(data);
+			// 		deferral.resolve(data);
 			// 	});
-			// 	return deferred.promise;
+			// 	return deferral.promise;
 			// },
 			loadBiotypeColors: function() {
-				var deferred = $q.defer();
+				var deferral = $q.defer();
 				var dataUrl;
 				var online = false; // Settings.getOnline(); // Most up-to-date version not strictly necessary
 				if (online) {
@@ -6181,12 +5781,12 @@
 					resources.featureColors = iniData;
 					resources.biotypes = iniData.gene;
 					console.log("Ensembl webcode biotype colors retrieved Ensembl.");
-					 deferred.resolve(iniData);
+					deferral.resolve(iniData);
 				});
-				return deferred.promise;
+				return deferral.promise;
 			},
 			// loadInfoBiotypes: function(speciesUrl) { // *** UNUSED ***
-			// 	var deferred = $q.defer();
+			// 	var deferral = $q.defer();
 			// 	var dataUrl;
 			// 	if (online) {
 			// 		dataUrl = ensemblRoot + "info/biotypes/" + speciesUrl + "?content-type=application/json";
@@ -6196,9 +5796,9 @@
 			// 	$http.get(dataUrl).
 			// 	success(function(data){
 			// 		console.log("Biotypes for " + speciesUrl + " retreived from Ensembl.");
-			// 		 deferred.resolve(data);
+			// 		deferral.resolve(data);
 			// 	});
-			// 	return deferred.promise;
+			// 	return deferral.promise;
 			// },
 			get: function () {
 				return resources;
@@ -6334,19 +5934,8 @@
 		.module('TADkit')
 		.factory('Segments', Segments);
 
-	function Segments($q, d3Service, Color) {
-		var deferred = $q.defer();
-		
-		// Check d3 Service is loaded
-		d3Service.load().then(function(d3) {
-			// console.log("loading d3");
-			deferred.resolve();
-		});
-
+	function Segments(d3Service, Color) {
 		return {
-			load: function() {
-				return deferred.promise;
-			},
 			gradientHCL: function(overlay, count) {
 				// Using D3 HCL for correct perceptual model
 				// Data is an array of 2 hex colors eg. ff0000
@@ -6422,6 +6011,7 @@
 						colors.push(hex);
 					}
 				}
+				// console.log(colors);
 				return colors;
 			},
 			bicolorVariable: function(overlay, chromStart, segmentsCount, segmentLength) {
@@ -6453,6 +6043,7 @@
 					}
 					colors.push(segmentColor);
 				}
+				// console.log(colors);
 				return colors;
 			},
 			featureGraph: function(overlay, count) {
@@ -6504,6 +6095,7 @@
 							// if (i==3) console.log("No features in fragment " + i );
 							// if (j == 0) console.log( JSON.stringify(segmentLower)+", "+JSON.stringify(start)+" <= "+JSON.stringify(segmentUpper)+", "+JSON.stringify(end) );
 						}
+						// console.log(insegments);
 						features[j].inSegments = inSegments;
 					}
 					for(var k=0; k<featuresPresent.length; k++){
@@ -6518,6 +6110,7 @@
 					}
 					colors.push(color);
 				}
+				// console.log(colors);
 				return colors;
 			}
 		};
@@ -6534,19 +6127,19 @@
 
 		return {
 			load: function() {
-				var deferred = $q.defer();
+				var deferral = $q.defer();
 				var dataUrl = "assets/defaults/tk-defaults-settings.json";
 				if( Object.getOwnPropertyNames(settings).length > 0 ) {
-					 deferred.resolve(settings);
+					deferral.resolve(settings);
 				} else {
 					$http.get(dataUrl)
 					.success( function(data) {
 						settings = data;
 						console.log("Settings loaded from " + dataUrl);
-						 deferred.resolve(settings);
+						deferral.resolve(settings);
 					});
 				}
-				return deferred.promise;
+				return deferral.promise;
 			},
 			set: function(dataset) {
 				var self = this;
@@ -6650,21 +6243,20 @@
 		
 		return {
 			load: function() {
-				var deferred = $q.defer();
+				var deferral = $q.defer();
 				var dataUrl = "assets/defaults/tk-defaults-storyboards.json";
 				if( storyboards.loaded.length > 0 ) {
-				console.log("if");
 					console.log("Storyboards already loaded.");
-					 deferred.resolve(storyboards);
+					deferral.resolve(storyboards);
 				} else {
 					$http.get(dataUrl)
 					.success( function(data) {
 						storyboards.loaded = data;
 						console.log("Storyboards (" + data.length + ") loaded from " + dataUrl);
-						 deferred.resolve(storyboards);
+						deferral.resolve(storyboards);
 					});
 				}
-				return deferred.promise;
+				return deferral.promise;
 			},
 			add: function(details) {
 				details = details || [""];
@@ -6839,6 +6431,7 @@
 					storyboard.index = storyboards.current.index;
 					console.log("Storyboard '" + id + "' not found: returning current.");
 				}
+				// console.log(storyboard);
 				return storyboard;
 			},
 			getComponentById: function (id) {
@@ -6869,6 +6462,39 @@
 (function() {
 	'use strict';
 	angular
+		.module('three', [])
+		.factory('threeService', threeService);
+
+	function threeService($document, $q, $rootScope) {
+			var d = $q.defer();
+			function onScriptLoad() {
+				// Load client in the browser
+				$rootScope.$apply(function() { d.resolve(window.three); });
+			}
+			// Create a script tag with ThreeJS as the source
+			// and call our onScriptLoad callback when it
+			// has been loaded
+			var scriptTag = $document[0].createElement('script');
+			scriptTag.type = 'text/javascript'; 
+			scriptTag.async = true;
+			// scriptTag.src = 'http://d3js.org/d3.v3.min.js';
+			scriptTag.src = '../bower_components/threejs/build/three.js';
+			scriptTag.onreadystatechange = function () {
+				if (this.readyState == 'complete') onScriptLoad();
+			};
+			scriptTag.onload = onScriptLoad;
+
+			var s = $document[0].getElementsByTagName('body')[0];
+			s.appendChild(scriptTag);
+
+			return {
+				three: function() { return d.promise; }
+			};
+	}
+})();
+(function() {
+	'use strict';
+	angular
 		.module('TADkit')
 		.factory('Users', Users);
 
@@ -6880,19 +6506,19 @@
 
 		return {
 			load: function() {
-				var deferred = $q.defer();
+				var deferral = $q.defer();
 				var dataUrl = "assets/defaults/tk-defaults-users.json";
 				if( users.loaded.length > 0 ) {
-					 deferred.resolve(users);
+					deferral.resolve(users);
 				} else {
 					$http.get(dataUrl)
 					.success( function(data) {
 						users.loaded = data;
 						console.log("Users (" + data.length + ") loaded from " + dataUrl);
-						 deferred.resolve(users);
+						deferral.resolve(users);
 					});
 				}
-				return deferred.promise;
+				return deferral.promise;
 			},
 			add: function(details) {
 				details = details || ["id", "Name Surname", "email@company.com", "Group", "edit", ["default"]];

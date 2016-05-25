@@ -19,7 +19,7 @@
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
 
-				d3Service.load().then(function(d3) {
+				d3Service.d3().then(function(d3) {
 
 					scope.safeApply = function(fn) {
 						var phase = this.$root.$$phase;

@@ -23,7 +23,7 @@
 				return lengthBP;
 			},
 			// loadInfoAssembly: function(speciesUrl, online) { // *** UNUSED ***
-			// 	var deferred = $q.defer();
+			// 	var deferral = $q.defer();
 			// 	var self = this;
 			// 	var dataUrl;
 			// 	if (online) {
@@ -38,12 +38,12 @@
 			// 		data.lengthBP = self.setLengthBP(data.top_level_region);
 			// 		console.log("Assembly length for " + speciesUrl + " = " + data.lengthBP);
 			// 		resources.assembly = data;
-			// 		 deferred.resolve(data);
+			// 		deferral.resolve(data);
 			// 	});
-			// 	return deferred.promise;
+			// 	return deferral.promise;
 			// },
 			loadBiotypeColors: function() {
-				var deferred = $q.defer();
+				var deferral = $q.defer();
 				var dataUrl;
 				var online = false; // Settings.getOnline(); // Most up-to-date version not strictly necessary
 				if (online) {
@@ -59,12 +59,12 @@
 					resources.featureColors = iniData;
 					resources.biotypes = iniData.gene;
 					console.log("Ensembl webcode biotype colors retrieved Ensembl.");
-					 deferred.resolve(iniData);
+					deferral.resolve(iniData);
 				});
-				return deferred.promise;
+				return deferral.promise;
 			},
 			// loadInfoBiotypes: function(speciesUrl) { // *** UNUSED ***
-			// 	var deferred = $q.defer();
+			// 	var deferral = $q.defer();
 			// 	var dataUrl;
 			// 	if (online) {
 			// 		dataUrl = ensemblRoot + "info/biotypes/" + speciesUrl + "?content-type=application/json";
@@ -74,9 +74,9 @@
 			// 	$http.get(dataUrl).
 			// 	success(function(data){
 			// 		console.log("Biotypes for " + speciesUrl + " retreived from Ensembl.");
-			// 		 deferred.resolve(data);
+			// 		deferral.resolve(data);
 			// 	});
-			// 	return deferred.promise;
+			// 	return deferral.promise;
 			// },
 			get: function () {
 				return resources;

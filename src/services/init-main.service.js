@@ -10,13 +10,13 @@
 			var settings = Settings.load();
 			var users = Users.load();
 			var projects = Projects.load();
+			var datasets = Datasets.load();
 			var overlays = Overlays.load();
 			var components = Components.load();
 			var storyboards = Storyboards.load();
-			var datasets = Datasets.load(); // dependent on Storyboards.loaded
 			var featureColors = Resources.loadBiotypeColors();
 
-			return $q.all([settings, users, projects, overlays, components, storyboards, datasets, featureColors])
+			return $q.all([settings, users, projects, datasets, overlays, components, storyboards, featureColors])
 			.then(function(results){
 				return {
 					settings: results[0],

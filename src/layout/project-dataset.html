@@ -8,12 +8,9 @@
 		Browse with Tracks <span class="icon-open-in-browser"></span></md-button>
 </md-toolbar>
 <md-content>
-	<tk-component-scene-clusters id="{{clusterComponent.object.id}}" clusters="clusters" type="clusterComponent.object.type" state="clusterComponent.object.state" view="clusterComponent.view" overlay="clusterComponent.overlay" ng-class="" class="clusters"></tk-component-scene-clusters>
-<!--
- 	<md-grid-list md-cols="5" md-gutter="0.2em" md-row-height="4:5">
+	<md-grid-list md-cols="5" md-gutter="0.2em" md-row-height="4:5">
 		<md-grid-tile ng-repeat='cluster in clusters' ng-click="selectCluster($index)">
 			<tk-component-scene-cluster id="{{clusterComponent.object.id}}-{{$index+1}}" cluster="cluster" type="clusterComponent.object.type" state="clusterComponent.object.state" view="clusterComponent.view" overlay="clusterComponent.overlay" ng-class="{selected: $index+1 == datasets.current.cluster}" class="tile-content"></tk-component-scene-cluster>
 		</md-grid-tile>
 	</md-grid-list>
- -->
 </md-content>

@@ -213,29 +213,17 @@
 				ary.splice(0, 1);
 				return rootObj.arrayToRGBA(ary.map(scale));
 			},
-			stripHash: function(hex) {
-				return (hex.charAt(0)=="#") ? hex.substring(1,7):hex;
-			},
-			hexToR: function(hex) {
-				var self = this;
-				return parseInt((self.stripHash(hex)).substring(0,2),16);
-			},
-			hexToG: function(hex) {
-				var self = this;
-				return parseInt((self.stripHash(hex)).substring(2,4),16);
-			},
-			hexToB: function(hex) {
-				var self = this;
-				return parseInt((self.stripHash(hex)).substring(4,6),16);
-			},
 			hexToRGB: function(hex) {
-				var self = this;
 				var RGB = [];
-				RGB.push(self.hexToR(hex));
-				RGB.push(self.hexToG(hex));
-				RGB.push(self.hexToB(hex));
+				RGB.push(hexToR(hex));
+				RGB.push(hexToG(hex));
+				RGB.push(hexToB(hex));
 				return RGB;
-			}
+			},
+			hexToR: function(hex) {return parseInt((cutHex(hex)).substring(0,2),16);},
+			hexToG: function(hex) {return parseInt((cutHex(hex)).substring(2,4),16);},
+			hexToB: function(hex) {return parseInt((cutHex(hex)).substring(4,6),16);},
+			cutHex: function(hex) {return (hex.charAt(0)=="#") ? hex.substring(1,7):hex;}	
 		};
 	}
 })();
