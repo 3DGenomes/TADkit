@@ -10,18 +10,18 @@
 	 * @requires TADkit.service:Users
 	 * @requires TADkit.service:Projects
 	 * @requires TADkit.service:Datasets
-	 * @requires TADkit.service:Overlays
+	 * @requires TADkit.service:Layers
 	 * @requires TADkit.service:Storyboards
 	 * @requires TADkit.service:Proximities
 	 * @requires TADkit.service:Restraints
-	 * @requires TADkit.service:ColorsEnsembl
+	 * @requires TADkit.service:EnsemblColors
 	 *
 	 */
 	angular
 		.module('TADkit')
 		.factory('Init', Init);
 
-	function Init($log, $q, Users, Projects, Datasets, Overlays, OverlaysImport, Storyboards, Settings, Proximities, Restraints, ColorsEnsembl) {
+	function Init($log, $q, Users, Projects, Datasets, Clusters, Layers, DataImport, Storyboards, Settings, Proximities, Restraints, EnsemblColors) {
 
 		/**
 		 * @ngdoc function
@@ -30,32 +30,33 @@
 		 * @kind function
 		 *
 		 * @description
-		 * Build app Object hierarchy ie. User > Projects > [Datasets | Overlays | Storyboards]
+		 * Build app Object hierarchy ie. User > Projects > [Datasets | Layers | Storyboards]
 		 *
 		 * @requires $log
 		 * @requires TADkit.service:Users
 		 * @requires TADkit.service:Projects
 		 * @requires TADkit.service:Datasets
-		 * @requires TADkit.service:Overlays
+		 * @requires TADkit.service:Layers
 		 * @requires TADkit.service:Storyboards
 		 *
 		 */
-		function buildUserHierarchy() {
+		function buildUX() {
 			$log.debug("Default user initializing...");
 
 			// BUILD DEFAULT DATA HIERARCHY
-			// USER >> PROJECTS >> DATASETS | OVERLAYS | STORYBOARDS
+			// User >> Projects >> Datasets | Layers | Storyboards
 			var user = Users.getUser();
 			if (typeof user.projects !== "undefined" && user.projects.length === 0) {
 				user.projects = Projects.get();
 				if (typeof user.projects.loaded[0].datasets !== "undefined" &&  user.projects.loaded[0].datasets.length === 0)
 					user.projects.loaded[0].datasets = Datasets.get();
-				if (typeof user.projects.loaded[0].overlays !== "undefined" &&  user.projects.loaded[0].overlays.length === 0)
-					user.projects.loaded[0].overlays = Overlays.get();
+				if (typeof user.projects.loaded[0].layers !== "undefined" &&  user.projects.loaded[0].layers.length === 0)
+					user.projects.loaded[0].layers = Layers.get();
 				if (typeof user.projects.loaded[0].storyboards !== "undefined" &&  user.projects.loaded[0].storyboards.length === 0)
 					user.projects.loaded[0].storyboards = Storyboards.get();
 			}
-			$log.debug("Default user initialized.");
+			Storyboards.setComponents();
+			$log.debug("User interface initialized.");
 		}
 
 		/**
@@ -71,25 +72,25 @@
 		 * @requires TADkit.service:Datasets
 		 * @requires TADkit.service:Proximities
 		 * @requires TADkit.service:Restraints
-		 * @requires TADkit.service:ColorsEnsembl
+		 * @requires TADkit.service:EnsemblColors
 		 *
 		 */
 		function setDefaultDataset() {
 			$log.debug("Default dataset initializing...");
 
 			var currentDataset = Datasets.getDataset();
-			var currentModelData = Datasets.getModelData();
+			
+			Clusters.load(currentDataset);
+			var currentModelData = Clusters.getModelData();
 			Settings.set(currentDataset);
 			var distances = Proximities.set(currentModelData).distances;
 			var datasetDimension = currentModelData.length / 3; // 3 == xyz components of vertices
 			var restraints = Restraints.set(currentDataset.restraints, datasetDimension);
 
-			// Update Overlays for initialized Dataset.
-			var overlaysUpdate = Overlays.update(distances, restraints);
-			// Load and import example TSV for initial/current Dataset.
-			var overlaysFile = Overlays.loadFromFile(currentDataset.object.filename);
+			// Update Layers for initialized Dataset.
+			var layersUpdate = Layers.update(distances, restraints);
 
-			return $q.all([overlaysUpdate, overlaysFile])
+			return $q.all([layersUpdate])
 			.then(function() {
 				$log.debug("Default dataset initialized.");
 			});
@@ -111,7 +112,7 @@
 			 * @requires TADkit.service:Projects
 			 * @requires TADkit.service:Datasets
 			 * @requires TADkit.service:Datasets
-			 * @requires TADkit.service:ColorsEnsembl
+			 * @requires TADkit.service:EnsemblColors
 			 *
 			 * @returns {Object} All loaded defaults.
 			 */
@@ -122,12 +123,12 @@
 				var users = Users.load();
 				var projects = Projects.load();
 				var datasets = Datasets.load();
-				var overlays = Overlays.load();
+				var layers = Layers.load();
 				var storyboards = Storyboards.load();
-				var features = ColorsEnsembl.load();
+				var features = EnsemblColors.load();
 
-				return $q.all([users, projects, datasets, overlays, storyboards, features])
-				.then(buildUserHierarchy)
+				return $q.all([users, projects, datasets, layers, storyboards, features])
+				.then(buildUX)
 				.then(setDefaultDataset)
 				.then(function() {
 				$log.debug("Defaults initialized.");

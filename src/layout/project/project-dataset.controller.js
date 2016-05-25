@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.controller('ProjectDatasetController', ProjectDatasetController);
 
-	function ProjectDatasetController ($log, $state, $scope, Datasets, Overlays, Components, Segments){
+	function ProjectDatasetController ($log, $state, $scope, Clusters, Layers, Components, Segments){
 		$log.debug($scope);
 
 		// Get dataset clusters scene component
@@ -12,10 +12,10 @@
 
 		// Set cluster color to gradient
 		// Recalculate specifically for single segment per particle in cluster scene
-		var gradientOverlay = Overlays.getOverlayById("gradient");
+		var gradientLayer = Layers.getLayerById("gradient");
 		var clusterLength = $scope.current.model.data.length / $scope.current.dataset.object.components;
-		var gradientColors = Segments.gradientHCL(gradientOverlay, clusterLength);
-		$scope.clusterComponent.overlay = gradientColors;
+		var gradientColors = Segments.gradientHCL(gradientLayer, clusterLength);
+		$scope.clusterComponent.layer = gradientColors;
 
 		// Calculate consistent camera position (translation) from combined dataset models
 		var datasetModels = new THREE.BufferGeometry();
@@ -30,7 +30,7 @@
 		$scope.clusterComponent.view.viewpoint.translate = datasetModels.boundingSphere.radius * datasetModels.boundingSphere.scale;
 
 		// Create collection of cluster models
-		$scope.clusters = Datasets.getGroupedClusters();
+		$scope.clusters = Clusters.get();
 		$log.debug($scope.clusters);
 
 	}

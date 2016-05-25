@@ -6,10 +6,10 @@
 			<span>{{dataset.object.title}}</span>
 		</md-list-item>
 	</md-list>
-	<span>Overlays</span>
+	<span>Layers</span>
 	<md-list layout="column" layout-padding>
-		<md-list-item data-ng-repeat='overlay in overlays.loaded track by $index' data-ng-click="setCurrentOverlay($index)" ui-sref="overlay" data-ng-class="{active: currentProject.state}">
-			<span>{{overlay.object.title}}</span>					
+		<md-list-item data-ng-repeat='layer in layers.loaded track by $index' data-ng-click="setCurrentLayer($index)" ui-sref="layer" data-ng-class="{active: currentProject.state}">
+			<span>{{layer.object.title}}</span>					
 		</md-list-item>
 	</md-list>
 	<span>Storyboards</span>

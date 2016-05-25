@@ -10,16 +10,16 @@ NG_DOCS={
       "type": "overview",
       "moduleName": "bioinformatics",
       "shortDescription": "Bioinformatics Module",
-      "keywords": "angular api bioinformatics facilitate module mymodule overview scripts"
+      "keywords": "angular api bioinformatics facilitate module myapp overview scripts"
     },
     {
       "section": "api",
-      "id": "bioinformatics.service:ColorsEnsembl",
-      "shortName": "ColorsEnsembl",
+      "id": "bioinformatics.service:EnsemblColors",
+      "shortName": "EnsemblColors",
       "type": "service",
       "moduleName": "bioinformatics",
       "shortDescription": "Import and manage Genomic feature colors (eg. genes) from Ensembl etc.",
-      "keywords": "16 angularjs api assets bioinformatics categorized colordata colors colorsensembl colorsfromini data derived emsembl ensembl example extract feature files function generate genes genomic githubusercontent https import ini json list load local manage object online org property rawgit reference remote service speccific tadkit text type"
+      "keywords": "16 angularjs api assets bioinformatics categorized colordata colors colorsfromini data derived emsembl ensembl ensemblcolors example extract feature files function generate genes genomic githubusercontent https import ini json list load local manage object online org property rawgit reference remote service speccific tadkit text type"
     },
     {
       "section": "api",
@@ -28,7 +28,16 @@ NG_DOCS={
       "type": "service",
       "moduleName": "bioinformatics",
       "shortDescription": "Import and manage Genomic features (eg. genes) from Ensembl etc.",
-      "keywords": "16 add address angularjs api array base bioinformatics biotype biotypestyle check color css data emsembl ensebl ensembl features featuresensembl format function genes genomic https idenify import length lengthbp lengths level list load lowercase manage object online org overlay pair path ping property regions requesting separators server service setbiotypestyle setlengthbp status sum supplied top top_level_region url"
+      "keywords": "16 add address angularjs api array base bioinformatics biotype biotypestyle check color css data emsembl ensebl ensembl features featuresensembl format function genes genomic https idenify import layer length lengthbp lengths level list load lowercase manage object online org pair path ping property regions requesting separators server service setbiotypestyle setlengthbp status sum supplied top top_level_region url"
+    },
+    {
+      "section": "api",
+      "id": "datasets",
+      "shortName": "datasets",
+      "type": "overview",
+      "moduleName": "datasets",
+      "shortDescription": "Datasets Module",
+      "keywords": "angular api app datasets essential module myapp overview scripts tadkit takit"
     },
     {
       "section": "api",
@@ -37,7 +46,7 @@ NG_DOCS={
       "type": "overview",
       "moduleName": "generic",
       "shortDescription": "Generic Module",
-      "keywords": "angular api app app-specific bower essential generic module mymodule overview scripts"
+      "keywords": "angular api app app-specific bower essential generic module myapp overview scripts"
     },
     {
       "section": "api",
@@ -68,12 +77,30 @@ NG_DOCS={
     },
     {
       "section": "api",
+      "id": "layers",
+      "shortName": "layers",
+      "type": "overview",
+      "moduleName": "layers",
+      "shortDescription": "Layers Module",
+      "keywords": "angular api app essential layers module myapp overview scripts tadkit takit"
+    },
+    {
+      "section": "api",
       "id": "modeling",
       "shortName": "modeling",
       "type": "overview",
       "moduleName": "modeling",
       "shortDescription": "Modeling Module",
-      "keywords": "angular api modeling module mymodule overview scripts"
+      "keywords": "angular api modeling module myapp overview scripts"
+    },
+    {
+      "section": "api",
+      "id": "modeling.service:Clusters",
+      "shortName": "Clusters",
+      "type": "service",
+      "moduleName": "modeling",
+      "shortDescription": "Clustering of spatial datasets",
+      "keywords": "$http $log $q 16 angularjs api array centroid cluster clustering clusters current data dataset datasets datset default file function getcentroidref getcluster getclustermodels getgroupedclusters getmodel getmodeldata group groupclusters groups https load loads mdoel model modeling newly org promise reference resolved service set setcentroid setcluster setmodel sets spatial supplied vertices waits"
     },
     {
       "section": "api",
@@ -113,12 +140,21 @@ NG_DOCS={
     },
     {
       "section": "api",
+      "id": "TADkit.directive:tkComponentBrowserBiodalliance",
+      "shortName": "tkComponentBrowserBiodalliance",
+      "type": "directive",
+      "moduleName": "TADkit",
+      "shortDescription": "Dummy components directive that is replaced on complie",
+      "keywords": "api array complie component components directive dummy ea ng-repeat object objects real replaced supplied tadkit tk-component-track-biodalliance tkcomponentbrowserbiodalliance type"
+    },
+    {
+      "section": "api",
       "id": "TADkit.directive:tkComponentTrackBarchart",
       "shortName": "tkComponentTrackBarchart",
       "type": "directive",
       "moduleName": "TADkit",
       "shortDescription": "Generates a d3 Barchart from the supplied data.",
-      "keywords": "api barchart d3 data directive ea function generates html overlay settings supplied tadkit template title tkcomponenttrackbarchart toggle toggleoverlay track type view"
+      "keywords": "api barchart d3 data directive ea function generates html layer settings supplied tadkit template title tkcomponenttrackbarchart toggle togglelayer track type view"
     },
     {
       "section": "api",
@@ -127,7 +163,16 @@ NG_DOCS={
       "type": "directive",
       "moduleName": "TADkit",
       "shortDescription": "Track component which generates a d3 graph",
-      "keywords": "api bigwig colleciton component d3 data directive ea format function generates graph initial js object overlay render settings supplied tadkit title tk-component-wiggle0 tkcomponentwiggle0 toggleoverlay track type update updates view"
+      "keywords": "api bigwig colleciton component d3 data directive ea format function generates graph initial js layer object render settings supplied tadkit title tk-component-wiggle0 tkcomponentwiggle0 togglelayer track type update updates view"
+    },
+    {
+      "section": "api",
+      "id": "TADkit.service:Annotations",
+      "shortName": "Annotations",
+      "type": "service",
+      "moduleName": "TADkit",
+      "shortDescription": "Tempalate for Layer to within TADkit",
+      "keywords": "annotations api browser custom data equivalent file format layer service structure tadkit tempalate template track ucsc"
     },
     {
       "section": "api",
@@ -149,12 +194,21 @@ NG_DOCS={
     },
     {
       "section": "api",
+      "id": "TADkit.service:DataImport",
+      "shortName": "DataImport",
+      "type": "service",
+      "moduleName": "TADkit",
+      "shortDescription": "Import datasets to Projects.",
+      "keywords": "16 1d 2d 3d angularjs api array arrays check classify cloud col1 col2 color cols coordinates create data dataimport dataset datasets describe details dimensions false feedback file filter float formats formatted function higher https image imaging import importing info integer isnumber json marked matrix note numerals object org parse pixel point process projects pulldown remove row row1col2 row2col2 rows scores selection service set strings table tadkit user validate xyz"
+    },
+    {
+      "section": "api",
       "id": "TADkit.service:Datasets",
       "shortName": "Datasets",
       "type": "service",
       "moduleName": "TADkit",
       "shortDescription": "Datasets of Projects.",
-      "keywords": "$http $log $q 1-1000 16 add adds angularjs api array centroid chromend chromosome chromsomes chromstart clear clears cluster clusters combines current data dataset datasets datset default extension file filename format formats formatted function genomic getcentroidref getcluster getclustergroups getclustermodels getgroupedclusters getmodel getmodeldata getmodels group groupclusters groups https json load loaded loads mdoel model models newly object org projects promise reference region remove removes resolved service set setcentroid setcluster setmodel setregion sets string supplied tadkit type validate validates vertices waits"
+      "keywords": "$http $log $q 16 add adds angularjs api check clear clears current data dataset datasets datset default extension file filename function getdataset getmodel https import imports json load loaded loads model newly object org preview previewed projects promise reference remove removes resolved service set sets supplied tadkit type unique waits"
     },
     {
       "section": "api",
@@ -163,25 +217,25 @@ NG_DOCS={
       "type": "service",
       "moduleName": "TADkit",
       "shortDescription": "Initialize default Objects.",
-      "keywords": "$log 16 angularjs api app appw build builduserhierarchy colorsensembl dataset datasets default defaults function hierarchy https init initalizes initialize loaded object objects org overlays projects proximities restraints service set setdefaultdataset storyboards tadkit user users"
+      "keywords": "$log 16 angularjs api app appw build builduserhierarchy dataset datasets default defaults ensemblcolors function hierarchy https init initalizes initialize layers loaded object objects org projects proximities restraints service set setdefaultdataset storyboards tadkit user users"
     },
     {
       "section": "api",
-      "id": "TADkit.service:Overlays",
-      "shortName": "Overlays",
+      "id": "TADkit.service:LayerAnnotations",
+      "shortName": "LayerAnnotations",
       "type": "service",
       "moduleName": "TADkit",
-      "shortDescription": "Overlays of Projects.",
-      "keywords": "16 angularjs api colorsensembl featuresensembl https networks org overlays overlaysimport projects segments service settings storyboards tadkit"
+      "shortDescription": "Layers to within a Project to be used in a Storyboard.",
+      "keywords": "16 angularjs api browser consists custom data equivalent file format https layer layerannotations layers org project sections service storyboard tack tadkit track ucsc"
     },
     {
       "section": "api",
-      "id": "TADkit.service:OverlaysImport",
-      "shortName": "OverlaysImport",
+      "id": "TADkit.service:Layers",
+      "shortName": "Layers",
       "type": "service",
       "moduleName": "TADkit",
-      "shortDescription": "Import Overlays to Projects.",
-      "keywords": "16 angularjs api generic https import org overlays overlaysimport projects service tadkit utils"
+      "shortDescription": "Layers of Projects.",
+      "keywords": "16 angularjs api ensemblcolors featuresensembl https layers networks org projects segments service settings storyboards tadkit"
     },
     {
       "section": "api",
@@ -221,12 +275,21 @@ NG_DOCS={
     },
     {
       "section": "api",
+      "id": "ui",
+      "shortName": "ui",
+      "type": "overview",
+      "moduleName": "ui",
+      "shortDescription": "UI Module",
+      "keywords": "angular api compoments d3js interface module myapp overview ui user"
+    },
+    {
+      "section": "api",
       "id": "visualization",
       "shortName": "visualization",
       "type": "overview",
       "moduleName": "visualization",
       "shortDescription": "Visualization Module",
-      "keywords": "angular api d3js module mymodule overview scripts visualization"
+      "keywords": "angular api d3js module myapp overview scripts visualization"
     },
     {
       "section": "api",
@@ -235,7 +298,7 @@ NG_DOCS={
       "type": "service",
       "moduleName": "visualization",
       "shortDescription": "Load app and initialize.",
-      "keywords": "0-1 0000ff 00ff00 1-2 1-3 1-4 2-3 2-4 3-4 4caf50 alpha api app array arrays b1 b2 b3 bm bn buffergeometry code col color colors column css derives edgecount explanation features ff00ff float32 function g1 g2 g3 generates getfeaturergb getmatrixindex gm gn half initialize length linesegments linesegmentsalpha linesegmentsrgb load match matrix networks number object overlay pairs position r1 r2 r3 relating represented restraints rgb rm rn row service size stores three uniquely values vertex visualization visualized"
+      "keywords": "0-1 0000ff 00ff00 1-2 1-3 1-4 2-3 2-4 3-4 4caf50 alpha api app array arrays b1 b2 b3 bm bn buffergeometry code col color colors column css derives edgecount explanation features ff00ff float32 function g1 g2 g3 generates getfeaturergb getmatrixindex gm gn half initialize layer length linesegments linesegmentsalpha linesegmentsrgb load match matrix networks number object pairs position r1 r2 r3 relating represented restraints rgb rm rn row service size stores three uniquely values vertex visualization visualized"
     },
     {
       "section": "api",
@@ -262,7 +325,7 @@ NG_DOCS={
       "type": "service",
       "moduleName": "visualization",
       "shortDescription": "Methods for generating Arrays of colors.",
-      "keywords": "0-1 0000ff 0xrrggbb 16 altcolor angularjs api array arrays bicolor bicolorvariable bigwig collection color colors correct count css d3 data decimal depends derived featuregraph features featuretypes ff0000 function generate generating generic gradientcomponentrgb gradienthcl hcl hex https length matrix methods model note number org output overlay palette perceptual prefix ranging rgb rrggbb segment segmentlength segments segmentscount segmentstart service single start three types unused values verbose visualization"
+      "keywords": "0-1 0000ff 0xrrggbb 16 altcolor angularjs api array arrays bicolor bicolorvariable bigwig collection color colors correct count css d3 data decimal depends derived featuregraph features featuretypes ff0000 function generate generating generic gradientcomponentrgb gradienthcl hcl hex https layer length matrix methods model note number org output palette perceptual prefix ranging rgb rrggbb segment segmentlength segments segmentscount segmentstart service single start three types unused values verbose visualization"
     }
   ],
   "apis": {

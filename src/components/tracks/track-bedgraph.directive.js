@@ -13,8 +13,8 @@
 				settings: '=',
 				view: '=',
 				data: '=',
-				overlay: '=', /* used in template */
-				toggleoverlay: '&' /* used in template */
+				layer: '=', /* used in template */
+				togglelayer: '&' /* used in template */
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {

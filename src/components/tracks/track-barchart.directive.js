@@ -10,8 +10,8 @@
 	 * @param {Array} settings Track settings.
 	 * @param {Array} view Track view.
 	 * @param {Array} data Track data.
-	 * @param {Array} overlay Value for toggle in template.
-	 * @param {function} toggleoverlay Toggle function in template.
+	 * @param {Array} layer Value for toggle in template.
+	 * @param {function} togglelayer Toggle function in template.
 	 *
 	 * @description
 	 * Generates a d3 Barchart from the supplied data.
@@ -37,8 +37,8 @@
 				settings: '=',
 				view: '=',
 				data: '=',
-				overlay: '=', /* used in template */
-				toggleoverlay: '&' /* used in template */
+				layer: '=', /* used in template */
+				togglelayer: '&' /* used in template */
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
@@ -75,8 +75,8 @@
 						nodeHeight = 10,
 						nodePadding = 0,
 						nodeColor = scope.view.settings.color,
-						harmonicsColor = scope.overlay.palette[0],
-						lowerBoundsColor = scope.overlay.palette[1];
+						harmonicsColor = scope.layer.palette[0],
+						lowerBoundsColor = scope.layer.palette[1];
 
 					// VIEWPORT
 					/* component-controller == children[0]

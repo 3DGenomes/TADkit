@@ -11,7 +11,7 @@
 	 * from supplied BigWig (wiggle format) data.
 	 *
 	 * @example
-	 * `<div tk-component-wiggle0 type="component.object.type" title="component.object.title" settings="settings" view="component.view" data="component.data" overlay="component.overlay" toggleoverlay="toggleOverlay(index)"></div>`
+	 * `<div tk-component-wiggle0 type="component.object.type" title="component.object.title" settings="settings" view="component.view" data="component.data" layer="component.layer" togglelayer="toggleLayer(index)"></div>`
 	 *
 	 */
 	angular
@@ -27,8 +27,8 @@
 				settings: '=',
 				view: '=',
 				data: '=',
-				overlay: '=', /* used in template */
-				toggleoverlay: '&' /* used in template */
+				layer: '=', /* used in template */
+				togglelayer: '&' /* used in template */
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {

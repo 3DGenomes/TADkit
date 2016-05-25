@@ -26,5 +26,5 @@
 	 * @requires modeling
 	 * @requires visualization
 	 */
-	angular.module('TADkit',['ui.router','ngMaterial','uuid4','d3js','threejs','generic','bioinformatics','modeling','visualization']);
+	angular.module('TADkit',['TADkit.datasets','TADkit.layers','ui.router','ngMaterial','uuid4','d3js','threejs','generic','ui','bioinformatics','modeling','visualization']);
 })();

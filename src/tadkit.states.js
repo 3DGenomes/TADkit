@@ -32,7 +32,7 @@
 				},
 				'sidebar-left@main': {
 					templateUrl: 'assets/templates/sidebar.project.html',
-					controller: 'SidebarProjectController'
+					controller: 'ProjectController'
 				},
 				'content@main': {
 					templateUrl: 'assets/templates/project-content.html',
@@ -78,16 +78,16 @@
 				}
 			}
 		})
-		.state('overlay', {
+		.state('layer', {
 			parent: 'project',
-			url: '/overlay',
+			url: '/layer',
 			data: {
-				cssClassnames: 'overlay'
+				cssClassnames: 'layer'
 			},
 			views: {
 				'content@main': {
-					templateUrl: 'assets/templates/project-overlay.html',
-					controller: 'ProjectOverlayController'
+					templateUrl: 'assets/templates/project-layer.html',
+					controller: 'ProjectController'
 				}
 			}
 		})
@@ -100,7 +100,7 @@
 			views: {
 				'content@main': {
 					templateUrl: 'assets/templates/project-storyboard.html',
-					controller: 'ProjectStoryboardController'
+					controller: 'ProjectController'
 				}
 			}
 		})
@@ -118,13 +118,13 @@
 				}
 			}
 		})
-		.state('overlay-import', {
+		.state('data-import', {
 			parent: 'browser',
-			url: '/overlay/import',
+			url: '/data/import',
 			views: {
 				'modal@main': {
-					templateUrl: 'assets/templates/overlay-import.html',
-					controller: 'OverlayImportController'
+					templateUrl: 'assets/templates/data-import.html',
+					controller: 'DataImportController'
 				}
 			}
 		})

@@ -1,8 +1,8 @@
 <!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->
-<md-dialog aria-label="Import Data for Overlay">
+<md-dialog aria-label="Import Data for Layer">
 	<md-toolbar class="md-accent">
 		<div class="md-toolbar-tools">
-		<h2 class="md-flex">Import Data for Overlay</h2>
+		<h2 class="md-flex">Import Data for Layer</h2>
 		</div>
 	</md-toolbar>
   	<md-content class="sticky-container">
@@ -43,7 +43,7 @@
 	</md-content>
 	<div class="md-actions" layout="row">
 		<md-input-container layout-padding>
-			<md-input type="file" tk-overlay-import="fetchData($fileContent)" filetitle="fileTitle" />
+			<md-input type="file" tk-layer-import="fetchData($fileContent)" filetitle="fileTitle" />
 		</md-input-container>
 		<span flex></span>
 		<!-- type=button is needed so form uses submit button -->

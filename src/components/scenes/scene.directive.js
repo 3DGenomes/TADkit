@@ -13,11 +13,11 @@
 				settings: '=',
 				view: '=',
 				data: '=',
-				overlay: '=',
+				layer: '=',
 				state: '=',
 				currentmodel: '=',
 				proximities: '=',
-				currentoverlay: '='
+				currentlayer: '='
 			},
 			templateUrl: 'assets/templates/scene.html',
 			link: function postLink(scope, element, attrs) {
@@ -100,21 +100,21 @@
 						// scene.add(ambientLight);
 						
 						// GEOMETRY: PARTICLES
-						particles = new Particles(scope.currentmodel.data, scope.currentoverlay.colors.particles, scope.view.settings.particles);
-						// particles = new Particles(scope.model.data, scope.overlay.colors.particles, scope.view.settings.particles);
+						particles = new Particles(scope.currentmodel.data, scope.currentlayer.colors.particles, scope.view.settings.particles);
+						// particles = new Particles(scope.model.data, scope.layer.colors.particles, scope.view.settings.particles);
 						particles.visible = scope.view.settings.particles.visible;
 						scene.add(particles);
 
 						//GEOMETRY: CHROMATIN
-						chromatin = new Chromatin(scope.currentmodel.data, scope.currentoverlay.colors.chromatin, scope.view.settings.chromatin);
-						// chromatin = new Chromatin(scope.model.data, scope.overlay.colors.chromatin, scope.view.settings.chromatin);
+						chromatin = new Chromatin(scope.currentmodel.data, scope.currentlayer.colors.chromatin, scope.view.settings.chromatin);
+						// chromatin = new Chromatin(scope.model.data, scope.layer.colors.chromatin, scope.view.settings.chromatin);
 						chromatin.visible = scope.view.settings.chromatin.visible;
 						scene.add(chromatin);
 						scope.view.settings.chromatin.radius = chromatin.boundingSphere.radius;
 
 						// GEOMETRY: MESH
 						// network = new Network(scope.proximities.positions, scope.proximities.distances, scope.view.settings.network);
-						network = new Network(scope.data, scope.overlay.colors.network, scope.view.settings.network);
+						network = new Network(scope.data, scope.layer.colors.network, scope.view.settings.network);
 						network.visible = scope.view.settings.network.visible;
 						scene.add(network);
 
@@ -189,39 +189,34 @@
 							}
 						});
 
-						var particlesObj = scene.getObjectByName( "Particles Cloud" );
-						var chromatinObj = scene.getObjectByName( "Chromatin Fiber" );
-						var networkObj = scene.getObjectByName( "Network Graph" );
-
 						// /* Watch for Particles colors */
-						// scope.$watch('currentoverlay.colors.particles', function( newColors, oldColors ) { // cant deep watch as change through set on service
+						// scope.$watch('currentlayer.colors.particles', function( newColors, oldColors ) { // cant deep watch as change through set on service
 						// 	if ( newColors !== oldColors ) {
-						// 		// var particleCount = particlesObj.children.length;
+						// 		// var particleCount = particles.children.length;
 						// 		// for (var i = 0; i < particleCount; i++) {
-						// 		// 	var newParticleColor =  new THREE.Color(newOverlay.colors.particles[i]);
-						// 		// 	particlesObj.children[i].material.color = newParticleColor;
+						// 		// 	var newParticleColor =  new THREE.Color(newLayer.colors.particles[i]);
+						// 		// 	particles.children[i].material.color = newParticleColor;
 						// 		// }
 						// 	}
 						// });
 
 						// /* Watch for Chromatin colors */
-						scope.$watch('currentoverlay.colors.chromatin', function( newColors, oldColors ) { // cant deep watch as change through set on service
+						scope.$watch('currentlayer.colors.chromatin', function( newColors, oldColors ) { // cant deep watch as change through set on service
 							if ( newColors !== oldColors ) {
-								var chromatinCount = chromatinObj.children.length;
+								var chromatinCount = chromatin.children.length;
 								for (var i = 0; i < chromatinCount; i++) {
 									var newChromatinColor =  new THREE.Color(newColors[i]);
-									chromatinObj.children[i].material.color = newChromatinColor;
-									chromatinObj.children[i].material.ambient = newChromatinColor;
-									chromatinObj.children[i].material.emissive = newChromatinColor;
+									chromatin.children[i].material.color = newChromatinColor;
+									chromatin.children[i].material.emissive = newChromatinColor;
 								}
 							}
 						});
 
 						// /* Watch for Network colors */
-						scope.$watch('currentoverlay.colors.network', function( newColors, oldColors ) { // cant deep watch as change through set on service
+						scope.$watch('currentlayer.colors.network', function( newColors, oldColors ) { // cant deep watch as change through set on service
 							if ( newColors !== oldColors ) {
-								networkObj.geometry.addAttribute( 'color', new THREE.BufferAttribute( newColors.RGB, 3 ) );
-								networkObj.geometry.addAttribute( 'alpha', new THREE.BufferAttribute( newColors.alpha, 1 ) );
+								network.geometry.addAttribute( 'color', new THREE.BufferAttribute( newColors.RGB, 3 ) );
+								network.geometry.addAttribute( 'alpha', new THREE.BufferAttribute( newColors.alpha, 1 ) );
 							}
 						});
 
@@ -230,10 +225,10 @@
 							if ( newParticle !== oldParticle ) {
 
 								// SET PARTICLE CURSOR COLOR
-								if (particleOriginalColor) particlesObj.geometry.colors[(oldParticle - 1)] = particleOriginalColor;
-								particleOriginalColor = particlesObj.geometry.colors[(newParticle - 1)];
-								particlesObj.geometry.colors[(newParticle - 1)] = highlightColor;
-								particlesObj.geometry.colorsNeedUpdate = true;
+								if (particleOriginalColor) particles.geometry.colors[(oldParticle - 1)] = particleOriginalColor;
+								particleOriginalColor = particles.geometry.colors[(newParticle - 1)];
+								particles.geometry.colors[(newParticle - 1)] = highlightColor;
+								particles.geometry.colorsNeedUpdate = true;
 							}
 						});
 
@@ -242,18 +237,16 @@
 							if ( newSegment !== oldSegment ) {
 
 								// SET CHROMATIN CURSOR COLOR								
-								var segmentPrevious = chromatinObj.getObjectByName( "segment-" + oldSegment );
+								var segmentPrevious = chromatin.getObjectByName( "segment-" + oldSegment );
 								if (positionOriginalColor) {
 									segmentPrevious.material.color = positionOriginalColor;
-									segmentPrevious.material.ambient = positionOriginalColor;
 									segmentPrevious.material.emissive = positionOriginalColor;
 								}
 
-								var segmentCurrent = chromatinObj.getObjectByName( "segment-" + newSegment );
+								var segmentCurrent = chromatin.getObjectByName( "segment-" + newSegment );
 								positionOriginalColor = segmentCurrent.material.color;
 
 								segmentCurrent.material.color = highlightColor;
-								segmentCurrent.material.ambient = highlightColor;
 								segmentCurrent.material.emissive = highlightColor;
 							}
 						});
@@ -268,9 +261,18 @@
 					};
 
 					$rootScope.$on('$stateChangeStart', function() {
-						cancelAnimationFrame( animation );
+						// cancelAnimationFrame( animation );
+						$log.info("$stateChangeStart");
 					});
-
+					$rootScope.$on('$stateNotFound', function() {
+						$log.warn("$stateNotFound");
+					});
+					$rootScope.$on('$stateChangeSuccess', function() {
+						$log.info("$stateChangeSuccess");
+					});
+					$rootScope.$on('$stateChangeError', function() {
+						$log.warn("$stateChangeError");
+					});
 					// element.on('mousemove', function(event) {
 					// 	// mouseX = ( event.clientX - width / 2 );
 					// 	// mouseY = ( event.clientX - width / 2 );

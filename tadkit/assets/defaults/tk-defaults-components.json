@@ -12,8 +12,8 @@
 			"type" : "scene",
 			"dataset" : "default",
 			"state" : {
-				"width" : "400px",
-				"height" : 	"300px",
+				"width" : "800px",
+				"height" : 	"400px",
 				"margin" : "4px",
 				"position" : 0
 			}
@@ -30,12 +30,12 @@
 				"far" : 1000000,
 				"translate" : 30000,
 				"fog" : true,
-				"fogNear" : 0.8,
-				"fogFar" : 1.2
+				"fogNear" : 0.75,
+				"fogFar" : 1.5		
 			},
 			"controls" : {
-				"autoRotate" : true,
-				"autoRotateSpeed" : 2.0
+				"autoRotate" : false,
+				"autoRotateSpeed" : 4
 			},
 			"viewtype" : "cylinderSegments",
 			"settings" : {
@@ -44,31 +44,36 @@
 				"padding" : {"top": "20px", "right": "40px", "bottom": "20px", "left": "40px"},
 				"lighting": {
 					"ambient" : "#111111",
-					"color" : "#333333",
-					"intensity" : 1.0
+					"color" : "#ffffff",
+					"intensity" : 0.2
 				},
 				"axis" : {
-					"size" : 1000,
+					"size" : 100,
 					"visible" : true
 					},
 				"particles" : {
-					"color" : "#0000ff",
-					"size" : 350,
+					"color" : "#ffffff",
+					"size" : 500,
 					"opacity" : 0.8,
-					"map" : null,
+					"map" : "particle",
 					"depthTest": true,
 					"alphaTest": 0.5,
 					"transparent": true,
 					"visible" : false
 				},
 				"chromatin" : {
-					"particleSegments" : 5,
+					"color" : "#cccccc",
+					"particleSegments" : 20,
 					"curveSegments" : 1,
-					"radius" : 15,
+					"radius" : 200,
 					"radiusSegments" : 16,
 					"endcap" : false,
 					"pathClosed" : false,
 					"visible" : true
+				},
+				"network" : {
+					"transparent": false,
+					"visible" : false
 				},
 				"occupancy" :  {
 					"visible" : false
@@ -157,13 +162,13 @@
 			"generator" : "TADkit"
 		},
 		"object" : {
-			"uuid" : "00000000-0000-0000-0000-000000000000",
+			"uuid" : "00000000-0000-0000-0000-000000000001",
 			"id" : "default-panel",
 			"title" : "Inspector",
 			"type" : "panel-inspector",
-			"dataset" : "default",
+			"dataset" : "genes",
 			"state" : {
-				"width" : "400px",
+				"width" : "200px",
 				"height" : "300px",
 				"margin" : "4px",
 				"position" : 1
@@ -178,7 +183,6 @@
 			"viewtype" : "list",
 			"settings" : {
 				"background" : "#ffffff",
-				"heightInner" : "40px",
 				"margin" : "4px",
 				"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
 				"example" : 1
@@ -192,15 +196,15 @@
 			"generator" : "TADkit"
 		},
 		"object" : {
-			"uuid" : "00000000-0000-0000-0000-000000000000",
-			"id" : "slider",
+			"uuid" : "00000000-0000-0000-0000-000000000002",
+			"id" : "track-slider",
 			"title" : "Navigation",
 			"type" : "track-slider",
-			"dataset" : "default",
+			"dataset" : "gradient",
 			"state" : {
 				"width" : "100%",
 				"height" : "auto",
-				"margin" : "4px",
+				"margin" : "0px",
 				"position" : 2
 			}
 		},
@@ -214,10 +218,9 @@
 			"settings" : {
 				"background" : "#ffffff",
 				"heightInner" : "40px",
-				"margin" : "4px",
-				"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
-				"sense" : true,
-				"segments" : 1000
+				"margin" : "0px",
+				"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
+				"cursorWidth" : 1
 			}
 		}
 	},
@@ -228,15 +231,15 @@
 			"generator" : "TADkit"
 		},
 		"object" : {
-			"uuid" : "00000000-0000-0000-0000-000000000000",
+			"uuid" : "00000000-0000-0000-0000-000000000004",
 			"id" : "genes-track",
 			"title" : "Genes",
 			"type" : "track-genes",
-			"dataset" : "default",
+			"dataset" : "genes",
 			"state" : {
 				"width" : "100%",
 				"height" : "auto",
-				"margin" : "4px",
+				"margin" : "0px",
 				"position" : 3
 			}
 		},
@@ -246,14 +249,14 @@
 				"chromEnd" : 999999,
 				"scale" : 1
 			},
-			"viewtype" : "step-variable",
+			"viewtype" : "linear",
 			"settings" : {
 				"background" : "#ffffff",
 				"heightInner" : "40px",
-				"margin" : "4px",
+				"margin" : "0px",
 				"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
-				"sense" : true,
-				"segments" : 1000
+				"cursorWidth" : 1,
+				"sense" : true
 			}
 		}
 	},
@@ -336,11 +339,11 @@
 			"generator" : "TADkit"
 		},
 		"object" : {
-			"uuid" : "00000000-0000-0000-0000-000000000004",
-			"id" : "h-restraints-track",
-			"title" : "Restraints",
-			"type" : "track-restraints",
-			"dataset" : "restraints",
+			"uuid" : "00000000-0000-0000-0000-000000000005",
+			"id" : "proximities-track",
+			"title" : "Proximity",
+			"type" : "track-proximities",
+			"dataset" : "distances",
 			"state" : {
 				"width" : "100%",
 				"height" : "auto",
@@ -357,7 +360,80 @@
 			"viewtype" : "linear",
 			"settings" : {
 				"background" : "#ffffff",
+				"heightInner" : "40px",
+				"margin" : "0px",
+				"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
+				"color" : "#0000ff",
+				"cursorWidth" : 1
+			}
+		}
+	},
+	{
+		"metadata" : {
+			"version" : 1.0,
+			"type" : "component",
+			"generator" : "TADkit"
+		},
+		"object" : {
+			"uuid" : "00000000-0000-0000-0000-000000000006",
+			"id" : "restraints-track",
+			"title" : "Restraints",
+			"type" : "track-restraints",
+			"dataset" : "restraints",
+			"state" : {
+				"width" : "100%",
+				"height" : "auto",
+				"margin" : "0px",
+				"position" : 5
+			}
+		},
+		"view" : {
+			"viewpoint" : {
+				"chromStart" : 1,
+				"chromEnd" : 999999,
+				"scale" : 1
+			},
+			"viewtype" : "linear",
+			"settings" : {
+				"background" : "#ffffff",
 				"heightInner" : "80px",
+				"margin" : "0px",
+				"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
+				"color" : "#0000ff",
+				"nodeSize" : 5,
+				"cursorWidth" : 1
+			}
+		}
+	},
+	{
+		"metadata" : {
+			"version" : 1.0,
+			"type" : "component",
+			"generator" : "TADkit"
+		},
+		"object" : {
+			"uuid" : "00000000-0000-0000-0000-000000000004",
+			"id" : "browser-biodalliance",
+			"title" : "Browser",
+			"type" : "browser-biodalliance",
+			"dataset" : "biodalliance",
+			"state" : {
+				"width" : "100%",
+				"height" : "auto",
+				"margin" : "0px",
+				"position" : 4
+			}
+		},
+		"view" : {
+			"viewpoint" : {
+				"chromStart" : 1,
+				"chromEnd" : 999999,
+				"scale" : 1
+			},
+			"viewtype" : "linear",
+			"settings" : {
+				"background" : "#ffffff",
+				"heightInner" : "200px",
 				"margin" : "0px",
 				"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
 				"color" : "#0000ff",

@@ -17,7 +17,7 @@
 		.module('TADkit')
 		.factory('Storyboards', Storyboards);
 
-	function Storyboards($log, $q, $http, uuid4, Settings, Components) {
+	function Storyboards(VERBOSE, $log, $q, $http, uuid4, Settings, Components) {
 		var storyboards = {
 			loaded : [],
 			current : {
@@ -64,7 +64,7 @@
 				storyboards.current = storyboards.loaded.length - 1;
 				return storyboards;
 			},
-			addComponent: function(overlay, storyboardId, options) {
+			addComponent: function(layer, storyboardId, options) {
 				var self = this;
 				storyboardId = storyboardId || "default";
 				options = options || [];
@@ -72,21 +72,21 @@
 				var settings = Settings.get();
 				// Add a preconfigured conponent from Components
 				// - update with options if necessary
-				var componentTemplate = Components.getComponentByType(overlay.object.type);
-				// New component for overlay
+				var componentTemplate = Components.getComponentByType(layer.object.type);
+				// New component for layer
 				var newComponent = angular.copy(componentTemplate);
 					newComponent.object.uuid = uuid4.generate();
-					newComponent.object.id = overlay.object.id;
-					newComponent.object.title = overlay.object.id;
-					newComponent.object.dataset = overlay.object.id;
-					newComponent.view.settings.step = overlay.object.step;
-					newComponent.view.settings.color = overlay.object.color;
+					newComponent.object.id = layer.object.id;
+					newComponent.object.title = layer.object.id;
+					newComponent.object.dataset = layer.object.id;
+					newComponent.view.settings.step = layer.object.step;
+					newComponent.view.settings.color = layer.object.color;
 					newComponent.view.viewpoint.chromStart = settings.current.chromStart;
 					newComponent.view.viewpoint.chromEnd = settings.current.chromEnd;
 					newComponent.view.viewpoint.scale = settings.views.scale;
-					newComponent.view.viewtype = overlay.object.type + "-" + overlay.object.stepType;
-					newComponent.data = overlay.data;
-					newComponent.overlay = overlay;
+					newComponent.view.viewtype = layer.object.type + "-" + layer.object.stepType;
+					newComponent.data = layer.data;
+					newComponent.layer = layer;
 
 				var storyboard = self.getStoryboardById(storyboardId);
 				storyboard.components.push(newComponent);
@@ -116,7 +116,6 @@
 			removeComponentById: function(id) {
 				var self = this;
 				if (id !== undefined || id !== false) {
-					var component = self.getComponentById(id);
 					var storyboard = self.getStoryboard();
 					storyboard.components.splice(component.index, 1);
 				}
@@ -127,11 +126,18 @@
 				var storyboard = storyboards.loaded[storyboards.current.index];
 				return storyboard;
 			},
+			setComponents: function() {
+				var self = this;
+				var storyboard = self.getStoryboard();
+				var components = Components.get(storyboard.componentList);
+				storyboard.components = components;
+				return components;
+			},
 			setViewpoint: function(chromStart, chromEnd, scaleOrig) {
 				chromStart = chromStart || 0;
 				chromEnd = chromEnd || 4999999;
 				var currentComponents = storyboards.loaded[storyboards.current.index].components;
-				$log.debug(currentComponents);
+				if (VERBOSE) $log.debug(currentComponents);
 				angular.forEach( currentComponents, function(component, index) {
 					var scale = scaleOrig || 1;
 					component.view.viewpoint.chromStart = chromStart;
@@ -145,47 +151,47 @@
 				});
 				return storyboards;
 			},
-			update: function(overlay) {
+			update: function(layer) {
 				var self = this;
 				var components = self.getStoryboard().components;
-				// Assign data and overlays for each component by type
+				// Assign data and layers for each component by type
 				angular.forEach(components, function(component, index) {
 					// if (component.object.dataset == "default") {
-						var overlayProximities;
+						var layerProximities;
 						// if (component.object.type == "scene") {
 						// 	component.data = $scope.current.model.data;
-						// 	 // component.proximities required for Scenes: overlay.colors Saturation
+						// 	 // component.proximities required for Scenes: layer.colors Saturation
 						// 	component.proximities = $scope.allProximities;
-						// 	component.overlay = $scope.current.overlay;
-						// 	component.overlay.state = {};
-						// 	component.overlay.object.state.index = Overlays.getCurrentIndex();
+						// 	component.layer = $scope.current.layer;
+						// 	component.layer.state = {};
+						// 	component.layer.object.state.index = Layers.getCurrentIndex();
 						// } else if (component.object.type == "track-genes" || component.object.type == "panel-inspector") {
 						if (component.object.type == "track-genes" || component.object.type == "panel-inspector") {
-							component.data = overlay.data;
-							// component.overlay required for toggle
-							component.overlay = overlay;
+							component.data = layer.data;
+							// component.layer required for toggle
+							component.layer = layer;
 						}
 						// } else if (component.object.type == "track-proximities") {
 						// 	// ie only one... see note above for Calculating Proximities
-						// 	// component.data for Scenes: overlay.colors Saturation
+						// 	// component.data for Scenes: layer.colors Saturation
 						// 	component.data = $scope.currentProximities;
-						// 	// component.overlay required for toggle
-						// 	//   and for Scenes: overlay.colors Hue
-						// 	overlay = Overlays.getOverlayById("proximities");
-						// 	component.overlay = overlay;
+						// 	// component.layer required for toggle
+						// 	//   and for Scenes: layer.colors Hue
+						// 	layer = Layers.getLayerById("proximities");
+						// 	component.layer = layer;
 						// } else if (component.object.type == "track-restraints") {
 						// 	// ie only one... see note above for Calculating Restraints
-						// 	// component.data for Scenes: overlay.colors Saturation
+						// 	// component.data for Scenes: layer.colors Saturation
 						// 	component.data = $scope.currentRestraints;
-						// 	// component.overlay required for toggle
-						// 	//   and for Scenes: overlay.colors Hue
-						// 	overlay = Overlays.getOverlayById("restraints");
-						// 	component.overlay = overlay;
+						// 	// component.layer required for toggle
+						// 	//   and for Scenes: layer.colors Hue
+						// 	layer = Layers.getLayerById("restraints");
+						// 	component.layer = layer;
 						// }
 						// } else if (component.object.type == "track-wiggle") {
-						// 	overlay = Overlays.getOverlayById(component.object.dataset);
-						// 	component.data = overlay.data;
-						// 	component.overlay = overlay; // required for toggle
+						// 	layer = Layers.getLayerById(component.object.dataset);
+						// 	component.data = layer.data;
+						// 	component.layer = layer; // required for toggle
 						// } else {
 						// 	// slider and other types of component...
 						// }
@@ -208,7 +214,7 @@
 							storyboard = storyboards.loaded[i];
 							storyboard.index = i;
 							found = true;
-							$log.debug("Overlay \"" + id + "\" found!");
+							$log.debug("Layer \"" + id + "\" found!");
 						}
 					}
 				}
@@ -223,28 +229,6 @@
 				var self = this;
 				var components = self.getStoryboard().components;
 				return components;
-			},
-			getComponentById: function (id) {
-				var self = this;
-				var component, found;
-				var components = self.getStoryboard().components;
-				if (id !== undefined || id !== false) {
-					for (var i = components.length - 1; i >= 0; i--) {
-						$log.debug(components[i].object.title);
-						if (components[i].object.title === id) {
-							component = components[i];
-							component.index = i;
-							found = true;
-							$log.debug("Component '" + id + "' found");
-						}
-					}
-				}
-				if (!found) {
-					component = components[0];
-					$log.warn("Component '" + id + "' not found: returning first.");
-				}
-				$log.debug(component);
-				return component;
 			}
 		};
 	}

@@ -99,6 +99,10 @@ gulp.task('dist-scripts', function() {
 		'src/tadkit.run.js',
 		'src/tadkit.states.js',
 		'src/core/*.js',
+		'src/datasets/*.module.js',
+		'src/datasets/*.service.js',
+		'src/layers/*.module.js',
+		'src/layers/*.service.js',
 		'src/components/**/*.js',
 		'src/layout/**/*.js',
 		'src/services/*.js'
@@ -113,15 +117,29 @@ gulp.task('dist-scripts', function() {
 		.pipe(gulp.dest('tadkit/assets/js'));
 });
 
-// Concatenate & Minify Generic JS
-gulp.task('dist-generic', function() {
+// Concatenate & Minify Angular Modules
+// ¡¡¡ LOADING MODULE BEFORE SERIVCE IS IMPORTANT !!!
+gulp.task('dist-modules', function() {
 	return gulp.src([
-		'src/generic/**/*.js'
+		'src/modules/generic/generic.module.js',
+		'src/modules/generic/*.service.js',
+		'src/modules/generic/*.directive.js',
+		'src/modules/ui/ui.module.js',
+		'src/modules/ui/*.service.js',
+		'src/modules/ui/*.directive.js',
+		'src/modules/bioinformatics/bioinformatics.module.js',
+		'src/modules/bioinformatics/*.service.js',
+		'src/modules/bioinformatics/*.directive.js',
+		'src/modules/modeling/modeling.module.js',
+		'src/modules/modeling/*.service.js',
+		'src/modules/modeling/*.directive.js',
+		'src/modules/visualization/visualization.module.js',
+		'src/modules/visualization/*.service.js',
+		'src/modules/visualization/*.directive.js'
 		])
-		.pipe(concat('generic.js'))
-		.pipe(gulp.dest('dist')) // isolated dist but requires app
+		.pipe(concat('modules.js'))
 		.pipe(gulp.dest('tadkit/assets/js')) // only needed when testing
-		.pipe(rename('generic.min.js'))
+		.pipe(rename('modules.min.js'))
 		.pipe(ngAnnotate())
 		.pipe(uglify())
 		.pipe(gulp.dest('dist')) // isolated dist but requires app
@@ -141,7 +159,8 @@ gulp.task('dist-vendor', function() {
 		'bower_components/angular-uuid4/angular-uuid4.js',
 		'bower_components/papaparse/papaparse.js',
 		'bower_components/angular-d3js/dist/angular-d3js.js',
-		'bower_components/angular-threejs/dist/angular-threejs.js'
+		'bower_components/angular-threejs/dist/angular-threejs.js',
+		'bower_components/dalliance-dist/dist/dalliance-all.js'
 		])
 		.pipe(concat('vendors.js'))
 		.pipe(gulp.dest('tadkit/assets/js'))
@@ -247,7 +266,8 @@ gulp.task('assets-offline', function() {
 // Transfer Examples
 gulp.task('assets-examples', function() {
 	return gulp.src([
-		'src/assets/examples/readme.txt'
+		'src/assets/examples/readme.txt',
+		'src/assets/examples/tk-example-*.*'
 		])
 		.pipe(gulp.dest('tadkit/assets/examples'));
 });
@@ -284,7 +304,7 @@ gulp.task('watch', function() {
 		// 'docs-md',
 		// 'sass',
 		'dist-scripts',
-		'dist-generic',
+		'dist-modules',
 		'dist-vendor',
 		'app-index',
 		'app-favicon',
@@ -307,7 +327,7 @@ gulp.task('default', [
 	'docs-html',
 	// 'docs-md',
 	'dist-scripts',
-	'dist-generic',
+	'dist-modules',
 	'dist-vendor',
 	'app-index',
 	'app-favicon',

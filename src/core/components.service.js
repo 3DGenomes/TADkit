@@ -216,10 +216,30 @@
 			 * @description
 			 * Get components Object.
 			 *
+			 * @param {Array} [list] Array of components to get.
 			 * @returns {Object} Components.
 			 */
-			get: function() {
-				return components;
+			get: function(list) {
+				list = list || [];
+				var collection = [];
+				if (list.length > 0) {
+					for (var i = list.length - 1; i >= 0; i--) {
+						var id = list[i];
+						for (var j = components.loaded.length - 1; j >= 0; j--) {
+							var component = components.loaded[j];
+							if (component.object.id === id) {
+								collection.unshift(component);
+								break;
+							}
+						}
+						// if (collection.length === 0) $log.warn("Component id '" + id + "' not found.");
+					}
+					// if (collection.length > 0) $log.warn("No components loaded.");
+				} else {
+					// return all components
+					collection = components.loaded;
+				}
+				return collection;
 			},
 
 			/**
@@ -271,6 +291,29 @@
 				}
 				return component;
 			},
+			// OLD VERSION FROM STORYBOARDS WITH INDEX
+			// getComponentById: function (id) {
+			// 	var self = this;
+			// 	var component, found;
+			// 	var components = self.getStoryboard().components;
+			// 	if (id !== undefined || id !== false) {
+			// 		for (var i = components.length - 1; i >= 0; i--) {
+			// 			$log.debug(components[i].object.title);
+			// 			if (components[i].object.title === id) {
+			// 				component = components[i];
+			// 				component.index = i;
+			// 				found = true;
+			// 				$log.debug("Component '" + id + "' found");
+			// 			}
+			// 		}
+			// 	}
+			// 	if (!found) {
+			// 		component = components[0];
+			// 		$log.warn("Component '" + id + "' not found: returning first.");
+			// 	}
+			// 	$log.debug(component);
+			// 	return component;
+			// }
 
 			/**
 			 * @ngdoc function

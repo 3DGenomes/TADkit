@@ -6,9 +6,9 @@
 
 	// create one line between each pair in dataset
 	function Network(VERBOSE, $log, Color, Particles, Networks) {
-		return function(data, overlay, settings) {
+		return function(data, layer, settings) {
 			if (VERBOSE) $log.debug(data);
-			if (VERBOSE) $log.debug(overlay);
+			if (VERBOSE) $log.debug(layer);
 
 			// Uses THREE.LineSegments to generate separate lines
 			// from an array of vertex pairs
@@ -50,8 +50,8 @@
 			var totalPairs = ((dataLength * dataLength) - dataLength) * 0.5;
 
 			var vertexPairs = getVertexPairs(data, totalPairs);
-			var vertexRGB = overlay.RGB;
-			var vertexAlpha = overlay.alpha;
+			var vertexRGB = layer.RGB;
+			var vertexAlpha = layer.alpha;
 
 			var geometry = new THREE.BufferGeometry();
 			geometry.addAttribute( 'position', new THREE.BufferAttribute( vertexPairs, 3 ) );

@@ -41,6 +41,9 @@ md-grid-list md-grid-tile {
 md-checkbox.md-default-theme:not([disabled]).md-primary .md-icon {
 	border-color: rgba(76,175,80,0.37);
 }
+.md-button[type="file"] > input[type="file"] {
+  display: none;
+}
 
 /*** TOPBAR ***/
 md-toolbar {
@@ -142,7 +145,7 @@ md-sidenav md-list-item {
 /*	margin-left: 0;
 	margin-right: 16px;
 */}
-.loader div[tk-project-dropzone] {
+.loader div[ui-dropzone] {
 	background: rgb(76,175,80);
 	color: #fff;
 	border: dashed 1px #fff;
@@ -154,7 +157,7 @@ md-sidenav md-list-item {
 	-webkit-box-shadow: inset 0 2px 5px rgba(0,0,0,0.26);
 	box-shadow: inset 0 2px 5px rgba(0,0,0,0.26);
 }
-.loader div[tk-project-dropzone]:hover {
+.loader div[ui-dropzone]:hover {
 	background: rgb(67,160,71);
 	-webkit-box-shadow: inset 0 4px 8px rgba(0,0,0,0.4);
 	box-shadow: inset 0 4px 8px rgba(0,0,0,0.4);

@@ -4,13 +4,13 @@
 		.module('TADkit')
 		.controller('ProjectLoaderController', ProjectLoaderController);
 
-	function ProjectLoaderController($log, $q, $state, $stateParams, $scope, Datasets, Overlays, Storyboards) {
+	function ProjectLoaderController($log, $q, $state, $stateParams, $scope, Datasets, Layers, Storyboards) {
 
 		$scope.updateCurrent = function() {
 			$scope.current.dataset = Datasets.getDataset();
 			$scope.current.model = Datasets.getModel();
-			$scope.current.overlay = Overlays.getOverlay();
-			$log.info("Current dataset, model, overlay and storyboard updated.");			
+			$scope.current.layer = Layers.getLayer();
+			$log.info("Current dataset, model, layer and storyboard updated.");			
 		};
 
 		// On click load dataset from URL Params
@@ -29,12 +29,11 @@
 		// On dropzone (load external file)
 		// Adds JSON to current project - load TSV when in browser
 		$scope.addDataset = function($fileContent) {
-			$log.info($fileContent);
-			var adding = Datasets.add($fileContent);
+			var adding = Datasets.import($fileContent);
 			return $q.all([ adding ])
 			.then(function(results){
 				$scope.updateCurrent(); // NEEDED? Move to function in Settings Service???
-				// ADD FILENAME (SEE OVERLAY-IMPORT)
+				// ADD FILENAME (SEE data-import)
 				$log.info("Dataset added."); //: " + $stateParams.loadDataset);			
 				$state.go('dataset');
 			});

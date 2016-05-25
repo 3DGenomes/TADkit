@@ -47,7 +47,7 @@
 
 			var particles = new THREE.Points( particlesGeometry, particlesMaterial );
 			// particles.sortParticles = true;
-			particles.name = "Particles";
+			particles.name = "Particles Cloud";
 			
 			return particles;
 		};

@@ -55,7 +55,7 @@
 						state : details[4]
 					},
 					datasets : details[5],
-					overlays : details[6],
+					layers : details[6],
 					storyboards : details[7]
 				};
 				projects.loaded.push(newProject);

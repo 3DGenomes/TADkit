@@ -5,19 +5,19 @@
 		.controller('TrackController', TrackController);
 
 	function TrackController($log, $scope) {
-		// if ($scope.overlay) {
-		// 	$log.debug($scope.overlay.object.id);
-		// 	$log.debug($scope.overlay.object.state.overlaid);
-		// 	$scope.overlaid = $scope.overlay.object.state.overlaid;
-		// 	$scope.overlayOrig = Overlays.getOverlay(); // current overlay
-		// 	$scope.toggleOverlay = function(index) {
-		// 		$scope.overlaid = Overlays.getOverlay(index).object.state.overlaid;
+		// if ($scope.layer) {
+		// 	$log.debug($scope.layer.object.id);
+		// 	$log.debug($scope.layer.object.state.overlaid);
+		// 	$scope.overlaid = $scope.layer.object.state.overlaid;
+		// 	$scope.layerOrig = Layers.getLayer(); // current layer
+		// 	$scope.toggleLayer = function(index) {
+		// 		$scope.overlaid = Layers.getLayer(index).object.state.overlaid;
 		// 		if (!$scope.overlaid) {
-		// 			Overlays.setOverlaid(index);
-		// 			Overlays.set(index);
+		// 			Layers.setOverlaid(index);
+		// 			Layers.set(index);
 		// 		} else {
-		// 			Overlays.setOverlaid($scope.overlayOrig.object.state.index);
-		// 			Overlays.set($scope.overlayOrig.object.state.index);
+		// 			Layers.setOverlaid($scope.layerOrig.object.state.index);
+		// 			Layers.set($scope.layerOrig.object.state.index);
 		// 		}
 		// 		$scope.overlaid = !$scope.overlaid;
 		// 	};

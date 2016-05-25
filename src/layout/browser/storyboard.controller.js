@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.controller('StoryboardController', StoryboardController);
 
-	function StoryboardController($log, $window, $scope, Settings, Storyboards, Components, Overlays, Proximities, Restraints) {
+	function StoryboardController($log, $window, $scope, Settings, Storyboards, Components, Layers, Proximities, Restraints) {
 
 		// WATCH FOR WINDOW RESIZE
 		angular.element($window).on('resize', function(){ $scope.$apply(); });
@@ -23,46 +23,46 @@
 		// Calculating Initial Restraints
 		//NOTE in future if more than 1 currentModel need same number of currentRestraints
 		$scope.currentRestraints = Restraints.get($scope.settings.current.particle); // for D3 tracks
-
-		// Assign data and overlays for each component by type
+		// console.log($scope.currentRestraints);
+		// Assign data and layers for each component by type
 		$scope.components = Storyboards.getComponents();
 		angular.forEach( $scope.components, function(component, index) {
 
 			// if (component.object.dataset == "default") {
-				var overlay, overlayProximities;
+				var layer, layerProximities;
 				if (component.object.type == "scene") {
 					component.data = $scope.current.model.data;
-					 // component.proximities required for Scenes: overlay.colors Saturation
+					 // component.proximities required for Scenes: layer.colors Saturation
 					component.proximities = $scope.allProximities;
-					component.overlay = $scope.current.overlay;
-					component.overlay.state = {};
-					component.overlay.object.state.index = Overlays.getCurrentIndex();
+					component.layer = $scope.current.layer;
+					component.layer.state = {};
+					component.layer.object.state.index = Layers.getCurrentIndex();
 				} else if (component.object.type == "track-genes" || component.object.type == "panel-inspector") {
-					overlay = Overlays.getOverlayById("genes");
-					component.data = overlay.data;
-					// component.overlay required for toggle
-					component.overlay = overlay;
+					layer = Layers.getLayerById("genes");
+					component.data = layer.data;
+					// component.layer required for toggle
+					component.layer = layer;
 				} else if (component.object.type == "track-proximities") {
 					// ie only one... see note above for Calculating Proximities
-					// component.data for Scenes: overlay.colors Saturation
+					// component.data for Scenes: layer.colors Saturation
 					component.data = $scope.currentProximities;
-					// component.overlay required for toggle
-					//   and for Scenes: overlay.colors Hue
-					overlay = Overlays.getOverlayById("proximities");
-					component.overlay = overlay;
+					// component.layer required for toggle
+					//   and for Scenes: layer.colors Hue
+					layer = Layers.getLayerById("proximities");
+					component.layer = layer;
 				} else if (component.object.type == "track-restraints") {
 					// ie only one... see note above for Calculating Restraints
-					// component.data for Scenes: overlay.colors Saturation
+					// component.data for Scenes: layer.colors Saturation
 					component.data = $scope.currentRestraints;
-					// component.overlay required for toggle
-					//   and for Scenes: overlay.colors Hue
-					overlay = Overlays.getOverlayById("restraints");
-					component.overlay = overlay;
+					// component.layer required for toggle
+					//   and for Scenes: layer.colors Hue
+					layer = Layers.getLayerById("restraints");
+					component.layer = layer;
 				}
 				// } else if (component.object.type == "track-wiggle") {
-				// 	overlay = Overlays.getOverlayById(component.object.dataset);
-				// 	component.data = overlay.data;
-				// 	component.overlay = overlay; // required for toggle
+				// 	layer = Layers.getLayerById(component.object.dataset);
+				// 	component.data = layer.data;
+				// 	component.layer = layer; // required for toggle
 				// } else {
 				// 	// slider and other types of component...
 				// }
@@ -74,29 +74,29 @@
 			if ( newParticle !== oldParticle ) {
 				$scope.currentProximities = Proximities.get(newParticle); // for D3 tracks
 				$scope.currentRestraints = Restraints.get(newParticle); // for D3 tracks
-				if ($scope.current.overlay.object.type == "matrix") {
-					Overlays.at(newParticle);
-					$scope.current.overlay = Overlays.getOverlay();
+				if ($scope.current.layer.object.type == "matrix") {
+					Layers.at(newParticle);
+					$scope.current.layer = Layers.getLayer();
 				} 
 				$log.debug($scope.currentProximities);
 			}
 		});
 
 		// save original overlaid
-		$scope.overlayOrig = $scope.current.overlay;
-		$scope.toggleOverlay = function(index) {
-			$scope.overlaid = Overlays.getOverlay(index).object.state.overlaid;
+		$scope.layerOrig = $scope.current.layer;
+		$scope.toggleLayer = function(index) {
+			$scope.overlaid = Layers.getLayer(index).object.state.overlaid;
 			if (!$scope.overlaid) {
-				Overlays.setOverlaid(index);
-				Overlays.set(index);
-				$scope.current.overlay = Overlays.getOverlay();
-				$log.debug($scope.current.overlay);
+				Layers.setOverlaid(index);
+				Layers.set(index);
+				$scope.current.layer = Layers.getLayer();
+				$log.debug($scope.current.layer);
 			} else {
-				Overlays.setOverlaid($scope.overlayOrig.object.state.index);
-				Overlays.set($scope.overlayOrig.object.state.index);
-				$scope.current.overlay = Overlays.getOverlay();
+				Layers.setOverlaid($scope.layerOrig.object.state.index);
+				Layers.set($scope.layerOrig.object.state.index);
+				$scope.current.layer = Layers.getLayer();
 			}
-			// $scope.overlay.object.state.overlaid = !$scope.overlay.object.state.overlaid;
+			// $scope.layer.object.state.overlaid = !$scope.layer.object.state.overlaid;
 		};
 
 		$scope.optionsState = false;

@@ -11,7 +11,7 @@
 				title: '@',
 				view: '=',
 				clusters: '=',
-				overlay:'=',
+				layer:'=',
 				mousemove: '&'
 			},
 			templateUrl: 'assets/templates/scene-clusters.html',
@@ -95,12 +95,12 @@
 							var particles, bundle;
 
 							// GEOMETRY: PARTICLES
-							particles = new Particles( cluster.data[cluster.centroidIndex], scope.overlay, scope.view.settings.particles );
+							particles = new Particles( cluster.data[cluster.centroidIndex], scope.layer, scope.view.settings.particles );
 							particles.visible = scope.view.settings.particles.visible;
 							scenes[index].add(particles);
 
 							//GEOMETRY: CLUSTER
-							bundle = new Cluster( cluster.data, cluster.centroidIndex, scope.overlay, scope.view.settings.cluster );
+							bundle = new Cluster( cluster.data, cluster.centroidIndex, scope.layer, scope.view.settings.cluster );
 							bundle.visible = scope.view.settings.cluster.visible;
 							bundle.name = bundle.name + " " + index;
 							scenes[index].add(bundle);

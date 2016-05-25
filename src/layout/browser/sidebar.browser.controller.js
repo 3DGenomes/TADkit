@@ -16,7 +16,7 @@
 		// 	$scope.scenes = Scenes.toggle(scene); // update $scope.scenes defined in browser controller
 		// };
 
-		// Track overlays
+		// Track layers
 		// $scope.toggleTrack = function(track) {
 		// 	$log.debug(track);
 		// 	$scope.tracks = Tracks.toggle(track); // update $scope.tracks defined in browser controller

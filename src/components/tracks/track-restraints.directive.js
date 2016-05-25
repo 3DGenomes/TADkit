@@ -13,12 +13,12 @@
 				settings: '=',
 				view: '=',
 				data: '=',
-				overlay: '=', /* used in template */
-				toggleoverlay: '&' /* used in template */
+				layer: '=', /* used in template */
+				togglelayer: '&' /* used in template */
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
-
+				// console.log(scope.data);
 				d3Service.load().then(function(d3) {
 
 					scope.safeApply = function(fn) {
@@ -54,8 +54,8 @@
 						verticalOffset = margin.top + (nodeSize * 0.5),
 						nodePadding = 0,
 						nodeColor = scope.view.settings.color,
-						harmonicsColor = scope.overlay.palette[0],
-						lowerBoundsColor = scope.overlay.palette[1];
+						harmonicsColor = scope.layer.palette[0],
+						lowerBoundsColor = scope.layer.palette[1];
 
 					// VIEWPORT
 					/* component-controller == children[0]

@@ -5,9 +5,9 @@
 		.factory('Cluster', Cluster);
 
 	// constructor for cluster models ensemble
-	function Cluster($log, Color) {
-		return function(VERBOSE, data, centroidIndex, overlay, settings) {
-			if (VERBOSE) $log.debug(overlay);
+	function Cluster(VERBOSE, $log, Color) {
+		return function(data, centroidIndex, layer, settings) {
+			if (VERBOSE) $log.debug(layer);
 
 			var defaults = {
 				visible: true,
@@ -17,17 +17,18 @@
 
 			// Convert Data (single Model / set of Particles) to Vector triplets
 			var clusterBufferGeometry = new THREE.BufferGeometry(); // to calculate merged bounds
-			var overlayColors = Color.THREEColorsFromHex(overlay);
+			var layerColors = Color.THREEColorsFromHex(layer);
 
 			// Generate Cluster model
 			var clusterEnsemble = new THREE.Object3D(); // unmerged network
+
 			for ( var i = 0 ; i < data.length; i++) {
 				var modelComponents = data[i];
 				clusterBufferGeometry.addAttribute( 'position', new THREE.BufferAttribute( modelComponents, 3 ) );
 				var modelGeometry = getModelGeometry(modelComponents);
-					modelGeometry.colors = overlayColors;
+					modelGeometry.colors = layerColors;
 
-				var modelColor = overlay[i];
+				var modelColor = layer[i];
 				var modelMaterial = new THREE.LineBasicMaterial({
 					color: new THREE.Color(this.color),
 					opacity: this.modelOpacity,
