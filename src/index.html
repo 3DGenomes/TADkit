@@ -8,8 +8,7 @@
 	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 	<link rel="stylesheet" href="../bower_components/angular-material/angular-material.css">
 	<link rel="stylesheet" href="assets/css/tadkit.css" />
-	<link rel="stylesheet" href="assets/css/ensembl-genes.css" />
-	
+	<link rel="stylesheet" href="assets/css/ensembl-genes.css" />	
 </head>
 <body ng-app="TADkit" route-css-classnames>
 	
@@ -27,7 +26,6 @@
 	<script src="../bower_components/papaparse/papaparse.js"></script>
 	<script src="../bower_components/angular-d3js/dist/angular-d3js.js"></script>
 	<script src="../bower_components/angular-threejs/dist/angular-threejs.js"></script>
-	<script src="../bower_components/dalliance-dist/dist/dalliance-all.js"></script>
 
 	<!-- MAIN TADKIT SCRIPTS -->
 	<script src="tadkit.js"></script>
@@ -49,6 +47,9 @@
 	<script src="modules/bioinformatics/bioinformatics.module.js"></script>
 	<script src="modules/bioinformatics/ensembl-features.service.js"></script>
 	<script src="modules/bioinformatics/ensembl-colors.service.js"></script>
+	<!-- MODULES: GENOVERSE -->
+	<script src="modules/genoverse/genoverse.module.js"></script>
+	<script src="modules/genoverse/genoverse-core.service.js"></script>
 	<!-- MODULES: MODELING -->
 	<script src="modules/modeling/modeling.module.js"></script>
 	<script src="modules/modeling/clusters.service.js"></script>
@@ -105,6 +106,7 @@
 	<!-- TADKIT COMPONENTS: BROWSERS -->
 	<script src="components/browsers/browser.controller.js"></script>
 	<script src="components/browsers/browser-biodalliance.directive.js"></script>
+	<script src="components/browsers/browser-genoverse.directive.js"></script>
 
 	<!-- TADKIT CORE SERVICES -->
 	<script src="core/app.service.js"></script>

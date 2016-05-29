@@ -51614,9 +51614,6 @@ Browser.prototype.realInit = function() {
     var helpPopup;
     var thisB = this;
     this.browserHolderHolder = document.getElementById(this.pageName);
-    console.log(this.pageName);
-
-    
     this.browserHolderHolder.classList.add('dalliance-injection-point');
     this.browserHolder = makeElement('div', null, {className: 'dalliance dalliance-root', tabIndex: -1});
     if (this.maxHeight) {

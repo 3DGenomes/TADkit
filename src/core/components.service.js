@@ -186,12 +186,14 @@
 			 * @param {number} scaleOrig Viewpoint scale of component.
 			 * @returns {Object} Components.
 			 */
-			setViewpoint: function(chromStart, chromEnd, scaleOrig) {
+			setViewpoint: function(chrom, chromStart, chromEnd, scaleOrig) {
+				chrom = chrom || "1";
 				chromStart = chromStart || 0;
 				chromEnd = chromEnd || 4999999;
 				var currentComponents = components.loaded;
 				angular.forEach(currentComponents, function(component, index) {
 					var scale = scaleOrig || 1;
+					component.view.viewpoint.chrom = chrom;
 					component.view.viewpoint.chromStart = chromStart;
 					component.view.viewpoint.chromEnd = chromEnd;
 					if (component.object.type === "scene" || component.object.type === "scene-clusters") {

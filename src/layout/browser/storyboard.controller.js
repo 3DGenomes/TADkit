@@ -12,8 +12,9 @@
 		// ¿¿¿ SET segmentLength??? $scope.current.storyboard.components[0].view.settings.chromatin.segmentLength = $scope.settings.current.segmentLength;
 
 		$scope.settings.views.scale = 1; //$scope.current.dataset.object.scale;
-		Storyboards.setViewpoint($scope.settings.current.chromStart,$scope.settings.current.chromEnd,$scope.settings.views.scale);
-		Components.setViewpoint($scope.settings.current.chromStart,$scope.settings.current.chromEnd,$scope.settings.views.scale);
+		// one of the setViewpoints is redundant?
+		Storyboards.setViewpoint($scope.settings.current.chrom,$scope.settings.current.chromStart,$scope.settings.current.chromEnd,$scope.settings.views.scale);
+		Components.setViewpoint($scope.settings.current.chrom,$scope.settings.current.chromStart,$scope.settings.current.chromEnd,$scope.settings.views.scale);
 
 		// Calculating Initial Proximities
 		//NOTE in future if more than 1 currentModel need same number of currentProximities

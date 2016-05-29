@@ -16,15 +16,19 @@
 	 * 	</file>
 	 * </example>
 	 *
+	 * @requires TADkit.datasets
+	 * @requires TADkit.layers
 	 * @requires ui.router
 	 * @requires ngMaterial
 	 * @requires uuid4
 	 * @requires d3js
 	 * @requires threejs
+	 * @requires genoverse
 	 * @requires generic
+	 * @requires ui
 	 * @requires bioinformatics
 	 * @requires modeling
 	 * @requires visualization
 	 */
-	angular.module('TADkit',['TADkit.datasets','TADkit.layers','ui.router','ngMaterial','uuid4','d3js','threejs','generic','ui','bioinformatics','modeling','visualization']);
+	angular.module('TADkit',['TADkit.datasets','TADkit.layers','ui.router','ngMaterial','uuid4','d3js','threejs','genoverse','generic','ui','bioinformatics','modeling','visualization']);
 })();

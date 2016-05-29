@@ -6,7 +6,7 @@
 	 * @restrict EA
 	 *
 	 * @description
-	 * Dummy components directive that is replaced on complie
+	 * Biodalliance browser directive that is replaced on complie
 	 * by real component directive from supplied object type.
 	 * e.g. from a array of components objects
 	 *
@@ -21,7 +21,7 @@
 	function tkComponentBrowserBiodalliance(VERBOSE, $log) {
 		return {
 			restrict: 'E',
-			templateUrl: 'components/browsers/browser.html',
+			templateUrl: 'assets/templates/browser.html',
 			link: function(scope, element, attrs) {
 				console.log(scope.component.view.viewpoint.chromStart);
 

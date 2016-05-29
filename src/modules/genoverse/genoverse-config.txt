@@ -1,0 +1,1 @@
+{container:'#browser-genoverse-6',genome:'grch38',chr:13,start:32296945,end:32370557,plugins:['controlPanel','karyotype','trackControls','resizer','focusRegion','fullscreen','tooltips','fileDrop'],tracks:[Genoverse.Track.Scalebar]}

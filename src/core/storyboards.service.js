@@ -133,13 +133,15 @@
 				storyboard.components = components;
 				return components;
 			},
-			setViewpoint: function(chromStart, chromEnd, scaleOrig) {
+			setViewpoint: function(chrom, chromStart, chromEnd, scaleOrig) {
+				chrom = chrom || "1";
 				chromStart = chromStart || 0;
 				chromEnd = chromEnd || 4999999;
 				var currentComponents = storyboards.loaded[storyboards.current.index].components;
 				if (VERBOSE) $log.debug(currentComponents);
 				angular.forEach( currentComponents, function(component, index) {
 					var scale = scaleOrig || 1;
+					component.view.viewpoint.chrom = chrom;
 					component.view.viewpoint.chromStart = chromStart;
 					component.view.viewpoint.chromEnd = chromEnd;
 					if (component.object.type === "scene" || component.object.type === "scene-clusters") {

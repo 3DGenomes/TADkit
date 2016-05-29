@@ -57,7 +57,7 @@ gulp.task('lint', function() {
 });
 
 // Documentation Angular sttyle JSDoc (HTML)
-gulp.task('docs-html', function() {
+gulp.task('doc-html', function() {
 	var options = {
 		// scripts: ['../app.min.js'],
 		html5Mode: true,
@@ -75,7 +75,7 @@ gulp.task('docs-html', function() {
 		])
 		// .pipe(dgeni({packages: [ngdoc]}))
 		.pipe(ngDocs.process(options))
-		.pipe(gulp.dest('docs-html'));
+		.pipe(gulp.dest('doc/html'));
 });
 
 // Documentation GitHub Markdown (MD)
@@ -130,6 +130,8 @@ gulp.task('dist-modules', function() {
 		'src/modules/bioinformatics/bioinformatics.module.js',
 		'src/modules/bioinformatics/*.service.js',
 		'src/modules/bioinformatics/*.directive.js',
+		'src/modules/genoverse/genoverse.module.js',
+		'src/modules/genoverse/*.service.js',
 		'src/modules/modeling/modeling.module.js',
 		'src/modules/modeling/*.service.js',
 		'src/modules/modeling/*.directive.js',
@@ -160,7 +162,8 @@ gulp.task('dist-vendor', function() {
 		'bower_components/papaparse/papaparse.js',
 		'bower_components/angular-d3js/dist/angular-d3js.js',
 		'bower_components/angular-threejs/dist/angular-threejs.js',
-		'bower_components/dalliance-dist/dist/dalliance-all.js'
+		'bower_components/dalliance-dist/dist/dalliance-all.js',
+		'bower_components/genoverse/js/genoverse.combined.js'
 		])
 		.pipe(concat('vendors.js'))
 		.pipe(gulp.dest('tadkit/assets/js'))
@@ -190,27 +193,45 @@ gulp.task('app-favicon', function() {
 gulp.task('assets-libs', function() {
 	return gulp.src([
 		'bower_components/angular/angular.min.js.map',
-		'bower_components/d3/d3.min.js',
-		'bower_components/threejs/build/three.min.js',
-		'bower_components/threejs/examples/js/controls/TrackballControls.js',
-		'bower_components/threejs/examples/js/controls/OrbitControls.js'
+		'bower_components/d3/d3.min.js', // use angular- version
+		'bower_components/threejs/build/three.min.js', // use angular- version
+		'bower_components/threejs/examples/js/controls/TrackballControls.js', // use angular- version
+		'bower_components/threejs/examples/js/controls/OrbitControls.js' // use angular- version
 		])
 		.pipe(gulp.dest('src/assets/js'))
 		.pipe(gulp.dest('tadkit/assets/js'));
 });
 
+// Transfer Genoverse
+gulp.task('assets-genoverse', function() {
+	return gulp.src([
+		'bower_components/angular-genoverse/**/*',
+		'!bower_components/angular-genoverse/**/Genoverse.js',
+		'!bower_components/angular-genoverse/**/lib/',
+		'!bower_components/angular-genoverse/**/lib/**/*',
+		'!bower_components/angular-genoverse/**/Track/',
+		'!bower_components/angular-genoverse/**/Track/**/*',
+		'!bower_components/angular-genoverse/**/Track.js'
+		])
+		.pipe(gulp.dest('src/assets/js/genoverse'))
+		.pipe(gulp.dest('tadkit/assets/js/genoverse'));
+});
+
 // Transfer HTML Templates
 gulp.task('assets-html', function() {
 	return gulp.src([
-		'src/components/panels/*.html',
-		'src/components/scenes/*.html',
-		'src/components/tracks/*.html',
-		'src/layout/shared/*.html',
-		'src/layout/home/*.html',
-		'src/layout/project/*.html',
-		'src/layout/browser/*.html'
+		'src/**/*.html',
+		// 'src/components/browsers/*.html',
+		// 'src/components/scenes/*.html',
+		// 'src/components/tracks/*.html',
+		// 'src/components/panels/*.html',
+		// 'src/layout/shared/*.html',
+		// 'src/layout/home/*.html',
+		// 'src/layout/project/*.html',
+		// 'src/layout/browser/*.html'
 		])
 		.pipe(header("<!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->\n"))
+		.pipe(rename({dirname: ''}))
 		.pipe(gulp.dest('src/assets/templates'))
 		.pipe(gulp.dest('tadkit/assets/templates'));
 });
@@ -291,16 +312,16 @@ gulp.task('openbrowser', function() {
 gulp.task('watch', function() {
 	gulp.watch([
 		'src/**/*',
-		'!src/assets/css/*',
-		'!src/assets/fonts/*',
-		'!src/assets/img/*',
-		'!src/assets/js/*',
-		'!src/assets/scss/*',
+		'!src/assets/css/**/*',
+		'!src/assets/fonts/**/*',
+		'!src/assets/img/**/*',
+		'!src/assets/js/**/*',
+		'!src/assets/scss/**/*',
 		'!src/assets/templates/**/*'
 	], [
 		'config',
 		'lint',
-		'docs-html',
+		'doc-html',
 		// 'docs-md',
 		// 'sass',
 		'dist-scripts',
@@ -309,6 +330,7 @@ gulp.task('watch', function() {
 		'app-index',
 		'app-favicon',
 		'assets-libs',
+		'assets-genoverse',
 		'assets-html',
 		'assets-css',
 		'assets-fonts',
@@ -324,7 +346,7 @@ gulp.task('watch', function() {
 gulp.task('default', [
 	'config',
 	'lint',
-	'docs-html',
+	'doc-html',
 	// 'docs-md',
 	'dist-scripts',
 	'dist-modules',
@@ -332,6 +354,7 @@ gulp.task('default', [
 	'app-index',
 	'app-favicon',
 	'assets-libs',
+	'assets-genoverse',
 	'assets-html',
 	'assets-css',
 	'assets-fonts',
