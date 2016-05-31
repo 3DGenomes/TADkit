@@ -221,17 +221,10 @@ gulp.task('assets-genoverse', function() {
 gulp.task('assets-html', function() {
 	return gulp.src([
 		'src/**/*.html',
-		// 'src/components/browsers/*.html',
-		// 'src/components/scenes/*.html',
-		// 'src/components/tracks/*.html',
-		// 'src/components/panels/*.html',
-		// 'src/layout/shared/*.html',
-		// 'src/layout/home/*.html',
-		// 'src/layout/project/*.html',
-		// 'src/layout/browser/*.html'
+		'!src/assets/templates/*.html'
 		])
-		.pipe(header("<!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->\n"))
 		.pipe(rename({dirname: ''}))
+		.pipe(header("<!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->\n"))
 		.pipe(gulp.dest('src/assets/templates'))
 		.pipe(gulp.dest('tadkit/assets/templates'));
 });
