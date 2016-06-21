@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Datasets', Datasets);
 
-	function Datasets($q, $http, uuid4, Settings, Resources, Proximities, Restraints, Overlays) {
+	function Datasets($q, $http, uuid4, Settings, Resources, Proximities, Restraints, Overlays, Hic_data) {
 		var datasets = {
 			loaded : [],
 			current : {
@@ -74,6 +74,7 @@
 				Settings.set(dataset);
 				Proximities.set(currentModelData);
 				Restraints.set(currentModelData, dataset.restraints);
+				if(!angular.isUndefined(dataset.hic_data))	Hic_data.set(dataset.hic_data);
 				Overlays.update(Proximities.get().distances, dataset.restraints);
 				// if (dataset.object.filename) {
 					var filetype = "tsv";
