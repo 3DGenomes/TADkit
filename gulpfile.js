@@ -70,6 +70,7 @@ gulp.task('dist-vendor', function() {
 		'bower_components/threejs/build/three.js', // see asset-libs below
 		'bower_components/threejs/examples/js/controls/TrackballControls.js',
 		'bower_components/threejs/examples/js/controls/OrbitControls.js',
+		'bower_components/angular-awesome-slider/dist/angular-awesome-slider.min.js',
 		])
 		.pipe(gulp.dest('src/assets/libs'))
 		.pipe(concat('vendors.js'))
@@ -134,6 +135,7 @@ gulp.task('assets-css', function() {
 		'src/assets/css/angular-material.css',
 		'src/assets/css/tadkit.css',
 		'src/assets/css/ensembl-genes.css',
+		'src/assets/css/angular-awesome-slider.min.css',
 		])
 		.pipe(gulp.dest('tadkit/assets/css'));
 });
