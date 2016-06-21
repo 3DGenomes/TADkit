@@ -31,6 +31,7 @@
     "angular-uuid4": "~0.3.0",
     "angular-busy": "~4.1.2",
     "angular-file-upload": "~1.1.5",
-    "papaparse": "~4.1.0"
+    "papaparse": "~4.1.0",
+    "angular-awesome-slider": "~2.4.4"
   }
 }
