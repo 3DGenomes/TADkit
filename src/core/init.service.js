@@ -55,7 +55,6 @@
 				if (typeof user.projects.loaded[0].storyboards !== "undefined" &&  user.projects.loaded[0].storyboards.length === 0)
 					user.projects.loaded[0].storyboards = Storyboards.get();
 			}
-			Storyboards.setComponents();
 			$log.debug("User interface initialized.");
 		}
 

@@ -641,7 +641,7 @@
 			 */
 			load: function(layer, address) {
 				layer = layer || ["http://rest.ensemblgenomes.org/overlap/region/","species","/","chrom",":","chromStart","-","chromEnd","?feature=gene;content-type=application/json"];
-				address = address || {species: "Drosophila melanogaster", speciesUrl: "drosophila_melanogaster", chrom: "chrX", chromStart: 15590000, chromEnd: 16600000};
+				address = address || {species: "Drosophila melanogaster", speciesUrl: "drosophila_melanogaster", chrom: "X", chromStart: 15590000, chromEnd: 16600000};
 				// TODO: clear odd colors while loading...
 				var deferred = $q.defer();
 				var dataUrl;
@@ -735,33 +735,40 @@
 	'use strict';
 	/**
 	 * @ngdoc overview
-	 * @name genoverse
-	 * @module genoverse
+	 * @name browsers
+	 * @module browsers
 	 * @description
 	 * Genoverse Module
 	 * Contains generic scripts which are not available on Bower
 	 * These are not app-specific but essential to the App.
 	 *
 	 * @example
-	 * `angular.module('myApp',['genoverse']);`
+	 * `angular.module('myApp',['browsers']);`
 	 *
 	 */
 	angular
-		.module('genoverse', []);
+		.module('browsers', []);
 }());
 /**!
  * Genoverse Angular module implmenting
  * Genoverse http://wtsi-web.github.io/Genoverse/
  * @author  Mike Goodstadt  <mikegoodstadt@gmail.com>
  * @version 0.0.1
+ *
+ * Module which loads Genoverse as a track
+ * install, inject into TADkit.js and then add "browser-genoverse" to Storyboard component list:
+ *
  */
 (function() {
 	'use strict';
 	angular
-		.module('genoverse')
+		.module('browsers')
 		.factory('GenoverseService', GenoverseService);
 
 	function GenoverseService(ONLINE, $log, $document, $q, $http, $timeout, $rootScope) {
+
+		// example genoverse-config.txt >> TODO: change to json
+		var genoverseConfigTxt = "{container:'#browser-genoverse-6',genome:'grch38',chr:13,start:32296945,end:32370557,plugins:['controlPanel','karyotype','trackControls','resizer','focusRegion','fullscreen','tooltips','fileDrop'],tracks:[Genoverse.Track.Scalebar]}";
 
 		function loadConfig(config) {
 			var deferred = $q.defer();
@@ -801,7 +808,7 @@
 					if (ONLINE) {
 						scriptTag.src = 'http://wtsi-web.github.io/Genoverse/js/genoverse.combined.js';
 					} else {
-						scriptTag.src = 'assets/js/genoverse/js/genoverse.combined.js';
+						scriptTag.src = 'assets/js/genoverse.combined.js';
 					}
 					scriptTag.onreadystatechange = function () {
 						if (this.readyState == 'complete') {
@@ -813,7 +820,7 @@
 					var cssReset = $document[0].createElement("link");
 					cssReset.rel = "stylesheet";
 					cssReset.type = 'text/css';
-					cssReset.href = "assets/js/genoverse/ng/genoverse-reset.css";
+					cssReset.href = "assets/js/genoverse-reset.css";
 
 					var node = $document[0].getElementsByTagName('body')[0];
 					node.appendChild(scriptTag);
@@ -831,6 +838,99 @@
 				loadConfig(config);
 				loadScriptTags();
 				return deferred.promise;
+			}
+		};
+	}
+})();
+/**!
+ * Genome Maps https://genomemaps.org
+ * Jsorolla genome-viewer https://github.com/opencb/jsorolla
+ * @author  Mike Goodstadt  <mikegoodstadt@gmail.com>
+ * @version 0.0.1
+ */
+(function() {
+	'use strict';
+	angular
+		.module('browsers')
+		.factory('JsorollaService', JsorollaService);
+
+	function JsorollaService($rootScope, $log, $document, $q, $timeout) {
+		var ASSETS = "assets/js/genome-viewer/";
+
+		function append(filename) {
+				var deferred = $q.defer();
+
+				var filetype = filename.substr(filename.lastIndexOf('.')+1);
+				var resource = {
+					"filename" : filename,
+					"filetype" : filetype
+				};
+				if (filetype == "css") {
+					resource.nodeName = "link";
+				} else if (filetype == "js") {
+					resource.nodeName = "script";
+				} else {
+					$log.warn("JsorollaService: \"" + filetype + "\" is not a valid filetype!");
+					// return deferred.resolve();
+				}
+
+				function onLoad() {
+					$rootScope.$apply(function() {
+						// console.log("Loaded: " + resource.filename);
+						deferred.resolve(resource);
+					});
+				}
+
+				function appendResource(resource) {
+					var node = $document[0].createElement(resource.nodeName);
+						if (resource.nodeName == "link") {
+							node.type = "text/css";
+							node.href = ASSETS + resource.filename;
+							node.rel = "stylesheet";
+						} else if (resource.nodeName == "script") {
+							node.type = "text/javascript";
+							node.src = ASSETS + resource.filename;
+							node.async = true;
+							// node.text = config;
+						}
+						node.onreadystatechange = function () { if (this.readyState == "complete") onLoad(); };
+						node.onload = onLoad;
+
+					var parent = $document[0].getElementsByTagName("body")[0];
+						parent.appendChild(node);
+				}
+
+				appendResource(resource);
+				return deferred.promise;
+		}
+
+		return {
+			load: function() {
+				$log.log("OpenCB Jsorolla Genome Viewer loading...");
+
+				var resources = [];
+				resources.push("vendor/fontawesome/css/font-awesome.min.css");
+				resources.push("vendor/qtip2/jquery.qtip.min.css");
+				resources.push("styles/css/style.css");
+				resources.push("vendor/underscore/underscore-min.js");
+				resources.push("vendor/backbone/backbone.js");
+				resources.push("vendor/jquery/dist/jquery.min.js");
+				resources.push("vendor/qtip2/jquery.qtip.min.js");
+				resources.push("vendor/uri.js/src/URI.min.js");
+				resources.push("gv-config.js");
+				resources.push("genome-viewer.js");
+
+				var appendResources = [];
+				angular.forEach(resources, function(filename, key) {
+					appendResources.push(append(filename));
+				});
+
+				return $q.all(appendResources)
+				.then(function(results) {
+					// $log.log(results);
+					$log.log("OpenCB Jsorolla Genome Viewer loaded OK!");
+					return results;
+				});
 			}
 		};
 	}

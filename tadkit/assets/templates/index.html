@@ -1,138 +1,326 @@
 <!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->
-<!doctype html>
-<html lang="en">
+<!DOCTYPE HTML>
+<html>
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
-	<!--base href="/"-->
-	<title>TADkit</title>
-	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-	<link rel="stylesheet" href="../bower_components/angular-material/angular-material.css">
-	<link rel="stylesheet" href="assets/css/tadkit.css" />
-	<link rel="stylesheet" href="assets/css/ensembl-genes.css" />	
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Genome Viewer Demo</title>
+
+    <link rel="stylesheet" href="vendor/fontawesome/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="vendor/qtip2/jquery.qtip.min.css">
+
+    <link rel="stylesheet" href="styles/css/style.css">
+
+
+    <script type="text/javascript" src="vendor/underscore/underscore-min.js"></script>
+
+    <script type="text/javascript" src="vendor/backbone/backbone.js"></script>
+
+    <script type="text/javascript" src="vendor/jquery/dist/jquery.min.js"></script>
+
+    <script type="text/javascript" src="vendor/qtip2/jquery.qtip.min.js"></script>
+
+    <script type="text/javascript" src="vendor/uri.js/src/URI.min.js"></script>
+
+
+    <script type="text/javascript" src="gv-config.js"></script>
+
+
+    <script src="genome-viewer.min.js"></script>
+
+
+    <!-- Google Analytics -->
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-16414504-2']);
+        _gaq.push(['_trackPageview']);
+
+        (function() {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+
+
+    <style type="text/css">
+        html {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body {
+            margin: 0px;
+        }
+
+        #application {
+            box-sizing: border-box;
+            margin: 0 auto;
+            width: 1500px;
+            border: 1px solid lightgray;
+        }
+
+        #title {
+            margin: 20px auto;
+            width: 1500px;
+            font-size: 35px;
+            color: gray;
+        }
+    </style>
+
 </head>
-<body ng-app="TADkit" route-css-classnames>
-	
-	<div data-ui-view id="main" class="fullheight"></div>
-	
-	<!-- VENDOR DEPENDENCIES Note: load order is important -->
-	<script src="../bower_components/angular/angular.js"></script>
-	<script src="../bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-	<script src="../bower_components/angular-aria/angular-aria.js"></script>
-	<script src="../bower_components/angular-animate/angular-animate.js"></script>
-	<script src="../bower_components/angular-material/angular-material.js"></script>
-	<script src="../bower_components/angular-file-upload/angular-file-upload.js"></script>
-	<script src="../bower_components/ng-flow/dist/ng-flow-standalone.js"></script>
-	<script src="../bower_components/angular-uuid4/angular-uuid4.js"></script>
-	<script src="../bower_components/papaparse/papaparse.js"></script>
-	<script src="../bower_components/angular-d3js/dist/angular-d3js.js"></script>
-	<script src="../bower_components/angular-threejs/dist/angular-threejs.js"></script>
 
-	<!-- MAIN TADKIT SCRIPTS -->
-	<script src="tadkit.js"></script>
-	<script src="tadkit.constants.js"></script>
-	<script src="tadkit.config.js"></script>
-	<script src="tadkit.run.js"></script>
-	<script src="tadkit.states.js"></script>
+<body class="ocb">
 
-	<!-- MODULES: GENERIC -->
-	<script src="modules/generic/generic.module.js"></script>
-	<script src="modules/generic/utils.service.js"></script>
-	<script src="modules/generic/color.service.js"></script>
-	<script src="modules/generic/route-css-classnames.directive.js"></script>
-	<!-- MODULES: UI -->
-	<script src="modules/ui/ui.module.js"></script>
-	<script src="modules/ui/ui-dropzone.directive.js"></script>
-	<script src="modules/ui/ui-loader.directive.js"></script>
-	<!-- MODULES: BIOINFORMATICS -->
-	<script src="modules/bioinformatics/bioinformatics.module.js"></script>
-	<script src="modules/bioinformatics/ensembl-features.service.js"></script>
-	<script src="modules/bioinformatics/ensembl-colors.service.js"></script>
-	<!-- MODULES: GENOVERSE -->
-	<script src="modules/genoverse/genoverse.module.js"></script>
-	<script src="modules/genoverse/genoverse-core.service.js"></script>
-	<!-- MODULES: MODELING -->
-	<script src="modules/modeling/modeling.module.js"></script>
-	<script src="modules/modeling/clusters.service.js"></script>
-	<script src="modules/modeling/restraints.service.js"></script>
-	<script src="modules/modeling/proximities.service.js"></script>
-	<!-- MODULES: VISUALIZATION -->
-	<script src="modules/visualization/visualization.module.js"></script>
-	<script src="modules/visualization/networks.service.js"></script>
-	<script src="modules/visualization/path-controls.service.js"></script>
-	<script src="modules/visualization/paths.service.js"></script>
-	<script src="modules/visualization/segments.service.js"></script>
+<script type="text/javascript">
+    var genomeViewer;
+    var CELLBASE_HOST = 'http://bioinfodev.hpc.cam.ac.uk/cellbase';
+    /*
+     *  For development purpose only
+     */
+    // if (window.location.host.indexOf("localhost") != -1 ||
+    //         window.location.protocol === "file:"
+    // ) {
+    //     CELLBASE_HOST = "http://localhost:8080/cellbase/webservices/rest";
+    // }
 
-	<!-- TADKIT LAYOUT: SHARED -->
-	<script src="layout/shared/main.controller.js"></script>
-	<script src="layout/shared/sidebar.user.controller.js"></script>
-	<script src="layout/shared/topbar.controller.js"></script>
-	<!-- TADKIT LAYOUT: HOME -->
-	<script src="layout/home/home.controller.js"></script>
-	<!-- TADKIT LAYOUT: PROJECT -->
-	<script src="layout/project/project.controller.js"></script>
-	<script src="layout/project/project-dataset.controller.js"></script>
-	<script src="layout/project/project-loader.controller.js"></script>
-	<!-- TADKIT LAYOUT: BROWSER -->
-	<script src="layout/browser/data-import.controller.js"></script>
-	<script src="layout/browser/data-import.directive.js"></script>
-	<script src="layout/browser/sidebar.browser.controller.js"></script>
-	<script src="layout/browser/storyboard.controller.js"></script>
+    var region = new Region({chromosome: "13", start: 32889611, end: 32889611});
+    //        var region = new Region({chromosome: "X", start: 139865187, end: 139865193});
 
-	<!-- TADKIT COMPONENTS: STORYBOARD -->
-	<script src="components/component.directive.js"></script>
-	<!-- TADKIT COMPONENTS: PANELS -->
-	<script src="components/panels/panel-infobox.controller.js"></script>
-	<script src="components/panels/panel-infobox.directive.js"></script>
-	<script src="components/panels/panel-inspector.controller.js"></script>
-	<script src="components/panels/panel-inspector.directive.js"></script>
-	<!-- TADKIT COMPONENTS: SCENES -->
-	<script src="components/scenes/scene.controller.js"></script>
-	<script src="components/scenes/scene-chromatin.service.js"></script>
-	<script src="components/scenes/scene-cluster.service.js"></script>
-	<script src="components/scenes/scene-clusters.directive.js"></script>
-	<script src="components/scenes/scene-floatingtad.directive.js"></script>
-	<script src="components/scenes/scene-network.service.js"></script>
-	<script src="components/scenes/scene-particles.service.js"></script>
-	<script src="components/scenes/scene.directive.js"></script>
-	<!-- TADKIT COMPONENTS: TRACKS -->
-	<script src="components/tracks/track.controller.js"></script>
-	<script src="components/tracks/track-barchart.directive.js"></script>
-	<script src="components/tracks/track-bedgraph.directive.js"></script>
-	<script src="components/tracks/track-genes.directive.js"></script>
-	<script src="components/tracks/track-proximities.directive.js"></script>
-	<script src="components/tracks/track-restraints.directive.js"></script>
-	<script src="components/tracks/track-slider.directive.js"></script>
-	<script src="components/tracks/track-wiggle.directive.js"></script>
-	<!-- TADKIT COMPONENTS: BROWSERS -->
-	<script src="components/browsers/browser.controller.js"></script>
-	<script src="components/browsers/browser-biodalliance.directive.js"></script>
-	<script src="components/browsers/browser-genoverse.directive.js"></script>
 
-	<!-- TADKIT CORE SERVICES -->
-	<script src="core/app.service.js"></script>
-	<script src="core/components.service.js"></script>
-	<script src="core/init.service.js"></script>
-	<script src="core/projects.service.js"></script>
-	<script src="core/settings.service.js"></script>
-	<script src="core/storyboards.service.js"></script>
-	<script src="core/users.service.js"></script>
+    getSpecies(function(s) {
+        AVAILABLE_SPECIES = s;
+        run();
+    });
 
-	<!-- TADKIT LAYERS DATASETS -->
-	<script src="datasets/datasets.module.js"></script>
-	<script src="datasets/datasets.service.js"></script>
-	<script src="datasets/data-import.service.js"></script>
-	<!-- <script src="datasets/spatial-tadbit.service.js"></script> -->
-	<!-- <script src="datasets/annotations-ensembl.service.js"></script> -->
-	<!-- <script src="datasets/annotations-tabular.service.js"></script> -->
+    function getSpecies(callback) {
+        CellBaseManager.get({
+            host: CELLBASE_HOST,
+            category: "meta",
+            subCategory: "species",
+            success: function(r) {
+                var taxonomies = r.response[0].result[0];
+                for (var taxonomy in taxonomies) {
+                    var newSpecies = [];
+                    for (var i = 0; i < taxonomies[taxonomy].length; i++) {
+                        var species = taxonomies[taxonomy][i];
+                        for (var j = 0; j < species.assemblies.length; j++) {
+                            var s = Utils.clone(species)
+                            s.assembly = species.assemblies[j];
+                            delete s.assemblies;
+                            newSpecies.push(s)
+                        }
+                    }
+                    taxonomies[taxonomy] = newSpecies;
+                }
+                callback(taxonomies);
+            }
+        });
+    }
 
-	<!-- TADKIT LAYERS SERVICES -->
-	<script src="layers/layers.module.js"></script>
-	<script src="layers/layers.service.js"></script>
-	<!-- <script src="layers/layers-import.service.js"></script> -->
-	<script src="layers/layer-annotations.service.js"></script>
+    function run() {
 
-	<!--base href="/src/"></base-->
+        var species = AVAILABLE_SPECIES.vertebrates[0];
 
+        genomeViewer = new GenomeViewer({
+            cellBaseHost: CELLBASE_HOST,
+            cellBaseVersion: 'v3',
+            target: 'application',
+            width: document.querySelector('#application').getBoundingClientRect().width,
+            region: region,
+            availableSpecies: AVAILABLE_SPECIES,
+            species: species,
+            sidePanel: false,
+            autoRender: true,
+            resizable: true,
+//        quickSearchResultFn:quickSearchResultFn,
+//        quickSearchDisplayKey:,
+            karyotypePanelConfig: {
+                collapsed: false,
+                collapsible: true
+            },
+            chromosomePanelConfig: {
+                collapsed: false,
+                collapsible: true
+            },
+            navigationBarConfig: {
+                componentsConfig: {
+//                restoreDefaultRegionButton:false,
+//                regionHistoryButton:false,
+//                speciesButton:false,
+//                chromosomesButton:false,
+//                karyotypeButton:false,
+//                chromosomeButton:false,
+//                regionButton:false,
+//                zoomControl:false,
+//                windowSizeControl:false,
+//                positionControl:false,
+//                moveControl:false,
+//                autoheightButton:false,
+//                compactButton:false,
+//                searchControl:false
+                }
+            },
+            handlers: {
+                'region:change': function(e) {
+                    console.log(e)
+                }
+            }
+//        chromosomeList:[]
+//            trackListTitle: ''
+//            drawNavigationBar = true;
+//            drawKaryotypePanel: false,
+//            drawChromosomePanel: false,
+//            drawOverviewTrackListPanel: false
+
+        });
+
+
+        tracks = [];
+
+        this.sequence = new FeatureTrack({
+            title: 'Sequence',
+            height: 25,
+            visibleRegionSize: 200,
+
+            renderer: new SequenceRenderer(),
+            dataAdapter: new CellBaseAdapter({
+                category: "genomic",
+                subCategory: "region",
+                resource: "sequence",
+                params: {},
+                species: genomeViewer.species,
+                cacheConfig: {
+                    chunkSize: 100
+                }
+            })
+        });
+        tracks.push(this.sequence);
+
+        this.gene = new GeneTrack({
+            title: 'Gene',
+            minHistogramRegionSize: 20000000,
+            maxLabelRegionSize: 10000000,
+            minTranscriptRegionSize: 200000,
+            height: 100,
+
+            renderer: new GeneRenderer({
+                handlers: {
+                    'feature:click': function(e) {
+                        console.log(e)
+                    }
+                }
+            }),
+
+            dataAdapter: new CellBaseAdapter({
+                category: "genomic",
+                subCategory: "region",
+                resource: "gene",
+                species: genomeViewer.species,
+                params: {
+                    exclude: 'transcripts.tfbs,transcripts.xrefs,transcripts.exons.sequence'
+                },
+                cacheConfig: {
+                    chunkSize: 100000
+                }
+            })
+        });
+
+        tracks.push(this.gene);
+
+
+        var renderer = new FeatureRenderer(FEATURE_TYPES.gene);
+        renderer.on({
+            'feature:click': function(event) {
+                // feature click event example
+                console.log(event)
+            }
+        });
+        var gene = new FeatureTrack({
+//        title: 'Gene overview',
+            minHistogramRegionSize: 20000000,
+            maxLabelRegionSize: 10000000,
+            height: 100,
+
+            renderer: renderer,
+
+            dataAdapter: new CellBaseAdapter({
+                category: "genomic",
+                subCategory: "region",
+                resource: "gene",
+                params: {
+                    exclude: 'transcripts,chunkIds'
+                },
+                species: genomeViewer.species,
+                cacheConfig: {
+                    chunkSize: 100000
+                }
+            })
+        });
+
+        genomeViewer.addOverviewTrack(gene);
+
+//         this.snp = new FeatureTrack({
+//             title: 'SNP',
+//             featureType: 'SNP',
+//             minHistogramRegionSize: 12000,
+//             maxLabelRegionSize: 3000,
+//             height: 120,
+
+//             renderer: new FeatureRenderer(FEATURE_TYPES.snp),
+
+//             dataAdapter: new CellBaseAdapter({
+//                 category: "genomic",
+//                 subCategory: "region",
+//                 resource: "snp",
+//                 params: {
+//                     exclude: 'transcriptVariations,xrefs,samples'
+//                 },
+//                 species: genomeViewer.species,
+//                 cacheConfig: {
+//                     chunkSize: 10000
+//                 }
+//             })
+//         });
+
+//         tracks.push(this.snp);
+
+// /*************************/
+//         var customTrack = new FeatureTrack({
+//             title: 'custom track',
+//             minHistogramRegionSize: 12000,
+//             maxLabelRegionSize: 3000,
+//             height: 120,
+
+//             renderer: new FeatureRenderer(),
+
+//             dataAdapter: new FeatureTemplateAdapter({
+//               multiRegions: true,
+//               histogramMultiRegions: false,
+//               uriTemplate: 'https://dcc.icgc.org/api/browser/gene?segment={region}&resource=gene',
+//               cacheConfig: {
+//                 chunkSize: 100000
+//               }
+//             })
+//         });
+//         tracks.push(customTrack);
+// /*************************/
+
+
+        genomeViewer.addTrack(tracks);
+
+        genomeViewer.draw();
+
+    }
+
+</script>
+
+<div id="title">Genome Viewer</div>
+<div id="application"></div>
 </body>
 </html>

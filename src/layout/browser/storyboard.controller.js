@@ -13,8 +13,8 @@
 
 		$scope.settings.views.scale = 1; //$scope.current.dataset.object.scale;
 		// one of the setViewpoints is redundant?
-		Storyboards.setViewpoint($scope.settings.current.chrom,$scope.settings.current.chromStart,$scope.settings.current.chromEnd,$scope.settings.views.scale);
-		Components.setViewpoint($scope.settings.current.chrom,$scope.settings.current.chromStart,$scope.settings.current.chromEnd,$scope.settings.views.scale);
+		Storyboards.setViewpoint();
+		// Components.setViewpoint();
 
 		// Calculating Initial Proximities
 		//NOTE in future if more than 1 currentModel need same number of currentProximities

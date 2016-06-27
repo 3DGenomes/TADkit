@@ -15,7 +15,7 @@
 		.module('TADkit')
 		.factory('Components', Components);
 
-	function Components($log, $q, $http, uuid4) {
+	function Components($log, $q, $http, uuid4, Settings) {
 		var components = {
 			loaded : [],
 			current : {
@@ -186,28 +186,28 @@
 			 * @param {number} scaleOrig Viewpoint scale of component.
 			 * @returns {Object} Components.
 			 */
-			setViewpoint: function(chrom, chromStart, chromEnd, scaleOrig) {
-				chrom = chrom || "1";
-				chromStart = chromStart || 0;
-				chromEnd = chromEnd || 4999999;
-				var currentComponents = components.loaded;
-				angular.forEach(currentComponents, function(component, index) {
-					var scale = scaleOrig || 1;
-					component.view.viewpoint.chrom = chrom;
-					component.view.viewpoint.chromStart = chromStart;
-					component.view.viewpoint.chromEnd = chromEnd;
-					if (component.object.type === "scene" || component.object.type === "scene-clusters") {
-						/* For 3D scenes, so as to view whole object for a given FOV:
-						 * Scale * radius of object = translation from orgin of object
-						 * See ... service.
-						 */
-						var angle = component.view.viewpoint.fov / 2;
-						scale = Math.tan(angle).toFixed(2);
-					}
-					component.view.viewpoint.scale = scale;
-				});
-				return components;
-			},
+			// setViewpoint: function(chrom, chromStart, chromEnd, scaleOrig) {
+			// 	chrom = chrom || "1";
+			// 	chromStart = chromStart || 0;
+			// 	chromEnd = chromEnd || 4999999;
+			// 	var currentComponents = components.loaded;
+			// 	angular.forEach(currentComponents, function(component, index) {
+			// 		var scale = scaleOrig || 1;
+			// 		component.view.viewpoint.chrom = chrom;
+			// 		component.view.viewpoint.chromStart = chromStart;
+			// 		component.view.viewpoint.chromEnd = chromEnd;
+			// 		if (component.object.type === "scene" || component.object.type === "scene-clusters") {
+			// 			/* For 3D scenes, so as to view whole object for a given FOV:
+			// 			 * Scale * radius of object = translation from orgin of object
+			// 			 * See ... service.
+			// 			 */
+			// 			var angle = component.view.viewpoint.fov / 2;
+			// 			scale = Math.tan(angle).toFixed(2);
+			// 		}
+			// 		component.view.viewpoint.scale = scale;
+			// 	});
+			// 	return components;
+			// },
 
 			/**
 			 * @ngdoc function

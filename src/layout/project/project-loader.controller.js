@@ -4,11 +4,11 @@
 		.module('TADkit')
 		.controller('ProjectLoaderController', ProjectLoaderController);
 
-	function ProjectLoaderController($log, $q, $state, $stateParams, $scope, Datasets, Layers, Storyboards) {
+	function ProjectLoaderController($log, $q, $state, $stateParams, $scope, Datasets, Clusters, Layers, Storyboards) {
 
 		$scope.updateCurrent = function() {
 			$scope.current.dataset = Datasets.getDataset();
-			$scope.current.model = Datasets.getModel();
+			$scope.current.model = Clusters.getModel();
 			$scope.current.layer = Layers.getLayer();
 			$log.info("Current dataset, model, layer and storyboard updated.");			
 		};

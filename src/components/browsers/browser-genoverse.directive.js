@@ -23,8 +23,6 @@
 			restrict: 'E',
 			templateUrl: 'assets/templates/browser.html',
 			link: function(scope, element, attrs) {
-				console.log("Load Genoverse!");
-
 				var config = "{container:'#" + scope.component.object.idIndex + "'";
 				config += ",genome:'grch38'";
 				config += ",chr:1";// + scope.component.view.viewpoint.chrom;

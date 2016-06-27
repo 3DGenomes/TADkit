@@ -19,8 +19,8 @@
 					layers: $scope.$parent.layers,
 				},
 				onComplete: afterShowAnimation
-			}).then(function(importedLayersCount) {
-				$log.info("Layers (" + importedLayersCount + ") added.");
+			}).then(function(datasetTitle) {
+				$log.info("Dataset \"" + datasetTitle + "\" added.");
 			}, function() {
 				$log.log("Layers import cancelled. No tracks added.");
 	 			$state.go('browser');	
@@ -36,7 +36,6 @@
 		// Parse $fileContent user preview in modal window
 		$scope.previewData = function($fileContent) {
 			$log.info("Previewing...");
-
 			$scope.preview = Datasets.preview($fileContent);
 			$log.info("Data fetched - pending selection...");
 		};
@@ -46,14 +45,8 @@
 			$log.info("Import selected data...");
 			var importedData = Datasets.import($scope.preview);
 			$log.info("Import complete.");
-
-			// Pass layers count for dialog hide message...
-			$mdDialog.hide(importedData.length);
+			$mdDialog.hide(importedData.object.title);
 			$state.go('browser');
-		};
-
-		$scope.hide = function() {
-			$mdDialog.hide($scope.layersAcquired);
 		};
 
 		$scope.cancel = function() {

@@ -14,7 +14,7 @@
 		.module('TADkit.datasets')
 		.factory('DataImport', DataImport);
 
-	function DataImport(VERSION, NAME, $log) {
+	function DataImport(VERSION, NAME, $log, Clusters, Layers) {
 		// Import additional 2D/track data imported by users for use as Layers
 
 		return {
@@ -48,6 +48,16 @@
 					var dataDetails = self.detail(data);
 					dataset = self.create(filteredData, dataDetails);
 				}
+
+				if (dataset.clusters) {
+					console.log("Clusters found :)");
+					Clusters.load(dataset);
+				} else {
+					console.log("No clusters :(");
+					// HACK: assuming tabular data import...
+					Layers.import(dataset);
+				}
+
 				return dataset;
 			},
 
@@ -100,6 +110,7 @@
 				// var rows = data.length;
 				// var cols = data[0].length;
 				var validatedData;
+
 
 				// for (var i = 0; i < rows; i++) {
 				// 	var newRow = [];
@@ -225,7 +236,6 @@
 			 * @returns {Object} Datasets Object.
 			 */
 			create: function(data, details) {
-
 				var dataset = {
 						"metadata": {
 							"version" : VERSION,

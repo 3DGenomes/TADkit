@@ -32,6 +32,15 @@ NG_DOCS={
     },
     {
       "section": "api",
+      "id": "browsers",
+      "shortName": "browsers",
+      "type": "overview",
+      "moduleName": "browsers",
+      "shortDescription": "Genoverse Module",
+      "keywords": "angular api app app-specific bower browsers essential generic genoverse module myapp overview scripts"
+    },
+    {
+      "section": "api",
       "id": "datasets",
       "shortName": "datasets",
       "type": "overview",
@@ -74,15 +83,6 @@ NG_DOCS={
       "moduleName": "generic",
       "shortDescription": "Generic javascript utilities.",
       "keywords": "api array description detrmines don function generic http javascript null object passed returned service string type undefined utilities utils whatisit"
-    },
-    {
-      "section": "api",
-      "id": "genoverse",
-      "shortName": "genoverse",
-      "type": "overview",
-      "moduleName": "genoverse",
-      "shortDescription": "Genoverse Module",
-      "keywords": "angular api app app-specific bower essential generic genoverse module myapp overview scripts"
     },
     {
       "section": "api",
@@ -136,7 +136,7 @@ NG_DOCS={
       "type": "overview",
       "moduleName": "TADkit",
       "shortDescription": "Main module for TADkit app.",
-      "keywords": "api app bioinformatics class d3js data-ui-view datasets fullheight generic genoverse html layers main modeling module ng-app ngmaterial overview route-css-classnames router tadkit threejs ui uuid4 visualization"
+      "keywords": "api app bioinformatics browsers class d3js data-ui-view datasets fullheight generic html layers main modeling module ng-app ngmaterial overview route-css-classnames router tadkit threejs ui uuid4 visualization"
     },
     {
       "section": "api",
@@ -167,6 +167,24 @@ NG_DOCS={
     },
     {
       "section": "api",
+      "id": "TADkit.directive:tkComponentBrowserJsorolla",
+      "shortName": "tkComponentBrowserJsorolla",
+      "type": "directive",
+      "moduleName": "TADkit",
+      "shortDescription": "OpenCB/jsorolla/    genome-viewer directive that is replaced on complie",
+      "keywords": "api array complie component components directive ea genome-viewer ng-repeat object objects opencb real replaced supplied tadkit tk-component-track-browser-jsorolla tkcomponentbrowserjsorolla type"
+    },
+    {
+      "section": "api",
+      "id": "TADkit.directive:tkComponentBrowserJsorolla",
+      "shortName": "tkComponentBrowserJsorolla",
+      "type": "directive",
+      "moduleName": "TADkit",
+      "shortDescription": "OpenCB/jsorolla/    genome-viewer directive that is replaced on complie",
+      "keywords": "api array complie component components directive ea genome-viewer ng-repeat object objects opencb real replaced supplied tadkit tk-component-track-browser-jsorolla tkcomponentbrowserjsorolla type"
+    },
+    {
+      "section": "api",
       "id": "TADkit.directive:tkComponentTrackBarchart",
       "shortName": "tkComponentTrackBarchart",
       "type": "directive",
@@ -182,6 +200,15 @@ NG_DOCS={
       "moduleName": "TADkit",
       "shortDescription": "Track component which generates a d3 graph",
       "keywords": "api bigwig colleciton component d3 data directive ea format function generates graph initial js layer object render settings supplied tadkit title tk-component-wiggle0 tkcomponentwiggle0 togglelayer track type update updates view"
+    },
+    {
+      "section": "api",
+      "id": "TADkit.directive:tkTooltip",
+      "shortName": "tkTooltip",
+      "type": "directive",
+      "moduleName": "TADkit",
+      "shortDescription": "Track Tooltip.",
+      "keywords": "api contents directive ea tadkit title tk-tooltip tktooltip tooltip track"
     },
     {
       "section": "api",

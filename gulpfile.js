@@ -130,8 +130,8 @@ gulp.task('dist-modules', function() {
 		'src/modules/bioinformatics/bioinformatics.module.js',
 		'src/modules/bioinformatics/*.service.js',
 		'src/modules/bioinformatics/*.directive.js',
-		'src/modules/genoverse/genoverse.module.js',
-		'src/modules/genoverse/*.service.js',
+		'src/modules/browsers/browsers.module.js',
+		'src/modules/browsers/*.service.js',
 		'src/modules/modeling/modeling.module.js',
 		'src/modules/modeling/*.service.js',
 		'src/modules/modeling/*.directive.js',
@@ -160,10 +160,9 @@ gulp.task('dist-vendor', function() {
 		'bower_components/ng-flow/dist/ng-flow-standalone.js',
 		'bower_components/angular-uuid4/angular-uuid4.js',
 		'bower_components/papaparse/papaparse.js',
-		'bower_components/angular-d3js/dist/angular-d3js.js',
-		'bower_components/angular-threejs/dist/angular-threejs.js',
-		'bower_components/dalliance-dist/dist/dalliance-all.js',
-		'bower_components/genoverse/js/genoverse.combined.js'
+		'bower_components/angular-d3js/dist/angular-d3js.js', // an angular module to load d3JS, NOT d3js scripts
+		'bower_components/angular-threejs/dist/angular-threejs.js', // an angular module to load threeJS, NOT threeJS scripts
+		// 'bower_components/angular-jsorolla/dist/angular-jsorolla.js' // an angular module to load jsorolla, NOT jsorolla scripts
 		])
 		.pipe(concat('vendors.js'))
 		.pipe(gulp.dest('tadkit/assets/js'))
@@ -192,29 +191,15 @@ gulp.task('app-favicon', function() {
 // Transfer Libs used in Services for local offline load
 gulp.task('assets-libs', function() {
 	return gulp.src([
-		'bower_components/angular/angular.min.js.map',
-		'bower_components/d3/d3.min.js', // use angular- version
-		'bower_components/threejs/build/three.min.js', // use angular- version
-		'bower_components/threejs/examples/js/controls/TrackballControls.js', // use angular- version
-		'bower_components/threejs/examples/js/controls/OrbitControls.js' // use angular- version
+		'bower_components/angular/angular.min.js.map', //required?
+		'bower_components/d3/d3.min.js',
+		'bower_components/threejs/build/three.min.js',
+		'bower_components/threejs/examples/js/controls/TrackballControls.js',
+		'bower_components/threejs/examples/js/controls/OrbitControls.js',
+		'bower_components/jsorolla/**/*' // temporary untill module comverted to bower
 		])
 		.pipe(gulp.dest('src/assets/js'))
 		.pipe(gulp.dest('tadkit/assets/js'));
-});
-
-// Transfer Genoverse
-gulp.task('assets-genoverse', function() {
-	return gulp.src([
-		'bower_components/angular-genoverse/**/*',
-		'!bower_components/angular-genoverse/**/Genoverse.js',
-		'!bower_components/angular-genoverse/**/lib/',
-		'!bower_components/angular-genoverse/**/lib/**/*',
-		'!bower_components/angular-genoverse/**/Track/',
-		'!bower_components/angular-genoverse/**/Track/**/*',
-		'!bower_components/angular-genoverse/**/Track.js'
-		])
-		.pipe(gulp.dest('src/assets/js/genoverse'))
-		.pipe(gulp.dest('tadkit/assets/js/genoverse'));
 });
 
 // Transfer HTML Templates
@@ -323,7 +308,6 @@ gulp.task('watch', function() {
 		'app-index',
 		'app-favicon',
 		'assets-libs',
-		'assets-genoverse',
 		'assets-html',
 		'assets-css',
 		'assets-fonts',
@@ -347,7 +331,6 @@ gulp.task('default', [
 	'app-index',
 	'app-favicon',
 	'assets-libs',
-	'assets-genoverse',
 	'assets-html',
 	'assets-css',
 	'assets-fonts',

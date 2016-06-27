@@ -37,6 +37,7 @@
 				var self = this;
 				var chromosomeIndex = 0;
 				if (dataset.object.chromosomeIndex) { chromosomeIndex = dataset.object.chromosomeIndex;	}
+				settings.current.chrom = dataset.object.species;
 				settings.current.chrom = dataset.object.chrom[chromosomeIndex];
 				settings.current.chromStart = dataset.object.chromStart[chromosomeIndex];
 				settings.current.chromEnd = dataset.object.chromEnd[chromosomeIndex];

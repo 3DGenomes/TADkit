@@ -81,6 +81,8 @@
 					newComponent.object.dataset = layer.object.id;
 					newComponent.view.settings.step = layer.object.step;
 					newComponent.view.settings.color = layer.object.color;
+					newComponent.view.viewpoint.species = settings.current.species;
+					newComponent.view.viewpoint.chrom = settings.current.chrom;
 					newComponent.view.viewpoint.chromStart = settings.current.chromStart;
 					newComponent.view.viewpoint.chromEnd = settings.current.chromEnd;
 					newComponent.view.viewpoint.scale = settings.views.scale;
@@ -133,17 +135,16 @@
 				storyboard.components = components;
 				return components;
 			},
-			setViewpoint: function(chrom, chromStart, chromEnd, scaleOrig) {
-				chrom = chrom || "1";
-				chromStart = chromStart || 0;
-				chromEnd = chromEnd || 4999999;
+			setViewpoint: function() {
+				var settings = Settings.get();
 				var currentComponents = storyboards.loaded[storyboards.current.index].components;
 				if (VERBOSE) $log.debug(currentComponents);
 				angular.forEach( currentComponents, function(component, index) {
-					var scale = scaleOrig || 1;
-					component.view.viewpoint.chrom = chrom;
-					component.view.viewpoint.chromStart = chromStart;
-					component.view.viewpoint.chromEnd = chromEnd;
+					var scale = settings.views.scale || 1;
+					component.view.viewpoint.species = settings.current.species;
+					component.view.viewpoint.chrom = settings.current.chrom;
+					component.view.viewpoint.chromStart = settings.current.chromStart;
+					component.view.viewpoint.chromEnd = settings.current.chromEnd;
 					if (component.object.type === "scene" || component.object.type === "scene-clusters") {
 						var angle = component.view.viewpoint.fov / 2;
 						var margin = 0.6;

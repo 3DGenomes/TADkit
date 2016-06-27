@@ -1,0 +1,8 @@
+<div ng-style="tkTooltipTitle">{{title}}</div>
+<div ng-style="tkTooltipContent">
+	<dl ng-style="tkTooltipList">
+		<dt ng-repeat-start="item in content track by $index" ng-style="tkTooltipTerm">{{item.name}}</dt>
+		<dd ng-repeat-end ng-style="tkTooltipDescription">{{item.value}}</dd>
+	</dl>
+</div>
+<div ng-style="tkTooltipArrow"></div>

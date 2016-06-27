@@ -10,7 +10,7 @@
                    "title": "Sample TADbit data",
                    "species" : "Drosophila melanogaster",
                    "assembly" : "DBGP 5 (dm3)",
-                   "chrom" : ["chrX"],
+                   "chrom" : ["X"],
                    "experimentType" : "Hi-C",
                    "cellType" : "kc167",
                    "project" : "TADbit_paper",

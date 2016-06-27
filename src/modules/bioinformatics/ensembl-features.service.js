@@ -75,7 +75,7 @@
 			 */
 			load: function(layer, address) {
 				layer = layer || ["http://rest.ensemblgenomes.org/overlap/region/","species","/","chrom",":","chromStart","-","chromEnd","?feature=gene;content-type=application/json"];
-				address = address || {species: "Drosophila melanogaster", speciesUrl: "drosophila_melanogaster", chrom: "chrX", chromStart: 15590000, chromEnd: 16600000};
+				address = address || {species: "Drosophila melanogaster", speciesUrl: "drosophila_melanogaster", chrom: "X", chromStart: 15590000, chromEnd: 16600000};
 				// TODO: clear odd colors while loading...
 				var deferred = $q.defer();
 				var dataUrl;

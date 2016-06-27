@@ -2,17 +2,21 @@
   "name": "TADkit",
   "description": "Frontend Visualization Tool for TADbit",
   "dependencies": {
-    "angular": "~1.3.13",
-    "angular-ui-router": "~0.2.13",
-    "angular-aria": "~1.3.20",
-    "angular-animate": "~1.3.20",
-    "angular-material": "~0.8.3",
-    "angular-file-upload": "~1.1.5",
+    "angular": "~1.5.7",
+    "angular-ui-router": "~0.3.1",
+    "angular-aria": "~1.5.7",
+    "angular-animate": "~1.5.7",
+    "angular-material": "~1.0.9",
+    "angular-file-upload": "~2.3.4",
     "ng-flow": "~2",
     "angular-uuid4": "~0.3.0",
     "papaparse": "~4.1.0",
     "angular-d3js": "*",
-    "angular-threejs": "*"
+    "angular-threejs": "*",
+    "d3-tip": "^0.6.7",
+    "angular-foundation": "~0.8.0",
+    "angular-route": "~1.5.7",
+    "angular-ui-router-styles": "~1.1.0"
   },
   "homepage": "https://github.com/3DGenomes/TADkit",
   "authors": [
@@ -24,5 +28,20 @@
     "bower_components",
     "node_modules",
     "src_pre-alpha"
-  ]
+  ],
+  "resolutions": {
+    "angular": "~1.5.7",
+    "angular-ui-router": "~0.3.1",
+    "angular-aria": "~1.5.7",
+    "angular-animate": "~1.5.7",
+    "angular-material": "~1.0.9",
+    "angular-file-upload": "~2.3.4",
+    "angular-foundation": "~0.8.0",
+    "angular-ui-router-styles": "~1.1.0",
+    "draggabilly": "~2.1.1",
+    "packery": "~2.1.1",
+    "get-size": "~2.0.2",
+    "outlayer": "^2.0.0",
+    "angular-route": "~1.5.7"
+  }
 }

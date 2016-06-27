@@ -1,6 +1,6 @@
 {
   "name": "TADkit",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Frontend Visualization Tool for TADbit",
   "main": "index.html",
   "config": {
