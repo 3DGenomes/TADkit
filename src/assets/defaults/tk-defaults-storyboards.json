@@ -108,40 +108,6 @@
 					"generator" : "TADkit"
 				},
 				"object" : {
-					"uuid" : "00000000-0000-0000-0000-000000000001",
-					"id" : "e-default-panel",
-					"title" : "Inspector",
-					"type" : "panel-inspector",
-					"dataset" : "genes",
-					"state" : {
-						"width" : "200px",
-						"height" : "300px",
-						"margin" : "4px",
-						"position" : 1
-					}
-				},
-				"view" : {
-					"viewpoint" : {
-						"chromStart" : 1,
-						"chromEnd" : 10,
-						"scale" : 1
-					},
-					"viewtype" : "list",
-					"settings" : {
-						"background" : "#ffffff",
-						"margin" : "4px",
-						"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
-						"example" : 1
-					}
-				}
-			},
-			{
-				"metadata" : {
-					"version" : 1.0,
-					"type" : "component",
-					"generator" : "TADkit"
-				},
-				"object" : {
 					"uuid" : "00000000-0000-0000-0000-000000000002",
 					"id" : "f-slider",
 					"title" : "Navigation",

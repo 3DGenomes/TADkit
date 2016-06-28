@@ -71432,7 +71432,7 @@ angular.module('flow', ['flow.provider', 'flow.init', 'flow.events', 'flow.btn',
 			// Reset when switching between views, routes or states (with ui-router	module).
 			// Use of renderer.setSize in a directive resets the viewport to full size.
 			// No view independent reset availible for scissor so can only set ScissorTest to false
-			renderer.enableScissorTest ( false );
+			renderer.setScissorTest ( false );
 			renderer.setClearColor( 0x000000, 0.0 );
 		}
 
@@ -71597,6 +71597,7 @@ angular.module('flow', ['flow.provider', 'flow.init', 'flow.events', 'flow.btn',
 				var loader = new THREE.TextureLoader( textureManager );
 				loader.load( filename, function ( texture ) {
 					newTexture = texture;
+					newTexture.sourceFile = filename;
 					newTexture.name = textureName;
 					textures.loaded.push( newTexture );
 				}, onProgress, onError );
@@ -71616,7 +71617,7 @@ angular.module('flow', ['flow.provider', 'flow.init', 'flow.events', 'flow.btn',
 				var texture, found;
 				if (textureName !== undefined || textureName !== false) {
 					for (var i = textures.loaded.length - 1; i >= 0; i--) {
-						if (textures.loaded[i].name === textureName) {
+						if (textures.loaded[i].sourceFile === textureName) {
 							texture = textures.loaded[i];
 							found = true;
 							$log.info("Texture \"" + textureName + "\" found!");

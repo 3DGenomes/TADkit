@@ -233,6 +233,16 @@ gulp.task('assets-css', function() {
 		.pipe(gulp.dest('tadkit/assets/css'));
 });
 
+// // Transfer Modules CSS Assets
+// gulp.task('assets-modulescss', function() {
+// 	return gulp.src([
+// 		'src/modules/*/*.css'
+// 		])
+// 		.pipe(rename({dirname: ''}))
+// 		.pipe(gulp.dest('src/assets/css'))
+// 		.pipe(gulp.dest('tadkit/assets/css'));
+// });
+
 // Transfer Fonts Assets
 gulp.task('assets-fonts', function() {
 	return gulp.src([

@@ -1,17 +1,21 @@
-/**!
- * Genome Maps https://genomemaps.org
- * Jsorolla genome-viewer https://github.com/opencb/jsorolla
- * @author  Mike Goodstadt  <mikegoodstadt@gmail.com>
- * @version 0.0.1
- */
 (function() {
 	'use strict';
+	/**
+	 * @ngdoc service
+	 * @name ui.service:uiTooltipService
+	 * @description uiTooltip loads CSS
+	 *
+	 * @requires https://code.angularjs.org/1.3.16/docs/api/ng/service/$log
+	 * @requires https://code.angularjs.org/1.3.16/docs/api/ng/service/$q
+	 * @requires https://code.angularjs.org/1.3.16/docs/api/ng/service/$http
+	 *
+	 */
 	angular
-		.module('browsers')
-		.factory('JsorollaService', JsorollaService);
+		.module('ui')
+		.factory('uiTooltipService', uiTooltipService);
 
-	function JsorollaService($rootScope, $log, $document, $q, $timeout) {
-		var ASSETS = "assets/js/genome-viewer/";
+	function uiTooltipService($rootScope, $log, $document, $q) {
+		var ASSETS = "assets/css/";
 
 		function append(filename) {
 				var deferred = $q.defer();
@@ -26,13 +30,13 @@
 				} else if (filetype == "js") {
 					resource.nodeName = "script";
 				} else {
-					$log.warn("JsorollaService: \"" + filetype + "\" is not a valid filetype!");
+					$log.warn("Service: \"" + filetype + "\" is not a valid filetype!");
 					// return deferred.resolve();
 				}
 
 				function onLoad() {
 					$rootScope.$apply(function() {
-						// console.log("Loaded: " + resource.filename);
+						$log.debug("Loaded: " + resource.filename);
 						deferred.resolve(resource);
 					});
 				}
@@ -62,19 +66,10 @@
 
 		return {
 			load: function() {
-				$log.log("OpenCB Jsorolla Genome Viewer loading...");
+				$log.log("Services loading...");
 
 				var resources = [];
-				resources.push("vendor/fontawesome/css/font-awesome.min.css");
-				resources.push("vendor/qtip2/jquery.qtip.min.css");
-				resources.push("styles/css/style.css");
-				resources.push("vendor/underscore/underscore-min.js");
-				resources.push("vendor/backbone/backbone.js");
-				resources.push("vendor/jquery/dist/jquery.min.js");
-				resources.push("vendor/qtip2/jquery.qtip.min.js");
-				resources.push("vendor/uri.js/src/URI.min.js");
-				resources.push("gv-config.js");
-				resources.push("genome-viewer.js");
+				resources.push("ui-tooltip.css");
 
 				var appendResources = [];
 				angular.forEach(resources, function(filename, key) {
@@ -84,7 +79,7 @@
 				return $q.all(appendResources)
 				.then(function(results) {
 					$log.debug(results);
-					$log.log("OpenCB Jsorolla Genome Viewer loaded OK!");
+					$log.info("Services (" + resources + ") loaded OK!");
 					return results;
 				});
 			}

@@ -203,15 +203,6 @@ NG_DOCS={
     },
     {
       "section": "api",
-      "id": "TADkit.directive:tkTooltip",
-      "shortName": "tkTooltip",
-      "type": "directive",
-      "moduleName": "TADkit",
-      "shortDescription": "Track Tooltip.",
-      "keywords": "api contents directive ea tadkit title tk-tooltip tktooltip tooltip track"
-    },
-    {
-      "section": "api",
       "id": "TADkit.service:Annotations",
       "shortName": "Annotations",
       "type": "service",
@@ -326,6 +317,24 @@ NG_DOCS={
       "moduleName": "ui",
       "shortDescription": "UI Module",
       "keywords": "angular api compoments d3js interface module myapp overview ui user"
+    },
+    {
+      "section": "api",
+      "id": "ui.directive:uiTooltip",
+      "shortName": "uiTooltip",
+      "type": "directive",
+      "moduleName": "ui",
+      "shortDescription": "UI Tooltip.",
+      "keywords": "api contents directive display ea ensure hidden ng-cloak onload style styling tag title tooltip ui ui-tooltip uitooltip"
+    },
+    {
+      "section": "api",
+      "id": "ui.service:uiTooltipService",
+      "shortName": "uiTooltipService",
+      "type": "service",
+      "moduleName": "ui",
+      "shortDescription": "uiTooltip loads CSS",
+      "keywords": "16 angularjs api css https loads org service ui uitooltip uitooltipservice"
     },
     {
       "section": "api",

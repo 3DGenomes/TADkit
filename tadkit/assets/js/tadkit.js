@@ -68,15 +68,39 @@ angular.module("TADkit")
 		// $locationProvider.html5Mode(true);
 
 		// Material Design Themes
-		$mdThemingProvider.theme("default")
-			.primaryPalette("green")
+		$mdThemingProvider.definePalette('chroma', {
+			"50": "#e8f5e9",
+			"100": "#c8e6c9",
+			"200": "#a5d6a7",
+			"300": "#81c784",
+			"400": "#66bb6a",
+			"500": "#4caf50",
+			"600": "#43a047",
+			"700": "#388e3c",
+			"800": "#2e7d32",
+			"900": "#1b5e20",
+			"A100": "#b9f6ca",
+			"A200": "#69f0ae",
+			"A400": "#00e676",
+			"A700": "#00c853",
+			'contrastDefaultColor': "light", // whether, by default, text (contrast) on this palette should be dark or light
+			'contrastDarkColors': ["50", "100", "200", "300", "400", "A100"], // hues which contrast should be 'dark' by default
+			'contrastLightColors': undefined // specify this if default was 'dark'
+		});
+		$mdThemingProvider.theme("tadkit")
+			.primaryPalette("chroma", {
+				"default": "500"
+			})
 			.accentPalette("lime", {
 				"default": "500"
 			})
-   			.warnPalette("red")
-			.backgroundPalette("grey");
+   			.warnPalette("red", {
+				"default": "500"
+			});
+			// .backgroundPalette("grey");
 		$mdThemingProvider.theme("darkKit")
 			.dark();
+		$mdThemingProvider.setDefaultTheme('tadkit');
 
 		$provide.decorator('mdButtonDirective', ['$delegate',
 			function ($delegate) {
@@ -2628,8 +2652,9 @@ angular.module("TADkit")
 					'layer="component.layer"' +
 					'togglelayer="toggleLayer(index)" ' +
 					'style="margin: {{component.object.state.margin}}; background-color: {{component.view.settings.background}}" ' +
-					'class="component ' + scope.component.object.type + '">' +
-					'</data-tk-component-' + scope.component.object.type + '>';
+					'class="component ' + scope.component.object.type + '" ' +
+					'ng-cloak ' +
+					'></data-tk-component-' + scope.component.object.type + '>';
 
 				element.replaceWith($compile(strTemplate)(scope));
 			}
@@ -3731,7 +3756,7 @@ angular.module("TADkit")
 
 							renderer.setViewport( viewportLeft, viewportBottom, viewportWidth, viewportHeight );
 							renderer.setScissor( viewportLeft, viewportBottom, viewportWidth, viewportHeight );
-							renderer.enableScissorTest ( true );
+							renderer.setScissorTest ( true );
 							renderer.setClearColor( "#ffffff" );
 							renderer.render( scene, camera, null, true ); // forceClear == true
 
@@ -3785,15 +3810,14 @@ angular.module("TADkit")
 
 						scene = new THREE.Scene();
 
-						camera = new THREE.PerspectiveCamera( 50, 1, 150, 650 );
+						camera = new THREE.PerspectiveCamera( 50, 1, 300, 900 );
 						camera.position.z = 500;
 						scene.add(camera);
 
 						geometry = new THREE.TorusKnotGeometry( 100, 30, 100, 16 );
 
 						material = new THREE.MeshDepthMaterial({
-							// morphTargets: false,
-							wireframe: true,
+ 							wireframe: true,
 							// wireframeLinewidth: 1
 						});
 
@@ -3907,7 +3931,7 @@ angular.module("TADkit")
 					},
 					// Function called when download progresses
 					function ( xhr ) {
-						$log.info( (xhr.loaded / xhr.total * 100) + '% loaded' );
+						$log.debug( (xhr.loaded / xhr.total * 100) + '% loaded' );
 					},
 					// Function called when download errors
 					function ( xhr ) {
@@ -4980,7 +5004,7 @@ angular.module("TADkit")
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
-
+				// uiTooltipService.load();
 				d3Service.load().then(function(d3) {
 					scope.safeApply = function(fn) {
 						var phase = this.$root.$$phase;
@@ -5065,9 +5089,12 @@ angular.module("TADkit")
 					});
 
 					// TOOLTIP
-					var tooltipWidth = 180; // TODO: get form settings
+					var tooltipWidth = 160; // TODO: get form settings
 					var tooltipPadding = 10; // TODO: get form settings
-					var backgroundColor = "rgb(76,175,80)"; // TODO: get from App
+					var backgroundColor = "#fff"; // TODO: get from App
+					var textColor = "#333"; // TODO: get from App
+					var borderWidth = 2; // TODO: get from App
+					var borderColor = "rgb(76,175,80)"; // TODO: get from App
 
 					// Attributees to pass to <tl-tooltip> (dummy values)
 					scope.tooltip = {
@@ -5076,11 +5103,14 @@ angular.module("TADkit")
 						"styling" : {
 							"width" : tooltipWidth,
 							"padding" : tooltipPadding,
-							"background" : backgroundColor
+							"background" : backgroundColor,
+							"color" : textColor,
+							"borderWidth" : borderWidth,
+							"borderColor" : borderColor
 						}
 					};
 
-					var tooltip = d3.select(componentBody).select("tk-tooltip");
+					var tooltip = d3.select(componentBody).select("ui-tooltip");
 						tooltip.style("width", (tooltipWidth + "px") );
 						tooltip.style("padding", (tooltipPadding + "px") );									
 
@@ -6089,101 +6119,6 @@ angular.module("TADkit")
 					};
 
 				});
-			}
-		};
-	}
-})();
-(function() {
-	'use strict';
-	/**
-	 * @ngdoc directive
-	 * @name TADkit.directive:tkTooltip
-	 * @scope
-	 * @restrict EA
-	 *
-	 * @description
-	 * Track Tooltip.
-	 *
-	 * @example
-	 * `<tk-tooltip title="title" contents="contents"/>`
-	 * `<div tk-tooltip title="title" contents="contents"></div>`
-	 *
-	 */
-	angular
-		.module('TADkit')
-		.directive('tkTooltip', tkTooltip);
-
-	function tkTooltip($timeout) {    
-		return {
-			restrict: 'EA',
-			scope: {
-				title: '=',
-				content: '=',
-				sorting: '=',
-				styling: '='
-			},
-			templateUrl: 'assets/templates/track-tooltip.html',
-			link: function(scope, element, attrs) {
-				if (scope.content) {
-
-					scope.title.replace('_name','');
-					var height = angular.element(element).prop('offsetHeight');
-
-					scope.$watch(function() {
-							height = angular.element(element).prop('offsetHeight');
-							angular.element(element).css("top", "-" + height + "px");
-					});
-
-					var width = scope.styling.width;
-					var padding = scope.styling.padding;
-					var center = (width * 0.5) - (padding * 0.5);
-					var background = scope.styling.background;
-
-					// STYLES applied to template via ng-style
-					element.css({
-						"position" : "absolute",
-						"display" : "block",
-						"background" : background,
-						"color" : "white",	
-						"border-radius" : padding + "pxñ    ",
-						"padding" : padding + "px",
-						"width" : width + "px",
-						"opacity" : 0,
-						"z-index" : 2,
-					});
-					scope.tkTooltipTitle = {
-					    "font-weight" : "bold",
-					    "margin-bottom" : "10px",
-					    "text-transform" : "capitalize"
-					};
-					scope.tkTooltipContent = {
-						"font-size" : "0.7rem"
-					};
-					scope.tkTooltipList = {
-					};
-					scope.tkTooltipTerm = {
-						"float" : "left",
-						"clear" : "left",
-						"width": "50px",
-						"font-weight": "bold"
-					};
-					scope.tkTooltipDescription = {
-						"margin" : "0 0 0 50px",
-						"padding" : "0 0 0.2em 0"
-					};
-					scope.tkTooltipArrow = {
-					    "position" : "absolute",
-					    "bottom" : "-" + padding + "px",
-					    "left" : center + "px",
-					    "width" : 0,
-					    "height" : 0, 
-					    "border-right" : padding + "px solid transparent",
-					    "border-left" : padding + "px solid transparent",
-					    "border-top" : padding + "px solid " + background,
-					    "font-size" : 0,
-					    "line-height" : 0
-					};
-				}
 			}
 		};
 	}

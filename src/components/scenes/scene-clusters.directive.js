@@ -187,7 +187,7 @@
 
 							renderer.setViewport( viewportLeft, viewportBottom, viewportWidth, viewportHeight );
 							renderer.setScissor( viewportLeft, viewportBottom, viewportWidth, viewportHeight );
-							renderer.enableScissorTest ( true );
+							renderer.setScissorTest ( true );
 							renderer.setClearColor( "#ffffff" );
 							renderer.render( scene, camera, null, true ); // forceClear == true
 

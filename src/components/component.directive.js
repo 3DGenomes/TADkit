@@ -43,8 +43,9 @@
 					'layer="component.layer"' +
 					'togglelayer="toggleLayer(index)" ' +
 					'style="margin: {{component.object.state.margin}}; background-color: {{component.view.settings.background}}" ' +
-					'class="component ' + scope.component.object.type + '">' +
-					'</data-tk-component-' + scope.component.object.type + '>';
+					'class="component ' + scope.component.object.type + '" ' +
+					'ng-cloak ' +
+					'></data-tk-component-' + scope.component.object.type + '>';
 
 				element.replaceWith($compile(strTemplate)(scope));
 			}

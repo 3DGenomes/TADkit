@@ -69,7 +69,7 @@
 					},
 					// Function called when download progresses
 					function ( xhr ) {
-						$log.info( (xhr.loaded / xhr.total * 100) + '% loaded' );
+						$log.debug( (xhr.loaded / xhr.total * 100) + '% loaded' );
 					},
 					// Function called when download errors
 					function ( xhr ) {

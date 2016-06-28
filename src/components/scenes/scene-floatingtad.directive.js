@@ -23,15 +23,14 @@
 
 						scene = new THREE.Scene();
 
-						camera = new THREE.PerspectiveCamera( 50, 1, 150, 650 );
+						camera = new THREE.PerspectiveCamera( 50, 1, 300, 900 );
 						camera.position.z = 500;
 						scene.add(camera);
 
 						geometry = new THREE.TorusKnotGeometry( 100, 30, 100, 16 );
 
 						material = new THREE.MeshDepthMaterial({
-							// morphTargets: false,
-							wireframe: true,
+ 							wireframe: true,
 							// wireframeLinewidth: 1
 						});
 

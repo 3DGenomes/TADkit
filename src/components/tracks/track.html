@@ -11,7 +11,7 @@
 			<md-icon class="icon-settings"></md-icon>
 		</a-->
 	</div>
-	<div class="component-options track" data-ng-show='optionsState'>
+	<div class="component-options track" ng-cloak data-ng-show='optionsState'>
 		<!-- TODO: ENABLE AUTO-GENERATION
 		<ul>
 	 		<li data-ng-repeat='option in options'>
@@ -30,6 +30,6 @@
 		<label for="rotate">Option3</label>
 	</div>
 	<div class="component-body">
-		<tk-tooltip title="tooltip.title" content="tooltip.content" styling="tooltip.styling" ng-style="tkToolkit" />
+		<ui-tooltip title="tooltip.title" content="tooltip.content" styling="tooltip.styling" />
 	</div>
 </div>

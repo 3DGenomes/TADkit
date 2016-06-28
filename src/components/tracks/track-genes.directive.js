@@ -18,7 +18,7 @@
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
-
+				// uiTooltipService.load();
 				d3Service.load().then(function(d3) {
 					scope.safeApply = function(fn) {
 						var phase = this.$root.$$phase;
@@ -103,9 +103,12 @@
 					});
 
 					// TOOLTIP
-					var tooltipWidth = 180; // TODO: get form settings
+					var tooltipWidth = 160; // TODO: get form settings
 					var tooltipPadding = 10; // TODO: get form settings
-					var backgroundColor = "rgb(76,175,80)"; // TODO: get from App
+					var backgroundColor = "#fff"; // TODO: get from App
+					var textColor = "#333"; // TODO: get from App
+					var borderWidth = 2; // TODO: get from App
+					var borderColor = "rgb(76,175,80)"; // TODO: get from App
 
 					// Attributees to pass to <tl-tooltip> (dummy values)
 					scope.tooltip = {
@@ -114,11 +117,14 @@
 						"styling" : {
 							"width" : tooltipWidth,
 							"padding" : tooltipPadding,
-							"background" : backgroundColor
+							"background" : backgroundColor,
+							"color" : textColor,
+							"borderWidth" : borderWidth,
+							"borderColor" : borderColor
 						}
 					};
 
-					var tooltip = d3.select(componentBody).select("tk-tooltip");
+					var tooltip = d3.select(componentBody).select("ui-tooltip");
 						tooltip.style("width", (tooltipWidth + "px") );
 						tooltip.style("padding", (tooltipPadding + "px") );									
 
