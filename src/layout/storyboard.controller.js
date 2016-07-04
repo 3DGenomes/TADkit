@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.controller('StoryboardController', StoryboardController);
 
-	function StoryboardController($window, $scope, Settings, Storyboards, Components, Overlays, Proximities, Restraints) {
+	function StoryboardController($window, $scope, Settings, Storyboards, Components, Overlays, Proximities, Restraints, Hic_data) {
 
 		// WATCH FOR WINDOW RESIZE
 		angular.element($window).on('resize', function(){ $scope.$apply(); });
@@ -57,6 +57,8 @@
 					//   and for Scenes: overlay.colors Hue
 					overlay = Overlays.getOverlayById("restraints");
 					component.overlay = overlay;
+				} else if (component.object.type == "panel-hicdata") {
+					component.data = Hic_data.get();
 				}
 				// } else if (component.object.type == "track-wiggle") {
 				// 	overlay = Overlays.getOverlayById(component.object.dataset);

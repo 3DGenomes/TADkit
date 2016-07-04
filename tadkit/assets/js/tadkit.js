@@ -2,7 +2,7 @@
 	'use strict';
 
 	// ANGULAR APP
-	angular.module('TADkit',['ui.router','ngMaterial','uuid4','d3']);
+	angular.module('TADkit',['ui.router','ngMaterial','uuid4','d3','angularAwesomeSlider']);
 	     
 })();
 (function() {
@@ -227,6 +227,259 @@
 					'</data-tk-component-' + scope.component.object.type + '>';
 
 				element.replaceWith($compile(strTemplate)(scope));
+			}
+		};
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.controller('PanelHicdataController', PanelHicdataController);
+
+	function PanelHicdataController($scope) {
+
+		$scope.width = $scope.canvas_width = parseInt($scope.state.width); // strip PX units
+		$scope.height = $scope.canvas_height = parseInt($scope.state.height); // strip PX units
+		if($scope.data.n === 0) {
+			$scope.no_hic_data = true; 
+			return;
+		} else  {
+			$scope.no_hic_data = false;
+		}
+		
+		if(parseInt($scope.data.n)>$scope.width) {
+			$scope.canvas_width = parseInt($scope.data.n); // strip PX units
+			$scope.canvas_height = parseInt($scope.data.n); // strip PX units
+		}
+		//$scope.slidevalue = $scope.data.min+";"+$scope.data.max;
+		$scope.slidevalue = "10;0.001";
+		$scope.slideoptions = {       
+		    //from: Math.round($scope.data.min*100)/100,
+		    //to: Math.round($scope.data.max*100)/100,
+		    from: 10,
+		    to: 0.001,
+		    //step: ($scope.data.max-$scope.data.min)/255,
+		    step: 0.01,
+		    round: 2,
+		    skin: 'blue',
+		    modelLabels: function(value) {
+		    	if(value==10) {
+		    		return '';
+		    	}
+		    	if(value<=0.001) {
+		    		return 'ln('+Math.round($scope.data.max*100)/100+')';
+		    	}
+		    	var b = Math.log(10000)/($scope.data.max-0.001);
+        		var a = 10/Math.exp(b*$scope.data.max);        	
+        		var val = $scope.data.max - Math.log(value/a)/b;
+        		//if(datamin!==0) datamin=Math.log(datamin/a)/b;
+        		//if(datamax!==0) datamax=Math.log(datamax/a)/b;
+		        return 'ln(' + Math.round(val*100)/100 + ')';
+		    },
+		    callback: function(value, released) {
+		    	if(released) {
+		    		$scope.settings.slidevalue = $scope.slidevalue;
+		    		$scope.$apply();
+		    	}
+		    }
+		  };
+		
+	}
+
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.directive('tkComponentPanelHicdata', tkComponentPanelHicdata);
+
+	function tkComponentPanelHicdata($timeout) {
+		return {
+			restrict: 'EA',
+			scope: { 
+				id: '@',
+				state: '=',
+				view: '=',
+				data: '=',
+				settings:'='
+			},
+			templateUrl: 'assets/templates/panel-hicdata.html',
+			link:function(scope, element, attrs){
+				var data = scope.data;
+				scope.rendered = false;
+				scope.imageObject=new Image();
+				//scope.restore_image = null;
+				//scope.restore_data = null;
+				//scope.restore_position = 0;
+				var slidevalue = scope.slidevalue;
+				
+				scope.render = function(data_max, data_min) {
+		            var canvas = document.getElementById("hic_canvas");
+		            if (canvas.getContext) {
+		                console.log("Drawing hic matrix");
+		                var ctx = canvas.getContext("2d");
+		                ctx.imageSmoothingEnabled = false;
+		                ctx.mozImageSmoothingEnabled = false;
+		                ctx.webkitImageSmoothingEnabled = false;
+		                
+		                //clear the canvas
+		                ctx.clearRect(0,0, canvas.width, canvas.height);
+		                
+		                var val, x , y = 0;
+		                var Logmin, Logmax = 0;
+		                if(data.max !== 0) Logmax = Math.log(data.max);
+		                if(data.min !== 0) Logmin = Math.log(data.min);
+		                //var container_width = parseInt(scope.state.width);
+		                //var container_height = parseInt(scope.state.height);
+		                for(var i=0;i<data.value.length;i++) {
+		                	x = Math.floor(data.pos[i]%data.n);
+							y = Math.floor(data.pos[i]/data.n);
+		                	if(x >= parseInt(canvas.width) && y >= parseInt(canvas.height)) {
+		                		break; // avoid overflow
+		                	}
+		                	//if(x >= (container_width-scope.translatePos.x)/scope.scale && y >= (container_height-scope.translatePos.y)/scope.scale) break;
+		                	if(x < parseInt(canvas.width) && y < parseInt(canvas.height)) {
+		                		if(data.value[i]!==0) {
+		                			//if(data.max<=1) val = Math.floor((Math.log(data.value[i])/Math.log(data.max))*5);
+		                			//else 
+		                			//val = Math.floor((Math.log(data.value[i])/Math.log(data.max))*255);
+		                			if(data.value[i] <= data_max && data.value[i] >= data_min)
+		                				val = Math.floor( ((Math.log(data.value[i])-Logmin)/(Logmax-Logmin))*255 );
+		                			else
+		                				val = 0;
+		                		} else {
+		                			val = 0;
+		                		}
+		                		ctx.fillStyle = "rgba(0,0,255,"+val/255+")";
+		                		ctx.fillRect( x, y, 1 , 1 );
+		                		
+		                	}
+		                }
+		                //scope.restore_image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+		                scope.scale = (canvas.width-10)/(Math.sqrt(2)*x);
+		                scope.imageObject.src=canvas.toDataURL();
+		                
+		                scope.rendered = true;
+		                scope.imageObject.onload = function () {
+		                	scope.update();
+		                };
+		            }
+		        };
+		        scope.$watch('settings.current.particle', function(newParticle, oldParticle) {
+					if ( newParticle !== oldParticle) {
+						//scope.render();
+						scope.update();
+					}
+				});
+		        scope.$watch('settings.slidevalue', function(newvalue,oldvalue) {
+		        	if ( newvalue !== oldvalue) {
+		        		var slide_value = newvalue.split(";");
+		        		var datamin = parseFloat(slide_value[0]);
+		        		var datamax = parseFloat(slide_value[1]);
+		        		var b = Math.log(10000)/(scope.data.max-0.001);
+		        		var a = 10/Math.exp(b*scope.data.max);
+		        		if(datamin!==0) datamin=Math.log(datamin/a)/b;
+		        		if(datamax!==0) datamax=Math.log(datamax/a)/b;
+		        		scope.render(scope.data.max-datamax,scope.data.max-datamin);
+		        	}
+				});
+
+		        // UPDATE
+				scope.update = function() {
+					
+					
+	                if(!scope.rendered)	scope.render(data.max, data.min);
+					var canvas = document.getElementById("hic_canvas");
+		            if (canvas.getContext) {
+		                var ctx = canvas.getContext("2d");
+		                ctx.clearRect(0,0, canvas.width, canvas.height);
+		                ctx.save();
+		                //if(scope.restore_image!==null) {
+		                	//ctx.putImageData(scope.restore_image,scope.translatePos.x, scope.translatePos.y);
+		                //}
+		                ctx.translate(0, canvas.height-10);
+		                ctx.rotate(-Math.PI/4);
+		                ctx.scale(scope.scale, scope.scale);
+		                
+		                ctx.drawImage(scope.imageObject,scope.translatePos.x/scope.scale,scope.translatePos.x/scope.scale);
+		                //ctx.drawImage(scope.imageObject,scope.translatePos.x/scope.scale,scope.translatePos.y/scope.scale);
+		                //ctx.translate(scope.translatePos.x/scope.scale, scope.translatePos.y/scope.scale);
+		                var x = scope.settings.current.particle-1;
+		                var y = scope.settings.current.particle-1;		                
+		                if(x<1) {
+		                	x=y=1;
+		                }
+		                if(x>=data.n-2) x=data.n-2;
+		                //x = (x)*scope.scale+scope.translatePos.x;
+		                //y = (y)*scope.scale+scope.translatePos.y;
+		                //scope.restore_position = x-4;
+		                //scope.restore_data = ctx.getImageData(x-4, x-4, 9, 9); 
+		                //ctx.fillStyle = "rgba(0,0,0,1)";
+            			//ctx.fillRect( x-2, y-2, 5 , 5 );
+            			ctx.fillStyle = "rgba(255,255,255,1)";
+            			x = x + scope.translatePos.x/scope.scale;
+            			y = y + scope.translatePos.x/scope.scale;
+            			ctx.fillRect( x-1, y-1, 3 , 3 );
+		                
+            			ctx.restore();
+		            }
+				};
+				
+				var canvas = document.getElementById("hic_canvas");
+				scope.translatePos = {
+					x: 0,
+				    y: 0
+				};
+			 
+			    scope.scale = 1.0;
+				var scaleMultiplier = 0.8;
+			    var startDragOffset = {};
+			    var mouseDown = false;
+			 
+	
+			    scope.increasezoom = function() {
+			    	scope.scale /= scaleMultiplier;
+			        scope.update();
+			    };
+			 
+			    scope.reducezoom = function() {
+			    	scope.scale *= scaleMultiplier;
+			        scope.update();
+			    };
+			    
+			    
+			    // add event listeners to handle screen drag
+			    canvas.addEventListener("mousedown", function(evt){
+			        mouseDown = true;
+			        startDragOffset.x = evt.clientX - scope.translatePos.x;
+			        startDragOffset.y = evt.clientY - scope.translatePos.y;
+			    });
+			 
+			    canvas.addEventListener("mouseup", function(evt){
+			        mouseDown = false;
+			    });
+			 
+			    canvas.addEventListener("mouseover", function(evt){
+			        mouseDown = false;
+			    });
+			 
+			    canvas.addEventListener("mouseout", function(evt){
+			        mouseDown = false;
+			    });
+			 
+			    canvas.addEventListener("mousemove", function(evt){
+			        if (mouseDown) {
+			            scope.translatePos.x = evt.clientX - startDragOffset.x;
+			            scope.translatePos.y = evt.clientY - startDragOffset.y;
+			            //scope.render();
+			            scope.update();
+			        }
+			    });
+				
+			    $timeout(function () {
+                    scope.update();
+                });
 			}
 		};
 	}
@@ -3722,7 +3975,7 @@
 		.module('TADkit')
 		.controller('StoryboardController', StoryboardController);
 
-	function StoryboardController($window, $scope, Settings, Storyboards, Components, Overlays, Proximities, Restraints) {
+	function StoryboardController($window, $scope, Settings, Storyboards, Components, Overlays, Proximities, Restraints, Hic_data) {
 
 		// WATCH FOR WINDOW RESIZE
 		angular.element($window).on('resize', function(){ $scope.$apply(); });
@@ -3775,6 +4028,8 @@
 					//   and for Scenes: overlay.colors Hue
 					overlay = Overlays.getOverlayById("restraints");
 					component.overlay = overlay;
+				} else if (component.object.type == "panel-hicdata") {
+					component.data = Hic_data.get();
 				}
 				// } else if (component.object.type == "track-wiggle") {
 				// 	overlay = Overlays.getOverlayById(component.object.dataset);
@@ -4443,7 +4698,7 @@
 		.module('TADkit')
 		.factory('Datasets', Datasets);
 
-	function Datasets($q, $http, uuid4, Settings, Resources, Proximities, Restraints, Overlays) {
+	function Datasets($q, $http, uuid4, Settings, Resources, Proximities, Restraints, Overlays, Hic_data) {
 		var datasets = {
 			loaded : [],
 			current : {
@@ -4513,6 +4768,7 @@
 				Settings.set(dataset);
 				Proximities.set(currentModelData);
 				Restraints.set(currentModelData, dataset.restraints);
+				if(!angular.isUndefined(dataset.hic_data))	Hic_data.set(dataset.hic_data);
 				Overlays.update(Proximities.get().distances, dataset.restraints);
 				// if (dataset.object.filename) {
 					var filetype = "tsv";
@@ -4611,6 +4867,7 @@
 		};
 	}
 })();
+
 (function() {
 	'use strict';
 	angular
@@ -4675,6 +4932,53 @@
 				});
 				return genes;
 			}
+		};
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.factory('Hic_data', Hic_data);
+
+	function Hic_data() {
+		var hic_data = {
+			n: 0,
+			max: 0,
+			min: 99999999999,
+			pos: [],
+			value: []
+		};
+		return {
+			set: function (datasetHic_data) {
+				var self = this;
+				self.clear();
+				hic_data.n = parseInt(datasetHic_data.n);
+
+				var i = 0;
+				for (var pos in datasetHic_data.data) {
+					//hic_data.x.push(Math.floor(parseInt(pos)%hic_data.n));
+					//hic_data.y.push(Math.floor(parseInt(pos)/hic_data.n));
+					hic_data.pos.push(parseInt(pos));
+					hic_data.value.push(datasetHic_data.data[pos]);
+					if(datasetHic_data.data[pos]<hic_data.min) hic_data.min = datasetHic_data.data[pos];
+					if(datasetHic_data.data[pos]>hic_data.max) hic_data.max = datasetHic_data.data[pos];
+					i++;	
+				}
+				return hic_data;
+			},
+			get: function() {
+				return hic_data;
+			},
+			clear: function() {
+				hic_data = {
+						n: 0,
+						max: 0,
+						min: 99999999999,
+						pos: [],
+						value: []
+				};
+			},
 		};
 	}
 })();
@@ -5314,7 +5618,9 @@
 							foreParticle = vertices[0];
 						} else {
 							// fore particle == extend same dist as to previous particle
-							foreParticle.copy(baseParticle).addVectors(baseParticle, vertices[i - 1]);
+							// really ???
+							//foreParticle.copy(baseParticle).addVectors(baseParticle, vertices[i - 1]);
+							foreParticle.copy(baseParticle).add(new THREE.Vector3(0.5, 0.5, 0.5));
 						}
 					} else {
 						foreParticle = vertices[i + 1];

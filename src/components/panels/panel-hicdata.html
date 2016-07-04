@@ -1,10 +1,10 @@
 <div ng-controller='PanelHicdataController' class="component-controller">
 	<div class="component-body">
 		<div id="hic_data_container" width="{{width}}" height="{{height}}" style="margin:{{state.margin}}; width:{{state.width}}; height:{{state.height}};">
-			<div layout="column" layout-align="start end">
+			<div id="no_hic_data_label" ng-show="no_hic_data"><h3>No HiC data found in the dataset</h3></div>
+			<div ng-hide="no_hic_data" layout="column" layout-align="start end">
 				<div id="zoom-buttons" layout="row" layout-align="center center">
-					<div><md-checkbox id="show_restraints" ng-model="show_restraints" aria-label="Restraints" ng-change="toggle(show_restraints)">Restraints</md-checkbox></div>
-				    <div><md-button id="minus" class="md-fab" aria-label="Zoom out" ng-click="reducezoom()">-</md-button>
+					<div><md-button id="minus" class="md-fab" aria-label="Zoom out" ng-click="reducezoom()">-</md-button>
 				    <md-button id="plus" class="md-fab" aria-label="Zoom in" ng-click="increasezoom()">+</md-button></div>
 				</div>
 				<div id="slider-hic"><input type="text" options="slideoptions" slider id="mySlider1" ng-model="slidevalue"></div>

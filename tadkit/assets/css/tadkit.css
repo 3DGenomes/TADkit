@@ -347,6 +347,49 @@ md-checkbox.md-checked .md-icon {
 	width: 300px;
 	height: 324px;
 }
+.component-container .panel-hicdata {
+	width: 600px;
+	height: 600px;
+}
+.component-container #hic_canvas, .component-container img {
+	cursor: move;
+    image-rendering: optimizeSpeed;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: optimize-contrast;
+    image-rendering: pixelated;
+    -ms-interpolation-mode: nearest-neighbor;
+}
+.component #hic_data_container{
+	overflow: hidden;
+	border: 5px solid #ddd;
+}
+.component #hic_data_container #zoom-buttons {
+    position: absolute;
+    left: 400px;
+}
+.component #hic_data_container #show_restraints {
+    padding-bottom: 4px;
+    padding-right: 6px;
+}
+.component #hic_data_container #slider-hic {
+	position: absolute;
+    left: 400px;
+    width: 200px;
+    top: 55px;
+}
+.component #hic_data_container .md-button.md-default-theme.md-fab {
+	font-size: 30px;
+	line-height: 14px;
+    width: 30px;
+    height: 30px;	
+    padding-bottom: 8px;
+}
+.component #hic_data_container #no_hic_data_label {
+	position: absolute;
+    top: 200px;
+    left: 200px;
+}
 .component-container .track-slider,
 .component-container .track-genes {
 	width: 100%;

@@ -348,8 +348,8 @@ md-checkbox.md-checked .md-icon {
 	height: 324px;
 }
 .component-container .panel-hicdata {
-	width: 400px;
-	height: 400px;
+	width: 600px;
+	height: 600px;
 }
 .component-container #hic_canvas, .component-container img {
 	cursor: move;
@@ -360,30 +360,35 @@ md-checkbox.md-checked .md-icon {
     image-rendering: pixelated;
     -ms-interpolation-mode: nearest-neighbor;
 }
-.component-container #hic_data_container{
+.component #hic_data_container{
 	overflow: hidden;
 	border: 5px solid #ddd;
 }
-.component-container #hic_data_container #zoom-buttons {
+.component #hic_data_container #zoom-buttons {
     position: absolute;
     left: 400px;
 }
-.component-container #hic_data_container #show_restraints {
+.component #hic_data_container #show_restraints {
     padding-bottom: 4px;
     padding-right: 6px;
 }
-.component-container #hic_data_container #slider-hic {
+.component #hic_data_container #slider-hic {
 	position: absolute;
     left: 400px;
     width: 200px;
     top: 55px;
 }
-.component-container #hic_data_container .md-button.md-default-theme.md-fab {
+.component #hic_data_container .md-button.md-default-theme.md-fab {
 	font-size: 30px;
 	line-height: 14px;
     width: 30px;
     height: 30px;	
     padding-bottom: 8px;
+}
+.component #hic_data_container #no_hic_data_label {
+	position: absolute;
+    top: 200px;
+    left: 200px;
 }
 .component-container .track-slider,
 .component-container .track-genes {

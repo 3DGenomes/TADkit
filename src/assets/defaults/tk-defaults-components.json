@@ -362,5 +362,40 @@
 				"cursorWidth" : 1
 			}
 		}
-	}
+	},
+	{
+        "metadata" : {
+            "version" : 1.0,
+            "type" : "component",
+            "generator" : "TADkit"
+        },
+        "object" : {
+            "uuid" : "00000000-0000-0000-0000-000000000005",
+            "id" : "default-hic-data-panel",
+            "title" : "Hic Data",
+            "type" : "panel-hicdata",
+            "dataset" : "default",
+            "state" : {
+                "width" : "600px",
+                "height" : "400px",
+                "margin" : "4px",
+                "position" : 1
+            }
+        },
+        "view" : {
+            "viewpoint" : {
+                "chromStart" : 1,
+                "chromEnd" : 10,
+                "scale" : 1
+            },
+            "viewtype" : "matrix",
+            "settings" : {
+                "background" : "#ffffff",
+                "heightInner" : "40px",
+                "margin" : "4px",
+                "padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
+                "example" : 1
+            }
+        }
+    }
 ]

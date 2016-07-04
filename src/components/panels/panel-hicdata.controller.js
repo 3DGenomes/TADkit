@@ -8,6 +8,12 @@
 
 		$scope.width = $scope.canvas_width = parseInt($scope.state.width); // strip PX units
 		$scope.height = $scope.canvas_height = parseInt($scope.state.height); // strip PX units
+		if($scope.data.n === 0) {
+			$scope.no_hic_data = true; 
+			return;
+		} else  {
+			$scope.no_hic_data = false;
+		}
 		
 		if(parseInt($scope.data.n)>$scope.width) {
 			$scope.canvas_width = parseInt($scope.data.n); // strip PX units
