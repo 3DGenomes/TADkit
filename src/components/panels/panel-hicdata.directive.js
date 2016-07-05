@@ -63,8 +63,17 @@
 		                		}
 		                		ctx.fillStyle = "rgba(0,0,255,"+val/255+")";
 		                		ctx.fillRect( x, y, 1 , 1 );
-		                		
 		                	}
+		                }
+		                var resolution, start_tad, end_tad = 0;
+		                for(var i=0;i<data.tads.length;i++) {
+		                	ctx.strokeStyle = "rgba(0,0,0,"+data.tads[i][3]/10+")";
+		                	// assuming tads given always at 10k
+		                	resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
+							start_tad = Math.round(((data.tads[i][1]-1)*10000-scope.settings.current.chromStart)/resolution);
+		                	end_tad = Math.round((data.tads[i][2]*10000-scope.settings.current.chromStart)/resolution);
+		                	
+		                	ctx.strokeRect( start_tad, start_tad, end_tad-start_tad , end_tad-start_tad);
 		                }
 		                //scope.restore_image = ctx.getImageData(0, 0, canvas.width, canvas.height);
 		                scope.scale = (canvas.width-10)/(Math.sqrt(2)*x);

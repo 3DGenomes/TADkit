@@ -353,8 +353,17 @@
 		                		}
 		                		ctx.fillStyle = "rgba(0,0,255,"+val/255+")";
 		                		ctx.fillRect( x, y, 1 , 1 );
-		                		
 		                	}
+		                }
+		                var resolution, start_tad, end_tad = 0;
+		                for(var i=0;i<data.tads.length;i++) {
+		                	ctx.strokeStyle = "rgba(0,0,0,"+data.tads[i][3]/10+")";
+		                	// assuming tads given always at 10k
+		                	resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
+							start_tad = Math.round(((data.tads[i][1]-1)*10000-scope.settings.current.chromStart)/resolution);
+		                	end_tad = Math.round((data.tads[i][2]*10000-scope.settings.current.chromStart)/resolution);
+		                	
+		                	ctx.strokeRect( start_tad, start_tad, end_tad-start_tad , end_tad-start_tad);
 		                }
 		                //scope.restore_image = ctx.getImageData(0, 0, canvas.width, canvas.height);
 		                scope.scale = (canvas.width-10)/(Math.sqrt(2)*x);
@@ -3918,7 +3927,7 @@
 		.module('TADkit')
 		.controller('ProjectLoaderController', ProjectLoaderController);
 
-	function ProjectLoaderController($q, $state, $stateParams, $scope, Datasets, Overlays, Storyboards) {
+	function ProjectLoaderController($q, $state, $stateParams, $scope, Datasets, Overlays, Storyboards, Hic_data) {
 
 		$scope.updateCurrent = function() {
 			$scope.current.dataset = Datasets.getDataset();
@@ -3955,6 +3964,7 @@
 		};
 		$scope.cleanDataset = function(event) {
 			Datasets.clear();
+			Hic_data.clear();
 			var loadexample = Datasets.load();
 			return $q.all([ loadexample ])
 			.then(function(results){
@@ -5053,7 +5063,8 @@
 			max: 0,
 			min: 99999999999,
 			pos: [],
-			value: []
+			value: [],
+			tads: []
 		};
 		return {
 			set: function (datasetHic_data) {
@@ -5071,7 +5082,12 @@
 					if(datasetHic_data.data[pos]>hic_data.max) hic_data.max = datasetHic_data.data[pos];
 					i++;	
 				}
+				if(!angular.isUndefined(datasetHic_data.tads))	self.setTADS(datasetHic_data.tads);
+				
 				return hic_data;
+			},
+			setTADS: function (datasetTADS) {
+				hic_data.tads = datasetTADS;
 			},
 			get: function() {
 				return hic_data;
@@ -5082,7 +5098,8 @@
 						max: 0,
 						min: 99999999999,
 						pos: [],
-						value: []
+						value: [],
+						tads: []
 				};
 			},
 		};

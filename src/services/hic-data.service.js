@@ -10,7 +10,8 @@
 			max: 0,
 			min: 99999999999,
 			pos: [],
-			value: []
+			value: [],
+			tads: []
 		};
 		return {
 			set: function (datasetHic_data) {
@@ -28,7 +29,12 @@
 					if(datasetHic_data.data[pos]>hic_data.max) hic_data.max = datasetHic_data.data[pos];
 					i++;	
 				}
+				if(!angular.isUndefined(datasetHic_data.tads))	self.setTADS(datasetHic_data.tads);
+				
 				return hic_data;
+			},
+			setTADS: function (datasetTADS) {
+				hic_data.tads = datasetTADS;
 			},
 			get: function() {
 				return hic_data;
@@ -39,7 +45,8 @@
 						max: 0,
 						min: 99999999999,
 						pos: [],
-						value: []
+						value: [],
+						tads: []
 				};
 			},
 		};

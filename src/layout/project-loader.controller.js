@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.controller('ProjectLoaderController', ProjectLoaderController);
 
-	function ProjectLoaderController($q, $state, $stateParams, $scope, Datasets, Overlays, Storyboards) {
+	function ProjectLoaderController($q, $state, $stateParams, $scope, Datasets, Overlays, Storyboards, Hic_data) {
 
 		$scope.updateCurrent = function() {
 			$scope.current.dataset = Datasets.getDataset();
@@ -41,6 +41,7 @@
 		};
 		$scope.cleanDataset = function(event) {
 			Datasets.clear();
+			Hic_data.clear();
 			var loadexample = Datasets.load();
 			return $q.all([ loadexample ])
 			.then(function(results){
