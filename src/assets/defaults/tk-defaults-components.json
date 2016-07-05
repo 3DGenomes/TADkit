@@ -148,222 +148,6 @@
 		}
 	},
 	{
-		"metadata" : {
-			"version" : 1.0,
-			"type" : "component",
-			"generator" : "TADkit"
-		},
-		"object" : {
-			"uuid" : "00000000-0000-0000-0000-000000000000",
-			"id" : "default-panel",
-			"title" : "Inspector",
-			"type" : "panel-inspector",
-			"dataset" : "default",
-			"state" : {
-				"width" : "400px",
-				"height" : "300px",
-				"margin" : "4px",
-				"position" : 1
-			}
-		},
-		"view" : {
-			"viewpoint" : {
-				"chromStart" : 1,
-				"chromEnd" : 10,
-				"scale" : 1
-			},
-			"viewtype" : "list",
-			"settings" : {
-				"background" : "#ffffff",
-				"heightInner" : "40px",
-				"margin" : "4px",
-				"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
-				"example" : 1
-			}
-		}
-	},
-	{
-		"metadata" : {
-			"version" : 1.0,
-			"type" : "component",
-			"generator" : "TADkit"
-		},
-		"object" : {
-			"uuid" : "00000000-0000-0000-0000-000000000000",
-			"id" : "slider",
-			"title" : "Navigation",
-			"type" : "track-slider",
-			"dataset" : "default",
-			"state" : {
-				"width" : "100%",
-				"height" : "auto",
-				"margin" : "4px",
-				"position" : 2
-			}
-		},
-		"view" : {
-			"viewpoint" : {
-				"chromStart" : 1,
-				"chromEnd" : 999999,
-				"scale" : 1
-			},
-			"viewtype" : "linear",
-			"settings" : {
-				"background" : "#ffffff",
-				"heightInner" : "40px",
-				"margin" : "4px",
-				"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
-				"sense" : true,
-				"segments" : 1000
-			}
-		}
-	},
-	{
-		"metadata" : {
-			"version" : 1.0,
-			"type" : "component",
-			"generator" : "TADkit"
-		},
-		"object" : {
-			"uuid" : "00000000-0000-0000-0000-000000000000",
-			"id" : "genes-track",
-			"title" : "Genes",
-			"type" : "track-genes",
-			"dataset" : "default",
-			"state" : {
-				"width" : "100%",
-				"height" : "auto",
-				"margin" : "4px",
-				"position" : 3
-			}
-		},
-		"view" : {
-			"viewpoint" : {
-				"chromStart" : 1,
-				"chromEnd" : 999999,
-				"scale" : 1
-			},
-			"viewtype" : "step-variable",
-			"settings" : {
-				"background" : "#ffffff",
-				"heightInner" : "40px",
-				"margin" : "4px",
-				"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
-				"sense" : true,
-				"segments" : 1000
-			}
-		}
-	},
-	{
-		"metadata" : {
-			"version" : 1.0,
-			"type" : "component",
-			"generator" : "TADkit"
-		},
-		"object" : {
-			"uuid" : "00000000-0000-0000-0000-000000000000",
-			"id" : "default-wiggle",
-			"title" : "BigWig Track",
-			"type" : "wiggle_0",
-			"dataset" : "default",
-			"state" : {
-				"width" : "100%",
-				"height" : "auto",
-				"margin" : "4px",
-				"position" : 3
-			}
-		},
-		"view" : {
-			"viewpoint" : {
-				"chromStart" : 1,
-				"chromEnd" : 999999,
-				"scale" : 1
-			},
-			"viewtype" : "step-fixed",
-			"settings" : {
-				"background" : "#ffffff",
-				"heightInner" : "20px",
-				"margin" : "4px",
-				"padding" : {"top": "0px", "right": "100px", "bottom": "0px", "left": "100px"},
-				"sense" : false,
-				"segments" : 1000
-			}
-		}
-	},
-	{
-		"metadata" : {
-			"version" : 1.0,
-			"type" : "component",
-			"generator" : "TADkit"
-		},
-		"object" : {
-			"uuid" : "00000000-0000-0000-0000-000000000000",
-			"id" : "default-bedgraph",
-			"title" : "BedGraph Track",
-			"type" : "bedgraph",
-			"dataset" : "default",
-			"state" : {
-				"width" : "100%",
-				"height" : "auto",
-				"margin" : "4px",
-				"position" : 4
-			}
-		},
-		"view" : {
-			"viewpoint" : {
-				"chromStart" : 1,
-				"chromEnd" : 999999,
-				"scale" : 1
-			},
-			"viewtype" : "step-fixed",
-			"settings" : {
-				"background" : "#ffffff",
-				"heightInner" : "40px",
-				"margin" : "4px",
-				"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
-				"sense" : false,
-				"segments" : 1000
-			}
-		}
-	},
-	{
-		"metadata" : {
-			"version" : 1.0,
-			"type" : "component",
-			"generator" : "TADkit"
-		},
-		"object" : {
-			"uuid" : "00000000-0000-0000-0000-000000000004",
-			"id" : "h-restraints-track",
-			"title" : "Restraints",
-			"type" : "track-barchart",
-			"dataset" : "restraints",
-			"state" : {
-				"width" : "100%",
-				"height" : "auto",
-				"margin" : "0px",
-				"position" : 4
-			}
-		},
-		"view" : {
-			"viewpoint" : {
-				"chromStart" : 1,
-				"chromEnd" : 999999,
-				"scale" : 1
-			},
-			"viewtype" : "linear",
-			"settings" : {
-				"background" : "#ffffff",
-				"heightInner" : "80px",
-				"margin" : "0px",
-				"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
-				"color" : "#0000ff",
-				"nodeSize" : 5,
-				"cursorWidth" : 1
-			}
-		}
-	},
-	{
         "metadata" : {
             "version" : 1.0,
             "type" : "component",
@@ -397,5 +181,40 @@
                 "example" : 1
             }
         }
-    }
+    },
+	{
+		"metadata" : {
+			"version" : 1.0,
+			"type" : "component",
+			"generator" : "TADkit"
+		},
+		"object" : {
+			"uuid" : "00000000-0000-0000-0000-000000000000",
+			"id" : "slider-external",
+			"title" : "Navigation",
+			"type" : "panel-jbrowse",
+			"dataset" : "default",
+			"state" : {
+				"width" : "100%",
+				"height" : "400px",
+				"position" : 1
+			}
+		},
+		"view" : {
+			"viewpoint" : {
+				"chromStart" : 1,
+				"chromEnd" : 999999,
+				"scale" : 1
+			},
+			"viewtype" : "linear",
+			"settings" : {
+				"background" : "#ffffff",
+				"heightInner" : "40px",
+				"margin" : "4px",
+				"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
+				"sense" : true,
+				"segments" : 1000
+			}
+		}
+	}
 ]

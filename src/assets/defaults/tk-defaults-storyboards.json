@@ -135,23 +135,22 @@
                     }
                 }
             },
-			{
+            {
 				"metadata" : {
 					"version" : 1.0,
 					"type" : "component",
 					"generator" : "TADkit"
 				},
 				"object" : {
-					"uuid" : "00000000-0000-0000-0000-000000000002",
-					"id" : "f-slider",
+					"uuid" : "00000000-0000-0000-0000-000000000000",
+					"id" : "slider-external",
 					"title" : "Navigation",
-					"type" : "track-slider",
-					"dataset" : "gradient",
+					"type" : "panel-jbrowse",
+					"dataset" : "default",
 					"state" : {
 						"width" : "100%",
-						"height" : "auto",
-						"margin" : "0px",
-						"position" : 2
+						"height" : "400px",
+						"position" : 1
 					}
 				},
 				"view" : {
@@ -164,118 +163,10 @@
 					"settings" : {
 						"background" : "#ffffff",
 						"heightInner" : "40px",
-						"margin" : "0px",
-						"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
-						"cursorWidth" : 1
-					}
-				}
-			},
-			{
-				"metadata" : {
-					"version" : 1.0,
-					"type" : "component",
-					"generator" : "TADkit"
-				},
-				"object" : {
-					"uuid" : "00000000-0000-0000-0000-000000000004",
-					"id" : "g-genes-track",
-					"title" : "Genes",
-					"type" : "track-genes",
-					"dataset" : "genes",
-					"state" : {
-						"width" : "100%",
-						"height" : "auto",
-						"margin" : "0px",
-						"position" : 3
-					}
-				},
-				"view" : {
-					"viewpoint" : {
-						"chromStart" : 1,
-						"chromEnd" : 999999,
-						"scale" : 1
-					},
-					"viewtype" : "linear",
-					"settings" : {
-						"background" : "#ffffff",
-						"heightInner" : "40px",
-						"margin" : "0px",
-						"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
-						"cursorWidth" : 1,
-						"sense" : true
-					}
-				}
-			},
-			{
-				"metadata" : {
-					"version" : 1.0,
-					"type" : "component",
-					"generator" : "TADkit"
-				},
-				"object" : {
-					"uuid" : "00000000-0000-0000-0000-000000000005",
-					"id" : "h-proximities-track",
-					"title" : "Proximity",
-					"type" : "track-proximities",
-					"dataset" : "distances",
-					"state" : {
-						"width" : "100%",
-						"height" : "auto",
-						"margin" : "0px",
-						"position" : 4
-					}
-				},
-				"view" : {
-					"viewpoint" : {
-						"chromStart" : 1,
-						"chromEnd" : 999999,
-						"scale" : 1
-					},
-					"viewtype" : "linear",
-					"settings" : {
-						"background" : "#ffffff",
-						"heightInner" : "40px",
-						"margin" : "0px",
-						"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
-						"color" : "#0000ff",
-						"cursorWidth" : 1
-					}
-				}
-			},
-			{
-				"metadata" : {
-					"version" : 1.0,
-					"type" : "component",
-					"generator" : "TADkit"
-				},
-				"object" : {
-					"uuid" : "00000000-0000-0000-0000-000000000006",
-					"id" : "h-restraints-track",
-					"title" : "Restraints",
-					"type" : "track-restraints",
-					"dataset" : "restraints",
-					"state" : {
-						"width" : "100%",
-						"height" : "auto",
-						"margin" : "0px",
-						"position" : 5
-					}
-				},
-				"view" : {
-					"viewpoint" : {
-						"chromStart" : 1,
-						"chromEnd" : 999999,
-						"scale" : 1
-					},
-					"viewtype" : "linear",
-					"settings" : {
-						"background" : "#ffffff",
-						"heightInner" : "80px",
-						"margin" : "0px",
-						"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
-						"color" : "#0000ff",
-						"nodeSize" : 5,
-						"cursorWidth" : 1
+						"margin" : "4px",
+						"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
+						"sense" : true,
+						"segments" : 1000
 					}
 				}
 			}

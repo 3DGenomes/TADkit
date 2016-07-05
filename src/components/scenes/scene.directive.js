@@ -51,6 +51,7 @@
 
 						// width = component.clientWidth; // NEED TO WAIT UNTIL DOM LOADED
 						width = parseInt(scope.state.width); // USE UNTIL DOM CHECK AVAILBLE
+						if(window.innerWidth <= 1280) width = 600;
 						// height = component.clientHeight;
 						height = parseInt(scope.state.height); // USE UNTIL DOM CHECK AVAILBLE
 						// OJO! DOM NOT READY
@@ -104,12 +105,14 @@
 						// scene.add(ambientLight);
 						
 						// GEOMETRY: PARTICLES
+						scope.view.settings.particles.size = scope.settings.current.particleSize;
 						particles = new Particles(scope.currentmodel.data, scope.currentoverlay.colors.particles, scope.view.settings.particles);
 						// particles = new Particles(scope.model.data, scope.overlay.colors.particles, scope.view.settings.particles);
 						particles.visible = scope.view.settings.particles.visible;
 						scene.add(particles);
 
 						//GEOMETRY: CHROMATIN
+						scope.view.settings.chromatin.particleSegments = scope.settings.current.particleSegments;
 						chromatin = new Chromatin(scope.currentmodel.data, scope.currentoverlay.colors.chromatin, scope.view.settings.chromatin);
 						// chromatin = new Chromatin(scope.model.data, scope.overlay.colors.chromatin, scope.view.settings.chromatin);
 						chromatin.visible = scope.view.settings.chromatin.visible;
@@ -318,6 +321,16 @@
 					scope.render = function () {
 						renderer.render( scene, camera );
 					};
+
+				    scope.$on('$destroy', function() {
+				        scene.remove("Particles Cloud");
+				        scene.remove("Chromatin Fiber");
+				        scene.remove("Network Graph");
+				        particles = undefined;
+				        chromatin = undefined;
+				        network = undefined;
+				        
+				    });
 
 					// Begin
 					scope.init();

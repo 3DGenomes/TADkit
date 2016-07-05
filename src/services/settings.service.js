@@ -35,8 +35,11 @@
 				// NOTE: particle segements as lowest resolution of model
 				// instead of particleSegments as variable in TADkit
 				// i.e settings.current.particleSegments = storyboard.components[0].view.settings.chromatin.particleSegments;
-				settings.current.particleSegments = 20;// ((dataset.object.chromEnd - dataset.object.chromStart) / dataset.object.resolution);
+				//settings.current.particleSegments = 20; // ((dataset.object.chromEnd - dataset.object.chromStart) / dataset.object.resolution);
+				//settings.current.particleSegments = Math.round((dataset.object.chromEnd - dataset.object.chromStart) / (5*dataset.object.resolution));
+				// Max rings in 3d aprox 2000
 				settings.current.particlesCount = dataset.models[0].data.length / dataset.object.components;
+				settings.current.particleSegments = Math.ceil(2000/settings.current.particlesCount);
 				settings.current.edgesCount = ((settings.current.particlesCount*settings.current.particlesCount)-settings.current.particlesCount)*0.5;
 				settings.current.segmentsCount = settings.current.particlesCount * settings.current.particleSegments;
 				// NOTE: segmentLength can be calculated in 2 ways:
@@ -48,6 +51,7 @@
 				// SET INITIAL position at midpoint
 				settings.current.position = settings.current.chromStart + parseInt((settings.current.chromEnd - settings.current.chromStart) * 0.5);
 				settings.current.particle = self.getParticle();
+				settings.current.particleSize = Math.ceil(dataset.object.resolution/20);
 				// AND SEGMENT IT LIES WITHIN
 				settings.current.segment = self.getSegment(settings.current.position);
 				settings.current.segmentLower = settings.current.position - (settings.current.segment * 0.5);

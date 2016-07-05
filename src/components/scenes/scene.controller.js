@@ -15,7 +15,6 @@
 			bool = !bool;
 			console.log(bool);
 		};
-
 		// $scope.keyControls = function (e, component) {
 		// 	if (event.keyCode === 32 || event.charCode === 32) {
 		// 		component.view.controls.autoRotate = !component.view.controls.autoRotate; 

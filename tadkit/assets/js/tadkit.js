@@ -588,6 +588,89 @@
 		};
 	}
 })();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.controller('PanelJBrowseController', PanelJBrowseController);
+
+	function PanelJBrowseController($scope, $mdDialog) {
+
+		$scope.width = $scope.state.width; // strip PX units
+		$scope.height = $scope.state.height; // strip PX units
+		
+		//$scope.jbrowsedataurl = 'http://172.16.54.4/JBrowse/data';
+		$scope.jbrowsedataurl = 'data';
+		$scope.iframe_src = '../JBrowse/index.html?data='+$scope.jbrowsedataurl+'&loc='+($scope.settings.current.chrom).replace('chr','')+':'+
+			($scope.settings.current.chromStart-30000)+'..'+($scope.settings.current.chromEnd+30000)+'&tracklist=0&tracks=Genes'+
+			'&highlight='+($scope.settings.current.chrom).replace('chr','')+':'+
+			$scope.settings.current.chromStart+'..'+$scope.settings.current.chromEnd;
+			//'&addBookmarks=%5B%7B%22start%22%3A'+$scope.settings.current.chromStart+
+			//'%2C%22end%22%3A'+$scope.settings.current.chromEnd+'%2C%22color%22%3A%20%22rgba(190%2C50%2C50%2C0.5)%22%2C%22ref%22%3A%20%22'+
+			//($scope.settings.current.chrom).replace('chr','')+'%22%7D%5D';
+		
+		$scope.updatePosition =  function(position) {
+			//alert(position);
+			if(position >= $scope.settings.current.chromStart && position <= $scope.settings.current.chromEnd) {
+				$scope.settings.current.position = position;
+			}
+			if(position < $scope.settings.current.chromStart) {
+				$scope.settings.current.position = $scope.settings.current.chromStart;
+			}  
+			if(position > $scope.settings.current.chromEnd) {
+				$scope.settings.current.position = $scope.settings.current.chromEnd;
+			}
+			$scope.$apply();
+		};
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.directive('tkComponentPanelJbrowse', tkComponentPanelJbrowse);
+
+	function tkComponentPanelJbrowse(Settings) {
+		return {
+			restrict: 'EA',
+			scope: { 
+				id: '@',
+				state: '=',
+				view: '=',
+				data: '=',
+				settings:'='
+			},
+			templateUrl: 'assets/templates/panel-jbrowse.html',
+			link:function(scope, element, attrs){
+				// console.log(scope.data);
+					
+				//window.jbrowseUp=function(){
+					//var jbrowseiframe = angular.element( document.querySelector( '#jbrowse-iframe' ) );
+					//var trackbar = element[0].querySelector('.trackVerticalPositionIndicatorMain' );
+					//trackbar.style.display = 'block';
+				  	//jbrowseiframe.contents().find("html").bind('click', function () {
+				           //alert("hello");
+				     //});
+				//};
+				
+				
+				scope.$watch('settings.current.position', function(newPosition, oldPosition) {
+					if ( newPosition !== oldPosition ) {
+						scope.update();
+					}
+				});
+				scope.update = function(data) {
+					scope.settings.current.particle = Settings.getParticle();
+					scope.settings.current.segment = Settings.getSegment();
+					scope.settings.current.segmentLower = scope.settings.current.position - (scope.settings.current.segment * 5); // * 0.5???
+					scope.settings.current.segmentUpper = scope.settings.current.position + (scope.settings.current.segment * 5); // * 0.5???
+				};
+
+				//http://rest.ensemblgenomes.org/overlap/region/drosophila_melanogaster/chrX:15590000-16600000?feature=gene;content-type=application/json"
+			}
+		};
+	}
+})();
  (function() {
 	'use strict';
 	angular
@@ -1342,7 +1425,6 @@
 			bool = !bool;
 			console.log(bool);
 		};
-
 		// $scope.keyControls = function (e, component) {
 		// 	if (event.keyCode === 32 || event.charCode === 32) {
 		// 		component.view.controls.autoRotate = !component.view.controls.autoRotate; 
@@ -1404,6 +1486,7 @@
 
 						// width = component.clientWidth; // NEED TO WAIT UNTIL DOM LOADED
 						width = parseInt(scope.state.width); // USE UNTIL DOM CHECK AVAILBLE
+						if(window.innerWidth <= 1280) width = 600;
 						// height = component.clientHeight;
 						height = parseInt(scope.state.height); // USE UNTIL DOM CHECK AVAILBLE
 						// OJO! DOM NOT READY
@@ -1457,12 +1540,14 @@
 						// scene.add(ambientLight);
 						
 						// GEOMETRY: PARTICLES
+						scope.view.settings.particles.size = scope.settings.current.particleSize;
 						particles = new Particles(scope.currentmodel.data, scope.currentoverlay.colors.particles, scope.view.settings.particles);
 						// particles = new Particles(scope.model.data, scope.overlay.colors.particles, scope.view.settings.particles);
 						particles.visible = scope.view.settings.particles.visible;
 						scene.add(particles);
 
 						//GEOMETRY: CHROMATIN
+						scope.view.settings.chromatin.particleSegments = scope.settings.current.particleSegments;
 						chromatin = new Chromatin(scope.currentmodel.data, scope.currentoverlay.colors.chromatin, scope.view.settings.chromatin);
 						// chromatin = new Chromatin(scope.model.data, scope.overlay.colors.chromatin, scope.view.settings.chromatin);
 						chromatin.visible = scope.view.settings.chromatin.visible;
@@ -1671,6 +1756,16 @@
 					scope.render = function () {
 						renderer.render( scene, camera );
 					};
+
+				    scope.$on('$destroy', function() {
+				        scene.remove("Particles Cloud");
+				        scene.remove("Chromatin Fiber");
+				        scene.remove("Network Graph");
+				        particles = undefined;
+				        chromatin = undefined;
+				        network = undefined;
+				        
+				    });
 
 					// Begin
 					scope.init();
@@ -3856,6 +3951,17 @@
 				// ADD FILENAME (SEE OVERLAY-IMPORT)
 				console.log("Dataset added."); //: " + $stateParams.loadDataset);			
 				$state.go('dataset');
+			});
+		};
+		$scope.cleanDataset = function(event) {
+			Datasets.clear();
+			var loadexample = Datasets.load();
+			return $q.all([ loadexample ])
+			.then(function(results){
+				$scope.updateCurrent();
+				// ADD FILENAME (SEE OVERLAY-IMPORT)
+				console.log("Dataset example loaded.");			
+				$state.go('browser');
 			});
 		};		
 	}
@@ -6459,8 +6565,11 @@
 				// NOTE: particle segements as lowest resolution of model
 				// instead of particleSegments as variable in TADkit
 				// i.e settings.current.particleSegments = storyboard.components[0].view.settings.chromatin.particleSegments;
-				settings.current.particleSegments = 20;// ((dataset.object.chromEnd - dataset.object.chromStart) / dataset.object.resolution);
+				//settings.current.particleSegments = 20; // ((dataset.object.chromEnd - dataset.object.chromStart) / dataset.object.resolution);
+				//settings.current.particleSegments = Math.round((dataset.object.chromEnd - dataset.object.chromStart) / (5*dataset.object.resolution));
+				// Max rings in 3d aprox 2000
 				settings.current.particlesCount = dataset.models[0].data.length / dataset.object.components;
+				settings.current.particleSegments = Math.ceil(2000/settings.current.particlesCount);
 				settings.current.edgesCount = ((settings.current.particlesCount*settings.current.particlesCount)-settings.current.particlesCount)*0.5;
 				settings.current.segmentsCount = settings.current.particlesCount * settings.current.particleSegments;
 				// NOTE: segmentLength can be calculated in 2 ways:
@@ -6472,6 +6581,7 @@
 				// SET INITIAL position at midpoint
 				settings.current.position = settings.current.chromStart + parseInt((settings.current.chromEnd - settings.current.chromStart) * 0.5);
 				settings.current.particle = self.getParticle();
+				settings.current.particleSize = Math.ceil(dataset.object.resolution/20);
 				// AND SEGMENT IT LIES WITHIN
 				settings.current.segment = self.getSegment(settings.current.position);
 				settings.current.segmentLower = settings.current.position - (settings.current.segment * 0.5);

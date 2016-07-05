@@ -38,6 +38,17 @@
 				console.log("Dataset added."); //: " + $stateParams.loadDataset);			
 				$state.go('dataset');
 			});
+		};
+		$scope.cleanDataset = function(event) {
+			Datasets.clear();
+			var loadexample = Datasets.load();
+			return $q.all([ loadexample ])
+			.then(function(results){
+				$scope.updateCurrent();
+				// ADD FILENAME (SEE OVERLAY-IMPORT)
+				console.log("Dataset example loaded.");			
+				$state.go('browser');
+			});
 		};		
 	}
 })();
