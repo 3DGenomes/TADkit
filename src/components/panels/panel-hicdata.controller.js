@@ -6,8 +6,8 @@
 
 	function PanelHicdataController($scope) {
 
-		$scope.width = $scope.canvas_width = parseInt($scope.state.width); // strip PX units
-		$scope.height = $scope.canvas_height = parseInt($scope.state.height); // strip PX units
+		$scope.width = $scope.canvas_width = parseInt($scope.state.width)-2*parseInt($scope.state.margin); // strip PX units
+		$scope.height = $scope.canvas_height = parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units
 		if($scope.data.n === 0) {
 			$scope.no_hic_data = true; 
 			return;

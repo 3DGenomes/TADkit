@@ -239,8 +239,8 @@
 
 	function PanelHicdataController($scope) {
 
-		$scope.width = $scope.canvas_width = parseInt($scope.state.width); // strip PX units
-		$scope.height = $scope.canvas_height = parseInt($scope.state.height); // strip PX units
+		$scope.width = $scope.canvas_width = parseInt($scope.state.width)-2*parseInt($scope.state.margin); // strip PX units
+		$scope.height = $scope.canvas_height = parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units
 		if($scope.data.n === 0) {
 			$scope.no_hic_data = true; 
 			return;
@@ -294,7 +294,7 @@
 		.module('TADkit')
 		.directive('tkComponentPanelHicdata', tkComponentPanelHicdata);
 
-	function tkComponentPanelHicdata($timeout) {
+	function tkComponentPanelHicdata(d3Service,$timeout) {
 		return {
 			restrict: 'EA',
 			scope: { 
@@ -313,6 +313,9 @@
 				//scope.restore_data = null;
 				//scope.restore_position = 0;
 				var slidevalue = scope.slidevalue;
+				var brush;
+				var hic_svg, handle, position;
+
 				
 				scope.render = function(data_max, data_min) {
 		            var canvas = document.getElementById("hic_canvas");
@@ -356,19 +359,138 @@
 		                	}
 		                }
 		                var resolution, start_tad, end_tad = 0;
-		                for(var i=0;i<data.tads.length;i++) {
+		                for(i=0;i<data.tads.length;i++) {
 		                	ctx.strokeStyle = "rgba(0,0,0,"+data.tads[i][3]/10+")";
 		                	// assuming tads given always at 10k
 		                	resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
 							start_tad = Math.round(((data.tads[i][1]-1)*10000-scope.settings.current.chromStart)/resolution);
 		                	end_tad = Math.round((data.tads[i][2]*10000-scope.settings.current.chromStart)/resolution);
-		                	
-		                	ctx.strokeRect( start_tad, start_tad, end_tad-start_tad , end_tad-start_tad);
+		                	ctx.beginPath();
+					        ctx.setLineDash([5,2]);
+					        ctx.strokeRect( start_tad, start_tad, end_tad-start_tad , end_tad-start_tad);
 		                }
 		                //scope.restore_image = ctx.getImageData(0, 0, canvas.width, canvas.height);
-		                scope.scale = (canvas.width-10)/(Math.sqrt(2)*x);
+		                scope.scale = (canvas.width-10)/(Math.sqrt(2)*data.n);
 		                scope.imageObject.src=canvas.toDataURL();
 		                
+		                d3Service.d3().then(function(d3) {
+		                	
+		                	scope.safeApply = function(fn) {
+								var phase = this.$root.$$phase;
+								if(phase == '$apply' || phase == '$digest') {
+									if(fn && (typeof(fn) === 'function')) { fn(); }
+								} else {
+								this.$apply(fn);
+								}
+							};
+		                	brush = d3.svg.brush();
+
+			                //tads svg
+			                var hic_data_container = angular.element(document.querySelector('#hic_data_container'));
+							var svg = d3.select(hic_data_container[0]).append('svg');
+							
+							svg.selectAll('*').remove();
+							
+							hic_svg = svg.attr('width', canvas.width)
+									.attr('height', canvas.height)
+									.style("position", "absolute")
+									.style("top", 2*parseInt(scope.state.margin))
+									.style("left", 2*parseInt(scope.state.margin))
+									.append("g")
+									.attr("id", "tads_svg");
+							
+							handle = hic_svg.append("circle")
+								.attr("id", "circ_mark")
+								.style("fill", "#fff")
+								.style("stroke", "#ccc")
+								.style("stroke-widt", 2)
+								.attr("cx", (scope.settings.current.particle*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2)))
+								.attr("cy", canvas.height-parseInt(scope.state.margin))
+								.attr("r", 4);
+
+							position = hic_svg.append("text")
+								.attr("id", "circ_position")
+								.attr("x", Math.ceil((scope.settings.current.particle*Math.sqrt(2)) - 2))
+								.attr("y", canvas.height-parseInt(scope.state.margin)-5)
+								.style("text-anchor", "bottom")
+								.style("font-family", "sans-serif")
+								.style("font-size", "10px")
+								.style("color", "#333")
+								.text(scope.settings.current.particle);
+
+							// hic_svg.append('rect')
+							//   .attr('class', 'overlay')
+							//   .attr('width', canvas.width)
+							//   .attr('height', canvas.height)
+							//   .style("fill", "transparent");
+							var stroke_width = 0;
+							var polygon_tad, start_tad_scaled, end_tad_scaled, tad_height; 
+							for(i=0;i<data.tads.length;i++) {
+			                	stroke_width = Math.round(data.tads[i][3]/10);
+			                	// assuming tads given always at 10k
+			                	resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
+								start_tad = Math.round(((data.tads[i][1]-1)*10000-scope.settings.current.chromStart)/resolution);
+			                	end_tad = Math.round((data.tads[i][2]*10000-scope.settings.current.chromStart)/resolution);
+			                 	start_tad_scaled = Math.round((start_tad*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2)));
+								// end_tad_scaled = Math.round((end_tad*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2)));
+								// tad_height = end_tad_scaled-start_tad_scaled;
+			     //            	var polygon_tad = tads_svg.append("polygon")
+			     //            		.attr("id",data.tads[i][0])
+								// 	.attr("x", 20)
+								// 	.attr("y", 400)
+								// 	.attr("width", 200)
+								// 	.style("fill", "white")
+								// 	.style("fill-opacity", 1)
+								// 	.style("stroke", "black")
+								// 	.style("stroke-width", stroke_width)
+								// 	.attr("class", "polygon_tad")
+								// 	.attr("points", start_tad_scaled+","+canvas.height+" "+end_tad_scaled+","+canvas.height+" "+(end_tad_scaled-start_tad_scaled)+","+tad_height);
+			                	polygon_tad = hic_svg.append("rect")
+			                 		.attr("id",data.tads[i][0])
+			                 		.style("fill", "white")
+									.style("fill-opacity", 0.2)
+									.style("stroke", "black")
+									.style("stroke-width", stroke_width)
+									.style("stroke-dasharray","5,5")
+									.attr("class", "polygon_tad")
+									.attr('width', end_tad-start_tad)
+									.attr('height', end_tad-start_tad)
+									.attr("x", 0)
+								 	.attr("y", 0)
+								 	.attr("transform", "translate(" + (start_tad_scaled) + ","+canvas.height+") scale("+scope.scale+") rotate(-45 0 0)");
+			       
+			                }
+
+			                svg.on("mousedown", function(){
+						        mouseDown = true;
+						        startDragOffset.x = d3.event.clientX - scope.translatePos.x;
+						        startDragOffset.y = d3.event.clientY- scope.translatePos.y;
+						    });
+						 
+						    svg.on("mouseup", function(){
+						        mouseDown = false;
+						    });
+						 
+						    svg.on("mouseover", function(){
+						        mouseDown = false;
+						    });
+						 
+						    svg.on("mouseout", function(){
+						        mouseDown = false;
+						    });
+						 
+						    svg.on("mousemove", function(){
+						        if (mouseDown) {
+						            scope.translatePos.x = d3.event.clientX - startDragOffset.x;
+						            scope.translatePos.y = d3.event.clientY - startDragOffset.y;
+						            //scope.render();
+						            scope.update();
+						            scope.update_marks();
+						        }
+						    });
+							
+						});
+
 		                scope.rendered = true;
 		                scope.imageObject.onload = function () {
 		                	scope.update();
@@ -377,8 +499,8 @@
 		        };
 		        scope.$watch('settings.current.particle', function(newParticle, oldParticle) {
 					if ( newParticle !== oldParticle) {
-						//scope.render();
 						scope.update();
+						scope.update_marks();
 					}
 				});
 		        scope.$watch('settings.slidevalue', function(newvalue,oldvalue) {
@@ -407,35 +529,30 @@
 		                //if(scope.restore_image!==null) {
 		                	//ctx.putImageData(scope.restore_image,scope.translatePos.x, scope.translatePos.y);
 		                //}
-		                ctx.translate(0, canvas.height-10);
+		                ctx.translate(scope.translatePos.x, canvas.height-2);
 		                ctx.rotate(-Math.PI/4);
 		                ctx.scale(scope.scale, scope.scale);
 		                
 		                ctx.drawImage(scope.imageObject,scope.translatePos.x/scope.scale,scope.translatePos.x/scope.scale);
 		                //ctx.drawImage(scope.imageObject,scope.translatePos.x/scope.scale,scope.translatePos.y/scope.scale);
 		                //ctx.translate(scope.translatePos.x/scope.scale, scope.translatePos.y/scope.scale);
-		                var x = scope.settings.current.particle-1;
-		                var y = scope.settings.current.particle-1;		                
-		                if(x<1) {
-		                	x=y=1;
-		                }
-		                if(x>=data.n-2) x=data.n-2;
-		                //x = (x)*scope.scale+scope.translatePos.x;
-		                //y = (y)*scope.scale+scope.translatePos.y;
 		                //scope.restore_position = x-4;
 		                //scope.restore_data = ctx.getImageData(x-4, x-4, 9, 9); 
-		                //ctx.fillStyle = "rgba(0,0,0,1)";
-            			//ctx.fillRect( x-2, y-2, 5 , 5 );
-            			ctx.fillStyle = "rgba(255,255,255,1)";
-            			x = x + scope.translatePos.x/scope.scale;
-            			y = y + scope.translatePos.x/scope.scale;
-            			ctx.fillRect( x-1, y-1, 3 , 3 );
 		                
             			ctx.restore();
 		            }
 				};
+
+				scope.update_marks =  function() {
+					var circ_mark = angular.element(document.querySelector('#circ_mark'));
+					var circ_position = angular.element(document.querySelector('#circ_position'));
+					var x = (scope.settings.current.particle*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2));
+					circ_mark.attr("cx", x );
+					circ_position.attr("x", x )
+						.text(scope.settings.current.particle);	
+				};
 				
-				var canvas = document.getElementById("hic_canvas");
+				//var canvas = document.getElementById("hic_canvas");
 				scope.translatePos = {
 					x: 0,
 				    y: 0
@@ -450,41 +567,44 @@
 			    scope.increasezoom = function() {
 			    	scope.scale /= scaleMultiplier;
 			        scope.update();
+			        scope.update_marks();
 			    };
 			 
 			    scope.reducezoom = function() {
 			    	scope.scale *= scaleMultiplier;
 			        scope.update();
+			        scope.update_marks();
 			    };
 			    
 			    
 			    // add event listeners to handle screen drag
-			    canvas.addEventListener("mousedown", function(evt){
-			        mouseDown = true;
-			        startDragOffset.x = evt.clientX - scope.translatePos.x;
-			        startDragOffset.y = evt.clientY - scope.translatePos.y;
-			    });
+			    // canvas.addEventListener("mousedown", function(evt){
+			    //     mouseDown = true;
+			    //     startDragOffset.x = evt.clientX - scope.translatePos.x;
+			    //     startDragOffset.y = evt.clientY - scope.translatePos.y;
+			    // });
 			 
-			    canvas.addEventListener("mouseup", function(evt){
-			        mouseDown = false;
-			    });
+			    // canvas.addEventListener("mouseup", function(evt){
+			    //     mouseDown = false;
+			    // });
 			 
-			    canvas.addEventListener("mouseover", function(evt){
-			        mouseDown = false;
-			    });
+			    // canvas.addEventListener("mouseover", function(evt){
+			    //     mouseDown = false;
+			    // });
 			 
-			    canvas.addEventListener("mouseout", function(evt){
-			        mouseDown = false;
-			    });
+			    // canvas.addEventListener("mouseout", function(evt){
+			    //     mouseDown = false;
+			    // });
 			 
-			    canvas.addEventListener("mousemove", function(evt){
-			        if (mouseDown) {
-			            scope.translatePos.x = evt.clientX - startDragOffset.x;
-			            scope.translatePos.y = evt.clientY - startDragOffset.y;
-			            //scope.render();
-			            scope.update();
-			        }
-			    });
+			    // canvas.addEventListener("mousemove", function(evt){
+			    //     if (mouseDown) {
+			    //         scope.translatePos.x = evt.clientX - startDragOffset.x;
+			    //         scope.translatePos.y = evt.clientY - startDragOffset.y;
+			    //         //scope.render();
+			    //         scope.update();
+			    //         scope.update_marks();
+			    //     }
+			    // });
 				
 			    $timeout(function () {
                     scope.update();
