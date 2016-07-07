@@ -12,7 +12,8 @@
 				state: '=',
 				view: '=',
 				data: '=',
-				settings:'='
+				settings:'=',
+				currentoverlay: '='
 			},
 			templateUrl: 'assets/templates/panel-hicdata.html',
 			link:function(scope, element, attrs){
@@ -25,10 +26,14 @@
 				var slidevalue = scope.slidevalue;
 				var brush;
 				var hic_svg, handle, position;
-
+				var polygon_tads = [];
+				scope.highlighted_tad = -1;
+				var canvas;
+				var original_colors = [];
 				
 				scope.render = function(data_max, data_min) {
-		            var canvas = document.getElementById("hic_canvas");
+		            //canvas = document.getElementById("hic_canvas");
+		            canvas = angular.element(document.querySelector('#hic_canvas'))[0];
 		            if (canvas.getContext) {
 		                console.log("Drawing hic matrix");
 		                var ctx = canvas.getContext("2d");
@@ -68,21 +73,13 @@
 		                		ctx.fillRect( x, y, 1 , 1 );
 		                	}
 		                }
-		                var resolution, start_tad, end_tad = 0;
-		                for(i=0;i<data.tads.length;i++) {
-		                	ctx.strokeStyle = "rgba(0,0,0,"+data.tads[i][3]/10+")";
-		                	// assuming tads given always at 10k
-		                	resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
-							start_tad = Math.round(((data.tads[i][1]-1)*10000-scope.settings.current.chromStart)/resolution);
-		                	end_tad = Math.round((data.tads[i][2]*10000-scope.settings.current.chromStart)/resolution);
-		                	ctx.beginPath();
-					        ctx.setLineDash([5,2]);
-					        ctx.strokeRect( start_tad, start_tad, end_tad-start_tad , end_tad-start_tad);
-		                }
+		                
 		                //scope.restore_image = ctx.getImageData(0, 0, canvas.width, canvas.height);
 		                scope.scale = (canvas.width-10)/(Math.sqrt(2)*data.n);
 		                scope.imageObject.src=canvas.toDataURL();
 		                
+		                if(scope.rendered) return;
+		                	
 		                d3Service.d3().then(function(d3) {
 		                	
 		                	scope.safeApply = function(fn) {
@@ -120,7 +117,7 @@
 
 							position = hic_svg.append("text")
 								.attr("id", "circ_position")
-								.attr("x", Math.ceil((scope.settings.current.particle*Math.sqrt(2)) - 2))
+								.attr("x", (scope.settings.current.particle*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2))-2)
 								.attr("y", canvas.height-parseInt(scope.state.margin)-5)
 								.style("text-anchor", "bottom")
 								.style("font-family", "sans-serif")
@@ -134,13 +131,14 @@
 							//   .attr('height', canvas.height)
 							//   .style("fill", "transparent");
 							var stroke_width = 0;
+							var resolution, start_tad, end_tad = 0;
 							var polygon_tad, start_tad_scaled, end_tad_scaled, tad_height; 
 							for(i=0;i<data.tads.length;i++) {
 			                	stroke_width = Math.round(data.tads[i][3]/10);
-			                	// assuming tads given always at 10k
+			                	// assuming tads given in absolute position
 			                	resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
-								start_tad = Math.round(((data.tads[i][1]-1)*10000-scope.settings.current.chromStart)/resolution);
-			                	end_tad = Math.round((data.tads[i][2]*10000-scope.settings.current.chromStart)/resolution);
+								start_tad = Math.round(((data.tads[i][1])-scope.settings.current.chromStart)/resolution);
+			                	end_tad = Math.round((data.tads[i][2]-scope.settings.current.chromStart)/resolution);
 			                 	start_tad_scaled = Math.round((start_tad*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2)));
 								// end_tad_scaled = Math.round((end_tad*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2)));
 								// tad_height = end_tad_scaled-start_tad_scaled;
@@ -157,17 +155,21 @@
 								// 	.attr("points", start_tad_scaled+","+canvas.height+" "+end_tad_scaled+","+canvas.height+" "+(end_tad_scaled-start_tad_scaled)+","+tad_height);
 			                	polygon_tad = hic_svg.append("rect")
 			                 		.attr("id",data.tads[i][0])
+			                 		.attr("start",(data.tads[i][1]))
+			                 		.attr("end",(data.tads[i][2]))
+			                 		.attr("score",(data.tads[i][3]))
 			                 		.style("fill", "white")
-									.style("fill-opacity", 0.2)
+									.style("fill-opacity", 0)
 									.style("stroke", "black")
 									.style("stroke-width", stroke_width)
-									.style("stroke-dasharray","5,5")
+									.style("stroke-dasharray","3,3")
 									.attr("class", "polygon_tad")
-									.attr('width', end_tad-start_tad)
-									.attr('height', end_tad-start_tad)
+									.attr('width', end_tad-start_tad+1)
+									.attr('height', end_tad-start_tad+1)
 									.attr("x", 0)
 								 	.attr("y", 0)
 								 	.attr("transform", "translate(" + (start_tad_scaled) + ","+canvas.height+") scale("+scope.scale+") rotate(-45 0 0)");
+			                	polygon_tads.push(polygon_tad);
 			       
 			                }
 
@@ -204,6 +206,7 @@
 		                scope.rendered = true;
 		                scope.imageObject.onload = function () {
 		                	scope.update();
+		                	scope.update_marks();
 		                };
 		            }
 		        };
@@ -243,7 +246,8 @@
 		                ctx.rotate(-Math.PI/4);
 		                ctx.scale(scope.scale, scope.scale);
 		                
-		                ctx.drawImage(scope.imageObject,scope.translatePos.x/scope.scale,scope.translatePos.x/scope.scale);
+		                //ctx.drawImage(scope.imageObject,scope.translatePos.x/scope.scale,scope.translatePos.x/scope.scale);
+		                ctx.drawImage(scope.imageObject,0,0);
 		                //ctx.drawImage(scope.imageObject,scope.translatePos.x/scope.scale,scope.translatePos.y/scope.scale);
 		                //ctx.translate(scope.translatePos.x/scope.scale, scope.translatePos.y/scope.scale);
 		                //scope.restore_position = x-4;
@@ -254,14 +258,50 @@
 				};
 
 				scope.update_marks =  function() {
-					var circ_mark = angular.element(document.querySelector('#circ_mark'));
-					var circ_position = angular.element(document.querySelector('#circ_position'));
-					var x = (scope.settings.current.particle*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2));
-					circ_mark.attr("cx", x );
-					circ_position.attr("x", x )
-						.text(scope.settings.current.particle);	
+					//var circ_mark = angular.element(document.querySelector('#circ_mark'));
+					//var circ_position = angular.element(document.querySelector('#circ_position'));
+					//var x = (scope.settings.current.particle*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2));
+					var x = (scope.settings.current.particle*Math.sqrt(2))*scope.scale+(scope.translatePos.x);
+					handle.attr("cx", x );
+					position.attr("x", x ).text(scope.settings.current.particle);
+					
+					var resolution, start_tad, end_tad = 0;
+					var start_tad_scaled, end_tad_scaled;
+					for(var i=0;i<polygon_tads.length;i++) {
+						resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
+						start_tad = Math.round(((data.tads[i][1])-scope.settings.current.chromStart)/resolution);
+						start_tad_scaled = Math.round((start_tad*Math.sqrt(2))*scope.scale+(scope.translatePos.x));
+						
+						polygon_tads[i]
+							.attr("transform", "translate(" + (start_tad_scaled) + ","+canvas.height+") scale("+scope.scale+") rotate(-45 0 0)");
+						if(scope.settings.current.position>=parseInt(polygon_tads[i].attr("start")) && scope.settings.current.position<=parseInt(polygon_tads[i].attr("end"))){
+							scope.highlighted_tad = i; 
+						} 
+					}
 				};
 				
+				scope.$watch('highlighted_tad', function(newvalue,oldvalue) {
+		        	if ( newvalue !== oldvalue) {
+		        		polygon_tads[newvalue].style("fill-opacity", 0.5);
+		        		var start_tad_segment, end_tad_segment, i;
+		        		if(oldvalue>-1) {
+			        		polygon_tads[oldvalue].style("fill-opacity", 0);
+			        		start_tad_segment = Math.round((parseInt(polygon_tads[oldvalue].attr("start")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
+			        		end_tad_segment = Math.ceil((parseInt(polygon_tads[oldvalue].attr("end")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
+			        		for(i=start_tad_segment;i<end_tad_segment;i++) {
+			        			scope.currentoverlay.colors.chromatin[i] = original_colors[i-start_tad_segment];
+			        		}
+		        		}
+		        		start_tad_segment = Math.round((parseInt(polygon_tads[newvalue].attr("start")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
+		        		end_tad_segment = Math.ceil((parseInt(polygon_tads[newvalue].attr("end")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
+		        		original_colors = scope.currentoverlay.colors.chromatin.slice(start_tad_segment,end_tad_segment);
+		        		for(i=start_tad_segment;i<end_tad_segment;i++) {
+		        			scope.currentoverlay.colors.chromatin[i] = "#e0e67e";
+		        		}
+		        		scope.settings.current.selected_tad = scope.highlighted_tad;
+		        		//scope.$apply();
+		        	}
+				});
 				//var canvas = document.getElementById("hic_canvas");
 				scope.translatePos = {
 					x: 0,

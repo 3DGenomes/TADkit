@@ -50,6 +50,11 @@
 				console.log("Dataset example loaded.");			
 				$state.go('browser');
 			});
-		};		
+		};
+		
+		
+		
+		
+		
 	}
 })();

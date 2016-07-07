@@ -223,6 +223,19 @@
 								}
 							}
 						});
+						
+						// /* Watch for selected TAD */
+						scope.$watch('settings.current.selected_tad', function( newValue, oldValue ) {
+							if ( newValue !== oldValue ) {
+								var chromatinCount = chromatinObj.children.length;
+								for (var i = 0; i < chromatinCount; i++) {
+									var newChromatinColor =  new THREE.Color(scope.currentoverlay.colors.chromatin[i]);
+									chromatinObj.children[i].material.color = newChromatinColor;
+									chromatinObj.children[i].material.ambient = newChromatinColor;
+									chromatinObj.children[i].material.emissive = newChromatinColor;
+								}
+							}
+						});
 
 						// /* Watch for Network colors */
 						scope.$watch('currentoverlay.colors.network', function( newColors, oldColors ) { // cant deep watch as change through set on service
