@@ -21,10 +21,16 @@
 				if (clear) self.clear();
 
 				var datapath = "defaults";
-				if (filename != "tk-example-dataset") datapath = "examples";
+				var dataUrl;
+				if(filename.indexOf('%2F')>-1) {
+					dataUrl = filename.split('%2F').join('/') + ".json";
+				} else {
+					if (filename != "tk-example-dataset") datapath = "examples";
+					dataUrl = "assets/" + datapath + "/" + filename + ".json";
+				}
 
 				var deferral = $q.defer();
-				var dataUrl = "assets/" + datapath + "/" + filename + ".json";
+				
 				$http.get(dataUrl)
 				.success( function(dataset) {
 					// TADkit defaults and examples are already validated

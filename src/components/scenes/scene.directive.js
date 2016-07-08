@@ -225,14 +225,16 @@
 						});
 						
 						// /* Watch for selected TAD */
-						scope.$watch('settings.current.selected_tad', function( newValue, oldValue ) {
+						scope.$watch('settings.current.start_tad_selected', function( newValue, oldValue ) {
 							if ( newValue !== oldValue ) {
 								var chromatinCount = chromatinObj.children.length;
 								for (var i = 0; i < chromatinCount; i++) {
-									var newChromatinColor =  new THREE.Color(scope.currentoverlay.colors.chromatin[i]);
-									chromatinObj.children[i].material.color = newChromatinColor;
-									chromatinObj.children[i].material.ambient = newChromatinColor;
-									chromatinObj.children[i].material.emissive = newChromatinColor;
+									if(i>=scope.settings.current.start_tad_selected && i<=scope.settings.current.end_tad_selected) {
+										chromatinObj.children[i].material.opacity = 0.5;
+									} else {
+										chromatinObj.children[i].material.opacity = 1;
+									}
+									
 								}
 							}
 						});

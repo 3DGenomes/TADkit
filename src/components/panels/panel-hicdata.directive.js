@@ -294,11 +294,12 @@
 		        		}
 		        		start_tad_segment = Math.round((parseInt(polygon_tads[newvalue].attr("start")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
 		        		end_tad_segment = Math.ceil((parseInt(polygon_tads[newvalue].attr("end")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
-		        		original_colors = scope.currentoverlay.colors.chromatin.slice(start_tad_segment,end_tad_segment);
-		        		for(i=start_tad_segment;i<end_tad_segment;i++) {
-		        			scope.currentoverlay.colors.chromatin[i] = "#e0e67e";
-		        		}
-		        		scope.settings.current.selected_tad = scope.highlighted_tad;
+		        		//original_colors = scope.currentoverlay.colors.chromatin.slice(start_tad_segment,end_tad_segment);
+		        		//for(i=start_tad_segment;i<end_tad_segment;i++) {
+		        			//scope.currentoverlay.colors.chromatin[i] = "#e0e67e";
+		        		//}
+		        		scope.settings.current.start_tad_selected = start_tad_segment;
+		        		scope.settings.current.end_tad_selected = end_tad_segment;
 		        		//scope.$apply();
 		        	}
 				});

@@ -584,11 +584,12 @@
 		        		}
 		        		start_tad_segment = Math.round((parseInt(polygon_tads[newvalue].attr("start")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
 		        		end_tad_segment = Math.ceil((parseInt(polygon_tads[newvalue].attr("end")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
-		        		original_colors = scope.currentoverlay.colors.chromatin.slice(start_tad_segment,end_tad_segment);
-		        		for(i=start_tad_segment;i<end_tad_segment;i++) {
-		        			scope.currentoverlay.colors.chromatin[i] = "#e0e67e";
-		        		}
-		        		scope.settings.current.selected_tad = scope.highlighted_tad;
+		        		//original_colors = scope.currentoverlay.colors.chromatin.slice(start_tad_segment,end_tad_segment);
+		        		//for(i=start_tad_segment;i<end_tad_segment;i++) {
+		        			//scope.currentoverlay.colors.chromatin[i] = "#e0e67e";
+		        		//}
+		        		scope.settings.current.start_tad_selected = start_tad_segment;
+		        		scope.settings.current.end_tad_selected = end_tad_segment;
 		        		//scope.$apply();
 		        	}
 				});
@@ -771,7 +772,7 @@
 		//$scope.jbrowsedataurl = 'http://172.16.54.4/JBrowse/data';
 		$scope.jbrowsedataurl = 'data';
 		$scope.iframe_src = '../JBrowse/index.html?data='+$scope.jbrowsedataurl+'&loc='+($scope.settings.current.chrom).replace('chr','')+':'+
-			($scope.settings.current.chromStart-30000)+'..'+($scope.settings.current.chromEnd+30000)+'&tracklist=0&tracks=Genes'+
+			($scope.settings.current.chromStart-30000)+'..'+($scope.settings.current.chromEnd+30000)+'&tracklist=0&tracks=Genes,Chromatin%20Types'+
 			'&highlight='+($scope.settings.current.chrom).replace('chr','')+':'+
 			$scope.settings.current.chromStart+'..'+$scope.settings.current.chromEnd;
 			//'&addBookmarks=%5B%7B%22start%22%3A'+$scope.settings.current.chromStart+
@@ -1829,14 +1830,16 @@
 						});
 						
 						// /* Watch for selected TAD */
-						scope.$watch('settings.current.selected_tad', function( newValue, oldValue ) {
+						scope.$watch('settings.current.start_tad_selected', function( newValue, oldValue ) {
 							if ( newValue !== oldValue ) {
 								var chromatinCount = chromatinObj.children.length;
 								for (var i = 0; i < chromatinCount; i++) {
-									var newChromatinColor =  new THREE.Color(scope.currentoverlay.colors.chromatin[i]);
-									chromatinObj.children[i].material.color = newChromatinColor;
-									chromatinObj.children[i].material.ambient = newChromatinColor;
-									chromatinObj.children[i].material.emissive = newChromatinColor;
+									if(i>=scope.settings.current.start_tad_selected && i<=scope.settings.current.end_tad_selected) {
+										chromatinObj.children[i].material.opacity = 0.5;
+									} else {
+										chromatinObj.children[i].material.opacity = 1;
+									}
+									
 								}
 							}
 						});
@@ -5012,10 +5015,16 @@
 				if (clear) self.clear();
 
 				var datapath = "defaults";
-				if (filename != "tk-example-dataset") datapath = "examples";
+				var dataUrl;
+				if(filename.indexOf('%2F')>-1) {
+					dataUrl = filename.split('%2F').join('/') + ".json";
+				} else {
+					if (filename != "tk-example-dataset") datapath = "examples";
+					dataUrl = "assets/" + datapath + "/" + filename + ".json";
+				}
 
 				var deferral = $q.defer();
-				var dataUrl = "assets/" + datapath + "/" + filename + ".json";
+				
 				$http.get(dataUrl)
 				.success( function(dataset) {
 					// TADkit defaults and examples are already validated
