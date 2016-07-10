@@ -9,6 +9,11 @@
 		$scope.updateCurrent = function() {
 			$scope.current.dataset = Datasets.getDataset();
 			$scope.current.model = Datasets.getModel();
+			var overlays = Overlays.get();
+			while (overlays.loaded.length > 1) { // remove all overlays
+				overlays.loaded.pop();
+			}
+			Overlays.set(0);
 			$scope.current.overlay = Overlays.getOverlay();
 			$scope.current.storyboard = Storyboards.getStoryboard();
 			console.log("Current dataset, model, overlay and storyboard updated.");			

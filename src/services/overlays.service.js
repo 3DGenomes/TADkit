@@ -244,6 +244,18 @@
 
 				return newOverlays;
 			},
+			addDirect: function(newOverlay) {
+				var self = this;
+				var currentOverlaysIndex = overlays.loaded.length - 1;
+				for (var i = overlays.loaded.length - 1; i >= 0; i--) {
+					if (overlays.loaded[i].object.uuid == newOverlay.object.uuid) return true;
+				}
+				currentOverlaysIndex++;
+				newOverlay.object.state.index = currentOverlaysIndex;
+				overlays.loaded = overlays.loaded.concat(newOverlay);
+				
+				return currentOverlaysIndex;
+			},
 			clear: function() {
 				while (overlays.loaded.length > 0) { // remove all overlays
 					overlays.loaded.shift();
@@ -363,7 +375,6 @@
 							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
 							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
 						}
-
 					} else {
 						// already segmented
 						console.log("Overlay '" + overlay.object.title + "' already segmented as color array matching current dataset length");

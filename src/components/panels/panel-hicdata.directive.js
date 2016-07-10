@@ -169,6 +169,8 @@
 									.attr("x", 0)
 								 	.attr("y", 0)
 								 	.attr("transform", "translate(" + (start_tad_scaled) + ","+canvas.height+") scale("+scope.scale+") rotate(-45 0 0)");
+			                		
+			                	polygon_tad.append("svg:title").text("Start:"+data.tads[i][1]+",End:"+data.tads[i][2]+",Score:"+data.tads[i][3]);
 			                	polygon_tads.push(polygon_tad);
 			       
 			                }

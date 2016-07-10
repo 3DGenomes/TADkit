@@ -12,7 +12,8 @@
 				state: '=',
 				view: '=',
 				data: '=',
-				settings:'='
+				settings:'=',
+				currentoverlay:'='
 			},
 			templateUrl: 'assets/templates/panel-jbrowse.html',
 			link:function(scope, element, attrs){
@@ -40,6 +41,11 @@
 					scope.settings.current.segmentUpper = scope.settings.current.position + (scope.settings.current.segment * 5); // * 0.5???
 				};
 
+				scope.toggleColor = function(overlay) {
+					scope.currentoverlay = overlay;
+					//scope.currentoverlay.colors.chromatin = chromatin_colors;
+					scope.$apply(scope.currentoverlay.colors.chromatin);
+				};
 				//http://rest.ensemblgenomes.org/overlap/region/drosophila_melanogaster/chrX:15590000-16600000?feature=gene;content-type=application/json"
 			}
 		};

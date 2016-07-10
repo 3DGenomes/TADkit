@@ -459,6 +459,8 @@
 									.attr("x", 0)
 								 	.attr("y", 0)
 								 	.attr("transform", "translate(" + (start_tad_scaled) + ","+canvas.height+") scale("+scope.scale+") rotate(-45 0 0)");
+			                		
+			                	polygon_tad.append("svg:title").text("Start:"+data.tads[i][1]+",End:"+data.tads[i][2]+",Score:"+data.tads[i][3]);
 			                	polygon_tads.push(polygon_tad);
 			       
 			                }
@@ -764,10 +766,12 @@
 		.module('TADkit')
 		.controller('PanelJBrowseController', PanelJBrowseController);
 
-	function PanelJBrowseController($scope, $mdDialog) {
+	function PanelJBrowseController($scope, $mdDialog, Overlays, uuid4, Networks) {
 
 		$scope.width = $scope.state.width; // strip PX units
 		$scope.height = $scope.state.height; // strip PX units
+
+		var originalOverlay = Overlays.getCurrentIndex();
 		
 		//$scope.jbrowsedataurl = 'http://172.16.54.4/JBrowse/data';
 		$scope.jbrowsedataurl = 'data';
@@ -792,6 +796,100 @@
 			}
 			$scope.$apply();
 		};
+		$scope.applyOverlay =  function(track,features) {
+			var self = this;
+			var overlays = Overlays.get();
+			for(var i=0;i<overlays.loaded.length;i++) {
+				if (overlays.loaded[i].object.title === track) {
+					$scope.toggleOverlay(overlays.loaded[i].object.state.index);
+					return true;
+				}
+			}
+			
+			var jbrowseOverlay =
+							{
+								"metadata": {
+									"version" : 1.0,
+									"type" : "overlay",
+									"generator" : "TADkit"
+								},
+								"object" : {
+									"uuid" : uuid4.generate(),
+									"id" : overlays.loaded.length,
+									"title" : track,
+									"source" : "JBrowse track",
+									"url" : "local",
+									"description" : "JBrowse track overlay", 
+									"type" : "jbrowse",
+									"format" : "variable",
+									"components" : 2,
+									"name" : track,
+									"state" : {
+										"index" : 0, // make real index???
+										"overlaid" : false
+									}
+								},
+								"palette" : [],
+								"data" : [],
+								"colors" : {
+									"particles" : [],
+									"chromatin" : [],
+									"network" : {
+										"RGB" : [],
+										"alpha" : []
+									}
+								}
+							};
+			var totallength;
+			var k;
+			var j = 0;
+			angular.forEach(features, function(feature) {
+				totallength = Math.round((feature[2] - feature[1])/$scope.settings.current.segmentLength);
+				for(k=j;k<(j+totallength) && k<$scope.settings.current.segmentsCount;k++) {
+					jbrowseOverlay.colors.chromatin[k] = feature[5];
+				}
+				j += totallength;
+			});
+			for(i=j;i<$scope.settings.current.segmentsCount;i++) {
+				jbrowseOverlay.colors.chromatin[i] = "gray";
+			}
+			var newOverlay = Overlays.addDirect(jbrowseOverlay);
+			var overlay = overlays.loaded[newOverlay];
+			
+			overlay.colors.particles = [];
+			overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, $scope.settings.current.edgesCount);
+			overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, $scope.settings.current.edgesCount);
+
+			$scope.toggleOverlay(newOverlay);
+			//Overlays.setOverlaid(newOverlay);
+			//Overlays.set(newOverlay);
+			//$scope.currentoverlay = Overlays.set(newOverlay);
+		};
+		$scope.toggleOverlay = function(index) {
+			$scope.overlaid = Overlays.getOverlay(index).object.state.overlaid;
+			if (!$scope.overlaid) {
+				Overlays.setOverlaid(index);
+				Overlays.set(index);
+				$scope.currentoverlay = Overlays.getOverlay();
+			} else {
+				Overlays.setOverlaid(originalOverlay);
+				Overlays.set(originalOverlay);
+				$scope.currentoverlay = Overlays.getOverlay();
+			}
+			//$scope.$apply($scope.currentoverlay.colors.chromatin);
+			//$scope.toggleColor($scope.currentoverlay.colors.chromatin);
+			$scope.toggleColor($scope.currentoverlay);
+			// $scope.overlay.object.state.overlaid = !$scope.overlay.object.state.overlaid;
+		};
+		$scope.removeOverlay =  function(track) {
+			var overlays = Overlays.get();
+			angular.forEach(overlays.loaded, function(overlay) {
+				if (overlay.object.title === track) {
+					$scope.toggleOverlay(overlay.object.state.index);
+				}
+
+			});
+		};
 	}
 })();
 (function() {
@@ -808,7 +906,8 @@
 				state: '=',
 				view: '=',
 				data: '=',
-				settings:'='
+				settings:'=',
+				currentoverlay:'='
 			},
 			templateUrl: 'assets/templates/panel-jbrowse.html',
 			link:function(scope, element, attrs){
@@ -836,6 +935,11 @@
 					scope.settings.current.segmentUpper = scope.settings.current.position + (scope.settings.current.segment * 5); // * 0.5???
 				};
 
+				scope.toggleColor = function(overlay) {
+					scope.currentoverlay = overlay;
+					//scope.currentoverlay.colors.chromatin = chromatin_colors;
+					scope.$apply(scope.currentoverlay.colors.chromatin);
+				};
 				//http://rest.ensemblgenomes.org/overlap/region/drosophila_melanogaster/chrX:15590000-16600000?feature=gene;content-type=application/json"
 			}
 		};
@@ -4111,6 +4215,11 @@
 		$scope.updateCurrent = function() {
 			$scope.current.dataset = Datasets.getDataset();
 			$scope.current.model = Datasets.getModel();
+			var overlays = Overlays.get();
+			while (overlays.loaded.length > 1) { // remove all overlays
+				overlays.loaded.pop();
+			}
+			Overlays.set(0);
 			$scope.current.overlay = Overlays.getOverlay();
 			$scope.current.storyboard = Storyboards.getStoryboard();
 			console.log("Current dataset, model, overlay and storyboard updated.");			
@@ -5670,6 +5779,18 @@
 
 				return newOverlays;
 			},
+			addDirect: function(newOverlay) {
+				var self = this;
+				var currentOverlaysIndex = overlays.loaded.length - 1;
+				for (var i = overlays.loaded.length - 1; i >= 0; i--) {
+					if (overlays.loaded[i].object.uuid == newOverlay.object.uuid) return true;
+				}
+				currentOverlaysIndex++;
+				newOverlay.object.state.index = currentOverlaysIndex;
+				overlays.loaded = overlays.loaded.concat(newOverlay);
+				
+				return currentOverlaysIndex;
+			},
 			clear: function() {
 				while (overlays.loaded.length > 0) { // remove all overlays
 					overlays.loaded.shift();
@@ -5789,7 +5910,6 @@
 							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
 							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
 						}
-
 					} else {
 						// already segmented
 						console.log("Overlay '" + overlay.object.title + "' already segmented as color array matching current dataset length");
