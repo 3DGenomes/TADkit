@@ -34,13 +34,13 @@
 			// var pathControls = getPathControls( geometry.vertices );
 			var pathControls = PathControls.cubic(geometry.vertices, this.pathClosed);
 
-			var controlsGeom = new THREE.Geometry();
-			for ( var h = 0; h < pathControls.vertices.length; h ++ ) {
-				controlsGeom.vertices.push( new THREE.Vector3( pathControls.vertices[h].x, pathControls.vertices[h].y, pathControls.vertices[h].z || 0) );
-				var vertexColor = pathControls.colors[h];
-				controlsGeom.colors.push(vertexColor);
-			}
-			controlsGeom.name = "controlsGeom";
+//			var controlsGeom = new THREE.Geometry();
+//			for ( var h = 0; h < pathControls.vertices.length; h ++ ) {
+//				controlsGeom.vertices.push( new THREE.Vector3( pathControls.vertices[h].x, pathControls.vertices[h].y, pathControls.vertices[h].z || 0) );
+//				var vertexColor = pathControls.colors[h];
+//				controlsGeom.colors.push(vertexColor);
+//			}
+//			controlsGeom.name = "controlsGeom";
 
 			// Set number of Particles
 			if (this.particles === 0) this.particles = geometry.vertices.length; //pathControls.vertices.length - 1;

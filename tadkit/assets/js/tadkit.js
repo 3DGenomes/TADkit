@@ -981,13 +981,13 @@
 			// var pathControls = getPathControls( geometry.vertices );
 			var pathControls = PathControls.cubic(geometry.vertices, this.pathClosed);
 
-			var controlsGeom = new THREE.Geometry();
-			for ( var h = 0; h < pathControls.vertices.length; h ++ ) {
-				controlsGeom.vertices.push( new THREE.Vector3( pathControls.vertices[h].x, pathControls.vertices[h].y, pathControls.vertices[h].z || 0) );
-				var vertexColor = pathControls.colors[h];
-				controlsGeom.colors.push(vertexColor);
-			}
-			controlsGeom.name = "controlsGeom";
+//			var controlsGeom = new THREE.Geometry();
+//			for ( var h = 0; h < pathControls.vertices.length; h ++ ) {
+//				controlsGeom.vertices.push( new THREE.Vector3( pathControls.vertices[h].x, pathControls.vertices[h].y, pathControls.vertices[h].z || 0) );
+//				var vertexColor = pathControls.colors[h];
+//				controlsGeom.colors.push(vertexColor);
+//			}
+//			controlsGeom.name = "controlsGeom";
 
 			// Set number of Particles
 			if (this.particles === 0) this.particles = geometry.vertices.length; //pathControls.vertices.length - 1;
@@ -1738,6 +1738,8 @@
 					var ambientLight, pointLight;
 					var playback, controls, renderer;
 					var particles, chromatin, network;
+					var particlesObj, chromatinObj, networkObj;
+					
 					var width, height, contW, contH, windowHalfX, windowHalfY;
 
 					var particleOriginalColor = new THREE.Color();
@@ -1905,9 +1907,10 @@
 							}
 						});
 
-						var particlesObj = scene.getObjectByName( "Particles Cloud" );
-						var chromatinObj = scene.getObjectByName( "Chromatin Fiber" );
-						var networkObj = scene.getObjectByName( "Network Graph" );
+						particlesObj = scene.getObjectByName( "Particles Cloud" );
+						chromatinObj = scene.getObjectByName( "Chromatin Fiber" );
+						networkObj = scene.getObjectByName( "Network Graph" );
+
 
 						// /* Watch for Particles colors */
 						scope.$watch('currentoverlay.colors.particles', function( newColors, oldColors ) { // cant deep watch as change through set on service
@@ -2047,12 +2050,38 @@
 					};
 
 				    scope.$on('$destroy', function() {
-				        scene.remove("Particles Cloud");
-				        scene.remove("Chromatin Fiber");
-				        scene.remove("Network Graph");
+				        scene.remove(particles);
+				        scene.remove(chromatin);
+				        scene.remove(network);
+				        scene.remove(particlesObj);
+				        scene.remove(chromatinObj);
+				        scene.remove(networkObj);
+				        
+				        particles.geometry.dispose();
+				        particles.material.dispose();
+				        particlesObj.geometry.dispose();
+				        particlesObj.material.dispose();
+				        
+				        for(var i=0;i<chromatin.children.length;i++) {
+				        	chromatin.children[i].geometry.dispose();
+				        	chromatin.children[i].material.dispose();
+				        	chromatinObj.children[i].geometry.dispose();
+				        	chromatinObj.children[i].material.dispose();
+				        	
+				        }
+
+				        network.geometry.dispose();
+				        network.material.dispose();
+				        networkObj.geometry.dispose();
+				        networkObj.material.dispose();
+				        
+				        
 				        particles = undefined;
+				        particlesObj = undefined;
+				        chromatinObj = undefined;
 				        chromatin = undefined;
 				        network = undefined;
+				        networkObj = undefined;
 				        
 				    });
 

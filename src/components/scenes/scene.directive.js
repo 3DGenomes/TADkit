@@ -29,6 +29,8 @@
 					var ambientLight, pointLight;
 					var playback, controls, renderer;
 					var particles, chromatin, network;
+					var particlesObj, chromatinObj, networkObj;
+					
 					var width, height, contW, contH, windowHalfX, windowHalfY;
 
 					var particleOriginalColor = new THREE.Color();
@@ -196,9 +198,10 @@
 							}
 						});
 
-						var particlesObj = scene.getObjectByName( "Particles Cloud" );
-						var chromatinObj = scene.getObjectByName( "Chromatin Fiber" );
-						var networkObj = scene.getObjectByName( "Network Graph" );
+						particlesObj = scene.getObjectByName( "Particles Cloud" );
+						chromatinObj = scene.getObjectByName( "Chromatin Fiber" );
+						networkObj = scene.getObjectByName( "Network Graph" );
+
 
 						// /* Watch for Particles colors */
 						scope.$watch('currentoverlay.colors.particles', function( newColors, oldColors ) { // cant deep watch as change through set on service
@@ -338,12 +341,38 @@
 					};
 
 				    scope.$on('$destroy', function() {
-				        scene.remove("Particles Cloud");
-				        scene.remove("Chromatin Fiber");
-				        scene.remove("Network Graph");
+				        scene.remove(particles);
+				        scene.remove(chromatin);
+				        scene.remove(network);
+				        scene.remove(particlesObj);
+				        scene.remove(chromatinObj);
+				        scene.remove(networkObj);
+				        
+				        particles.geometry.dispose();
+				        particles.material.dispose();
+				        particlesObj.geometry.dispose();
+				        particlesObj.material.dispose();
+				        
+				        for(var i=0;i<chromatin.children.length;i++) {
+				        	chromatin.children[i].geometry.dispose();
+				        	chromatin.children[i].material.dispose();
+				        	chromatinObj.children[i].geometry.dispose();
+				        	chromatinObj.children[i].material.dispose();
+				        	
+				        }
+
+				        network.geometry.dispose();
+				        network.material.dispose();
+				        networkObj.geometry.dispose();
+				        networkObj.material.dispose();
+				        
+				        
 				        particles = undefined;
+				        particlesObj = undefined;
+				        chromatinObj = undefined;
 				        chromatin = undefined;
 				        network = undefined;
+				        networkObj = undefined;
 				        
 				    });
 
