@@ -17,6 +17,8 @@
 		
 		if(parseInt($scope.data.n)>$scope.width) {
 			$scope.canvas_width = parseInt($scope.data.n); // strip PX units
+		}
+		if(parseInt($scope.data.n)>$scope.height) {
 			$scope.canvas_height = parseInt($scope.data.n); // strip PX units
 		}
 		//$scope.slidevalue = $scope.data.min+";"+$scope.data.max;

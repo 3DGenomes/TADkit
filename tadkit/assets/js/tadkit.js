@@ -250,6 +250,8 @@
 		
 		if(parseInt($scope.data.n)>$scope.width) {
 			$scope.canvas_width = parseInt($scope.data.n); // strip PX units
+		}
+		if(parseInt($scope.data.n)>$scope.height) {
 			$scope.canvas_height = parseInt($scope.data.n); // strip PX units
 		}
 		//$scope.slidevalue = $scope.data.min+";"+$scope.data.max;
@@ -458,7 +460,7 @@
 									.attr('height', end_tad-start_tad+1)
 									.attr("x", 0)
 								 	.attr("y", 0)
-								 	.attr("transform", "translate(" + (start_tad_scaled) + ","+(container_height-2*parseInt(scope.state.margin)-5)+") scale("+scope.scale+") rotate(-45 0 0)");
+								 	.attr("transform", "translate(" + (start_tad_scaled) + ","+(container_height-2*parseInt(scope.state.margin))+") scale("+scope.scale+") rotate(-45 0 0)");
 			                		
 			                	polygon_tad.append("svg:title").text("Start:"+data.tads[i][1]+",End:"+data.tads[i][2]+",Score:"+data.tads[i][3]);
 			                	polygon_tads.push(polygon_tad);
@@ -561,7 +563,7 @@
 						start_tad_scaled = Math.round((start_tad*Math.sqrt(2))*scope.scale+(scope.translatePos.x));
 						
 						polygon_tads[i]
-							.attr("transform", "translate(" + (start_tad_scaled) + ","+(container_height-2*parseInt(scope.state.margin)-5)+") scale("+scope.scale+") rotate(-45 0 0)");
+							.attr("transform", "translate(" + (start_tad_scaled) + ","+(container_height-2*parseInt(scope.state.margin))+") scale("+scope.scale+") rotate(-45 0 0)");
 						if(scope.settings.current.position>=parseInt(polygon_tads[i].attr("start")) && scope.settings.current.position<=parseInt(polygon_tads[i].attr("end"))){
 							scope.highlighted_tad = i; 
 						} 
