@@ -338,8 +338,8 @@
 		                var Logmin, Logmax = 0;
 		                if(data.max !== 0) Logmax = Math.log(data.max);
 		                if(data.min !== 0) Logmin = Math.log(data.min);
-		                //var container_width = parseInt(scope.state.width);
-		                //var container_height = parseInt(scope.state.height);
+		                var container_width = parseInt(scope.state.width);
+		                var container_height = parseInt(scope.state.height);
 		                for(var i=0;i<data.value.length;i++) {
 		                	x = Math.floor(data.pos[i]%data.n);
 							y = Math.floor(data.pos[i]/data.n);
@@ -365,7 +365,7 @@
 		                }
 		                
 		                //scope.restore_image = ctx.getImageData(0, 0, canvas.width, canvas.height);
-		                scope.scale = (canvas.width-10)/(Math.sqrt(2)*data.n);
+		                scope.scale = (container_width-2*parseInt(scope.state.margin))/(Math.sqrt(2)*data.n);
 		                scope.imageObject.src=canvas.toDataURL();
 		                
 		                if(scope.rendered) return;
@@ -388,8 +388,8 @@
 							
 							svg.selectAll('*').remove();
 							
-							hic_svg = svg.attr('width', canvas.width)
-									.attr('height', canvas.height)
+							hic_svg = svg.attr('width', container_width-2*parseInt(scope.state.margin))
+									.attr('height', container_height-2*parseInt(scope.state.margin))
 									.style("position", "absolute")
 									.style("top", 2*parseInt(scope.state.margin))
 									.style("left", 2*parseInt(scope.state.margin))
@@ -402,13 +402,13 @@
 								.style("stroke", "#ccc")
 								.style("stroke-widt", 2)
 								.attr("cx", (scope.settings.current.particle*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2)))
-								.attr("cy", canvas.height-parseInt(scope.state.margin))
+								.attr("cy", container_height-2*parseInt(scope.state.margin))
 								.attr("r", 4);
 
 							position = hic_svg.append("text")
 								.attr("id", "circ_position")
 								.attr("x", (scope.settings.current.particle*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2))-2)
-								.attr("y", canvas.height-parseInt(scope.state.margin)-5)
+								.attr("y", container_height-2*parseInt(scope.state.margin)-5)
 								.style("text-anchor", "bottom")
 								.style("font-family", "sans-serif")
 								.style("font-size", "10px")
@@ -458,7 +458,7 @@
 									.attr('height', end_tad-start_tad+1)
 									.attr("x", 0)
 								 	.attr("y", 0)
-								 	.attr("transform", "translate(" + (start_tad_scaled) + ","+canvas.height+") scale("+scope.scale+") rotate(-45 0 0)");
+								 	.attr("transform", "translate(" + (start_tad_scaled) + ","+(container_height-2*parseInt(scope.state.margin)-5)+") scale("+scope.scale+") rotate(-45 0 0)");
 			                		
 			                	polygon_tad.append("svg:title").text("Start:"+data.tads[i][1]+",End:"+data.tads[i][2]+",Score:"+data.tads[i][3]);
 			                	polygon_tads.push(polygon_tad);
@@ -527,23 +527,17 @@
 					
 	                if(!scope.rendered)	scope.render(data.max, data.min);
 					var canvas = document.getElementById("hic_canvas");
+					var container_height = parseInt(scope.state.height);
 		            if (canvas.getContext) {
 		                var ctx = canvas.getContext("2d");
 		                ctx.clearRect(0,0, canvas.width, canvas.height);
 		                ctx.save();
-		                //if(scope.restore_image!==null) {
-		                	//ctx.putImageData(scope.restore_image,scope.translatePos.x, scope.translatePos.y);
-		                //}
-		                ctx.translate(scope.translatePos.x, canvas.height-2);
+		                ctx.translate(scope.translatePos.x, container_height-10);
 		                ctx.rotate(-Math.PI/4);
 		                ctx.scale(scope.scale, scope.scale);
 		                
-		                //ctx.drawImage(scope.imageObject,scope.translatePos.x/scope.scale,scope.translatePos.x/scope.scale);
 		                ctx.drawImage(scope.imageObject,0,0);
-		                //ctx.drawImage(scope.imageObject,scope.translatePos.x/scope.scale,scope.translatePos.y/scope.scale);
-		                //ctx.translate(scope.translatePos.x/scope.scale, scope.translatePos.y/scope.scale);
-		                //scope.restore_position = x-4;
-		                //scope.restore_data = ctx.getImageData(x-4, x-4, 9, 9); 
+
 		                
             			ctx.restore();
 		            }
@@ -557,6 +551,8 @@
 					handle.attr("cx", x );
 					position.attr("x", x ).text(scope.settings.current.particle);
 					
+					var container_width = parseInt(scope.state.width);
+	                var container_height = parseInt(scope.state.height);
 					var resolution, start_tad, end_tad = 0;
 					var start_tad_scaled, end_tad_scaled;
 					for(var i=0;i<polygon_tads.length;i++) {
@@ -565,7 +561,7 @@
 						start_tad_scaled = Math.round((start_tad*Math.sqrt(2))*scope.scale+(scope.translatePos.x));
 						
 						polygon_tads[i]
-							.attr("transform", "translate(" + (start_tad_scaled) + ","+canvas.height+") scale("+scope.scale+") rotate(-45 0 0)");
+							.attr("transform", "translate(" + (start_tad_scaled) + ","+(container_height-2*parseInt(scope.state.margin)-5)+") scale("+scope.scale+") rotate(-45 0 0)");
 						if(scope.settings.current.position>=parseInt(polygon_tads[i].attr("start")) && scope.settings.current.position<=parseInt(polygon_tads[i].attr("end"))){
 							scope.highlighted_tad = i; 
 						} 
