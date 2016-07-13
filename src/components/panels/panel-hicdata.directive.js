@@ -29,7 +29,7 @@
 				var polygon_tads = [];
 				scope.highlighted_tad = -1;
 				var canvas;
-				var original_colors = [];
+				//var original_colors = [];
 				
 				scope.render = function(data_max, data_min) {
 		            //canvas = document.getElementById("hic_canvas");
@@ -286,9 +286,9 @@
 			        		polygon_tads[oldvalue].style("fill-opacity", 0);
 			        		start_tad_segment = Math.round((parseInt(polygon_tads[oldvalue].attr("start")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
 			        		end_tad_segment = Math.ceil((parseInt(polygon_tads[oldvalue].attr("end")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
-			        		for(i=start_tad_segment;i<end_tad_segment;i++) {
-			        			scope.currentoverlay.colors.chromatin[i] = original_colors[i-start_tad_segment];
-			        		}
+//			        		for(i=start_tad_segment;i<end_tad_segment;i++) {
+//			        			scope.currentoverlay.colors.chromatin[i] = original_colors[i-start_tad_segment];
+//			        		}
 		        		}
 		        		start_tad_segment = Math.round((parseInt(polygon_tads[newvalue].attr("start")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
 		        		end_tad_segment = Math.ceil((parseInt(polygon_tads[newvalue].attr("end")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
