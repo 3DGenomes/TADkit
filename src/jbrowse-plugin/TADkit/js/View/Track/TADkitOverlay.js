@@ -132,6 +132,33 @@ function(
                 if (Math.floor(leftpos) < 0) {
                     leftpos = widget.getWidth()/2;
                 };
+                var dr = dojo.create("div", {id: "trackbar-tadkit-right-mark"}, "static_track");
+                dr.style.display = "none";
+                dr.style.left = "0px";
+                dr.style.top = toppos + "px";
+                
+                var dl = dojo.create("div", {id: "trackbar-tadkit-left-mark"}, "static_track");
+                dl.style.display = "none";
+                dl.style.left = "0px";
+                dl.style.top = toppos + "px";
+                
+                $scope.hideTadkitMarkers = function() {
+                	dl.style.display = "none";
+                	dr.style.display = "none";
+                };
+                $scope.updateTadkitMarkers = function(x,y) {
+                	c = widget.bpToPx(y);
+                    leftpos = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
+                	dl.style.left = Math.floor(leftpos) + "px";
+                	
+                	c = widget.bpToPx(x);
+                    leftpos = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
+                	dr.style.left = Math.floor(leftpos) + "px";
+                	
+                	dl.style.display = "block";
+                	dr.style.display = "block";
+                };
+                
                 var d = dojo.create("div", {id: "trackbar-tadkit"}, "static_track");
                 d.style.display = "block";
                 d.style.left = Math.floor(leftpos) + "px";

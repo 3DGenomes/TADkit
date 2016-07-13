@@ -365,8 +365,9 @@ md-checkbox.md-checked .md-icon {
 	border: 5px solid #ddd;
 }
 .component #hic_data_container #zoom-buttons {
+	z-index: 2;
     position: absolute;
-    left: 530px;
+    left: 450px;
 }
 .component #hic_data_container #show_restraints {
     padding-bottom: 4px;

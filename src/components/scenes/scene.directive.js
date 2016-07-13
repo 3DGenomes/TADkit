@@ -233,9 +233,10 @@
 								var chromatinCount = chromatinObj.children.length;
 								for (var i = 0; i < chromatinCount; i++) {
 									if(i>=scope.settings.current.start_tad_selected && i<=scope.settings.current.end_tad_selected) {
-										chromatinObj.children[i].material.opacity = 0.5;
-									} else {
 										chromatinObj.children[i].material.opacity = 1;
+									} else {
+										if(newValue == -1) chromatinObj.children[i].material.opacity = 1;
+										else chromatinObj.children[i].material.opacity = 0.5;
 									}
 									
 								}

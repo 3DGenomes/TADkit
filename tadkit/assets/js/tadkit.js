@@ -312,17 +312,107 @@
 				var data = scope.data;
 				scope.rendered = false;
 				scope.imageObject=new Image();
-				//scope.restore_image = null;
-				//scope.restore_data = null;
-				//scope.restore_position = 0;
-				var slidevalue = scope.slidevalue;
+				scope.show_tads = (data.tads.length !== 0);
+				
+				var scaleMultiplier = 0.8;
+			    var startDragOffset = {};
+			    var mouseDown = false;
+			    var mouseMove = false;
+				
+			    var slidevalue = scope.slidevalue;
 				var brush;
-				var hic_svg, handle, position;
+				var hic_svg, handle, position, contact_marker, contact_marker_value;
 				var polygon_tads = [];
 				scope.highlighted_tad = -1;
 				var canvas;
-				//var original_colors = [];
 				
+				// Last updated November 2011
+				// By Simon Sarris
+				// www.simonsarris.com
+				// sarris@acm.org
+				//
+				// Free to use and distribute at will
+				// So long as you are nice to people, etc
+
+				function Transform() {
+				  this.reset();
+				}
+
+				Transform.prototype.reset = function() {
+				  this.m = [1,0,0,1,0,0];
+				};
+
+				Transform.prototype.multiply = function(matrix) {
+				  var m11 = this.m[0] * matrix.m[0] + this.m[2] * matrix.m[1];
+				  var m12 = this.m[1] * matrix.m[0] + this.m[3] * matrix.m[1];
+
+				  var m21 = this.m[0] * matrix.m[2] + this.m[2] * matrix.m[3];
+				  var m22 = this.m[1] * matrix.m[2] + this.m[3] * matrix.m[3];
+
+				  var dx = this.m[0] * matrix.m[4] + this.m[2] * matrix.m[5] + this.m[4];
+				  var dy = this.m[1] * matrix.m[4] + this.m[3] * matrix.m[5] + this.m[5];
+
+				  this.m[0] = m11;
+				  this.m[1] = m12;
+				  this.m[2] = m21;
+				  this.m[3] = m22;
+				  this.m[4] = dx;
+				  this.m[5] = dy;
+				};
+
+				Transform.prototype.invert = function() {
+				  var d = 1 / (this.m[0] * this.m[3] - this.m[1] * this.m[2]);
+				  var m0 = this.m[3] * d;
+				  var m1 = -this.m[1] * d;
+				  var m2 = -this.m[2] * d;
+				  var m3 = this.m[0] * d;
+				  var m4 = d * (this.m[2] * this.m[5] - this.m[3] * this.m[4]);
+				  var m5 = d * (this.m[1] * this.m[4] - this.m[0] * this.m[5]);
+				  this.m[0] = m0;
+				  this.m[1] = m1;
+				  this.m[2] = m2;
+				  this.m[3] = m3;
+				  this.m[4] = m4;
+				  this.m[5] = m5;
+				};
+
+				Transform.prototype.rotate = function(rad) {
+				  var c = Math.cos(rad);
+				  var s = Math.sin(rad);
+				  var m11 = this.m[0] * c + this.m[2] * s;
+				  var m12 = this.m[1] * c + this.m[3] * s;
+				  var m21 = this.m[0] * -s + this.m[2] * c;
+				  var m22 = this.m[1] * -s + this.m[3] * c;
+				  this.m[0] = m11;
+				  this.m[1] = m12;
+				  this.m[2] = m21;
+				  this.m[3] = m22;
+				};
+
+				Transform.prototype.translate = function(x, y) {
+				  this.m[4] += this.m[0] * x + this.m[2] * y;
+				  this.m[5] += this.m[1] * x + this.m[3] * y;
+				};
+
+				Transform.prototype.scale = function(sx, sy) {
+				  this.m[0] *= sx;
+				  this.m[1] *= sx;
+				  this.m[2] *= sy;
+				  this.m[3] *= sy;
+				};
+
+				Transform.prototype.transformPoint = function(px, py) {
+				  var x = px;
+				  var y = py;
+				  px = x * this.m[0] + y * this.m[2] + this.m[4];
+				  py = x * this.m[1] + y * this.m[3] + this.m[5];
+				  return [px, py];
+				};
+				// end of code for nice person
+				
+				var t = new Transform();
+				var ti = new  Transform();
+                
 				scope.render = function(data_max, data_min) {
 		            //canvas = document.getElementById("hic_canvas");
 		            canvas = angular.element(document.querySelector('#hic_canvas'))[0];
@@ -417,11 +507,6 @@
 								.style("color", "#333")
 								.text(scope.settings.current.particle);
 
-							// hic_svg.append('rect')
-							//   .attr('class', 'overlay')
-							//   .attr('width', canvas.width)
-							//   .attr('height', canvas.height)
-							//   .style("fill", "transparent");
 							var stroke_width = 0;
 							var resolution, start_tad, end_tad = 0;
 							var polygon_tad, start_tad_scaled, end_tad_scaled, tad_height; 
@@ -432,19 +517,6 @@
 								start_tad = Math.round(((data.tads[i][1])-scope.settings.current.chromStart)/resolution);
 			                	end_tad = Math.round((data.tads[i][2]-scope.settings.current.chromStart)/resolution);
 			                 	start_tad_scaled = Math.round((start_tad*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2)));
-								// end_tad_scaled = Math.round((end_tad*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2)));
-								// tad_height = end_tad_scaled-start_tad_scaled;
-			     //            	var polygon_tad = tads_svg.append("polygon")
-			     //            		.attr("id",data.tads[i][0])
-								// 	.attr("x", 20)
-								// 	.attr("y", 400)
-								// 	.attr("width", 200)
-								// 	.style("fill", "white")
-								// 	.style("fill-opacity", 1)
-								// 	.style("stroke", "black")
-								// 	.style("stroke-width", stroke_width)
-								// 	.attr("class", "polygon_tad")
-								// 	.attr("points", start_tad_scaled+","+canvas.height+" "+end_tad_scaled+","+canvas.height+" "+(end_tad_scaled-start_tad_scaled)+","+tad_height);
 			                	polygon_tad = hic_svg.append("rect")
 			                 		.attr("id",data.tads[i][0])
 			                 		.attr("start",(data.tads[i][1]))
@@ -458,6 +530,7 @@
 									.attr("class", "polygon_tad")
 									.attr('width', end_tad-start_tad+1)
 									.attr('height', end_tad-start_tad+1)
+									.attr('display', 'block')
 									.attr("x", 0)
 								 	.attr("y", 0)
 								 	.attr("transform", "translate(" + (start_tad_scaled) + ","+(container_height-2*parseInt(scope.state.margin))+") scale("+scope.scale+") rotate(-45 0 0)");
@@ -466,6 +539,27 @@
 			                	polygon_tads.push(polygon_tad);
 			       
 			                }
+							
+							//marker
+							contact_marker = hic_svg.append("rect")
+		                 		.attr("id","contact_marker")
+		                 		.style("fill", "transparent")
+								.style("stroke", "red")
+								.style("stroke-width", 1)
+								.attr('width', 1)
+								.attr('height', 1)
+								.attr('display', 'block')
+								.attr("x", 0)
+							 	.attr("y", 0);
+							contact_marker_value = hic_svg.append("text")
+								.attr("id", "contact_marker_value")
+								.attr("x", 0)
+								.attr("y", 0)
+								.style("text-anchor", "bottom")
+								.style("font-family", "sans-serif")
+								.style("font-size", "10px")
+								.style("color", "#333")
+								.text("0");
 
 			                svg.on("mousedown", function(){
 						        mouseDown = true;
@@ -474,7 +568,46 @@
 						    });
 						 
 						    svg.on("mouseup", function(){
+						    	if(!mouseMove) {
+						    		var jbrowse_scope = angular.element(document.querySelector('#jbrowse-iframe')).scope();
+						    		
+						    		var mouseCoords = d3.mouse(this);   
+						    		var transformCoords = ti.transformPoint(mouseCoords[0],mouseCoords[1]);
+						            if(transformCoords[0]<0 || transformCoords[1]<0 || transformCoords[0]>data.n || transformCoords[0]>data.n) {
+						            	contact_marker.attr('display', 'none');
+						            	contact_marker_value.attr('display', 'none');
+						            	if(!angular.isUndefined(jbrowse_scope)) {
+						            		jbrowse_scope.hideTadkitMarkers();
+						            	}
+						            } else {
+						            	contact_marker
+						            		.attr("x", mouseCoords[0])
+						            		.attr("y", mouseCoords[1])
+						            		.attr('width', data.n*scope.scale)
+						            		.attr('height', data.n*scope.scale)
+						            		.attr("transform", "rotate(45 "+mouseCoords[0]+" "+mouseCoords[1]+")")
+						            		.attr('display', 'block');
+						            	
+						            	var pos = Math.round(transformCoords[0])+ Math.round(transformCoords[1])*data.n;
+						            	var value_index = data.pos.indexOf(pos);
+						            	var value_text = 0;
+						            	if(value_index >= 0) value_text = data.value[value_index];
+						            	contact_marker_value
+						            		.attr("x", mouseCoords[0])
+						            		.attr("y", mouseCoords[1]-10)
+						            		.text(value_text)
+						            		.attr('display', 'block');
+						            	
+						            	if(!angular.isUndefined(jbrowse_scope)) {
+						            		var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
+											jbrowse_scope.updateTadkitMarkers(transformCoords[0]*resolution+scope.settings.current.chromStart,transformCoords[1]*resolution+scope.settings.current.chromStart);
+						            	}
+						            }
+						            
+						    	}
+						    	mouseMove = false;
 						        mouseDown = false;
+						        
 						    });
 						 
 						    svg.on("mouseover", function(){
@@ -489,7 +622,7 @@
 						        if (mouseDown) {
 						            scope.translatePos.x = d3.event.clientX - startDragOffset.x;
 						            scope.translatePos.y = d3.event.clientY - startDragOffset.y;
-						            //scope.render();
+						            mouseMove = true;
 						            scope.update();
 						            scope.update_marks();
 						        }
@@ -534,9 +667,17 @@
 		                var ctx = canvas.getContext("2d");
 		                ctx.clearRect(0,0, canvas.width, canvas.height);
 		                ctx.save();
-		                ctx.translate(scope.translatePos.x, container_height-10);
-		                ctx.rotate(-Math.PI/4);
-		                ctx.scale(scope.scale, scope.scale);
+		                //ctx.translate(scope.translatePos.x, container_height-10);
+		                //ctx.rotate(-Math.PI/4);
+		                //ctx.scale(scope.scale, scope.scale);
+		                t.reset();
+		                t.translate(scope.translatePos.x, container_height-10);
+		                t.rotate(-Math.PI/4);
+		                t.scale(scope.scale, scope.scale);
+		                ti.m  = t.m.slice();
+		                ti.invert();
+		                var m = t.m;
+		                ctx.setTransform(m[0], m[1], m[2], m[3], m[4], m[5]);
 		                
 		                ctx.drawImage(scope.imageObject,0,0);
 
@@ -546,9 +687,6 @@
 				};
 
 				scope.update_marks =  function() {
-					//var circ_mark = angular.element(document.querySelector('#circ_mark'));
-					//var circ_position = angular.element(document.querySelector('#circ_position'));
-					//var x = (scope.settings.current.particle*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2));
 					var x = (scope.settings.current.particle*Math.sqrt(2))*scope.scale+(scope.translatePos.x);
 					handle.attr("cx", x );
 					position.attr("x", x ).text(scope.settings.current.particle);
@@ -557,53 +695,46 @@
 	                var container_height = parseInt(scope.state.height);
 					var resolution, start_tad, end_tad = 0;
 					var start_tad_scaled, end_tad_scaled;
-					for(var i=0;i<polygon_tads.length;i++) {
-						resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
-						start_tad = Math.round(((data.tads[i][1])-scope.settings.current.chromStart)/resolution);
-						start_tad_scaled = Math.round((start_tad*Math.sqrt(2))*scope.scale+(scope.translatePos.x));
-						
-						polygon_tads[i]
-							.attr("transform", "translate(" + (start_tad_scaled) + ","+(container_height-2*parseInt(scope.state.margin))+") scale("+scope.scale+") rotate(-45 0 0)");
-						if(scope.settings.current.position>=parseInt(polygon_tads[i].attr("start")) && scope.settings.current.position<=parseInt(polygon_tads[i].attr("end"))){
-							scope.highlighted_tad = i; 
-						} 
+					if(scope.show_tads) {
+						for(var i=0;i<polygon_tads.length;i++) {
+							resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
+							start_tad = Math.round(((data.tads[i][1])-scope.settings.current.chromStart)/resolution);
+							start_tad_scaled = Math.round((start_tad*Math.sqrt(2))*scope.scale+(scope.translatePos.x));
+							
+							polygon_tads[i]
+								.attr("transform", "translate(" + (start_tad_scaled) + ","+(container_height-2*parseInt(scope.state.margin))+") scale("+scope.scale+") rotate(-45 0 0)");
+							if(scope.settings.current.position>=parseInt(polygon_tads[i].attr("start")) && scope.settings.current.position<=parseInt(polygon_tads[i].attr("end"))){
+								scope.highlighted_tad = i; 
+							} 
+						}
 					}
 				};
 				
 				scope.$watch('highlighted_tad', function(newvalue,oldvalue) {
 		        	if ( newvalue !== oldvalue) {
+		        		if(newvalue ==-1) {
+		        			polygon_tads[oldvalue].style("fill-opacity", 0);
+		        			return true;
+		        		}
 		        		polygon_tads[newvalue].style("fill-opacity", 0.5);
 		        		var start_tad_segment, end_tad_segment, i;
 		        		if(oldvalue>-1) {
 			        		polygon_tads[oldvalue].style("fill-opacity", 0);
 			        		start_tad_segment = Math.round((parseInt(polygon_tads[oldvalue].attr("start")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
 			        		end_tad_segment = Math.ceil((parseInt(polygon_tads[oldvalue].attr("end")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
-//			        		for(i=start_tad_segment;i<end_tad_segment;i++) {
-//			        			scope.currentoverlay.colors.chromatin[i] = original_colors[i-start_tad_segment];
-//			        		}
 		        		}
 		        		start_tad_segment = Math.round((parseInt(polygon_tads[newvalue].attr("start")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
 		        		end_tad_segment = Math.ceil((parseInt(polygon_tads[newvalue].attr("end")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
-		        		//original_colors = scope.currentoverlay.colors.chromatin.slice(start_tad_segment,end_tad_segment);
-		        		//for(i=start_tad_segment;i<end_tad_segment;i++) {
-		        			//scope.currentoverlay.colors.chromatin[i] = "#e0e67e";
-		        		//}
 		        		scope.settings.current.start_tad_selected = start_tad_segment;
 		        		scope.settings.current.end_tad_selected = end_tad_segment;
-		        		//scope.$apply();
 		        	}
 				});
-				//var canvas = document.getElementById("hic_canvas");
 				scope.translatePos = {
 					x: 0,
 				    y: 0
 				};
 			 
 			    scope.scale = 1.0;
-				var scaleMultiplier = 0.8;
-			    var startDragOffset = {};
-			    var mouseDown = false;
-			 
 	
 			    scope.increasezoom = function() {
 			    	scope.scale /= scaleMultiplier;
@@ -617,36 +748,21 @@
 			        scope.update_marks();
 			    };
 			    
+			    scope.toggle = function(newValue){
+			        scope.show_tads = newValue;
+			        for(var i=0;i<polygon_tads.length;i++) {							
+						if(scope.show_tads) {
+							polygon_tads[i].attr('display', 'block');
+						} else {
+							polygon_tads[i].attr('display', 'none');
+							scope.highlighted_tad = -1; 
+							scope.settings.current.start_tad_selected = -1;
+							scope.settings.current.end_tad_selected = -1;
+						}
+			        }
+			        scope.update_marks();
+			    };
 			    
-			    // add event listeners to handle screen drag
-			    // canvas.addEventListener("mousedown", function(evt){
-			    //     mouseDown = true;
-			    //     startDragOffset.x = evt.clientX - scope.translatePos.x;
-			    //     startDragOffset.y = evt.clientY - scope.translatePos.y;
-			    // });
-			 
-			    // canvas.addEventListener("mouseup", function(evt){
-			    //     mouseDown = false;
-			    // });
-			 
-			    // canvas.addEventListener("mouseover", function(evt){
-			    //     mouseDown = false;
-			    // });
-			 
-			    // canvas.addEventListener("mouseout", function(evt){
-			    //     mouseDown = false;
-			    // });
-			 
-			    // canvas.addEventListener("mousemove", function(evt){
-			    //     if (mouseDown) {
-			    //         scope.translatePos.x = evt.clientX - startDragOffset.x;
-			    //         scope.translatePos.y = evt.clientY - startDragOffset.y;
-			    //         //scope.render();
-			    //         scope.update();
-			    //         scope.update_marks();
-			    //     }
-			    // });
-				
 			    $timeout(function () {
                     scope.update();
                 });
@@ -1930,7 +2046,6 @@
 									chromatinObj.children[i].material.color = newChromatinColor;
 									chromatinObj.children[i].material.ambient = newChromatinColor;
 									chromatinObj.children[i].material.emissive = newChromatinColor;
-									chromatinObj.children[i].material.opacity = 1;
 								}
 							}
 						});
@@ -1941,9 +2056,10 @@
 								var chromatinCount = chromatinObj.children.length;
 								for (var i = 0; i < chromatinCount; i++) {
 									if(i>=scope.settings.current.start_tad_selected && i<=scope.settings.current.end_tad_selected) {
-										chromatinObj.children[i].material.opacity = 0.5;
-									} else {
 										chromatinObj.children[i].material.opacity = 1;
+									} else {
+										if(newValue == -1) chromatinObj.children[i].material.opacity = 1;
+										else chromatinObj.children[i].material.opacity = 0.5;
 									}
 									
 								}
