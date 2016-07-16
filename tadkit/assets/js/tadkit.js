@@ -309,6 +309,9 @@
 			},
 			templateUrl: 'assets/templates/panel-hicdata.html',
 			link:function(scope, element, attrs){
+				
+				if(scope.data.n<=0) return; 
+					
 				var data = scope.data;
 				scope.rendered = false;
 				scope.imageObject=new Image();
@@ -688,9 +691,12 @@
 
 				scope.update_marks =  function() {
 					var x = (scope.settings.current.particle*Math.sqrt(2))*scope.scale+(scope.translatePos.x);
-					handle.attr("cx", x );
-					position.attr("x", x ).text(scope.settings.current.particle);
+					handle.attr("cx",x);
+					position.attr("x",x).text(scope.settings.current.particle);
 					
+					contact_marker.attr('display', 'none');
+	            	contact_marker_value.attr('display', 'none');
+	            	
 					var container_width = parseInt(scope.state.width);
 	                var container_height = parseInt(scope.state.height);
 					var resolution, start_tad, end_tad = 0;
@@ -705,7 +711,7 @@
 								.attr("transform", "translate(" + (start_tad_scaled) + ","+(container_height-2*parseInt(scope.state.margin))+") scale("+scope.scale+") rotate(-45 0 0)");
 							if(scope.settings.current.position>=parseInt(polygon_tads[i].attr("start")) && scope.settings.current.position<=parseInt(polygon_tads[i].attr("end"))){
 								scope.highlighted_tad = i; 
-							} 
+							}	
 						}
 					}
 				};
@@ -764,7 +770,7 @@
 			    };
 			    
 			    $timeout(function () {
-                    scope.update();
+			    	scope.update();
                 });
 			}
 		};
@@ -5328,6 +5334,7 @@
 				Proximities.set(currentModelData);
 				Restraints.set(currentModelData, dataset.restraints);
 				if(!angular.isUndefined(dataset.hic_data))	Hic_data.set(dataset.hic_data);
+				else Hic_data.clear();
 				Overlays.update(Proximities.get().distances, dataset.restraints);
 				// if (dataset.object.filename) {
 					var filetype = "tsv";

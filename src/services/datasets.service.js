@@ -81,6 +81,7 @@
 				Proximities.set(currentModelData);
 				Restraints.set(currentModelData, dataset.restraints);
 				if(!angular.isUndefined(dataset.hic_data))	Hic_data.set(dataset.hic_data);
+				else Hic_data.clear();
 				Overlays.update(Proximities.get().distances, dataset.restraints);
 				// if (dataset.object.filename) {
 					var filetype = "tsv";
