@@ -16,7 +16,7 @@
 		//$scope.jbrowsedataurl = 'http://172.16.54.4/JBrowse/data';
 		$scope.jbrowsedataurl = 'data';
 		$scope.iframe_src = '../JBrowse/index.html?data='+$scope.jbrowsedataurl+'&loc='+($scope.settings.current.chrom).replace('chr','')+':'+
-		jbrowse_start+'..'+($scope.settings.current.chromEnd+30000)+'&tracklist=0&tracks=Genes,Chromatin%20Types'+
+		jbrowse_start+'..'+($scope.settings.current.chromEnd+30000)+'&tracklist=0&tracks=Genes,Restraints,Chromatin%20Types'+
 			'&highlight='+($scope.settings.current.chrom).replace('chr','')+':'+
 			$scope.settings.current.chromStart+'..'+$scope.settings.current.chromEnd;
 			//'&addBookmarks=%5B%7B%22start%22%3A'+$scope.settings.current.chromStart+

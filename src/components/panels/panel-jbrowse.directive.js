@@ -13,6 +13,7 @@
 				view: '=',
 				data: '=',
 				settings:'=',
+				overlay: '=',
 				currentoverlay:'='
 			},
 			templateUrl: 'assets/templates/panel-jbrowse.html',
