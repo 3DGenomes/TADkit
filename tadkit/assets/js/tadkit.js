@@ -4593,8 +4593,8 @@
 				} else if (component.object.type == "panel-hicdata") {
 					component.data = Hic_data.get();
 				} else if (component.object.type == "panel-jbrowse") {
-					//component.data = Restraints.get();
-					component.data = $scope.currentRestraints;
+					component.data = Restraints.get();
+					//component.data = $scope.currentRestraints;
 					overlay = Overlays.getOverlayById("restraints");
 					component.overlay = overlay;
 				}
