@@ -20,15 +20,51 @@ function(
     registry,
     CanvasFeatureTrack
 ) {
+
+	var FRectIndex = declare( null,  {
+	    constructor: function( args ) {
+	        var height = args.h;
+	        var width  = args.w;
+
+	        this.dims = { h: height, w: width };
+
+	        this.byID = {};
+	    },
+
+	    getByID: function( id ) {
+	        return this.byID[id];
+	    },
+
+	    addAll: function( fRects ) {
+	        var byID = this.byID;
+	        var cW = this.dims.w;
+	        var cH = this.dims.h;
+	        array.forEach( fRects, function( fRect ) {
+	            if( ! fRect )
+	                return;
+
+	            // by ID
+	            byID[ fRect.f.id() ] = fRect;
+	        }, this );
+	    },
+
+	    getAll: function( ) {
+	        var fRects = [];
+	        for( var id in this.byID ) {
+	            fRects.push( this.byID[id] );
+	        }
+	        return fRects;
+	    }
+	});
     return declare(CanvasFeatureTrack, {
         constructor: function( args ) {
             var track=this;
             this._createTadkitNavigation();
             var $scope = parent.angular.element( parent.document.querySelector( '#jbrowse-iframe' ) ).scope();
-            $scope.$watch('settings.current.particle', function(newPosition, oldPosition) {
-                    if ( newPosition !== oldPosition ) {
-                        track._refreshTrack(track, newPosition, oldPosition);
-                    }
+            $scope.$watch('data.dimension', function(newPosition, oldPosition) {
+                if ( newPosition !== oldPosition ) {
+                    track._refreshTrack(track, newPosition, oldPosition);
+                }
             });
         },
         _defaultConfig: function() {
@@ -40,10 +76,17 @@ function(
         },
         _refreshTrack: function(track, newPosition, oldPosition) {
             
+        	array.forEach(track.blocks, function(block,i) {
+				if( !block || !block.fRectIndex || !block.featureCanvas)
+                    return;
+                track.cleanupBlock(block);
+                var ctx = block.featureCanvas.getContext('2d');
+                ctx.clearRect(0, 0, block.featureCanvas.width, block.featureCanvas.height);
+        	});
             array.forEach(track.blocks, function(block,i) {
 				if( !block || !block.fRectIndex || !block.featureCanvas)
                     return;
-                //track.cleanupBlock(block);
+                
                 
                 args = {
                     block: block, 
@@ -52,86 +95,56 @@ function(
                     scale: block.scale,
                     finishCallback: track._finish_callback
                 }
-                var ctx = block.featureCanvas.getContext('2d');
-                ctx.clearRect(0, 0, block.featureCanvas.width, block.featureCanvas.height);
+                //var ctx = block.featureCanvas.getContext('2d');
+                //ctx.clearRect(0, 0, block.featureCanvas.width, block.featureCanvas.height);
                 //track._hideBlock(i);
                 //track._hideBlock(i);
-                var context = track.getRenderingContext( args );
-                     
+                //var context = track.getRenderingContext( args );
+                
+                /*
+                var fRects = [];
+                fRects.push( null );
+                var rectNumber = fRects.length-1;
                 var idx = block.fRectIndex.byID;
                 for( var id in idx ) {
                      var fRect = idx[id];
                      var feature = track.layout.getByID(fRect.f.id());
                      
                      if(fRect.f.data.particle_from == newPosition || fRect.f.data.particle_to == newPosition) {
-                         fRect.f.data.active = true;
                          feature.data.active = true;
-                         fRect.rect.h = fRect.h = 10;
-                         fRect.glyph.renderFeature(context, fRect);  	 
                      } else {
-                         fRect.f.data.active = false;
                          feature.data.active = false;
-                         fRect.rect.h = fRect.h = 0;
+                         //fRect.rect.h = fRect.h = 0;
                          //fRect.glyph.renderFeature(context, fRect);
                      }
-                }
-                //track.renderClickMap( args, block.fRectIndex.getAll() );
+                     var newfRect = fRect.glyph.layoutFeature(
+	                        args,
+	                        track.layout,
+	                        feature
+                     );
+                     
+                     if( newfRect === null ) {
+                        // could not lay out, would exceed our configured maxHeight
+                        // mark the block as exceeding the max height
+                        block.maxHeightExceeded = true;
+                     }
+                     else {
+                        // laid out successfully
+                       fRects[rectNumber] = newfRect;
+                       rectNumber++;
+                       //fRect.glyph.renderFeature(context, fRect);
+                     }
+                                                 
+                }*/
+                track.fillFeatures( args );
+                //track.renderFeatures( args, fRects );
+                //track.renderClickMap( args, fRects );
+                
                 //track._attachMouseOverEvents();
                 //track._connectEventHandlers( block );
                 
             });
-            if( track._mouseoverEvent ) {
-                track._mouseoverEvent.remove();
-                delete track._mouseoverEvent;
-            }
-
-            if( track._mouseoutEvent ) {
-                track._mouseoutEvent.remove();
-                delete track._mouseoutEvent;
-            }
-            array.forEach(track.blocks, function(block,i) {
-                if( !block || !block.fRectIndex || !block.featureCanvas)
-                    return;
-
-                track.cleanupBlock(block);
-                track._attachMouseOverEvents();
-                track._connectEventHandlers( block );
-                track.updateStaticElements( { x: track.browser.view.getX() } );
-                
-            });
             
-        },
-        _attachMouseOverEvents: function( ) {
-            var gv = this.browser.view;
-            var thisB = this;
-
-            if( this.displayMode == 'collapsed' ) {
-                if( this._mouseoverEvent ) {
-                    this._mouseoverEvent.remove();
-                    delete this._mouseoverEvent;
-                }
-
-                if( this._mouseoutEvent ) {
-                    this._mouseoutEvent.remove();
-                    delete this._mouseoutEvent;
-                }
-            } else {
-                if( !this._mouseoverEvent ) {
-                    this._mouseoverEvent = this.own( on( this.staticCanvas, 'mousemove', function( evt ) {
-                        evt = domEvent.fix( evt );
-                        var bpX = gv.absXtoBp( evt.clientX );
-                        var feature = thisB.layout.getByCoord( bpX, ( evt.offsetY === undefined ? evt.layerY : evt.offsetY ) );
-                        //if(feature && feature.data.active) thisB.mouseoverFeature( feature, evt );
-                        thisB.mouseoverFeature( feature, evt );
-                    }))[0];
-                }
-
-                if( !this._mouseoutEvent ) {
-                    this._mouseoutEvent = this.own( on( this.staticCanvas, 'mouseout', function( evt) {
-                        thisB.mouseoverFeature( undefined );
-                    }))[0];
-                }
-            }
         },
         _finish_callback: function() {
             // to do

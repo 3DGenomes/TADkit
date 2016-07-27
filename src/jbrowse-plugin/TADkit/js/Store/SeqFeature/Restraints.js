@@ -21,11 +21,12 @@ function(
             var harmonicsColor = $scope.overlay.palette[0];
             var lowerBoundsColor = $scope.overlay.palette[1];
             var resolution = $scope.settings.current.segmentLength*$scope.settings.current.particleSegments;
+            var active = true;
             array.forEach($scope.data.harmonics, function(f) {
-            	var start = $scope.settings.current.chromStart+resolution*(f[0]);
-                var end = $scope.settings.current.chromStart+resolution*(f[0]+0.9);
-                var active = false;
-                if($scope.settings.current.particle == f[1]) active = true;
+            	var start = $scope.settings.current.chromStart+resolution*(f[1]);
+                var end = $scope.settings.current.chromStart+resolution*(f[1]+0.9);
+                //var active = false;
+                //if($scope.settings.current.particle == f[1]) active = true;
                 if(start>=query.start && end<=query.end) {
                     var restraint = new SimpleFeature({
                         id: 'h-'+f[0]+'-'+f[1],
@@ -43,7 +44,7 @@ function(
                     });
                     featureCallback(restraint);
                 }
-                start = $scope.settings.current.chromStart+resolution*(f[1]);
+                /*start = $scope.settings.current.chromStart+resolution*(f[1]);
                 end = $scope.settings.current.chromStart+resolution*(f[1]+0.9);
                 active = false;
                 if($scope.settings.current.particle == f[0]) active = true;
@@ -63,13 +64,14 @@ function(
                         }
                     });
                     featureCallback(restraint);
-                }
+                }*/
             });
+            
             array.forEach($scope.data.lowerBounds, function(f) {
-                var start = $scope.settings.current.chromStart+resolution*(f[0]);
-                var end = $scope.settings.current.chromStart+resolution*(f[0]+0.9);
-                var active = false;
-                if($scope.settings.current.particle == f[1]) active = true;
+                var start = $scope.settings.current.chromStart+resolution*(f[1]);
+                var end = $scope.settings.current.chromStart+resolution*(f[1]+0.9);
+                //var active = false;
+                //if($scope.settings.current.particle == f[1]) active = true;
                 if(start>=query.start && end<=query.end) {
                     var restraint = new SimpleFeature({
                         id: 'l-'+f[0]+'-'+f[1],
@@ -87,7 +89,7 @@ function(
                     });
                     featureCallback(restraint);
                 }
-                start = $scope.settings.current.chromStart+resolution*(f[1]);
+                /*start = $scope.settings.current.chromStart+resolution*(f[1]);
                 end = $scope.settings.current.chromStart+resolution*(f[1]+0.9);
                 active = false;
                 if($scope.settings.current.particle == f[0]) active = true;
@@ -107,7 +109,7 @@ function(
                         }
                     });
                     featureCallback(restraint);
-                }
+                }*/
             });
             finishCallback();
 

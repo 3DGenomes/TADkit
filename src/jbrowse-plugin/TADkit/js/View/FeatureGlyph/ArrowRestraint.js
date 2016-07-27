@@ -19,7 +19,7 @@ function(
                     border_color: null,
                     strandArrow: false,
                     marginBottom: 0,
-                    height: 0,
+                    height: 10,
                     active_height: 10,
                     mouseovercolor: 'rgba(0,0,0,0)'
                 }
@@ -41,12 +41,12 @@ function(
             fRect.rect.t = 0;
             fRect.t = 0;
             fRect.rect.h = fRect.h = this.getStyle( fRect.f, 'height');
-            if(r.active) {
-            	fRect.rect.h = fRect.h = this.getStyle( fRect.f, 'active_height');	
-            } else {
-            	fRect.rect.h = fRect.h = 0;
-            }
-            if (!r || !r.active) return;
+            //if(r.active) {
+            //	fRect.rect.h = fRect.h = this.getStyle( fRect.f, 'active_height');	
+            //} else {
+            //	fRect.rect.h = fRect.h = 0;
+            //}
+            //if (!r || !r.active) return;
                 
             var fromy = Math.round(fRect.rect.h/2);
             var toy = fromy;
