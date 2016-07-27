@@ -20,19 +20,9 @@ function(
                     strandArrow: false,
                     marginBottom: 0,
                     height: 10,
-                    active_height: 10,
-                    mouseovercolor: 'rgba(0,0,0,0)'
+                    mouseovercolor: 'rgba(0,0,0,0.1)'
                 }
             });
-        },
-        _getFeatureHeight: function( viewArgs, feature ) {
-        	
-        	var h = 0;
-        	if(feature.data.active) h = this.getStyle( feature, 'active_height');
-            if( viewArgs.displayMode == 'compact' )
-                h = Math.round( 0.45 * h );
-
-            return h;
         },
         renderFeature: function(context, fRect) {
             var style = lang.hitch(this, 'getStyle');
@@ -41,16 +31,11 @@ function(
             fRect.rect.t = 0;
             fRect.t = 0;
             fRect.rect.h = fRect.h = this.getStyle( fRect.f, 'height');
-            //if(r.active) {
-            //	fRect.rect.h = fRect.h = this.getStyle( fRect.f, 'active_height');	
-            //} else {
-            //	fRect.rect.h = fRect.h = 0;
-            //}
-            //if (!r || !r.active) return;
+
                 
             var fromy = Math.round(fRect.rect.h/2);
             var toy = fromy;
-            var margin_arrow = 4;
+            var margin_arrow = 2;
             var headlen = 1;
             var angle = Math.atan2(toy-fromy,r.tox-r.fromx);
             
@@ -59,17 +44,20 @@ function(
             }
             
             //context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+            context.clearRect(fRect.rect.l, fRect.rect.t, fRect.rect.w, fRect.rect.h);
+            
             context.save();
+            //context.globalCompositeOperation = 'destination-atop';
             context.beginPath();
             context.globalAlpha = r.opacity;
-
+            	
             context.moveTo(r.fromx, fromy);
             context.lineTo(r.tox-margin_arrow, toy);
             context.strokeStyle = r.color;
             context.lineWidth = 5;
-            context.stroke();
+            //context.stroke();
 
-            context.beginPath();
+            //context.beginPath();
             context.moveTo(r.tox, toy);
             context.lineTo(r.tox-headlen*Math.cos(angle-Math.PI/7),toy-headlen*Math.sin(angle-Math.PI/7));
 
@@ -83,6 +71,7 @@ function(
             context.stroke();
             context.fillStyle = r.color;
             context.fill();
+            //context.globalCompositeOperation = 'source-over';
             context.restore();
             
                 
@@ -104,8 +93,7 @@ function(
             	fromx: start,
                 tox: end-margin_feat,
                 color: feature.get('color'),
-                opacity: feature.get('opacity'),
-                active: feature.get('active')
+                opacity: feature.get('opacity')
             };
         }
         
