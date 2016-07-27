@@ -27,7 +27,7 @@ function(
             var $scope = parent.angular.element( parent.document.querySelector( '#jbrowse-iframe' ) ).scope();
             $scope.$watch('settings.current.particle', function(newPosition, oldPosition) {
                     if ( newPosition !== oldPosition ) {
-                        track._refreshTrack(track, newPosition);
+                        track._refreshTrack(track, newPosition, oldPosition);
                     }
             });
         },
@@ -35,36 +35,70 @@ function(
             return Util.deepUpdate(
 				lang.clone(this.inherited(arguments)),
 				                {
-				                    glyph: 'TADkit/View/FeatureGlyph/ArrowRestraint'				                    
+				                    glyph: 'TADkit/View/FeatureGlyph/ArrowRestraint'
 				                });
         },
-        _refreshTrack: function(track, newPosition) {
-        	var context;
-            array.forEach(this.blocks, function(block,i) {
-            				if( !block || !block.fRectIndex || !block.featureCanvas)
-                                return;
-                            args = {
-                                block: block, 
-                                leftBase: block.startBase,
-                                rightBase: block.endBase, 
-                                scale: block.scale,
-                                finishCallback: track._finish_callback
-                            }
-                            var ctx = block.featureCanvas.getContext('2d');
-                            ctx.clearRect(0, 0, block.featureCanvas.width, block.featureCanvas.height);
-                            var context = track.getRenderingContext( args );
-                            var idx = block.fRectIndex.byID;
-                            for( var id in idx ) {
-                                 var fRect = idx[id];
-                                 if(fRect.f.data.particle_from == newPosition || fRect.f.data.particle_to == newPosition) {
-                                	 fRect.f.data.active = true;
-                                	 fRect.glyph.renderFeature(context, fRect);  	 
-                                 } else {
-                                	 fRect.f.data.active = false;
-                                 }
-                            }
-                            
-                        });
+        _refreshTrack: function(track, newPosition, oldPosition) {
+            
+            array.forEach(track.blocks, function(block,i) {
+				if( !block || !block.fRectIndex || !block.featureCanvas)
+                    return;
+                //track.cleanupBlock(block);
+                
+                args = {
+                    block: block, 
+                    leftBase: block.startBase,
+                    rightBase: block.endBase, 
+                    scale: block.scale,
+                    finishCallback: track._finish_callback
+                }
+                var ctx = block.featureCanvas.getContext('2d');
+                ctx.clearRect(0, 0, block.featureCanvas.width, block.featureCanvas.height);
+                //track._hideBlock(i);
+                //track._hideBlock(i);
+                var context = track.getRenderingContext( args );
+                     
+                var idx = block.fRectIndex.byID;
+                for( var id in idx ) {
+                     var fRect = idx[id];
+                     var feature = track.layout.getByID(fRect.f.id());
+                     
+                     if(fRect.f.data.particle_from == newPosition || fRect.f.data.particle_to == newPosition) {
+                         fRect.f.data.active = true;
+                         feature.data.active = true;
+                         fRect.rect.h = fRect.h = 10;
+                         fRect.glyph.renderFeature(context, fRect);  	 
+                     } else {
+                         fRect.f.data.active = false;
+                         feature.data.active = false;
+                         fRect.rect.h = fRect.h = 0;
+                         //fRect.glyph.renderFeature(context, fRect);
+                     }
+                }
+                //track.renderClickMap( args, block.fRectIndex.getAll() );
+                //track._attachMouseOverEvents();
+                //track._connectEventHandlers( block );
+                
+            });
+            if( track._mouseoverEvent ) {
+                track._mouseoverEvent.remove();
+                delete track._mouseoverEvent;
+            }
+
+            if( track._mouseoutEvent ) {
+                track._mouseoutEvent.remove();
+                delete track._mouseoutEvent;
+            }
+            array.forEach(track.blocks, function(block,i) {
+                if( !block || !block.fRectIndex || !block.featureCanvas)
+                    return;
+
+                track.cleanupBlock(block);
+                track._attachMouseOverEvents();
+                track._connectEventHandlers( block );
+                track.updateStaticElements( { x: track.browser.view.getX() } );
+                
+            });
             
         },
         _attachMouseOverEvents: function( ) {
@@ -87,6 +121,7 @@ function(
                         evt = domEvent.fix( evt );
                         var bpX = gv.absXtoBp( evt.clientX );
                         var feature = thisB.layout.getByCoord( bpX, ( evt.offsetY === undefined ? evt.layerY : evt.offsetY ) );
+                        //if(feature && feature.data.active) thisB.mouseoverFeature( feature, evt );
                         thisB.mouseoverFeature( feature, evt );
                     }))[0];
                 }
@@ -98,99 +133,8 @@ function(
                 }
             }
         },
-        mouseoverFeature: function( feature, evt ) {
-
-            if( this.lastMouseover == feature )
-                return;
-
-            if( evt )
-                var bpX = this.browser.view.absXtoBp( evt.clientX );
-
-            if( this.labelTooltip)
-                this.labelTooltip.style.display = 'none';
-
-            array.forEach( this.blocks, function( block, i ) {
-                if( ! block )
-                    return;
-                var context = this.getRenderingContext({ block: block, leftBase: block.startBase, scale: block.scale });
-                if( ! context )
-                    return;
-
-                if( this.lastMouseover && block.fRectIndex ) {
-                    var r = block.fRectIndex.getByID( this.lastMouseover.id() );
-                    //if( r )
-                    //    this.renderFeature( context, r );
-                }
-
-                if( block.tooltipTimeout )
-                    window.clearTimeout( block.tooltipTimeout );
-
-                if( feature ) {
-                    var fRect = block.fRectIndex && block.fRectIndex.getByID( feature.id() );
-                    if( ! fRect )
-                        return;
-
-                    if( block.containsBp( bpX ) ) {
-                        var renderTooltip = dojo.hitch( this, function() {
-                            if( !this.labelTooltip )
-                                return;
-                            var label = fRect.label || fRect.glyph.makeFeatureLabel( feature );
-                            var description = fRect.description || fRect.glyph.makeFeatureDescriptionLabel( feature );
-
-                            if( ( !label && !description ) )
-                                return;
-
-                            if( !this.ignoreTooltipTimeout ) {
-                                this.labelTooltip.style.left = evt.clientX + "px";
-                                this.labelTooltip.style.top = (evt.clientY + 15) + "px";
-                            }
-                            this.ignoreTooltipTimeout = true;
-                            this.labelTooltip.style.display = 'block';
-                            var labelSpan = this.labelTooltip.childNodes[0],
-                                descriptionSpan = this.labelTooltip.childNodes[1];
-
-                            if( this.config.onClick&&this.config.onClick.label ) {
-                                var context = lang.mixin( { track: this, feature: feature, callbackArgs: [ this, feature ] } );
-                                labelSpan.style.display = 'block';
-                                labelSpan.style.font = label.font;
-                                labelSpan.style.color = label.fill;
-                                labelSpan.innerHTML = this.template( feature, this._evalConf( context, this.config.onClick.label, "label" ) );
-                                return;
-                            }
-                            if( label ) {
-                                labelSpan.style.display = 'block';
-                                labelSpan.style.font = label.font;
-                                labelSpan.style.color = label.fill;
-                                labelSpan.innerHTML = label.text;
-                            } else {
-                                labelSpan.style.display = 'none';
-                                labelSpan.innerHTML = '(no label)';
-                            }
-                            if( description ) {
-                                descriptionSpan.style.display = 'block';
-                                descriptionSpan.style.font = description.font;
-                                descriptionSpan.style.color = description.fill;
-                                descriptionSpan.innerHTML = description.text;
-                            }
-                            else {
-                                descriptionSpan.style.display = 'none';
-                                descriptionSpan.innerHTML = '(no description)';
-                            }
-                        });
-                        if( this.ignoreTooltipTimeout )
-                            renderTooltip();
-                        else
-                            block.tooltipTimeout = window.setTimeout( renderTooltip, 600);
-                    }
-
-                    //fRect.glyph.mouseoverFeature( context, fRect );
-                    this._refreshContextMenu( fRect );
-                } else {
-                    block.tooltipTimeout = window.setTimeout( dojo.hitch(this, function() { this.ignoreTooltipTimeout = false; }), 200);
-                }
-            }, this );
-
-            this.lastMouseover = feature;
+        _finish_callback: function() {
+            // to do
         },
         _createTadkitNavigation: function() {
             if(parent.angular==undefined) return false;
