@@ -3,6 +3,7 @@ define([
     'dojo/_base/array',
     'dojo/_base/lang',
     'dojo/_base/event',
+    'dojo/dom-construct',
     'JBrowse/Util',
     'dojo/query',
     'dojo/on',
@@ -14,6 +15,7 @@ function(
     array,
     lang,
     domEvent,
+    domConstruct,
     Util,
     query,
     on,
@@ -40,17 +42,14 @@ function(
         },
         _refreshTrack: function(track, newPosition, oldPosition) {
             
-        	array.forEach(track.blocks, function(block,i) {
-				if( !block || !block.fRectIndex || !block.featureCanvas)
-                    return;
-                track.cleanupBlock(block);
-                var ctx = block.featureCanvas.getContext('2d');
-                ctx.clearRect(0, 0, block.featureCanvas.width, block.featureCanvas.height);
-        	});
+
+        	track._clearLayout();
             array.forEach(track.blocks, function(block,i) {
-				if( !block || !block.fRectIndex || !block.featureCanvas)
+				if( !block || !block.fRectIndex)
                     return;
-                
+				
+				domConstruct.destroy( block.featureCanvas );
+				delete block.featureCanvas;
                 
                 args = {
                     block: block, 
