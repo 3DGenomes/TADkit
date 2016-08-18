@@ -3,7 +3,6 @@ define([
     'dojo/_base/array',
     'dojo/_base/lang',
     'dojo/_base/event',
-    'dojo/dom-construct',
     'JBrowse/Util',
     'dojo/query',
     'dojo/on',
@@ -15,7 +14,6 @@ function(
     array,
     lang,
     domEvent,
-    domConstruct,
     Util,
     query,
     on,
@@ -42,14 +40,17 @@ function(
         },
         _refreshTrack: function(track, newPosition, oldPosition) {
             
-
-        	track._clearLayout();
-            array.forEach(track.blocks, function(block,i) {
-				if( !block || !block.fRectIndex)
+        	array.forEach(track.blocks, function(block,i) {
+				if( !block || !block.fRectIndex || !block.featureCanvas)
                     return;
-				
-				domConstruct.destroy( block.featureCanvas );
-				delete block.featureCanvas;
+                track.cleanupBlock(block);
+                var ctx = block.featureCanvas.getContext('2d');
+                ctx.clearRect(0, 0, block.featureCanvas.width, block.featureCanvas.height);
+        	});
+            array.forEach(track.blocks, function(block,i) {
+				if( !block || !block.fRectIndex || !block.featureCanvas)
+                    return;
+                
                 
                 args = {
                     block: block, 
@@ -159,6 +160,12 @@ function(
                 d.style.top = toppos + "px";
                 var Bp = Math.floor(widget.absXtoBp(leftpos));
                 $scope.updatePosition(Bp);
+
+                $scope.updateTadkitBar = function(x) {
+                    c = widget.bpToPx(x);
+                    leftpos = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
+                    d.style.left = Math.floor(leftpos) + "px";
+                };
             };
         }
     });

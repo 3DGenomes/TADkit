@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.directive('tkComponentSceneCluster', tkComponentSceneCluster);
 
-	function tkComponentSceneCluster(Particles, Cluster, $timeout) {
+	function tkComponentSceneCluster(Particles, Cluster) {
 		return {
 			restrict: 'EA',
 			scope: { 
@@ -105,21 +105,6 @@
 					var	scale = Math.tan(angle).toFixed(2) * margin;
 					cameraTranslate = cluster.boundingSphere.radius * scale;
 					scope.lookAtTarget(cameraPosition, cameraTarget, cameraTranslate);
-					/*$timeout(function () {
-						screenshot = renderer.domElement.toDataURL();
-						
-						//renderer.forceContextLoss();
-						var ctx = viewport.children[0].getContext('2d');
-						
-						var img = new Image();
-						img.onload = function(){
-						  ctx.drawImage(img,0,0);
-						};
-						img.src = screenshot;
-						
-						console.log('should clean context');
-	                });*/
-
 				};
 
 				scope.lookAtTarget = function (position, target, translate) {
@@ -156,16 +141,6 @@
 				// Begin
 				scope.init();
 				scope.animate();
-				/*var webglImage = (function convertCanvasToImage(canvas) {
-				    var image = new Image();
-				    image.src = canvas.toDataURL('image/png');
-				    return image;
-				  })(renderer.domElement);
-				
-				$timeout(function () {
-				  scope.destroy_scene();
-				  viewport.appendChild(webglImage);
-				});*/
 				
 				scope.destroy_scene = function () {
 					scene.remove(cluster);

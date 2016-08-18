@@ -243,6 +243,8 @@
 		$scope.height = $scope.canvas_height = parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units
 		if($scope.data.n === 0) {
 			$scope.no_hic_data = true; 
+			$scope.slidevalue = "10;0.001";
+			$scope.slideoptions = {};
 			return;
 		} else  {
 			$scope.no_hic_data = false;
@@ -424,7 +426,7 @@
 		                var ctx = canvas.getContext("2d");
 		                ctx.imageSmoothingEnabled = false;
 		                ctx.mozImageSmoothingEnabled = false;
-		                ctx.webkitImageSmoothingEnabled = false;
+		                ctx.imageSmoothingEnabled = false;
 		                
 		                //clear the canvas
 		                ctx.clearRect(0,0, canvas.width, canvas.height);
@@ -1056,6 +1058,10 @@
 					scope.settings.current.segment = Settings.getSegment();
 					scope.settings.current.segmentLower = scope.settings.current.position - (scope.settings.current.segment * 5); // * 0.5???
 					scope.settings.current.segmentUpper = scope.settings.current.position + (scope.settings.current.segment * 5); // * 0.5???
+					var jbrowse_scope = angular.element(document.querySelector('#jbrowse-iframe')).scope();
+					if(!angular.isUndefined(jbrowse_scope) && jbrowse_scope.updateTadkitBar) {
+						jbrowse_scope.updateTadkitBar(scope.settings.current.position);
+					}
 				};
 
 				scope.toggleColor = function(overlay) {
@@ -1156,7 +1162,6 @@
 				var segmentColor = colors[i];
 				var segmentMaterial = new THREE.MeshLambertMaterial({
 					color: segmentColor,
-					ambient: segmentColor,
 					emissive: segmentColor,
 					vertexColors: THREE.VertexColors,
 					opacity: 1.0, 
@@ -1249,7 +1254,7 @@
 		.module('TADkit')
 		.directive('tkComponentSceneCluster', tkComponentSceneCluster);
 
-	function tkComponentSceneCluster(Particles, Cluster, $timeout) {
+	function tkComponentSceneCluster(Particles, Cluster) {
 		return {
 			restrict: 'EA',
 			scope: { 
@@ -1350,21 +1355,6 @@
 					var	scale = Math.tan(angle).toFixed(2) * margin;
 					cameraTranslate = cluster.boundingSphere.radius * scale;
 					scope.lookAtTarget(cameraPosition, cameraTarget, cameraTranslate);
-					/*$timeout(function () {
-						screenshot = renderer.domElement.toDataURL();
-						
-						//renderer.forceContextLoss();
-						var ctx = viewport.children[0].getContext('2d');
-						
-						var img = new Image();
-						img.onload = function(){
-						  ctx.drawImage(img,0,0);
-						};
-						img.src = screenshot;
-						
-						console.log('should clean context');
-	                });*/
-
 				};
 
 				scope.lookAtTarget = function (position, target, translate) {
@@ -1401,16 +1391,6 @@
 				// Begin
 				scope.init();
 				scope.animate();
-				/*var webglImage = (function convertCanvasToImage(canvas) {
-				    var image = new Image();
-				    image.src = canvas.toDataURL('image/png');
-				    return image;
-				  })(renderer.domElement);
-				
-				$timeout(function () {
-				  scope.destroy_scene();
-				  viewport.appendChild(webglImage);
-				});*/
 				
 				scope.destroy_scene = function () {
 					scene.remove(cluster);
@@ -1618,15 +1598,15 @@
 
 			// Define a color-typed uniform
 			var uniforms = {  
-				// color: { type: "c", value: new THREE.Color( 0x00ff00 ) },
-				// alpha: { type: "f", value: 1.0 }
+				color: { type: "c", value: new THREE.Color( 0x00ff00 ) },
+				alpha: { type: "f", value: 1.0 }
 			};
-			var attributes = {  
-				alpha: { type: 'f', value: [] }
-			};
+			//var attributes = {  
+			//	alpha: { type: 'f', value: [] }
+			//};
 			var parameters = {
 				uniforms: uniforms,
-				attributes: attributes,
+				//attributes: attributes,
 				vertexShader: document.getElementById('vertexShader').textContent,
 				fragmentShader: document.getElementById('fragmentShader').textContent,
 				vertexColors: THREE.VertexColors,
@@ -1635,6 +1615,7 @@
 				transparent: true //this.transparent
 			};
 			var shaderMaterial = new THREE.ShaderMaterial(parameters);
+			shaderMaterial.linewidth = 1;
 
 			var dataLength = data.length / 3;
 			var totalPairs = ((dataLength * dataLength) - dataLength) * 0.5;
@@ -1647,12 +1628,16 @@
 			geometry.addAttribute( 'position', new THREE.BufferAttribute( vertexPairs, 3 ) );
 			geometry.addAttribute( 'color', new THREE.BufferAttribute( vertexRGB, 3 ) );
 			geometry.addAttribute( 'alpha', new THREE.BufferAttribute( vertexAlpha, 1 ) );
+			geometry.center();
 			geometry.computeBoundingSphere();
 
 			var nodeMap = null; // render only point
-			if (this.map) nodeMap = THREE.ImageUtils.loadTexture(this.map);
-
-			var nodesMaterial = new THREE.PointCloudMaterial({
+			if (this.map) {
+				var loader = new THREE.TextureLoader();
+				nodeMap = loader.load(this.map);
+			}
+			
+			var nodesMaterial = new THREE.PointsMaterial({
 				color: this.color,
     			vertexColors: THREE.VertexColors,
 				size: this.size,
@@ -1664,17 +1649,31 @@
 			});
 
 			// NETWORK
-			// var nodes = new THREE.PointCloud(data, nodesMaterial);
-			// nodes.name = "Network Nodes";
+			var particlesGeometry = getGeometry(data);
+			particlesGeometry.center();
+			particlesGeometry.computeBoundingSphere();
+			var vertexColors = [];
+			for( var i = 0; i < particlesGeometry.vertices.length; i++ ) {
+				// BASE COLOR
+				vertexColors[i] = new THREE.Color("rgb(255,255,255)");
+			}
+			particlesGeometry.colors = vertexColors;
+			var nodes = new THREE.Points(particlesGeometry, nodesMaterial);
+			nodes.name = "Network Nodes";
 			
-			// var edges = new THREE.Line(geometry, shaderMaterial, THREE.LinePieces); // THREE.LinePieces = separate lines
-			// edges.name = "Network Edges";
+			//var edges = new THREE.Line(geometry, shaderMaterial, THREE.LinePieces); // THREE.LinePieces = separate lines
+			//var material = new THREE.LineBasicMaterial({
+			//    color: 0x000000
+			//});
+			var edges = new THREE.LineSegments( geometry, shaderMaterial );
+			edges.name = "Network Edges";
 
-			// var network = new THREE.Object3D();
-			// network.add(edges);
-			// network.add(nodes);
-			// network.boundingSphere = geometry.boundingSphere;
-			var network = new THREE.Line(geometry, shaderMaterial, THREE.LinePieces); // THREE.LinePieces = separate lines
+			var network = new THREE.Object3D();
+			network.add(edges);
+			network.add(nodes);
+			network.boundingSphere = geometry.boundingSphere;
+			//var network = new THREE.Line(geometry, shaderMaterial, THREE.LinePieces); // THREE.LinePieces = separate lines
+			//var network = new THREE.LineSegments( geometry, shaderMaterial );
 			network.name = "Network Graph";
 			// console.log(network);
 			return network;
@@ -1714,6 +1713,20 @@
 		}
 		vertexPairs.name = "Network Vertex Pairs";
 		return vertexPairs;
+	}
+	function getGeometry(data) {
+		var offset = 0, vertex,
+			 vertexGeometry = new THREE.Geometry();
+		var totalVertices = data.length;
+		while ( offset < totalVertices ) {
+			vertex = new THREE.Vector3();
+			vertex.x = data[ offset ++ ];
+			vertex.y = data[ offset ++ ];
+			vertex.z = data[ offset ++ ];
+			vertexGeometry.vertices.push( vertex );
+		}
+		vertexGeometry.name = "Particles Geometry";
+		return vertexGeometry;
 	}
 
 })();
@@ -1962,9 +1975,9 @@
 							renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
 						else
 							renderer = new THREE.CanvasRenderer({alpha: true});					
-					var background = scope.view.settings.background;
-					var clearColor = "0x" + background.substring(1);
-						renderer.setClearColor( clearColor );
+						var background = scope.view.settings.background;
+						var clearColor = "0x" + background.substring(1);
+						renderer.setClearColor( parseInt(clearColor) );
 						renderer.setSize( width, height );
 						renderer.autoClear = false; // To allow render overlay on top of sprited sphere
 						viewport.appendChild( renderer.domElement );
@@ -1986,11 +1999,11 @@
 						playback.autoRotate = scope.view.controls.autoRotate;
 						playback.autoRotateSpeed = scope.view.controls.autoRotateSpeed;
 						// interaction FALSE so as not to conflict with controls
-						playback.noZoom = true;
-						playback.noRotate = true;
-						playback.noPan = true;
-						playback.noKeys = true;
-
+						playback.enableZoom = false;
+						playback.enableRotate = false;
+						playback.enablePan = false;
+						playback.enableKeys = false;
+						
 						// AXIS
 						// TODO: Make local axisHelper
 						var axisHelper = new THREE.AxisHelper( scope.view.settings.axis.size );
@@ -2166,20 +2179,23 @@
 						scope.$watch('settings.current.segment', function( newSegment, oldSegment ) {
 							if ( newSegment !== oldSegment ) {
 
-								// SET CHROMATIN CURSOR COLOR								
+								// SET CHROMATIN CURSOR COLOR
+
 								var segmentPrevious = chromatinObj.getObjectByName( "segment-" + oldSegment );
-								if (positionOriginalColor) {
+								if (positionOriginalColor && segmentPrevious) {
 									segmentPrevious.material.color = positionOriginalColor;
 									segmentPrevious.material.ambient = positionOriginalColor;
 									segmentPrevious.material.emissive = positionOriginalColor;
 								}
 
 								var segmentCurrent = chromatinObj.getObjectByName( "segment-" + newSegment );
-								positionOriginalColor = segmentCurrent.material.color;
+								if(segmentCurrent) {
+									positionOriginalColor = segmentCurrent.material.color;
 
-								segmentCurrent.material.color = highlightColor;
-								segmentCurrent.material.ambient = highlightColor;
-								segmentCurrent.material.emissive = highlightColor;
+									segmentCurrent.material.color = highlightColor;
+									segmentCurrent.material.ambient = highlightColor;
+									segmentCurrent.material.emissive = highlightColor;
+								}
 							}
 						});
 
@@ -2260,12 +2276,13 @@
 				        	chromatinObj.children[i].material.dispose();
 				        	
 				        }
-
-				        network.geometry.dispose();
-				        network.material.dispose();
-				        networkObj.geometry.dispose();
-				        networkObj.material.dispose();
-				        
+				        for(i=0;i<network.children.length;i++) {
+				        	network.children[i].geometry.dispose();
+				        	network.children[i].material.dispose();
+				        	networkObj.children[i].geometry.dispose();
+				        	networkObj.children[i].material.dispose();
+				        	
+				        }     
 				        
 				        particles = undefined;
 				        particlesObj = undefined;
@@ -4315,7 +4332,6 @@
 		var clusterLists = $scope.current.dataset.clusters;
 		var models = $scope.current.dataset.models;
 		for (var i = clusterLists.length - 1; i >= 0; i--) {
-			//if(clusterLists.length-i>10) break;
 			var cluster = {};
 			cluster.number = i + 1;
 			cluster.list = clusterLists[i];

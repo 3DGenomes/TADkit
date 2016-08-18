@@ -10,6 +10,8 @@
 		$scope.height = $scope.canvas_height = parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units
 		if($scope.data.n === 0) {
 			$scope.no_hic_data = true; 
+			$scope.slidevalue = "10;0.001";
+			$scope.slideoptions = {};
 			return;
 		} else  {
 			$scope.no_hic_data = false;

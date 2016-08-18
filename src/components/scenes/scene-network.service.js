@@ -28,15 +28,15 @@
 
 			// Define a color-typed uniform
 			var uniforms = {  
-				// color: { type: "c", value: new THREE.Color( 0x00ff00 ) },
-				// alpha: { type: "f", value: 1.0 }
+				color: { type: "c", value: new THREE.Color( 0x00ff00 ) },
+				alpha: { type: "f", value: 1.0 }
 			};
-			var attributes = {  
-				alpha: { type: 'f', value: [] }
-			};
+			//var attributes = {  
+			//	alpha: { type: 'f', value: [] }
+			//};
 			var parameters = {
 				uniforms: uniforms,
-				attributes: attributes,
+				//attributes: attributes,
 				vertexShader: document.getElementById('vertexShader').textContent,
 				fragmentShader: document.getElementById('fragmentShader').textContent,
 				vertexColors: THREE.VertexColors,
@@ -45,6 +45,7 @@
 				transparent: true //this.transparent
 			};
 			var shaderMaterial = new THREE.ShaderMaterial(parameters);
+			shaderMaterial.linewidth = 1;
 
 			var dataLength = data.length / 3;
 			var totalPairs = ((dataLength * dataLength) - dataLength) * 0.5;
@@ -57,12 +58,16 @@
 			geometry.addAttribute( 'position', new THREE.BufferAttribute( vertexPairs, 3 ) );
 			geometry.addAttribute( 'color', new THREE.BufferAttribute( vertexRGB, 3 ) );
 			geometry.addAttribute( 'alpha', new THREE.BufferAttribute( vertexAlpha, 1 ) );
+			geometry.center();
 			geometry.computeBoundingSphere();
 
 			var nodeMap = null; // render only point
-			if (this.map) nodeMap = THREE.ImageUtils.loadTexture(this.map);
-
-			var nodesMaterial = new THREE.PointCloudMaterial({
+			if (this.map) {
+				var loader = new THREE.TextureLoader();
+				nodeMap = loader.load(this.map);
+			}
+			
+			var nodesMaterial = new THREE.PointsMaterial({
 				color: this.color,
     			vertexColors: THREE.VertexColors,
 				size: this.size,
@@ -74,17 +79,31 @@
 			});
 
 			// NETWORK
-			// var nodes = new THREE.PointCloud(data, nodesMaterial);
-			// nodes.name = "Network Nodes";
+			var particlesGeometry = getGeometry(data);
+			particlesGeometry.center();
+			particlesGeometry.computeBoundingSphere();
+			var vertexColors = [];
+			for( var i = 0; i < particlesGeometry.vertices.length; i++ ) {
+				// BASE COLOR
+				vertexColors[i] = new THREE.Color("rgb(255,255,255)");
+			}
+			particlesGeometry.colors = vertexColors;
+			var nodes = new THREE.Points(particlesGeometry, nodesMaterial);
+			nodes.name = "Network Nodes";
 			
-			// var edges = new THREE.Line(geometry, shaderMaterial, THREE.LinePieces); // THREE.LinePieces = separate lines
-			// edges.name = "Network Edges";
+			//var edges = new THREE.Line(geometry, shaderMaterial, THREE.LinePieces); // THREE.LinePieces = separate lines
+			//var material = new THREE.LineBasicMaterial({
+			//    color: 0x000000
+			//});
+			var edges = new THREE.LineSegments( geometry, shaderMaterial );
+			edges.name = "Network Edges";
 
-			// var network = new THREE.Object3D();
-			// network.add(edges);
-			// network.add(nodes);
-			// network.boundingSphere = geometry.boundingSphere;
-			var network = new THREE.Line(geometry, shaderMaterial, THREE.LinePieces); // THREE.LinePieces = separate lines
+			var network = new THREE.Object3D();
+			network.add(edges);
+			network.add(nodes);
+			network.boundingSphere = geometry.boundingSphere;
+			//var network = new THREE.Line(geometry, shaderMaterial, THREE.LinePieces); // THREE.LinePieces = separate lines
+			//var network = new THREE.LineSegments( geometry, shaderMaterial );
 			network.name = "Network Graph";
 			// console.log(network);
 			return network;
@@ -124,6 +143,20 @@
 		}
 		vertexPairs.name = "Network Vertex Pairs";
 		return vertexPairs;
+	}
+	function getGeometry(data) {
+		var offset = 0, vertex,
+			 vertexGeometry = new THREE.Geometry();
+		var totalVertices = data.length;
+		while ( offset < totalVertices ) {
+			vertex = new THREE.Vector3();
+			vertex.x = data[ offset ++ ];
+			vertex.y = data[ offset ++ ];
+			vertex.z = data[ offset ++ ];
+			vertexGeometry.vertices.push( vertex );
+		}
+		vertexGeometry.name = "Particles Geometry";
+		return vertexGeometry;
 	}
 
 })();

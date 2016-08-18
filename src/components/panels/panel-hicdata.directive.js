@@ -132,7 +132,7 @@
 		                var ctx = canvas.getContext("2d");
 		                ctx.imageSmoothingEnabled = false;
 		                ctx.mozImageSmoothingEnabled = false;
-		                ctx.webkitImageSmoothingEnabled = false;
+		                ctx.imageSmoothingEnabled = false;
 		                
 		                //clear the canvas
 		                ctx.clearRect(0,0, canvas.width, canvas.height);

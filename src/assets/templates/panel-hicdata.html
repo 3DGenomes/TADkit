@@ -9,7 +9,7 @@
 					<div><md-button id="minus" class="md-fab" aria-label="Zoom out" ng-click="reducezoom()">-</md-button>
 				    <md-button id="plus" class="md-fab" aria-label="Zoom in" ng-click="increasezoom()">+</md-button></div>
 				</div>
-				<div id="slider-hic"><input type="text" options="slideoptions" slider id="mySlider1" ng-model="slidevalue"></div>
+				<div ng-hide="no_hic_data" id="slider-hic"><input type="text" options="slideoptions" slider id="mySlider1" ng-model="slidevalue"></div>
 			</div>
 			<canvas width="{{canvas_width}}" height="{{canvas_height}}" id="hic_canvas" ng-hide="no_hic_data"></canvas>
 		</div>

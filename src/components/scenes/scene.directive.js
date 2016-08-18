@@ -63,9 +63,9 @@
 							renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
 						else
 							renderer = new THREE.CanvasRenderer({alpha: true});					
-					var background = scope.view.settings.background;
-					var clearColor = "0x" + background.substring(1);
-						renderer.setClearColor( clearColor );
+						var background = scope.view.settings.background;
+						var clearColor = "0x" + background.substring(1);
+						renderer.setClearColor( parseInt(clearColor) );
 						renderer.setSize( width, height );
 						renderer.autoClear = false; // To allow render overlay on top of sprited sphere
 						viewport.appendChild( renderer.domElement );
@@ -87,11 +87,11 @@
 						playback.autoRotate = scope.view.controls.autoRotate;
 						playback.autoRotateSpeed = scope.view.controls.autoRotateSpeed;
 						// interaction FALSE so as not to conflict with controls
-						playback.noZoom = true;
-						playback.noRotate = true;
-						playback.noPan = true;
-						playback.noKeys = true;
-
+						playback.enableZoom = false;
+						playback.enableRotate = false;
+						playback.enablePan = false;
+						playback.enableKeys = false;
+						
 						// AXIS
 						// TODO: Make local axisHelper
 						var axisHelper = new THREE.AxisHelper( scope.view.settings.axis.size );
@@ -267,20 +267,23 @@
 						scope.$watch('settings.current.segment', function( newSegment, oldSegment ) {
 							if ( newSegment !== oldSegment ) {
 
-								// SET CHROMATIN CURSOR COLOR								
+								// SET CHROMATIN CURSOR COLOR
+
 								var segmentPrevious = chromatinObj.getObjectByName( "segment-" + oldSegment );
-								if (positionOriginalColor) {
+								if (positionOriginalColor && segmentPrevious) {
 									segmentPrevious.material.color = positionOriginalColor;
 									segmentPrevious.material.ambient = positionOriginalColor;
 									segmentPrevious.material.emissive = positionOriginalColor;
 								}
 
 								var segmentCurrent = chromatinObj.getObjectByName( "segment-" + newSegment );
-								positionOriginalColor = segmentCurrent.material.color;
+								if(segmentCurrent) {
+									positionOriginalColor = segmentCurrent.material.color;
 
-								segmentCurrent.material.color = highlightColor;
-								segmentCurrent.material.ambient = highlightColor;
-								segmentCurrent.material.emissive = highlightColor;
+									segmentCurrent.material.color = highlightColor;
+									segmentCurrent.material.ambient = highlightColor;
+									segmentCurrent.material.emissive = highlightColor;
+								}
 							}
 						});
 
@@ -361,12 +364,13 @@
 				        	chromatinObj.children[i].material.dispose();
 				        	
 				        }
-
-				        network.geometry.dispose();
-				        network.material.dispose();
-				        networkObj.geometry.dispose();
-				        networkObj.material.dispose();
-				        
+				        for(i=0;i<network.children.length;i++) {
+				        	network.children[i].geometry.dispose();
+				        	network.children[i].material.dispose();
+				        	networkObj.children[i].geometry.dispose();
+				        	networkObj.children[i].material.dispose();
+				        	
+				        }     
 				        
 				        particles = undefined;
 				        particlesObj = undefined;

@@ -86,7 +86,6 @@
 				var segmentColor = colors[i];
 				var segmentMaterial = new THREE.MeshLambertMaterial({
 					color: segmentColor,
-					ambient: segmentColor,
 					emissive: segmentColor,
 					vertexColors: THREE.VertexColors,
 					opacity: 1.0, 

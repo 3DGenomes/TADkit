@@ -40,6 +40,10 @@
 					scope.settings.current.segment = Settings.getSegment();
 					scope.settings.current.segmentLower = scope.settings.current.position - (scope.settings.current.segment * 5); // * 0.5???
 					scope.settings.current.segmentUpper = scope.settings.current.position + (scope.settings.current.segment * 5); // * 0.5???
+					var jbrowse_scope = angular.element(document.querySelector('#jbrowse-iframe')).scope();
+					if(!angular.isUndefined(jbrowse_scope) && jbrowse_scope.updateTadkitBar) {
+						jbrowse_scope.updateTadkitBar(scope.settings.current.position);
+					}
 				};
 
 				scope.toggleColor = function(overlay) {

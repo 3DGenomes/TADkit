@@ -35,7 +35,6 @@
 		var clusterLists = $scope.current.dataset.clusters;
 		var models = $scope.current.dataset.models;
 		for (var i = clusterLists.length - 1; i >= 0; i--) {
-			//if(clusterLists.length-i>10) break;
 			var cluster = {};
 			cluster.number = i + 1;
 			cluster.list = clusterLists[i];
