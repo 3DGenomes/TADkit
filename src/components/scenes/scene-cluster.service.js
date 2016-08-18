@@ -15,14 +15,13 @@
 			angular.extend(this, angular.copy(defaults), settings);
 
 			// Convert Data (single Model / set of Particles) to Vector triplets
-			var clusterBufferGeometry = new THREE.BufferGeometry(); // to calculate merged bounds
+			var max_radius = 0;
 			var overlayColors = Color.colorsFromHex(overlay);
 
 			// Generate Cluster model
 			var clusterEnsemble = new THREE.Object3D(); // unmerged network
 			for ( var i = 0 ; i < data.length; i++) {
 				var modelComponents = data[i];
-				clusterBufferGeometry.addAttribute( 'position', new THREE.BufferAttribute( modelComponents, 3 ) );
 				var modelGeometry = getModelGeometry(modelComponents);
 				modelGeometry.colors = overlayColors;
 
@@ -46,11 +45,15 @@
 				}
 				var model = new THREE.Line(modelGeometry, modelMaterial);
 				model.name = "model-"+ i;
+				model.geometry.computeBoundingSphere();
+				if(model.geometry.boundingSphere.radius>max_radius) max_radius = model.geometry.boundingSphere.radius;
 				clusterEnsemble.add(model);
 			}
-			clusterBufferGeometry.computeBoundingSphere();
-			clusterEnsemble.boundingSphere = clusterBufferGeometry.boundingSphere;
-			clusterEnsemble.BufferGeometryometry = clusterBufferGeometry;
+			for ( i = 0 ; i < clusterEnsemble.children.length; i++) {
+				clusterEnsemble.children[i].geometry.center();
+			}
+			clusterEnsemble.boundingSphere = clusterEnsemble.children[0].geometry.boundingSphere.clone();
+			clusterEnsemble.boundingSphere.radius = max_radius;
 			clusterEnsemble.name = "Cluster Ensemble";
 			return clusterEnsemble;
 		};

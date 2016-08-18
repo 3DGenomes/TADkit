@@ -1315,10 +1315,10 @@
 					orbit = new THREE.OrbitControls(camera, renderer.domElement);
 					orbit.autoRotate = scope.view.controls.autoRotate;
 					orbit.autoRotateSpeed = scope.view.controls.autoRotateSpeed;
-					orbit.enableZoom = true;
-					orbit.enableRotate = true;
-					orbit.enablePan = true;
-					orbit.enableKeys = true;
+					orbit.enableZoom = false;
+					orbit.enableRotate = false;
+					orbit.enablePan = false;
+					orbit.enableKeys = false;
 					controls = new THREE.TrackballControls(camera, renderer.domElement);
 					controls.noZoom = true;
 					controls.noRotate = true;
@@ -1338,8 +1338,18 @@
 					// SET CAMERA ORIENTATION
 					cameraPosition = new THREE.Vector3(); //cluster.boundingSphere.center;
 					cameraTarget = new THREE.Vector3( 0,0,0 ); //cluster.boundingSphere.center;
-					cameraTranslate = cluster.boundingSphere.radius * scope.view.viewpoint.scale;
-					//scope.lookAtTarget(cameraPosition, cameraTarget, cameraTranslate);
+
+					/*var objectCenter = cluster.boundingSphere.center;
+
+					cluster.position.x -= objectCenter.x;
+					cluster.position.y -= objectCenter.y;
+					cluster.position.z -= objectCenter.z;
+					*/
+					var angle = scope.view.viewpoint.fov / 2;
+					var margin = 0.6;
+					var	scale = Math.tan(angle).toFixed(2) * margin;
+					cameraTranslate = cluster.boundingSphere.radius * scale;
+					scope.lookAtTarget(cameraPosition, cameraTarget, cameraTranslate);
 					/*$timeout(function () {
 						screenshot = renderer.domElement.toDataURL();
 						
@@ -1395,13 +1405,14 @@
 				    var image = new Image();
 				    image.src = canvas.toDataURL('image/png');
 				    return image;
-				  })(document.querySelectorAll('canvas')[0]);
+				  })(renderer.domElement);
 				
 				$timeout(function () {
-				  window.document.body.appendChild(webglImage);
+				  scope.destroy_scene();
+				  viewport.appendChild(webglImage);
 				});*/
 				
-				scope.$on('$destroy', function() {
+				scope.destroy_scene = function () {
 					scene.remove(cluster);
 					scene.remove(particles);
 					
@@ -1417,9 +1428,11 @@
 
 			        particles = undefined;
 			        cluster = undefined;
-			        renderer.forceContextLoss();
+			        if(renderer) renderer.forceContextLoss();
 			        
-			        
+				};
+				scope.$on('$destroy', function() {
+					scope.destroy_scene();
 			    });
 				
 			}
@@ -1444,14 +1457,13 @@
 			angular.extend(this, angular.copy(defaults), settings);
 
 			// Convert Data (single Model / set of Particles) to Vector triplets
-			var clusterBufferGeometry = new THREE.BufferGeometry(); // to calculate merged bounds
+			var max_radius = 0;
 			var overlayColors = Color.colorsFromHex(overlay);
 
 			// Generate Cluster model
 			var clusterEnsemble = new THREE.Object3D(); // unmerged network
 			for ( var i = 0 ; i < data.length; i++) {
 				var modelComponents = data[i];
-				clusterBufferGeometry.addAttribute( 'position', new THREE.BufferAttribute( modelComponents, 3 ) );
 				var modelGeometry = getModelGeometry(modelComponents);
 				modelGeometry.colors = overlayColors;
 
@@ -1475,11 +1487,15 @@
 				}
 				var model = new THREE.Line(modelGeometry, modelMaterial);
 				model.name = "model-"+ i;
+				model.geometry.computeBoundingSphere();
+				if(model.geometry.boundingSphere.radius>max_radius) max_radius = model.geometry.boundingSphere.radius;
 				clusterEnsemble.add(model);
 			}
-			clusterBufferGeometry.computeBoundingSphere();
-			clusterEnsemble.boundingSphere = clusterBufferGeometry.boundingSphere;
-			clusterEnsemble.BufferGeometryometry = clusterBufferGeometry;
+			for ( i = 0 ; i < clusterEnsemble.children.length; i++) {
+				clusterEnsemble.children[i].geometry.center();
+			}
+			clusterEnsemble.boundingSphere = clusterEnsemble.children[0].geometry.boundingSphere.clone();
+			clusterEnsemble.boundingSphere.radius = max_radius;
 			clusterEnsemble.name = "Cluster Ensemble";
 			return clusterEnsemble;
 		};
@@ -1714,7 +1730,7 @@
 				particles: 0,
 				visible: true,
 				color: "#ff0000",
-				size: 200,
+				size: 100,
 				opacity: 0.8,
 				map: "assets/img/sphere-glossy.png",
 				depthtest: true,
@@ -1725,6 +1741,7 @@
 			angular.extend(this, angular.copy(defaults), settings);
 
 			var particlesGeometry = getGeometry(data);
+			particlesGeometry.center();
 			particlesGeometry.computeBoundingSphere();
 
 			var vertexColors = [];
@@ -4265,6 +4282,11 @@
 	'use strict';
 	angular
 		.module('TADkit')
+		.filter('startFrom', function() {
+		    return function(input, start) {
+		        start = +start; //parse to int
+		        return input.slice(start);
+		    };})
 		.controller('ProjectDatasetController', ProjectDatasetController);
 
 	function ProjectDatasetController ($state, $scope, Datasets, Overlays, Components, Segments){
@@ -4293,7 +4315,7 @@
 		var clusterLists = $scope.current.dataset.clusters;
 		var models = $scope.current.dataset.models;
 		for (var i = clusterLists.length - 1; i >= 0; i--) {
-			if(clusterLists.length-i>10) break;
+			//if(clusterLists.length-i>10) break;
 			var cluster = {};
 			cluster.number = i + 1;
 			cluster.list = clusterLists[i];
@@ -4315,7 +4337,11 @@
 			$scope.clusters.unshift(cluster);
 		}
 		// console.log($scope.clusters);
-
+		$scope.currentPage = 0;
+	    $scope.pageSize = 10;
+	    $scope.numberOfPages=function(){
+	        return Math.ceil($scope.clusters.length/$scope.pageSize);                
+	    };
 
 		// On click set selected cluster
 		$scope.selectCluster = function(index) {

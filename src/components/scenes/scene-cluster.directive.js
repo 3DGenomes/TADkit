@@ -70,10 +70,10 @@
 					orbit = new THREE.OrbitControls(camera, renderer.domElement);
 					orbit.autoRotate = scope.view.controls.autoRotate;
 					orbit.autoRotateSpeed = scope.view.controls.autoRotateSpeed;
-					orbit.enableZoom = true;
-					orbit.enableRotate = true;
-					orbit.enablePan = true;
-					orbit.enableKeys = true;
+					orbit.enableZoom = false;
+					orbit.enableRotate = false;
+					orbit.enablePan = false;
+					orbit.enableKeys = false;
 					controls = new THREE.TrackballControls(camera, renderer.domElement);
 					controls.noZoom = true;
 					controls.noRotate = true;
@@ -93,8 +93,18 @@
 					// SET CAMERA ORIENTATION
 					cameraPosition = new THREE.Vector3(); //cluster.boundingSphere.center;
 					cameraTarget = new THREE.Vector3( 0,0,0 ); //cluster.boundingSphere.center;
-					cameraTranslate = cluster.boundingSphere.radius * scope.view.viewpoint.scale;
-					//scope.lookAtTarget(cameraPosition, cameraTarget, cameraTranslate);
+
+					/*var objectCenter = cluster.boundingSphere.center;
+
+					cluster.position.x -= objectCenter.x;
+					cluster.position.y -= objectCenter.y;
+					cluster.position.z -= objectCenter.z;
+					*/
+					var angle = scope.view.viewpoint.fov / 2;
+					var margin = 0.6;
+					var	scale = Math.tan(angle).toFixed(2) * margin;
+					cameraTranslate = cluster.boundingSphere.radius * scale;
+					scope.lookAtTarget(cameraPosition, cameraTarget, cameraTranslate);
 					/*$timeout(function () {
 						screenshot = renderer.domElement.toDataURL();
 						
@@ -150,13 +160,14 @@
 				    var image = new Image();
 				    image.src = canvas.toDataURL('image/png');
 				    return image;
-				  })(document.querySelectorAll('canvas')[0]);
+				  })(renderer.domElement);
 				
 				$timeout(function () {
-				  window.document.body.appendChild(webglImage);
+				  scope.destroy_scene();
+				  viewport.appendChild(webglImage);
 				});*/
 				
-				scope.$on('$destroy', function() {
+				scope.destroy_scene = function () {
 					scene.remove(cluster);
 					scene.remove(particles);
 					
@@ -172,9 +183,11 @@
 
 			        particles = undefined;
 			        cluster = undefined;
-			        renderer.forceContextLoss();
+			        if(renderer) renderer.forceContextLoss();
 			        
-			        
+				};
+				scope.$on('$destroy', function() {
+					scope.destroy_scene();
 			    });
 				
 			}

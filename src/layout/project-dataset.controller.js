@@ -2,6 +2,11 @@
 	'use strict';
 	angular
 		.module('TADkit')
+		.filter('startFrom', function() {
+		    return function(input, start) {
+		        start = +start; //parse to int
+		        return input.slice(start);
+		    };})
 		.controller('ProjectDatasetController', ProjectDatasetController);
 
 	function ProjectDatasetController ($state, $scope, Datasets, Overlays, Components, Segments){
@@ -30,7 +35,7 @@
 		var clusterLists = $scope.current.dataset.clusters;
 		var models = $scope.current.dataset.models;
 		for (var i = clusterLists.length - 1; i >= 0; i--) {
-			if(clusterLists.length-i>10) break;
+			//if(clusterLists.length-i>10) break;
 			var cluster = {};
 			cluster.number = i + 1;
 			cluster.list = clusterLists[i];
@@ -52,7 +57,11 @@
 			$scope.clusters.unshift(cluster);
 		}
 		// console.log($scope.clusters);
-
+		$scope.currentPage = 0;
+	    $scope.pageSize = 10;
+	    $scope.numberOfPages=function(){
+	        return Math.ceil($scope.clusters.length/$scope.pageSize);                
+	    };
 
 		// On click set selected cluster
 		$scope.selectCluster = function(index) {

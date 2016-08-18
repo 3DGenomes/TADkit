@@ -11,7 +11,7 @@
 				particles: 0,
 				visible: true,
 				color: "#ff0000",
-				size: 200,
+				size: 100,
 				opacity: 0.8,
 				map: "assets/img/sphere-glossy.png",
 				depthtest: true,
@@ -22,6 +22,7 @@
 			angular.extend(this, angular.copy(defaults), settings);
 
 			var particlesGeometry = getGeometry(data);
+			particlesGeometry.center();
 			particlesGeometry.computeBoundingSphere();
 
 			var vertexColors = [];
