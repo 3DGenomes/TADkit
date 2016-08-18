@@ -20,7 +20,7 @@
 		// Calculate consistent camera position (translation) from combined dataset models
 		var datasetModels = new THREE.BufferGeometry();
 		for (var h = $scope.current.dataset.models.length - 1; h >= 0; h--) {
-			datasetModels.addAttribute( 'position', new THREE.BufferAttribute( $scope.current.dataset.models[i], 3 ) );
+			datasetModels.addAttribute( 'position', new THREE.BufferAttribute( $scope.current.dataset.models[h], 3 ) );
 		}
 		datasetModels.computeBoundingSphere();
 		$scope.clusterComponent.view.viewpoint.translate = datasetModels.boundingSphere.radius;
@@ -30,6 +30,7 @@
 		var clusterLists = $scope.current.dataset.clusters;
 		var models = $scope.current.dataset.models;
 		for (var i = clusterLists.length - 1; i >= 0; i--) {
+			if(clusterLists.length-i>10) break;
 			var cluster = {};
 			cluster.number = i + 1;
 			cluster.list = clusterLists[i];

@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.directive('tkComponentSceneCluster', tkComponentSceneCluster);
 
-	function tkComponentSceneCluster(Particles, Cluster) {
+	function tkComponentSceneCluster(Particles, Cluster, $timeout) {
 		return {
 			restrict: 'EA',
 			scope: { 
@@ -22,6 +22,7 @@
 				// console.log(scope.cluster);
 				
 				var renderer;
+				var screenshot;
 				var scene, viewport;
 				var camera, cameraPosition, cameraTarget, cameraTranslate;
 				var ambientLight, pointLight;
@@ -29,7 +30,7 @@
 				var width, height, contW, contH, windowHalfX, windowHalfY;
 
 				scope.init = function () {
-
+					
 					// VIEWPORT
 					/* component-controller == children[0]
 					 * - component-header == children[0]
@@ -42,18 +43,20 @@
 					height = parseInt(scope.state.height);
 					// OJO! DOM NOT READY
 					// console.log(element[0].firstChild.children[2].clientWidth);
-
+					
 					if (window.WebGLRenderingContext)
 						renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
 					else
 						renderer = new THREE.CanvasRenderer({alpha: true});	
+						
 					var background = scope.view.settings.background;
 					var clearColor = "0x" + background.substring(1);
-					renderer.setClearColor( clearColor );
+					renderer.setClearColor( parseInt(clearColor) );
 					renderer.setSize( width, height );
 					renderer.autoClear = false; // To allow render overlay on top of sprited sphere
 					renderer.setSize( width, height );
 					viewport.appendChild( renderer.domElement );
+					
 
 					// SCENE
 					scene = new THREE.Scene();
@@ -67,10 +70,10 @@
 					orbit = new THREE.OrbitControls(camera, renderer.domElement);
 					orbit.autoRotate = scope.view.controls.autoRotate;
 					orbit.autoRotateSpeed = scope.view.controls.autoRotateSpeed;
-					orbit.noZoom = true;
-					orbit.noRotate = true;
-					orbit.noPan = true;
-					orbit.noKeys = true;
+					orbit.enableZoom = true;
+					orbit.enableRotate = true;
+					orbit.enablePan = true;
+					orbit.enableKeys = true;
 					controls = new THREE.TrackballControls(camera, renderer.domElement);
 					controls.noZoom = true;
 					controls.noRotate = true;
@@ -91,7 +94,21 @@
 					cameraPosition = new THREE.Vector3(); //cluster.boundingSphere.center;
 					cameraTarget = new THREE.Vector3( 0,0,0 ); //cluster.boundingSphere.center;
 					cameraTranslate = cluster.boundingSphere.radius * scope.view.viewpoint.scale;
-					scope.lookAtTarget(cameraPosition, cameraTarget, cameraTranslate);
+					//scope.lookAtTarget(cameraPosition, cameraTarget, cameraTranslate);
+					/*$timeout(function () {
+						screenshot = renderer.domElement.toDataURL();
+						
+						//renderer.forceContextLoss();
+						var ctx = viewport.children[0].getContext('2d');
+						
+						var img = new Image();
+						img.onload = function(){
+						  ctx.drawImage(img,0,0);
+						};
+						img.src = screenshot;
+						
+						console.log('should clean context');
+	                });*/
 
 				};
 
@@ -129,6 +146,37 @@
 				// Begin
 				scope.init();
 				scope.animate();
+				/*var webglImage = (function convertCanvasToImage(canvas) {
+				    var image = new Image();
+				    image.src = canvas.toDataURL('image/png');
+				    return image;
+				  })(document.querySelectorAll('canvas')[0]);
+				
+				$timeout(function () {
+				  window.document.body.appendChild(webglImage);
+				});*/
+				
+				scope.$on('$destroy', function() {
+					scene.remove(cluster);
+					scene.remove(particles);
+					
+			        
+			        particles.geometry.dispose();
+			        particles.material.dispose();
+			        
+			        for(var i=0;i<cluster.children.length;i++) {
+			        	cluster.children[i].geometry.dispose();
+			        	cluster.children[i].material.dispose();
+			        	
+			        }
+
+			        particles = undefined;
+			        cluster = undefined;
+			        renderer.forceContextLoss();
+			        
+			        
+			    });
+				
 			}
 		};
 	}

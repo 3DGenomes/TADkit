@@ -84,9 +84,9 @@
 				else Hic_data.clear();
 				Overlays.update(Proximities.get().distances, dataset.restraints);
 				// if (dataset.object.filename) {
-					var filetype = "tsv";
-					var resetToDefaults = true;
-					Overlays.loadTSV(dataset.object.filename, filetype, resetToDefaults);	
+				//	var filetype = "tsv";
+				//	var resetToDefaults = true;
+				//	Overlays.loadTSV(dataset.object.filename, filetype, resetToDefaults);	
 				// }
 				console.log("Settings, Proximities, Restraints & Overlays initialized.");
 			},

@@ -1249,7 +1249,7 @@
 		.module('TADkit')
 		.directive('tkComponentSceneCluster', tkComponentSceneCluster);
 
-	function tkComponentSceneCluster(Particles, Cluster) {
+	function tkComponentSceneCluster(Particles, Cluster, $timeout) {
 		return {
 			restrict: 'EA',
 			scope: { 
@@ -1267,6 +1267,7 @@
 				// console.log(scope.cluster);
 				
 				var renderer;
+				var screenshot;
 				var scene, viewport;
 				var camera, cameraPosition, cameraTarget, cameraTranslate;
 				var ambientLight, pointLight;
@@ -1274,7 +1275,7 @@
 				var width, height, contW, contH, windowHalfX, windowHalfY;
 
 				scope.init = function () {
-
+					
 					// VIEWPORT
 					/* component-controller == children[0]
 					 * - component-header == children[0]
@@ -1287,18 +1288,20 @@
 					height = parseInt(scope.state.height);
 					// OJO! DOM NOT READY
 					// console.log(element[0].firstChild.children[2].clientWidth);
-
+					
 					if (window.WebGLRenderingContext)
 						renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
 					else
 						renderer = new THREE.CanvasRenderer({alpha: true});	
+						
 					var background = scope.view.settings.background;
 					var clearColor = "0x" + background.substring(1);
-					renderer.setClearColor( clearColor );
+					renderer.setClearColor( parseInt(clearColor) );
 					renderer.setSize( width, height );
 					renderer.autoClear = false; // To allow render overlay on top of sprited sphere
 					renderer.setSize( width, height );
 					viewport.appendChild( renderer.domElement );
+					
 
 					// SCENE
 					scene = new THREE.Scene();
@@ -1312,10 +1315,10 @@
 					orbit = new THREE.OrbitControls(camera, renderer.domElement);
 					orbit.autoRotate = scope.view.controls.autoRotate;
 					orbit.autoRotateSpeed = scope.view.controls.autoRotateSpeed;
-					orbit.noZoom = true;
-					orbit.noRotate = true;
-					orbit.noPan = true;
-					orbit.noKeys = true;
+					orbit.enableZoom = true;
+					orbit.enableRotate = true;
+					orbit.enablePan = true;
+					orbit.enableKeys = true;
 					controls = new THREE.TrackballControls(camera, renderer.domElement);
 					controls.noZoom = true;
 					controls.noRotate = true;
@@ -1336,7 +1339,21 @@
 					cameraPosition = new THREE.Vector3(); //cluster.boundingSphere.center;
 					cameraTarget = new THREE.Vector3( 0,0,0 ); //cluster.boundingSphere.center;
 					cameraTranslate = cluster.boundingSphere.radius * scope.view.viewpoint.scale;
-					scope.lookAtTarget(cameraPosition, cameraTarget, cameraTranslate);
+					//scope.lookAtTarget(cameraPosition, cameraTarget, cameraTranslate);
+					/*$timeout(function () {
+						screenshot = renderer.domElement.toDataURL();
+						
+						//renderer.forceContextLoss();
+						var ctx = viewport.children[0].getContext('2d');
+						
+						var img = new Image();
+						img.onload = function(){
+						  ctx.drawImage(img,0,0);
+						};
+						img.src = screenshot;
+						
+						console.log('should clean context');
+	                });*/
 
 				};
 
@@ -1374,6 +1391,37 @@
 				// Begin
 				scope.init();
 				scope.animate();
+				/*var webglImage = (function convertCanvasToImage(canvas) {
+				    var image = new Image();
+				    image.src = canvas.toDataURL('image/png');
+				    return image;
+				  })(document.querySelectorAll('canvas')[0]);
+				
+				$timeout(function () {
+				  window.document.body.appendChild(webglImage);
+				});*/
+				
+				scope.$on('$destroy', function() {
+					scene.remove(cluster);
+					scene.remove(particles);
+					
+			        
+			        particles.geometry.dispose();
+			        particles.material.dispose();
+			        
+			        for(var i=0;i<cluster.children.length;i++) {
+			        	cluster.children[i].geometry.dispose();
+			        	cluster.children[i].material.dispose();
+			        	
+			        }
+
+			        particles = undefined;
+			        cluster = undefined;
+			        renderer.forceContextLoss();
+			        
+			        
+			    });
+				
 			}
 		};
 	}
@@ -1409,7 +1457,7 @@
 
 				var modelColor = overlay[i];
 				var modelMaterial = new THREE.LineBasicMaterial({
-					color: new THREE.Color(this.color),
+					color: new THREE.Color(parseInt(this.color)),
 					opacity: this.modelOpacity,
 					transparent: this.transparent,
 					linewidth: this.linewidth,
@@ -1489,7 +1537,6 @@
 					// console.log(JSON.stringify(testgeom));
 
 					material = new THREE.MeshDepthMaterial({
-						color: 0x666666,
 						wireframe: true,
 						wireframeLinewidth: 1
 					});
@@ -1688,9 +1735,12 @@
 			particlesGeometry.colors = vertexColors;
 
 			var particleMap = null; // render only point
-			if (this.map) particleMap = THREE.ImageUtils.loadTexture(this.map);
+			if (this.map) {
+				var loader = new THREE.TextureLoader();
+				particleMap = loader.load(this.map);
+			}
 
-			var particlesMaterial = new THREE.PointCloudMaterial({
+			var particlesMaterial = new THREE.PointsMaterial({
 				color: this.color,
     			vertexColors: THREE.VertexColors,
 				size: this.size,
@@ -1701,7 +1751,7 @@
 				transparent: this.transparent
 			});
 
-			var particlesCloud = new THREE.PointCloud( particlesGeometry, particlesMaterial );
+			var particlesCloud = new THREE.Points( particlesGeometry, particlesMaterial );
 			// particlesCloud.sortParticles = true;
 			particlesCloud.name = "Particles Cloud";
 			
@@ -4233,7 +4283,7 @@
 		// Calculate consistent camera position (translation) from combined dataset models
 		var datasetModels = new THREE.BufferGeometry();
 		for (var h = $scope.current.dataset.models.length - 1; h >= 0; h--) {
-			datasetModels.addAttribute( 'position', new THREE.BufferAttribute( $scope.current.dataset.models[i], 3 ) );
+			datasetModels.addAttribute( 'position', new THREE.BufferAttribute( $scope.current.dataset.models[h], 3 ) );
 		}
 		datasetModels.computeBoundingSphere();
 		$scope.clusterComponent.view.viewpoint.translate = datasetModels.boundingSphere.radius;
@@ -4243,6 +4293,7 @@
 		var clusterLists = $scope.current.dataset.clusters;
 		var models = $scope.current.dataset.models;
 		for (var i = clusterLists.length - 1; i >= 0; i--) {
+			if(clusterLists.length-i>10) break;
 			var cluster = {};
 			cluster.number = i + 1;
 			cluster.list = clusterLists[i];
@@ -5345,9 +5396,9 @@
 				else Hic_data.clear();
 				Overlays.update(Proximities.get().distances, dataset.restraints);
 				// if (dataset.object.filename) {
-					var filetype = "tsv";
-					var resetToDefaults = true;
-					Overlays.loadTSV(dataset.object.filename, filetype, resetToDefaults);	
+				//	var filetype = "tsv";
+				//	var resetToDefaults = true;
+				//	Overlays.loadTSV(dataset.object.filename, filetype, resetToDefaults);	
 				// }
 				console.log("Settings, Proximities, Restraints & Overlays initialized.");
 			},

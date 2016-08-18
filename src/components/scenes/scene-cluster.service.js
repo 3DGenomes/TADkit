@@ -28,7 +28,7 @@
 
 				var modelColor = overlay[i];
 				var modelMaterial = new THREE.LineBasicMaterial({
-					color: new THREE.Color(this.color),
+					color: new THREE.Color(parseInt(this.color)),
 					opacity: this.modelOpacity,
 					transparent: this.transparent,
 					linewidth: this.linewidth,
