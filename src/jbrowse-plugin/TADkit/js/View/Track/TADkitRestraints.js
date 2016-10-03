@@ -3,6 +3,7 @@ define([
     'dojo/_base/array',
     'dojo/_base/lang',
     'dojo/_base/event',
+    'dojo/dom-construct',
     'JBrowse/Util',
     'dojo/query',
     'dojo/on',
@@ -14,6 +15,7 @@ function(
     array,
     lang,
     domEvent,
+    domConstruct,
     Util,
     query,
     on,
@@ -59,6 +61,11 @@ function(
                     scale: block.scale,
                     finishCallback: track._finish_callback
                 }
+                l = track._getLayout(block.scale);
+                l.rectangles = {};
+                l.bitmap = [];
+                
+                domConstruct.destroy(block.featureCanvas);
                 track.fillFeatures( args );
                 
                 
