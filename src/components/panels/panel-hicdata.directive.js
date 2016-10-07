@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.directive('tkComponentPanelHicdata', tkComponentPanelHicdata);
 
-	function tkComponentPanelHicdata(d3Service,$timeout) {
+	function tkComponentPanelHicdata(d3Service,$timeout, Overlays, uuid4, Networks) {
 		return {
 			restrict: 'EA',
 			scope: { 
@@ -162,7 +162,7 @@
 		                		} else {
 		                			val = 0;
 		                		}
-		                		ctx.fillStyle = "rgba(0,0,255,"+val/255+")";
+		                		ctx.fillStyle = "rgba(255,0,0,"+val/255+")";
 		                		ctx.fillRect( x, y, 1 , 1 );
 		                	}
 		                }
@@ -194,8 +194,8 @@
 							hic_svg = svg.attr('width', container_width-2*parseInt(scope.state.margin))
 									.attr('height', container_height-2*parseInt(scope.state.margin))
 									.style("position", "absolute")
-									.style("top", 2*parseInt(scope.state.margin))
-									.style("left", 2*parseInt(scope.state.margin))
+									.style("top", 2*parseInt(scope.state.margin)+'px')
+									.style("left", 2*parseInt(scope.state.margin)+'px')
 									.append("g")
 									.attr("id", "tads_svg");
 							
@@ -417,6 +417,7 @@
 							
 							polygon_tads[i]
 								.attr("transform", "translate(" + (start_tad_scaled) + ","+(container_height-2*parseInt(scope.state.margin))+") scale("+scope.scale+") rotate(-45 0 0)");
+							if(i != scope.highlighted_tad) polygon_tads[i].style("fill-opacity", 0.5);
 							if(scope.settings.current.position>=parseInt(polygon_tads[i].attr("start")) && scope.settings.current.position<=parseInt(polygon_tads[i].attr("end"))){
 								scope.highlighted_tad = i; 
 							}	
@@ -427,13 +428,13 @@
 				scope.$watch('highlighted_tad', function(newvalue,oldvalue) {
 		        	if ( newvalue !== oldvalue) {
 		        		if(newvalue ==-1) {
-		        			polygon_tads[oldvalue].style("fill-opacity", 0);
+		        			polygon_tads[oldvalue].style("fill-opacity", 0.5);
 		        			return true;
 		        		}
-		        		polygon_tads[newvalue].style("fill-opacity", 0.5);
+		        		polygon_tads[newvalue].style("fill-opacity", 0);
 		        		var start_tad_segment, end_tad_segment, i;
 		        		if(oldvalue>-1) {
-			        		polygon_tads[oldvalue].style("fill-opacity", 0);
+			        		polygon_tads[oldvalue].style("fill-opacity", 0.5);
 			        		start_tad_segment = Math.round((parseInt(polygon_tads[oldvalue].attr("start")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
 			        		end_tad_segment = Math.ceil((parseInt(polygon_tads[oldvalue].attr("end")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
 		        		}
@@ -477,8 +478,70 @@
 			        scope.update_marks();
 			    };
 			    
+			    var originalOverlay = Overlays.getCurrentIndex();
+				var overlays = Overlays.get();
+				var hicDataOverlay =
+				{
+					"metadata": {
+						"version" : 1.0,
+						"type" : "overlay",
+						"generator" : "TADkit"
+					},
+					"object" : {
+						"uuid" : uuid4.generate(),
+						"id" : overlays.loaded.length,
+						"title" : "HiC Data Overlay",
+						"source" : "HiC panel",
+						"url" : "local",
+						"description" : "HiC Data overlay", 
+						"type" : "HiC",
+						"format" : "variable",
+						"components" : 1,
+						"name" : "HiC Data Overlay",
+						"state" : {
+							"index" : 0, // make real index???
+							"overlaid" : false
+						}
+					},
+					"palette" : [],
+					"data" : [],
+					"colors" : {
+						"particles" : [],
+						"chromatin" : [],
+						"network" : {
+							"RGB" : [],
+							"alpha" : []
+						}
+					}
+				};
+				for(var i=0;i<scope.settings.current.segmentsCount;i++) {
+					hicDataOverlay.colors.chromatin[i] = "red";
+				}
+				var newOverlay = Overlays.addDirect(hicDataOverlay);
+				var overlay = overlays.loaded[newOverlay];
+					
+				overlay.colors.particles = [];
+				overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, scope.settings.current.edgesCount);
+				overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, scope.settings.current.edgesCount);
+				
+				scope.toggleOverlay = function(index) {
+					scope.overlaid = Overlays.getOverlay(index).object.state.overlaid;
+					if (!scope.overlaid) {
+						Overlays.setOverlaid(index);
+						Overlays.set(index);
+						scope.currentoverlay = Overlays.getOverlay();
+					} else {
+						Overlays.setOverlaid(originalOverlay);
+						Overlays.set(originalOverlay);
+						scope.currentoverlay = Overlays.getOverlay();
+					}
+					
+				};
+			    
+			    
 			    $timeout(function () {
 			    	scope.update();
+			    	if(scope.show_tads) scope.toggleOverlay(newOverlay);
                 });
 			}
 		};

@@ -209,11 +209,10 @@
 			"viewtype" : "linear",
 			"settings" : {
 				"background" : "#ffffff",
-				"heightInner" : "40px",
 				"margin" : "4px",
 				"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
-				"sense" : true,
-				"segments" : 1000
+				"jbrowse_path" : "../JBrowse/",
+				"jbrowse_data" : "data"
 			}
 		}
 	}

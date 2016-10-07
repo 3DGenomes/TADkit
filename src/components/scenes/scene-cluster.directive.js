@@ -81,6 +81,7 @@
 					
 					// GEOMETRY: PARTICLES
 					particles = new Particles( scope.cluster.data[scope.cluster.centroidIndex], scope.view.settings.particles );
+					particles.geometry.center();
 					particles.visible = scope.view.settings.particles.visible;
 					scene.add(particles);
 
