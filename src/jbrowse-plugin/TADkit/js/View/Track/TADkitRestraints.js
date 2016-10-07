@@ -42,6 +42,10 @@ function(
         },
         _refreshTrack: function(track, newPosition, oldPosition) {
             
+            track._mouseoverEvent.remove();
+            track._mouseoverEvent = null;
+            track._mouseoutEvent.remove();
+            track._mouseoutEvent = null;
         	array.forEach(track.blocks, function(block,i) {
 				if( !block || !block.fRectIndex || !block.featureCanvas)
                     return;

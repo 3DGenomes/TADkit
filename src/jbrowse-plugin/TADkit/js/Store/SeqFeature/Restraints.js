@@ -16,7 +16,7 @@ function(
         getFeatures: function(query, featureCallback, finishCallback, errorCallback) {
             var $scope = parent.angular.element( parent.document.querySelector( '#jbrowse-iframe' ) ).scope();
             if($scope.settings.current.chromStart > query.end || $scope.settings.current.chromEnd < query.start) {
-            	return;
+            	finishCallback();
             }
             var harmonicsColor = $scope.overlay.palette[0];
             var lowerBoundsColor = $scope.overlay.palette[1];
