@@ -46,6 +46,7 @@ function(
             track._mouseoverEvent = null;
             track._mouseoutEvent.remove();
             track._mouseoutEvent = null;
+            //track.eventHandlers = null;
         	array.forEach(track.blocks, function(block,i) {
 				if( !block || !block.fRectIndex || !block.featureCanvas)
                     return;
@@ -53,6 +54,7 @@ function(
                 var ctx = block.featureCanvas.getContext('2d');
                 ctx.clearRect(0, 0, block.featureCanvas.width, block.featureCanvas.height);
         	});
+            track._clearLayout();
             array.forEach(track.blocks, function(block,i) {
 				if( !block || !block.fRectIndex || !block.featureCanvas)
                     return;
@@ -65,10 +67,9 @@ function(
                     scale: block.scale,
                     finishCallback: track._finish_callback
                 }
-                l = track._getLayout(block.scale);
-                l.rectangles = {};
-                l.bitmap = [];
-                
+                //l = track._getLayout(block.scale);
+                //l.rectangles = {};
+                //l.bitmap = [];
                 domConstruct.destroy(block.featureCanvas);
                 track.fillFeatures( args );
                 
