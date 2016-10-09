@@ -1,4 +1,5 @@
 {
+   "include": ["jbrowse-tadkit.conf"],
    "plugins" : [
       "NeatHTMLFeatures",
       "NeatCanvasFeatures",
@@ -39,10 +40,11 @@
       },
       {
          "style" : {
-            "className" : "feature"
+            "className" : "feature",
+            "arrowheadClass" : "null"
          },
-         "style": {
-             "color": "function( feature, variableName, glyphObject, trackObject ) {  return feature.get('name'); }"
+         "hooks": {  
+            "modify" : "function(track,f,featDiv){ var col = f.get('name'); featDiv.style.background = col; var toppos; switch(col) {case 'black': toppos='0';break;case 'blue': toppos='8';break;case 'yellow': toppos='16';break;case 'red': toppos='24';break;case 'green': toppos='32';break;default: toppos='40'; }; featDiv.style.top = toppos+'px';};"
          },
          "key" : "Chromatin Types",
          "storeClass" : "JBrowse/Store/SeqFeature/NCList",

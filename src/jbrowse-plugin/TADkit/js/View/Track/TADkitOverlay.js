@@ -2,8 +2,7 @@ define([
     'dojo/_base/declare',
     'dojo/_base/array',
     'dojo/_base/lang',
-    'JBrowse/View/Track/CanvasFeatures',
-    'JBrowse/View/Track/Alignments2',
+    'JBrowse/View/Track/HTMLFeatures',
     'dojo/promise/all',
     'JBrowse/Util',
     'dojo/query', 
@@ -15,8 +14,7 @@ function(
     declare,
     array,
     lang,
-    CanvasFeatureTrack,
-    Alignments2,
+    HTMLFeatureTrack,
     all,
     Util,
     query, 
@@ -24,7 +22,7 @@ function(
     domStyle, 
     registry
 ) {
-    return declare(Alignments2, {
+    return declare(HTMLFeatureTrack, {
         _defaultConfig: function() {
             return Util.deepUpdate(lang.clone(this.inherited(arguments)), {
                 apply3D: false
