@@ -1,8 +1,7 @@
 {
    "include": ["jbrowse-tadkit.conf"],
+   "css" : "plugins/TADkit/css/main.css",
    "plugins" : [
-      "NeatHTMLFeatures",
-      "NeatCanvasFeatures",
       "HideTrackLabels",
       "TADkit"
    ],
@@ -21,35 +20,29 @@
          "track" : "Genes",
          "style" : {
             "className" : "feature5",
-            "subfeatureClasses" : {
-               "CDS" : "transcript-CDS"
-            },
             "arrowheadClass" : "transcript-arrowhead"
          },
          "key" : "genes",
          "feature" : [
             "gene"
          ],
+         "displayMode" : "compact",
          "storeClass" : "JBrowse/Store/SeqFeature/NCList",
          "urlTemplate" : "tracks/Genes/{refseq}/trackData.json",
          "compress" : 0,
          "label" : "Genes",
          "type" : "FeatureTrack",
          "category" : "Genes",
-         "subfeatures" : true
+         "subfeatures" : false
       },
       {
          "style" : {
-            "className" : "feature",
-            "arrowheadClass" : "null"
+            "className" : "chromType"
          },
-         "hooks": {  
-            "modify" : "function(track,f,featDiv){ var col = f.get('name'); featDiv.style.background = col; var toppos; switch(col) {case 'black': toppos='0';break;case 'blue': toppos='8';break;case 'yellow': toppos='16';break;case 'red': toppos='24';break;case 'green': toppos='32';break;default: toppos='40'; }; featDiv.style.top = toppos+'px';};"
-         },
-         "key" : "Chromatin Types",
+         "key" : "filion_colors",
          "storeClass" : "JBrowse/Store/SeqFeature/NCList",
-         "trackType" : null,
-         "urlTemplate" : "tracks/Chromatin Types/{refseq}/trackData.json",
+         "trackType" : "FeatureTrack",
+         "urlTemplate" : "tracks/filion_colors/{refseq}/trackData.json",
          "compress" : 0,
          "type" : "TADkit/View/Track/TADkitOverlay",
          "label" : "Chromatin Types"

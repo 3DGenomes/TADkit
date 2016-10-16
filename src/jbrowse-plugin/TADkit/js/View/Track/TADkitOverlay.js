@@ -25,7 +25,26 @@ function(
     return declare(HTMLFeatureTrack, {
         _defaultConfig: function() {
             return Util.deepUpdate(lang.clone(this.inherited(arguments)), {
-                apply3D: false
+                style: {
+                    arrowheadClass: '',
+                    showLabels: false,
+                    colors: 'black,blue,yellow,red,green',
+                    colorTop: 8 
+                },
+                apply3D: false,
+                hooks: {
+                    modify: function(track,f,featDiv) { 
+                        var avail_colors = track.config.style.colors.split(","); 
+                        var col = f.get('color'); 
+                        featDiv.style.background = col; 
+                        var toppos = avail_colors.indexOf(col);
+                        if(toppos==-1) {
+                            toppos = 0;
+                            featDiv.style.background = 'transparent';
+                        }  
+                        featDiv.style.top = (toppos*track.config.style.colorTop)+'px';
+                    }
+                },
             });
             
         },

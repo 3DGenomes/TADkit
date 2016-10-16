@@ -30,7 +30,12 @@
 			// if (component.object.dataset == "default") {
 				var overlay, overlayProximities;
 				if (component.object.type == "scene") {
-					component.data = $scope.current.model.data;
+					var all_data = {
+						tad_data: Hic_data.get(),
+						data: $scope.current.model.data 
+					};
+					component.data = all_data;
+					//component.data = $scope.current.model.data;
 					 // component.proximities required for Scenes: overlay.colors Saturation
 					component.proximities = $scope.allProximities;
 					component.overlay = $scope.current.overlay;

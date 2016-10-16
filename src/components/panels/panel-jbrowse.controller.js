@@ -14,7 +14,7 @@
 		var jbrowse_start = (($scope.settings.current.chromStart-30000));
 		if(jbrowse_start<0) jbrowse_start = 0;
 		//$scope.jbrowsedataurl = 'http://172.16.54.4/JBrowse/data';
-		$scope.jbrowsedataurl = $scope.view.settings.jbrowse_data;
+		$scope.jbrowsedataurl = $scope.view.settings.jbrowse_data+'_'+$scope.settings.current.speciesUrl;
 		$scope.iframe_src = $scope.view.settings.jbrowse_path+'index.html?data='+$scope.jbrowsedataurl+'&loc='+($scope.settings.current.chrom).replace('chr','')+':'+
 		jbrowse_start+'..'+($scope.settings.current.chromEnd+30000)+'&tracklist=0&tracks=Genes,Restraints,Chromatin%20Types'+
 			'&highlight='+($scope.settings.current.chrom).replace('chr','')+':'+
@@ -84,9 +84,9 @@
 			var k;
 			var j = 0;
 			angular.forEach(features, function(feature) {
-				totallength = Math.round((feature[2] - feature[1])/$scope.settings.current.segmentLength);
+				totallength = Math.round((feature.get('end') - feature.get('start'))/$scope.settings.current.segmentLength);
 				for(k=j;k<(j+totallength) && k<$scope.settings.current.segmentsCount;k++) {
-					jbrowseOverlay.colors.chromatin[k] = feature[5];
+					jbrowseOverlay.colors.chromatin[k] = feature.get('color');
 				}
 				j += totallength;
 			});

@@ -18,7 +18,8 @@
 				radius: 15,
 				radiusSegments: 16,
 				endcap: false,
-				pathClosed: false
+				pathClosed: false,
+				tubed: false
 			};		
 			settings = settings || {};
 			angular.extend(this, angular.copy(defaults), settings);
@@ -76,29 +77,51 @@
 
 			// Generate Chromatin model
 			var chromatinFiber = new THREE.Object3D(); // unmerged network
-			var chromatinGeometry = new THREE.Geometry(); // to calculate merged bounds
+			
+			var chromatinGeometry;
+			if(settings.tubed) {
+				chromatinGeometry = new THREE.TubeGeometry(cubicPath, pathSegments, 4, 8, this.pathClosed);
+				var tubeMesh = THREE.SceneUtils.createMultiMaterialObject( chromatinGeometry, [
+				new THREE.MeshLambertMaterial({
+					color: 0xff0000
+				}),
+				new THREE.MeshBasicMaterial({
+					color: 0xff0000,
+					opacity: 0.3,
+					wireframe: true,
+						transparent: true
+				})]);
+				chromatinFiber.add( tubeMesh );
+				chromatinFiber.userData = {display:'tube'};
 
-			for ( var i = 0 ; i < pathSegments; i++) {
-				// cap if end segment
-				this.endcap = ( i === 0 || i === pathSegments - 1 ) ? false : true ;
-				// color linked to scene scope
-				
-				var segmentColor = colors[i];
-				var segmentMaterial = new THREE.MeshLambertMaterial({
-					color: segmentColor,
-					emissive: segmentColor,
-					vertexColors: THREE.VertexColors,
-					opacity: 1.0, 
-					transparent: false,
-					wireframe: false
-				});
-				var segment = segmentGeometry(cubicGeom.vertices[i], cubicGeom.vertices[i+1], this );
-				chromatinGeometry.merge(segment);
+			} else {
+				// Rings
+					chromatinGeometry = new THREE.Geometry(); // to calculate merged bounds
 
-				var chromatinSegment = new THREE.Mesh(segment, segmentMaterial);
-				chromatinSegment.name = "segment-" + (i + 1);
-				chromatinFiber.add(chromatinSegment);
+				for ( var i = 0 ; i < pathSegments; i++) {
+					// cap if end segment
+					this.endcap = ( i === 0 || i === pathSegments - 1 ) ? false : true ;
+					// color linked to scene scope
+					
+					var segmentColor = colors[i];
+					var segmentMaterial = new THREE.MeshLambertMaterial({
+						color: segmentColor,
+						emissive: segmentColor,
+						vertexColors: THREE.VertexColors,
+						opacity: 1.0, 
+						transparent: false,
+						wireframe: false
+					});
+					var segment = segmentGeometry(cubicGeom.vertices[i], cubicGeom.vertices[i+1], this );
+					chromatinGeometry.merge(segment);
+
+					var chromatinSegment = new THREE.Mesh(segment, segmentMaterial);
+					chromatinSegment.name = "segment-" + (i + 1);
+					chromatinFiber.add(chromatinSegment);
+				}	
 			}
+			
+			
 
 			// Visualize Controls
 			// var controlsMaterial = new THREE.LineBasicMaterial({color: "#ff0000",opacity: 0.5});
@@ -170,5 +193,6 @@
 		
 		return newGeometry;
 	}
+
 		
 })();

@@ -440,8 +440,9 @@
 		        		}
 		        		start_tad_segment = Math.round((parseInt(polygon_tads[newvalue].attr("start")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
 		        		end_tad_segment = Math.ceil((parseInt(polygon_tads[newvalue].attr("end")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
-		        		scope.settings.current.start_tad_selected = start_tad_segment;
-		        		scope.settings.current.end_tad_selected = end_tad_segment;
+		        		//scope.settings.current.start_tad_selected = start_tad_segment;
+		        		scope.settings.current.start_tad_selected = newvalue;
+		        		//scope.settings.current.end_tad_selected = end_tad_segment;
 		        	}
 				});
 				scope.translatePos = {

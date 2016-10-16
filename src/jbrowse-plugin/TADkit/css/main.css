@@ -15,3 +15,34 @@
     width: 1px;
     z-index: 15;
 }
+.track .global_highlight {
+    position: absolute;
+    background: rgba( 185,246,202, 0.3 );
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+
+    border: 1px solid rgb(255, 178, 13);
+    border-width: 0;
+}
+/*.track_chromatin_types{
+    background-size: 100% 0.7em;
+    background-image: -webkit-linear-gradient(0deg, transparent 40px, #abced4 40px, #abced4 42px, transparent 42px),
+                      -webkit-linear-gradient(#ccc .05em, transparent .05em);
+    background-image: -moz-linear-gradient(0deg, transparent 40px, #abced4 40px, #abced4 42px, transparent 42px),
+                      -moz-linear-gradient(#ccc .05em, transparent .05em);
+    background-image: linear-gradient(90deg, transparent 40px, #abced4 40px, #abced4 42px, transparent 42px),
+                      linear-gradient(#ccc .05em, transparent .05em);
+    -pie-background: linear-gradient(90deg, transparent 40px, #abced4 40px, #abced4 42px, transparent 42px) 0 0 / 100% 1.2em,
+                     linear-gradient(#ccc .05em, transparent .05em) 0 0 / 100% 1.2em #fff;
+    behavior: url(/pie/PIE.htc);
+}
+.track.track_chromatin_types.dojoDndItemOver {
+    cursor: inherit;
+    background: none;
+}*/    
+div.gridline_minor {
+    border-color: #fff;
+}
+
