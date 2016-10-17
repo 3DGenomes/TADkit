@@ -19,7 +19,7 @@
 				radiusSegments: 16,
 				endcap: false,
 				pathClosed: false,
-				tubed: false
+				tubed: true
 			};		
 			settings = settings || {};
 			angular.extend(this, angular.copy(defaults), settings);
@@ -66,9 +66,9 @@
 			// var cellRadius = 10000;
 			// Nucleus diameter == 6 µm (3 - 10 micrometers) = 3000 units radius
 			// var nucelusRadius = 20;
-			// Chromatin diameter == 30nm
+			// Chromatin diameter == 15nm
 			var pathLength = cubicPath.getLength();
-			var chromatinRadius = 15; // 30nm * 0.5
+			var chromatinRadius = 7.5; // 15nm * 0.5
 			// Chromatin density == 1080 BP : 11nm
 			var chromatinLength = this.genomeLength * 11 / 1080;
 			this.radius = (pathLength * chromatinRadius) / chromatinLength;
@@ -92,7 +92,7 @@
 						transparent: true
 				})]);
 				chromatinFiber.add( tubeMesh );
-				chromatinFiber.userData = {display:'tube'};
+				//chromatinFiber.userData = {display:'tube'};
 
 			} else {
 				// Rings

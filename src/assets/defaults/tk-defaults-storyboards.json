@@ -88,7 +88,8 @@
 							"radiusSegments" : 16,
 							"endcap" : false,
 							"pathClosed" : false,
-							"visible" : true
+							"visible" : true,
+							"tubed" : true
 						},
 						"network" : {
 							"transparent": false,

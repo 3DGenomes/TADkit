@@ -41,6 +41,7 @@
 					component.overlay = $scope.current.overlay;
 					component.overlay.state = {};
 					component.overlay.object.state.index = Overlays.getCurrentIndex();
+					
 				} else if (component.object.type == "track-genes" || component.object.type == "panel-inspector") {
 					overlay = Overlays.getOverlayById("genes");
 					component.data = overlay.data;

@@ -440,9 +440,8 @@
 		        		}
 		        		start_tad_segment = Math.round((parseInt(polygon_tads[newvalue].attr("start")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
 		        		end_tad_segment = Math.ceil((parseInt(polygon_tads[newvalue].attr("end")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
-		        		//scope.settings.current.start_tad_selected = start_tad_segment;
-		        		scope.settings.current.start_tad_selected = newvalue;
-		        		//scope.settings.current.end_tad_selected = end_tad_segment;
+		        		scope.settings.current.tad_selected = newvalue;
+		        		
 		        	}
 				});
 				scope.translatePos = {
@@ -472,13 +471,14 @@
 						} else {
 							polygon_tads[i].attr('display', 'none');
 							scope.highlighted_tad = -1; 
-							scope.settings.current.start_tad_selected = -1;
-							scope.settings.current.end_tad_selected = -1;
+							scope.settings.current.tad_selected = -1;
+							//scope.settings.current.end_tad_selected = -1;
 						}
 			        }
 			        scope.update_marks();
 			    };
-			    
+
+			    /*// Better tubed by default. Maybe add button to toggle red
 			    var originalOverlay = Overlays.getCurrentIndex();
 				var overlays = Overlays.get();
 				var hicDataOverlay =
@@ -518,6 +518,7 @@
 				for(var i=0;i<scope.settings.current.segmentsCount;i++) {
 					hicDataOverlay.colors.chromatin[i] = "red";
 				}
+				
 				var newOverlay = Overlays.addDirect(hicDataOverlay);
 				var overlay = overlays.loaded[newOverlay];
 					
@@ -537,12 +538,12 @@
 						scope.currentoverlay = Overlays.getOverlay();
 					}
 					
-				};
+				};*/
 			    
 			    
 			    $timeout(function () {
 			    	scope.update();
-			    	if(scope.show_tads) scope.toggleOverlay(newOverlay);
+			    	//if(scope.show_tads) scope.toggleOverlay(newOverlay);
                 });
 			}
 		};

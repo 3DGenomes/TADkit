@@ -7,7 +7,7 @@
 	function Overlays($q, $http, uuid4, d3Service, Settings, Storyboards, Ensembl, Segments, Networks, Resources) {
 		var overlays = {
 			loaded : [],
-			current : {index:0}
+			current : {index:-1}
 		};
 
 		return {
