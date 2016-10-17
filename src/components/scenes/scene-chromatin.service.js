@@ -80,7 +80,7 @@
 			
 			var chromatinGeometry;
 			if(settings.tubed) {
-				chromatinGeometry = new THREE.TubeGeometry(cubicPath, pathSegments, 4, 8, this.pathClosed);
+				chromatinGeometry = new THREE.TubeGeometry(cubicPath, pathSegments, 5, 8, this.pathClosed);
 				var tubeMesh = THREE.SceneUtils.createMultiMaterialObject( chromatinGeometry, [
 				new THREE.MeshLambertMaterial({
 					color: 0xff0000

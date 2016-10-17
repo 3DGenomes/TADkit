@@ -30,13 +30,14 @@
 					var playback, controls, renderer;
 					var particles, chromatin, network, spheres;
 					var particlesObj, chromatinObj, networkObj, sphereObj;
-					
+					var raycaster, mouse;
 					var width, height, contW, contH, windowHalfX, windowHalfY;
 
 					var particleOriginalColor = new THREE.Color();
 					var positionOriginalColor = new THREE.Color();
 					var highlightColor = new THREE.Color("rgb(0,0,0)"); // add to scene component
-
+					var array_spheres = [];
+					
 					scope.init = function () {
 
 						scope.complete_scene = function() {
@@ -58,28 +59,48 @@
 							if(scope.view.settings.chromatin.tubed) {
 								spheres = new THREE.Object3D();
 								var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
-								var start_tad, end_tad, middle_tad, radius_cloud;
+								var start_tad, end_tad, middle_tad, radius_cloud, centre_of_mass;
 								for (var i = 0; i < scope.data.tad_data.tads.length; i++) {
 									start_tad = Math.round(((scope.data.tad_data.tads[i][1])-scope.settings.current.chromStart)/resolution);
 			                		end_tad = Math.round((scope.data.tad_data.tads[i][2]-scope.settings.current.chromStart)/resolution);
 			                 		middle_tad = Math.round(((end_tad-start_tad)/2)+start_tad);
-			                 		radius_cloud = particles.geometry.vertices[start_tad].distanceTo(particles.geometry.vertices[middle_tad])/2;
+			                 		
+			                 		centre_of_mass = new THREE.Vector3();
+									for (var j = start_tad; j <= end_tad; j++) {
+										centre_of_mass.add(particles.geometry.vertices[j]);
+									}
+									centre_of_mass.divideScalar(end_tad - start_tad + 1);
+									radius_cloud = 0;
+									for (j = start_tad; j <= end_tad; j++) {
+										if(centre_of_mass.distanceTo(particles.geometry.vertices[j])>radius_cloud) 
+											radius_cloud = centre_of_mass.distanceTo(particles.geometry.vertices[j]);
+									}
+									//radius_cloud = particles.geometry.vertices[start_tad].distanceTo(particles.geometry.vertices[middle_tad])/1.2;
 									//radius_cloud = (middle_tad-start_tad)*2;
-									var sphereGeom =  new THREE.SphereGeometry( radius_cloud, 32, 16 );
+			                 		
+									var sphereGeom =  new THREE.SphereGeometry( radius_cloud-10, 32, 16 );
 									//var blueMaterial = new THREE.MeshBasicMaterial( { color: 0x0000ff,  transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending } );
-									var blueMaterial = new THREE.MeshPhongMaterial( { color: 0x0000ff, ambient: 0xff0000, transparent: true, blending: THREE.AdditiveBlending } );
-									var sphere = new THREE.Mesh( sphereGeom, blueMaterial );
-									sphere.position.x = particles.geometry.vertices[middle_tad].x;
-									sphere.position.y = particles.geometry.vertices[middle_tad].y;
-									sphere.position.z = particles.geometry.vertices[middle_tad].z;
 									
+									var blueMaterial = new THREE.MeshPhongMaterial( { color: 0x0000ff, transparent: true, blending: THREE.AdditiveBlending, opacity: 0.7 } );
+									
+									var sphere = new THREE.Mesh( sphereGeom, blueMaterial );
+									sphere.material.emissive = new THREE.Color( 0.2, 0.2, 0.2 );
+									
+									sphere.position.x = centre_of_mass.x;
+									sphere.position.y = centre_of_mass.y;
+									sphere.position.z = centre_of_mass.z;
 									spheres.add(sphere);
+									array_spheres.push(sphere);
 									
 								}
 								spheres.name = "TADs cloud";
 								scene.add(spheres);	
 								sphereObj = scene.getObjectByName( "TADs cloud" );
-
+								
+								raycaster = new THREE.Raycaster();
+								mouse = new THREE.Vector2();
+								
+								viewport.addEventListener( 'click', onDocumentMouseDown, false );
 								
 							}
 							// GEOMETRY: MESH
@@ -268,6 +289,7 @@
 									scope.clean_scene();
 							        scope.view.settings.chromatin.tubed = true;
 							        scope.complete_scene();
+							        sphereObj = scene.getObjectByName( "TADs cloud" );
 								}
 								if(newValue==-1 && scope.view.settings.chromatin.tubed) {
 									scope.clean_scene();
@@ -277,17 +299,26 @@
 								particlesObj = scene.getObjectByName( "Particles Cloud" );
 								chromatinObj = scene.getObjectByName( "Chromatin Fiber" );
 								networkObj = scene.getObjectByName( "Network Graph" );
-								sphereObj = scene.getObjectByName( "TADs cloud" );
-
-								var tadCount = sphereObj.children.length;
-								for (var i = 0; i < tadCount; i++) {
-									if(i==scope.settings.current.start_tad_selected) {
-										sphereObj.children[i].material.opacity = 0.3;
-									} else {
-										if(newValue == -1) sphereObj.children[i].material.opacity = 0.3;
-										else sphereObj.children[i].material.opacity = 0.6;
+								
+								if(scope.view.settings.chromatin.tubed) {
+									var tadCount = sphereObj.children.length;
+									var newColor = new THREE.Color( 0xff0000 );
+									var oldColor = new THREE.Color( 0x0000ff );
+									for (var i = 0; i < tadCount; i++) {
+										if(i==scope.settings.current.start_tad_selected) {
+											sphereObj.children[i].material.opacity = 0.4;
+											sphereObj.children[i].material.color = newColor;
+										} else {
+											if(newValue == -1) {
+												sphereObj.children[i].material.opacity = 0.4;
+												sphereObj.children[i].material.color = newColor;
+											} else {
+												sphereObj.children[i].material.opacity = 0.7;
+												sphereObj.children[i].material.color = oldColor;
+											}
+										}
+										
 									}
-									
 								}
 								/*var chromatinCount = chromatinObj.children.length;
 								for (var i = 0; i < chromatinCount; i++) {
@@ -459,6 +490,20 @@
 				        scope.clean_scene();
 				    });
 
+
+					function onDocumentMouseDown( event ) {
+
+						event.preventDefault();
+						mouse.x = ( event.clientX / renderer.domElement.clientWidth ) * 2 - 1;
+						mouse.y = - ( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
+						raycaster.setFromCamera( mouse, camera );
+						var intersects = raycaster.intersectObjects(array_spheres);
+						if ( intersects.length > 0 ) {
+							intersects[ 0 ].object.material.color.setHex( Math.random() * 0xffffff );
+
+						}
+					}
+				    
 					// Begin
 					scope.init();
 					scope.animate();
