@@ -2062,7 +2062,9 @@
 
 							if(scope.view.settings.chromatin.tubed) {
 
-								ring = new THREE.Mesh(new THREE.RingGeometry(10, 20, 50), new THREE.MeshBasicMaterial({ color: 0x32cd32, side: THREE.DoubleSide}));
+								var ringGeometry = new THREE.RingGeometry(10, 20, 50);
+								//ringGeometry.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI / 2 ) );
+								ring = new THREE.Mesh(ringGeometry, new THREE.MeshBasicMaterial({ color: 0x32cd32, side: THREE.DoubleSide}));
 								ring.position.x = particles.geometry.vertices[0].x;
 								ring.position.y = particles.geometry.vertices[0].y;
 								ring.position.z = particles.geometry.vertices[0].z;
@@ -2370,9 +2372,12 @@
 								particlesObj.geometry.colorsNeedUpdate = true;
 
 								if(scope.view.settings.chromatin.tubed) {
-									ring.position.x = particlesObj.geometry.vertices[newParticle].x;
-									ring.position.y = particlesObj.geometry.vertices[newParticle].y;
-									ring.position.z = particlesObj.geometry.vertices[newParticle].z;
+									ring.position.x = particlesObj.geometry.vertices[newParticle-1].x;
+									ring.position.y = particlesObj.geometry.vertices[newParticle-1].y;
+									ring.position.z = particlesObj.geometry.vertices[newParticle-1].z;
+									ring.lookAt(particlesObj.geometry.vertices[newParticle]);
+									//var rotate_axis = particlesObj.geometry.vertices[newParticle].sub(particlesObj.geometry.vertices[oldParticle]);
+									//ring.rotateOnAxis(rotate_axis, Math.PI / 2);
 								}
 							}
 						});
