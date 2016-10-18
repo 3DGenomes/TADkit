@@ -37,6 +37,8 @@
 					var positionOriginalColor = new THREE.Color();
 					var highlightColor = new THREE.Color("rgb(0,0,0)"); // add to scene component
 					var array_spheres = [];
+
+					var cu;
 					
 					scope.init = function () {
 
@@ -58,13 +60,13 @@
 
 							if(scope.view.settings.chromatin.tubed) {
 
-								var ringGeometry = new THREE.RingGeometry(10, 20, 50);
+								var ringGeometry = new THREE.RingGeometry(6, 10, 50);
 								//ringGeometry.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI / 2 ) );
 								ring = new THREE.Mesh(ringGeometry, new THREE.MeshBasicMaterial({ color: 0x32cd32, side: THREE.DoubleSide}));
 								ring.position.x = particles.geometry.vertices[0].x;
 								ring.position.y = particles.geometry.vertices[0].y;
 								ring.position.z = particles.geometry.vertices[0].z;
-								
+								//http://stackoverflow.com/questions/20810662/coloring-faces-surrounding-a-given-vertex-index-in-three-jss-tube-geometry
 								scene.add(ring);
 
 								spheres = new THREE.Object3D();
@@ -366,22 +368,33 @@
 								particleOriginalColor = particlesObj.geometry.colors[(newParticle - 1)];
 								particlesObj.geometry.colors[(newParticle - 1)] = highlightColor;
 								particlesObj.geometry.colorsNeedUpdate = true;
-
-								if(scope.view.settings.chromatin.tubed) {
-									ring.position.x = particlesObj.geometry.vertices[newParticle-1].x;
-									ring.position.y = particlesObj.geometry.vertices[newParticle-1].y;
-									ring.position.z = particlesObj.geometry.vertices[newParticle-1].z;
-									ring.lookAt(particlesObj.geometry.vertices[newParticle]);
-									//var rotate_axis = particlesObj.geometry.vertices[newParticle].sub(particlesObj.geometry.vertices[oldParticle]);
-									//ring.rotateOnAxis(rotate_axis, Math.PI / 2);
-								}
 							}
 						});
 
 						/* Watch for Browser-wide Position updates */
 						scope.$watch('settings.current.segment', function( newSegment, oldSegment ) {
 							if ( newSegment !== oldSegment ) {
-								if(scope.view.settings.chromatin.tubed) return;
+								//if(scope.view.settings.chromatin.tubed) return;
+								if(scope.view.settings.chromatin.tubed) {
+									var vec, i;
+									vec = chromatinObj.children[0].children[0].geometry.vertices[newSegment*8];
+									for(i=1;i<8;i++){
+										vec.add(chromatinObj.children[0].children[0].geometry.vertices[newSegment*8+i]);
+									}
+									vec.divideScalar(8);
+									ring.position.x = vec.x;
+									ring.position.y = vec.y;
+									ring.position.z = vec.z;
+									
+									vec = chromatinObj.children[0].children[0].geometry.vertices[oldSegment*8];
+									for(i=1;i<8;i++){
+										vec.add(chromatinObj.children[0].children[0].geometry.vertices[oldSegment*8+i]);
+									}
+									vec.divideScalar(8);
+									ring.lookAt(vec);
+
+									return;
+								}
 								// SET CHROMATIN CURSOR COLOR
 
 								var segmentPrevious = chromatinObj.getObjectByName( "segment-" + oldSegment );
