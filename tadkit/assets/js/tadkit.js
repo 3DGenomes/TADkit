@@ -1156,7 +1156,7 @@
 				visible: true,
 				genomeLength: 816394, // bactieria mycoplasma_pneumoniae_m129
 				particles: 0,
-				particleSegments: 5,
+				particleSegments: 40,
 				curveSegments: 1,
 				radius: 15,
 				radiusSegments: 16,
@@ -1209,9 +1209,9 @@
 			// var cellRadius = 10000;
 			// Nucleus diameter == 6 µm (3 - 10 micrometers) = 3000 units radius
 			// var nucelusRadius = 20;
-			// Chromatin diameter == 15nm
+			// Chromatin diameter == 10nm
 			var pathLength = cubicPath.getLength();
-			var chromatinRadius = 7.5; // 15nm * 0.5
+			var chromatinRadius = 5; // 10nm * 0.5
 			// Chromatin density == 1080 BP : 11nm
 			var chromatinLength = this.genomeLength * 11 / 1080;
 			this.radius = (pathLength * chromatinRadius) / chromatinLength;
@@ -1223,17 +1223,44 @@
 			
 			var chromatinGeometry;
 			if(settings.tubed) {
-				chromatinGeometry = new THREE.TubeGeometry(cubicPath, pathSegments, 5, 8, this.pathClosed);
-				var tubeMesh = THREE.SceneUtils.createMultiMaterialObject( chromatinGeometry, [
-				new THREE.MeshLambertMaterial({
-					color: 0xff0000
-				}),
-				new THREE.MeshBasicMaterial({
-					color: 0xff0000,
-					opacity: 0.3,
-					wireframe: true,
-						transparent: true
-				})]);
+				chromatinGeometry = new THREE.TubeGeometry(cubicPath, pathSegments, 4, 8, this.pathClosed);
+				
+				
+//					
+//				var tubeMesh = THREE.SceneUtils.createMultiMaterialObject( chromatinGeometry, [
+//				new THREE.MeshLambertMaterial({
+//					color: 0xff0000,
+//					vertexColors: THREE.FaceColors
+//				}),
+//				new THREE.MeshBasicMaterial({
+//					color: 0x000000,
+//					opacity: 0.3,
+//					wireframe: true,
+//					transparent: true
+//				})]);
+				
+				chromatinGeometry.dynamic = true;
+				chromatinGeometry.verticesNeedUpdate = true;
+
+			    var tubeMesh = new THREE.Mesh(chromatinGeometry, new THREE.MeshLambertMaterial({
+			        color: 0xffffff,
+			        //shading: THREE.FlatShading,
+			        //side: THREE.DoubleSide,
+			        wireframe: false,
+			        transparent: false,
+			        vertexColors: THREE.FaceColors, // CHANGED
+			        overdraw: true
+			    }));
+
+			    for(var k=0;k< chromatinGeometry.faces.length;k++) {
+			    	//if(k%12) chromatinGeometry.faces[k].color.setRGB(1,0,0);
+			    	//else chromatinGeometry.faces[k].color.setRGB(0,0,0);
+			    	chromatinGeometry.faces[k].color.setRGB(1,0,0);
+				}
+			    
+			    tubeMesh.dynamic = true;
+			    tubeMesh.needsUpdate = true;
+			    
 				chromatinFiber.add( tubeMesh );
 				//chromatinFiber.userData = {display:'tube'};
 
@@ -2008,7 +2035,7 @@
 		.module('TADkit')
 		.directive('tkComponentScene', tkComponentScene);
 
-	function tkComponentScene(Particles, Chromatin, Network, Settings, Networks) {
+	function tkComponentScene(Particles, Chromatin, Network, Settings, Networks, ColorConvert) {
 		return {
 			restrict: 'EA',
 			scope: { 
@@ -2040,8 +2067,7 @@
 					var particleOriginalColor = new THREE.Color();
 					var positionOriginalColor = new THREE.Color();
 					var highlightColor = new THREE.Color("rgb(0,0,0)"); // add to scene component
-					var array_spheres = [];
-
+					
 					var cu;
 					
 					scope.init = function () {
@@ -2070,7 +2096,7 @@
 								ring.position.x = particles.geometry.vertices[0].x;
 								ring.position.y = particles.geometry.vertices[0].y;
 								ring.position.z = particles.geometry.vertices[0].z;
-								//http://stackoverflow.com/questions/20810662/coloring-faces-surrounding-a-given-vertex-index-in-three-jss-tube-geometry
+							
 								scene.add(ring);
 
 								spheres = new THREE.Object3D();
@@ -2091,19 +2117,18 @@
 											radius_cloud = centre_of_mass.distanceTo(particles.geometry.vertices[j]);
 									}
 									
-									var sphereGeom =  new THREE.SphereGeometry( radius_cloud-10, 32, 16 );
-									//var blueMaterial = new THREE.MeshBasicMaterial( { color: 0x0000ff,  transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending } );
-									
-									var blueMaterial = new THREE.MeshPhongMaterial( { color: 0x0000ff, transparent: true, blending: THREE.AdditiveBlending, opacity: 0.7 } );
-									
+									var sphereGeom =  new THREE.SphereGeometry( radius_cloud-10, 32, 16 );									
+									var blueMaterial = new THREE.MeshPhongMaterial( { color: 0xe6e6e6, transparent: true, blending: THREE.AdditiveBlending, opacity: 0.3 } );									
 									var sphere = new THREE.Mesh( sphereGeom, blueMaterial );
-									sphere.material.emissive = new THREE.Color( 0.2, 0.2, 0.2 );
-									
+									sphere.material.emissive = new THREE.Color( 0.3, 0.3, 0.3 );
+								
 									sphere.position.x = centre_of_mass.x;
 									sphere.position.y = centre_of_mass.y;
 									sphere.position.z = centre_of_mass.z;
+									
+									
 									spheres.add(sphere);
-									array_spheres.push(sphere);
+									
 									
 								}
 								spheres.name = "TADs cloud";
@@ -2121,6 +2146,8 @@
 							network = new Network(scope.data.data, scope.overlay.colors.network, scope.view.settings.network);
 							network.visible = scope.view.settings.network.visible;
 							scene.add(network);
+							
+							chromatin.center();
 
 						};
 						// VIEWPORT
@@ -2188,7 +2215,7 @@
 						var ambientColor = scope.view.settings.lighting.ambient;
 						ambientLight = new THREE.AmbientLight(ambientColor);
 						ambientLight.name = "Scene Ambient Light";
-						// scene.add(ambientLight);
+						scene.add(ambientLight);
 						
 						scope.complete_scene();
 
@@ -2204,12 +2231,13 @@
 						pointLight = new THREE.PointLight(pointColor, pointIntensity);
 						pointLight.name = "Scene Light";
 						camera.add(pointLight);
-						var lightOffset = cameraTranslate * 0.5; // Up and to the left
+						var lightOffset = cameraTranslate * 1.5; // Up and to the left
+						//pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
 						pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
 						// Point Light Helper
-						var sphereSize = 100;
+						var sphereSize = 10000;
 						var pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
-						// scene.add(pointLightHelper);
+						scene.add(pointLightHelper);
 						
 						// FOG SCENE
 						var fogNear = cameraTranslate * scope.view.viewpoint.fogNear,
@@ -2283,20 +2311,31 @@
 						// /* Watch for Chromatin colors */
 						scope.$watch('currentoverlay.colors.chromatin', function( newColors, oldColors ) { // cant deep watch as change through set on service
 							if ( newColors !== oldColors ) {
-								if(scope.view.settings.chromatin.tubed && scope.currentoverlay.object.state.overlaid) {
-									scope.toggleTubed(false);
-								} 
-								if(!scope.view.settings.chromatin.tubed && !scope.currentoverlay.object.state.overlaid) {
-									scope.toggleTubed(true);
-								}
+//								if(scope.view.settings.chromatin.tubed && scope.currentoverlay.object.state.overlaid) {
+//									scope.toggleTubed(false);
+//								} 
+//								if(!scope.view.settings.chromatin.tubed && !scope.currentoverlay.object.state.overlaid) {
+//									scope.toggleTubed(true);
+//								}
+								var i,j,newChromatinColor;
+								var chromatinCount = chromatinObj.children.length;
 								if(!scope.view.settings.chromatin.tubed) {
-									var chromatinCount = chromatinObj.children.length;
-									for (var i = 0; i < chromatinCount; i++) {
-										var newChromatinColor =  new THREE.Color(newColors[i]);
+									chromatinCount = chromatinObj.children.length;
+									for (i = 0; i < chromatinCount; i++) {
+										newChromatinColor =  new THREE.Color(newColors[i]);
 										chromatinObj.children[i].material.color = newChromatinColor;
 										chromatinObj.children[i].material.ambient = newChromatinColor;
 										chromatinObj.children[i].material.emissive = newChromatinColor;
 									}
+								} else {
+									for (i = 0; i < newColors.length; i++) {
+										if(!ColorConvert.testIfHex(newColors[i])) newChromatinColor =  new THREE.Color(ColorConvert.nameToHex(newColors[i]));
+										else newChromatinColor =  new THREE.Color(newColors[i]);
+										for (j = 0; j < 16; j++) {
+											chromatinObj.children[0].geometry.faces[i*16+j].color.set(newChromatinColor);
+										}
+									}
+									chromatinObj.children[0].geometry.colorsNeedUpdate = true;
 								}
 							}
 						});
@@ -2314,27 +2353,34 @@
 						};
 						// /* Watch for selected TAD */
 						scope.$watch('settings.current.tad_selected', function( newValue, oldValue ) {
+							//if(scope.view.settings.chromatin.tubed) return;
 							if ( newValue !== oldValue ) {
 								var i;
 								if(scope.view.settings.chromatin.tubed) {
 									var tadCount = sphereObj.children.length;
 									var newColor = new THREE.Color( 0xff0000 );
-									var oldColor = new THREE.Color( 0x0000ff );
+									var oldColor = new THREE.Color( 0xe6e6e6 );
 									for (i = 0; i < tadCount; i++) {
 										if(i==scope.settings.current.tad_selected) {
-											sphereObj.children[i].material.opacity = 0.4;
-											sphereObj.children[i].material.color = newColor;
+											sphereObj.children[i].material.opacity = 0.1;
+											sphereObj.children[i].material.color.set( newColor );
+											sphereObj.children[i].material.emissive = 0.1;
+											
 										} else {
 											if(newValue == -1) {
-												sphereObj.children[i].material.opacity = 0.4;
-												sphereObj.children[i].material.color = newColor;
+												sphereObj.children[i].material.opacity = 0.2;
+												sphereObj.children[i].material.color.set( newColor );
+												sphereObj.children[i].material.emissive = 0.2;
 											} else {
-												sphereObj.children[i].material.opacity = 0.7;
-												sphereObj.children[i].material.color = oldColor;
+												sphereObj.children[i].material.opacity = 0.3;
+												sphereObj.children[i].material.color.set(oldColor);
+												sphereObj.children[i].material.emissive = 0.3;
 											}
 										}
+										sphereObj.children[i].geometry.colorsNeedUpdate = true;
 										
 									}
+									
 								} else {
 									var chromatinCount = chromatinObj.children.length;
 									var start_tad, end_tad;
@@ -2380,23 +2426,27 @@
 							if ( newSegment !== oldSegment ) {
 								//if(scope.view.settings.chromatin.tubed) return;
 								if(scope.view.settings.chromatin.tubed) {
-									var vec, i;
-									vec = chromatinObj.children[0].children[0].geometry.vertices[newSegment*8];
-									for(i=1;i<8;i++){
-										vec.add(chromatinObj.children[0].children[0].geometry.vertices[newSegment*8+i]);
+									if(chromatinObj.children[0].geometry.vertices.length > (newSegment+1)*8+8) {
+										var vec, i;
+										vec = chromatinObj.children[0].geometry.vertices[(newSegment+1)*8];
+										
+											for(i=1;i<8;i++){
+												vec.add(chromatinObj.children[0].geometry.vertices[(newSegment+1)*8+i]);
+											}
+											vec.divideScalar(8);
+										
+										
+										ring.position.x = vec.x;
+										ring.position.y = vec.y;
+										ring.position.z = vec.z;
+										
+										vec = chromatinObj.children[0].geometry.vertices[oldSegment*8];
+										for(i=1;i<8;i++){
+											vec.add(chromatinObj.children[0].geometry.vertices[oldSegment*8+i]);
+										}
+										vec.divideScalar(8);
+										ring.lookAt(vec);
 									}
-									vec.divideScalar(8);
-									ring.position.x = vec.x;
-									ring.position.y = vec.y;
-									ring.position.z = vec.z;
-									
-									vec = chromatinObj.children[0].children[0].geometry.vertices[oldSegment*8];
-									for(i=1;i<8;i++){
-										vec.add(chromatinObj.children[0].children[0].geometry.vertices[oldSegment*8+i]);
-									}
-									vec.divideScalar(8);
-									ring.lookAt(vec);
-
 									return;
 								}
 								// SET CHROMATIN CURSOR COLOR

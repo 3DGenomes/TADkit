@@ -62,7 +62,7 @@
 						"margin" : "4px",
 						"padding" : {"top": "20px", "right": "40px", "bottom": "20px", "left": "40px"},
 						"lighting": {
-							"ambient" : "#111111",
+							"ambient" : "#b3b3b3",
 							"color" : "#ffffff",
 							"intensity" : 0.2
 						},
@@ -82,7 +82,7 @@
 						},
 						"chromatin" : {
 							"color" : "#cccccc",
-							"particleSegments" : 20,
+							"particleSegments" : 40,
 							"curveSegments" : 1,
 							"radius" : 200,
 							"radiusSegments" : 16,

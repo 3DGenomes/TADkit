@@ -19,7 +19,7 @@
 	</div>
 	<div class="component-body"></div>
 </div>
-<script id="vertexShader" type="x-shader/x-vertex">
+<script id="vertexShader" type="x-shader/x-vertex"> 
 	attribute float alpha;
 	varying vec3 vColor;
 	varying float vAlpha;
@@ -38,4 +38,5 @@
 		gl_FragColor = vec4(vColor, vAlpha);  // adjust the alpha
 		if (gl_FragColor.a < 0.1) discard;
 	}
-</script>  
+</script>
+

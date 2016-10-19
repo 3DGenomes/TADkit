@@ -13,7 +13,7 @@
 				visible: true,
 				genomeLength: 816394, // bactieria mycoplasma_pneumoniae_m129
 				particles: 0,
-				particleSegments: 5,
+				particleSegments: 40,
 				curveSegments: 1,
 				radius: 15,
 				radiusSegments: 16,
@@ -66,9 +66,9 @@
 			// var cellRadius = 10000;
 			// Nucleus diameter == 6 µm (3 - 10 micrometers) = 3000 units radius
 			// var nucelusRadius = 20;
-			// Chromatin diameter == 15nm
+			// Chromatin diameter == 10nm
 			var pathLength = cubicPath.getLength();
-			var chromatinRadius = 7.5; // 15nm * 0.5
+			var chromatinRadius = 5; // 10nm * 0.5
 			// Chromatin density == 1080 BP : 11nm
 			var chromatinLength = this.genomeLength * 11 / 1080;
 			this.radius = (pathLength * chromatinRadius) / chromatinLength;
@@ -80,17 +80,44 @@
 			
 			var chromatinGeometry;
 			if(settings.tubed) {
-				chromatinGeometry = new THREE.TubeGeometry(cubicPath, pathSegments, 5, 8, this.pathClosed);
-				var tubeMesh = THREE.SceneUtils.createMultiMaterialObject( chromatinGeometry, [
-				new THREE.MeshLambertMaterial({
-					color: 0xff0000
-				}),
-				new THREE.MeshBasicMaterial({
-					color: 0xff0000,
-					opacity: 0.3,
-					wireframe: true,
-						transparent: true
-				})]);
+				chromatinGeometry = new THREE.TubeGeometry(cubicPath, pathSegments, 4, 8, this.pathClosed);
+				
+				
+//					
+//				var tubeMesh = THREE.SceneUtils.createMultiMaterialObject( chromatinGeometry, [
+//				new THREE.MeshLambertMaterial({
+//					color: 0xff0000,
+//					vertexColors: THREE.FaceColors
+//				}),
+//				new THREE.MeshBasicMaterial({
+//					color: 0x000000,
+//					opacity: 0.3,
+//					wireframe: true,
+//					transparent: true
+//				})]);
+				
+				chromatinGeometry.dynamic = true;
+				chromatinGeometry.verticesNeedUpdate = true;
+
+			    var tubeMesh = new THREE.Mesh(chromatinGeometry, new THREE.MeshLambertMaterial({
+			        color: 0xffffff,
+			        //shading: THREE.FlatShading,
+			        //side: THREE.DoubleSide,
+			        wireframe: false,
+			        transparent: false,
+			        vertexColors: THREE.FaceColors, // CHANGED
+			        overdraw: true
+			    }));
+
+			    for(var k=0;k< chromatinGeometry.faces.length;k++) {
+			    	//if(k%12) chromatinGeometry.faces[k].color.setRGB(1,0,0);
+			    	//else chromatinGeometry.faces[k].color.setRGB(0,0,0);
+			    	chromatinGeometry.faces[k].color.setRGB(1,0,0);
+				}
+			    
+			    tubeMesh.dynamic = true;
+			    tubeMesh.needsUpdate = true;
+			    
 				chromatinFiber.add( tubeMesh );
 				//chromatinFiber.userData = {display:'tube'};
 
