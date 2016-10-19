@@ -64,7 +64,7 @@
 						"lighting": {
 							"ambient" : "#b3b3b3",
 							"color" : "#ffffff",
-							"intensity" : 0.2
+							"intensity" : 0.7
 						},
 						"axis" : {
 							"size" : 100,

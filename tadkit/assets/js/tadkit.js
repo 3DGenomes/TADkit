@@ -2118,9 +2118,9 @@
 									}
 									
 									var sphereGeom =  new THREE.SphereGeometry( radius_cloud-10, 32, 16 );									
-									var blueMaterial = new THREE.MeshPhongMaterial( { color: 0xe6e6e6, transparent: true, blending: THREE.AdditiveBlending, opacity: 0.3 } );									
+									var blueMaterial = new THREE.MeshPhongMaterial( { color: 0x000000, transparent: true, blending: THREE.AdditiveBlending, opacity: 0.3 } );									
 									var sphere = new THREE.Mesh( sphereGeom, blueMaterial );
-									sphere.material.emissive = new THREE.Color( 0.3, 0.3, 0.3 );
+									sphere.material.emissive = new THREE.Color(0x000000);
 								
 									sphere.position.x = centre_of_mass.x;
 									sphere.position.y = centre_of_mass.y;
@@ -2146,8 +2146,6 @@
 							network = new Network(scope.data.data, scope.overlay.colors.network, scope.view.settings.network);
 							network.visible = scope.view.settings.network.visible;
 							scene.add(network);
-							
-							chromatin.center();
 
 						};
 						// VIEWPORT
@@ -2232,12 +2230,12 @@
 						pointLight.name = "Scene Light";
 						camera.add(pointLight);
 						var lightOffset = cameraTranslate * 1.5; // Up and to the left
-						//pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
 						pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
+						//pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
 						// Point Light Helper
-						var sphereSize = 10000;
+						var sphereSize = 1000;
 						var pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
-						scene.add(pointLightHelper);
+						//scene.add(pointLightHelper);
 						
 						// FOG SCENE
 						var fogNear = cameraTranslate * scope.view.viewpoint.fogNear,
@@ -2329,8 +2327,11 @@
 									}
 								} else {
 									for (i = 0; i < newColors.length; i++) {
-										if(!ColorConvert.testIfHex(newColors[i])) newChromatinColor =  new THREE.Color(ColorConvert.nameToHex(newColors[i]));
-										else newChromatinColor =  new THREE.Color(newColors[i]);
+										if(ColorConvert.testIfHex(newColors[i]) || newColors[i].indexOf('#')===0) {
+											newChromatinColor =  new THREE.Color(newColors[i]);	 
+										} else {
+											newChromatinColor =  new THREE.Color(ColorConvert.nameToHex(newColors[i]));
+										} 
 										for (j = 0; j < 16; j++) {
 											chromatinObj.children[0].geometry.faces[i*16+j].color.set(newChromatinColor);
 										}
@@ -2359,22 +2360,22 @@
 								if(scope.view.settings.chromatin.tubed) {
 									var tadCount = sphereObj.children.length;
 									var newColor = new THREE.Color( 0xff0000 );
-									var oldColor = new THREE.Color( 0xe6e6e6 );
+									var oldColor = new THREE.Color( 0x000000 );
 									for (i = 0; i < tadCount; i++) {
 										if(i==scope.settings.current.tad_selected) {
-											sphereObj.children[i].material.opacity = 0.1;
-											sphereObj.children[i].material.color.set( newColor );
-											sphereObj.children[i].material.emissive = 0.1;
+											sphereObj.children[i].material.opacity = 0.2;
+											sphereObj.children[i].material.emissive.set( newColor );
+											//sphereObj.children[i].material.emissive = 1;
 											
 										} else {
 											if(newValue == -1) {
 												sphereObj.children[i].material.opacity = 0.2;
-												sphereObj.children[i].material.color.set( newColor );
-												sphereObj.children[i].material.emissive = 0.2;
+												sphereObj.children[i].material.emissive.set( newColor );
+												//sphereObj.children[i].material.emissive = 1;
 											} else {
 												sphereObj.children[i].material.opacity = 0.3;
 												sphereObj.children[i].material.color.set(oldColor);
-												sphereObj.children[i].material.emissive = 0.3;
+												sphereObj.children[i].material.emissive.set(oldColor);
 											}
 										}
 										sphereObj.children[i].geometry.colorsNeedUpdate = true;
