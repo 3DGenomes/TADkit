@@ -967,7 +967,7 @@
 		//$scope.jbrowsedataurl = 'http://172.16.54.4/JBrowse/data';
 		$scope.jbrowsedataurl = $scope.view.settings.jbrowse_data+'_'+$scope.settings.current.speciesUrl;
 		$scope.iframe_src = $scope.view.settings.jbrowse_path+'index.html?data='+$scope.jbrowsedataurl+'&loc='+($scope.settings.current.chrom).replace('chr','')+':'+
-		jbrowse_start+'..'+($scope.settings.current.chromEnd+30000)+'&tracklist=0&tracks=Genes,Restraints,Chromatin%20Types'+
+		jbrowse_start+'..'+($scope.settings.current.chromEnd+30000)+'&tracks='+
 			'&highlight='+($scope.settings.current.chrom).replace('chr','')+':'+
 			$scope.settings.current.chromStart+'..'+$scope.settings.current.chromEnd;
 			//'&addBookmarks=%5B%7B%22start%22%3A'+$scope.settings.current.chromStart+
@@ -985,6 +985,7 @@
 			if(position > $scope.settings.current.chromEnd) {
 				$scope.settings.current.position = $scope.settings.current.chromEnd;
 			}
+			$scope.hideTadkitMarkers();
 			$scope.$apply();
 		};
 		$scope.applyOverlay =  function(track,features) {
@@ -2365,13 +2366,10 @@
 										if(i==scope.settings.current.tad_selected) {
 											sphereObj.children[i].material.opacity = 0.2;
 											sphereObj.children[i].material.emissive.set( newColor );
-											//sphereObj.children[i].material.emissive = 1;
 											
 										} else {
 											if(newValue == -1) {
-												sphereObj.children[i].material.opacity = 0.2;
-												sphereObj.children[i].material.emissive.set( newColor );
-												//sphereObj.children[i].material.emissive = 1;
+												sphereObj.visible = false;
 											} else {
 												sphereObj.children[i].material.opacity = 0.3;
 												sphereObj.children[i].material.color.set(oldColor);
@@ -6118,7 +6116,7 @@
 					$http.get(dataUrl)
 					.success( function(data) {
 						overlays.loaded = data;
-						// overlays.current.index = overlays.loaded.length - 1;
+						overlays.current.index = overlays.loaded.length - 1;
 						console.log("Overlays (" + data.length + ") loaded from " + dataUrl);
 						deferral.resolve(overlays);
 					});

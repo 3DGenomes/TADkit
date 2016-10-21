@@ -16,7 +16,7 @@
 		//$scope.jbrowsedataurl = 'http://172.16.54.4/JBrowse/data';
 		$scope.jbrowsedataurl = $scope.view.settings.jbrowse_data+'_'+$scope.settings.current.speciesUrl;
 		$scope.iframe_src = $scope.view.settings.jbrowse_path+'index.html?data='+$scope.jbrowsedataurl+'&loc='+($scope.settings.current.chrom).replace('chr','')+':'+
-		jbrowse_start+'..'+($scope.settings.current.chromEnd+30000)+'&tracklist=0&tracks=Genes,Restraints,Chromatin%20Types'+
+		jbrowse_start+'..'+($scope.settings.current.chromEnd+30000)+'&tracks='+
 			'&highlight='+($scope.settings.current.chrom).replace('chr','')+':'+
 			$scope.settings.current.chromStart+'..'+$scope.settings.current.chromEnd;
 			//'&addBookmarks=%5B%7B%22start%22%3A'+$scope.settings.current.chromStart+
@@ -34,6 +34,7 @@
 			if(position > $scope.settings.current.chromEnd) {
 				$scope.settings.current.position = $scope.settings.current.chromEnd;
 			}
+			$scope.hideTadkitMarkers();
 			$scope.$apply();
 		};
 		$scope.applyOverlay =  function(track,features) {

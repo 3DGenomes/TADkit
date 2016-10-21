@@ -20,7 +20,7 @@
 					$http.get(dataUrl)
 					.success( function(data) {
 						overlays.loaded = data;
-						// overlays.current.index = overlays.loaded.length - 1;
+						overlays.current.index = overlays.loaded.length - 1;
 						console.log("Overlays (" + data.length + ") loaded from " + dataUrl);
 						deferral.resolve(overlays);
 					});

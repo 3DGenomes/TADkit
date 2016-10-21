@@ -334,13 +334,10 @@
 										if(i==scope.settings.current.tad_selected) {
 											sphereObj.children[i].material.opacity = 0.2;
 											sphereObj.children[i].material.emissive.set( newColor );
-											//sphereObj.children[i].material.emissive = 1;
 											
 										} else {
 											if(newValue == -1) {
-												sphereObj.children[i].material.opacity = 0.2;
-												sphereObj.children[i].material.emissive.set( newColor );
-												//sphereObj.children[i].material.emissive = 1;
+												sphereObj.visible = false;
 											} else {
 												sphereObj.children[i].material.opacity = 0.3;
 												sphereObj.children[i].material.color.set(oldColor);

@@ -24,7 +24,7 @@ function(
 ) {
     return declare(CanvasFeatureTrack, {
         constructor: function( args ) {
-            var track=this;
+        	var track=this;
             this._createTadkitNavigation();
             var $scope = parent.angular.element( parent.document.querySelector( '#jbrowse-iframe' ) ).scope();
             $scope.$watch('data.dimension', function(newPosition, oldPosition) {
@@ -42,14 +42,15 @@ function(
         },
         _refreshTrack: function(track, newPosition, oldPosition) {
             
-            track._mouseoverEvent.remove();
+        	if(track._mouseoverEvent) track._mouseoverEvent.remove();
             track._mouseoverEvent = null;
-            track._mouseoutEvent.remove();
+            if(track._mouseoutEvent) track._mouseoutEvent.remove();
             track._mouseoutEvent = null;
             //track.eventHandlers = null;
         	array.forEach(track.blocks, function(block,i) {
-				if( !block || !block.fRectIndex || !block.featureCanvas)
+				if( !block || !block.fRectIndex || !block.featureCanvas) 
                     return;
+				
                 track.cleanupBlock(block);
                 var ctx = block.featureCanvas.getContext('2d');
                 ctx.clearRect(0, 0, block.featureCanvas.width, block.featureCanvas.height);
@@ -68,8 +69,6 @@ function(
                     finishCallback: track._finish_callback
                 }
                 //l = track._getLayout(block.scale);
-                //l.rectangles = {};
-                //l.bitmap = [];
                 domConstruct.destroy(block.featureCanvas);
                 track.fillFeatures( args );
                 

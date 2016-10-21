@@ -50,11 +50,13 @@ function(
             //context.globalCompositeOperation = 'destination-atop';
             context.beginPath();
             context.globalAlpha = r.opacity;
-            	
-            context.moveTo(r.fromx, fromy);
-            context.lineTo(r.tox-margin_arrow, toy);
-            context.strokeStyle = r.color;
-            context.lineWidth = 5;
+            
+            if(Math.abs(r.tox-r.fromx)>5) {
+	            context.moveTo(r.fromx, fromy);
+	            context.lineTo(r.tox-margin_arrow, toy);
+	            context.strokeStyle = r.color;
+	            context.lineWidth = 5;
+            }
             //context.stroke();
 
             //context.beginPath();

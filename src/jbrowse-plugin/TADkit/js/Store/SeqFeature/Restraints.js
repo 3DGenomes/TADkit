@@ -18,9 +18,15 @@ function(
             if($scope.settings.current.chromStart > query.end || $scope.settings.current.chromEnd < query.start) {
             	finishCallback();
             }
-            var harmonicsColor = $scope.overlay.palette[0];
-            var lowerBoundsColor = $scope.overlay.palette[1];
+            var harmonicsColor = '#ff0000'//$scope.overlay.palette[0];
+            var lowerBoundsColor = '#0000ff'//$scope.overlay.palette[1];
             var resolution = $scope.settings.current.segmentLength*$scope.settings.current.particleSegments;
+            if($scope.data.harmonics.length == 0 && $scope.data.lowerBounds.length == 0) {
+            	//var restraint = new SimpleFeature({});
+            	var restraint = new SimpleFeature({});
+            	featureCallback(restraint);
+            	finishCallback();
+            }
             array.forEach($scope.data.harmonics, function(f) {
             	var start = $scope.settings.current.chromStart+resolution*(f[1]);
                 var end = $scope.settings.current.chromStart+resolution*(f[1]+0.9);
