@@ -14,7 +14,8 @@
 		var jbrowse_start = (($scope.settings.current.chromStart-30000));
 		if(jbrowse_start<0) jbrowse_start = 0;
 		//$scope.jbrowsedataurl = 'http://172.16.54.4/JBrowse/data';
-		$scope.jbrowsedataurl = $scope.view.settings.jbrowse_data+'_'+$scope.settings.current.speciesUrl;
+		//$scope.jbrowsedataurl = $scope.view.settings.jbrowse_data+'_'+$scope.settings.current.speciesUrl;
+		$scope.jbrowsedataurl = encodeURIComponent($scope.view.settings.species_data[$scope.settings.current.speciesUrl]);
 		$scope.iframe_src = $scope.view.settings.jbrowse_path+'index.html?data='+$scope.jbrowsedataurl+'&loc='+($scope.settings.current.chrom).replace('chr','')+':'+
 		jbrowse_start+'..'+($scope.settings.current.chromEnd+30000)+'&tracks='+
 			'&highlight='+($scope.settings.current.chrom).replace('chr','')+':'+
