@@ -213,9 +213,9 @@
 				"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
 				"jbrowse_path" : "../JBrowse/",
 				"species_data" : {
-					"human": "http://inb.bsc.es/MuG/JBrowse-1.12.1/data/",
-					"drosophila_melanogaster" : "http://mmb.irbbarcelona.org/NucleosomeDynamics/JBrowse/JBrowse-1.12.0/user_jbrowse/dmel-r5.1/jbrowse/",
-					"saccharomyces_cerevisiae" : "http://mmb.irbbarcelona.org/NucleosomeDynamics/JBrowse/JBrowse-1.12.0/user_jbrowse/R64-1-1/jbrowse/"
+					"human": "http://inb.bsc.es/MuG/JBrowse-1.12.1/data",
+					"drosophila_melanogaster" : "http://mmb.irbbarcelona.org/NucleosomeDynamics/JBrowse/JBrowse-1.12.0/user_jbrowse/dmel-r5.1/jbrowse",
+					"saccharomyces_cerevisiae" : "http://mmb.irbbarcelona.org/NucleosomeDynamics/JBrowse/JBrowse-1.12.0/user_jbrowse/R64-1-1/jbrowse"
 				}
 			}
 		}

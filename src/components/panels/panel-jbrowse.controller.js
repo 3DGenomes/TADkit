@@ -16,9 +16,9 @@
 		//$scope.jbrowsedataurl = 'http://172.16.54.4/JBrowse/data';
 		//$scope.jbrowsedataurl = $scope.view.settings.jbrowse_data+'_'+$scope.settings.current.speciesUrl;
 		$scope.jbrowsedataurl = encodeURIComponent($scope.view.settings.species_data[$scope.settings.current.speciesUrl]);
-		$scope.iframe_src = $scope.view.settings.jbrowse_path+'index.html?data='+$scope.jbrowsedataurl+'&loc='+($scope.settings.current.chrom).replace('chr','')+':'+
-		jbrowse_start+'..'+($scope.settings.current.chromEnd+30000)+'&tracks='+
-			'&highlight='+($scope.settings.current.chrom).replace('chr','')+':'+
+		$scope.iframe_src = $scope.view.settings.jbrowse_path+'index.html?data='+$scope.jbrowsedataurl+'&loc='+($scope.settings.current.chrom)+':'+
+		jbrowse_start+'..'+($scope.settings.current.chromEnd+30000)+'&tracks=Restraints'+
+			'&highlight='+($scope.settings.current.chrom)+':'+
 			$scope.settings.current.chromStart+'..'+$scope.settings.current.chromEnd;
 			//'&addBookmarks=%5B%7B%22start%22%3A'+$scope.settings.current.chromStart+
 			//'%2C%22end%22%3A'+$scope.settings.current.chromEnd+'%2C%22color%22%3A%20%22rgba(190%2C50%2C50%2C0.5)%22%2C%22ref%22%3A%20%22'+
