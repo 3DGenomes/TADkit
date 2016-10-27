@@ -56,23 +56,26 @@ function(
 	            context.lineTo(r.tox-margin_arrow, toy);
 	            context.strokeStyle = r.color;
 	            context.lineWidth = 5;
+            
+
+	            context.moveTo(r.tox, toy);
+	            context.lineTo(r.tox-headlen*Math.cos(angle-Math.PI/7),toy-headlen*Math.sin(angle-Math.PI/7));
+	
+	            context.lineTo(r.tox-headlen*Math.cos(angle+Math.PI/7),toy-headlen*Math.sin(angle+Math.PI/7));
+	
+	            context.lineTo(r.tox, toy);
+	            context.lineTo(r.tox-headlen*Math.cos(angle-Math.PI/7),toy-headlen*Math.sin(angle-Math.PI/7));
+	
+	            context.strokeStyle = r.color;
+	            context.lineWidth = 5;
+	            context.stroke();
+	            context.fillStyle = r.color;
+	            context.fill();
+            } else {
+            	context.font="20px Georgia";
+            	context.fillStyle = r.color;
+            	context.fillText(">",r.fromx,toy*2);
             }
-            //context.stroke();
-
-            //context.beginPath();
-            context.moveTo(r.tox, toy);
-            context.lineTo(r.tox-headlen*Math.cos(angle-Math.PI/7),toy-headlen*Math.sin(angle-Math.PI/7));
-
-            context.lineTo(r.tox-headlen*Math.cos(angle+Math.PI/7),toy-headlen*Math.sin(angle+Math.PI/7));
-
-            context.lineTo(r.tox, toy);
-            context.lineTo(r.tox-headlen*Math.cos(angle-Math.PI/7),toy-headlen*Math.sin(angle-Math.PI/7));
-
-            context.strokeStyle = r.color;
-            context.lineWidth = 5;
-            context.stroke();
-            context.fillStyle = r.color;
-            context.fill();
             //context.globalCompositeOperation = 'source-over';
             context.restore();
             
