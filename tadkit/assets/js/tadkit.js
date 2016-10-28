@@ -955,7 +955,7 @@
 		.module('TADkit')
 		.controller('PanelJBrowseController', PanelJBrowseController);
 
-	function PanelJBrowseController($scope, $mdDialog, Overlays, uuid4, Networks) {
+	function PanelJBrowseController($scope, $mdDialog, Overlays, uuid4, Networks, d3Service) {
 
 		$scope.width = $scope.state.width; // strip PX units
 		$scope.height = $scope.state.height; // strip PX units
@@ -1034,18 +1034,46 @@
 								}
 							};
 			var totallength;
-			var k;
+			var k, max_val, min_val;
 			var j = 0;
+			var l = 0;
+			
+			for(k=0;k<$scope.settings.current.segmentsCount;k++) {
+				jbrowseOverlay.colors.chromatin[k] = "gray";
+			}
+
+			var featureColor = [];
+			var scored_color = false;
 			angular.forEach(features, function(feature) {
+				if(typeof feature.get('color') == 'undefined') {
+					featureColor.push(feature.get('score'));
+					scored_color = true;
+				} else {
+					featureColor.push(feature.get('color'));
+				}
+			});
+			if(scored_color) {
+				var hexEnd = '#0000ff';
+				var hexStart = '#ffffff';
+				max_val = Math.max.apply(Math, featureColor);
+				min_val = Math.min.apply(Math, featureColor);
+				for(k=0;k<featureColor.length;k++) {
+					featureColor[k] = d3.interpolateHcl(hexStart, hexEnd)((featureColor[k]-min_val)/(max_val-min_val));
+				}
+			}
+			angular.forEach(features, function(feature) {
+				j = Math.round((feature.get('start') - $scope.settings.current.chromStart)/$scope.settings.current.segmentLength);
 				totallength = Math.round((feature.get('end') - feature.get('start'))/$scope.settings.current.segmentLength);
 				for(k=j;k<(j+totallength) && k<$scope.settings.current.segmentsCount;k++) {
-					jbrowseOverlay.colors.chromatin[k] = feature.get('color');
+					jbrowseOverlay.colors.chromatin[k] = featureColor[l];
 				}
-				j += totallength;
+				l++;
+				//j += totallength;
 			});
-			for(i=j;i<$scope.settings.current.segmentsCount;i++) {
-				jbrowseOverlay.colors.chromatin[i] = "gray";
-			}
+//			j += totallength;
+//			for(i=j;i<$scope.settings.current.segmentsCount;i++) {
+//				jbrowseOverlay.colors.chromatin[i] = "gray";
+//			}
 			var newOverlay = Overlays.addDirect(jbrowseOverlay);
 			var overlay = overlays.loaded[newOverlay];
 			

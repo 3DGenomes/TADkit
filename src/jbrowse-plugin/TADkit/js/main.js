@@ -1,11 +1,13 @@
 define([
     'dojo/_base/declare',
     'dojo/_base/lang',
+    'dojo/when',
     'JBrowse/Plugin'
 ],
 function(
     declare,
     lang,
+    when,
     JBrowsePlugin
 ) {
     return declare(JBrowsePlugin, {
@@ -27,7 +29,11 @@ function(
                 this._createRestraintsTrack();
                 
             }, this );
-            dojo.subscribe("/jbrowse/v1/v/tracks/show",  lang.hitch( this, '_addOverlayMenuItem' ));  
+            //dojo.subscribe("/jbrowse/v1/n/tracks/visibleChanged",  lang.hitch( this, '_addOverlayMenuItem' ));
+            dojo.subscribe('/jbrowse/v1/n/tracks/visibleChanged'
+            		, function (visibleTrackNames) {
+            			if(visibleTrackNames) thisB._addOverlayMenuItem(visibleTrackNames[0]);
+            		});
 
         },
         _createRestraintsTrack: function() {
@@ -59,7 +65,7 @@ function(
 
                
         },
-        _addOverlayMenuItem: function( /**Array[Object]*/ trackConfigs ) {
+        _addOverlayMenuItem: function( visibleTrackNames ) {
         	
         	var thisB = this;
         	
@@ -75,6 +81,9 @@ function(
 	                var feat = [];
 	                track.store.getFeatures( region,
 	                                        function( feature ) {
+	                							if(typeof feature.get('color') == 'undefined' && typeof feature.get('score') == 'undefined') {
+	                								return;
+	                							}
 	                                            feat.push(feature);
 	                                        },
 	                                        // callback when all features sent
@@ -88,23 +97,49 @@ function(
                 }
                 
             };
-            dojo.forEach( trackConfigs, function(conf) {
+            dojo.forEach( visibleTrackNames, function(conf) {
             	
-            	var trackConf = this.browser.trackConfigsByName[conf.label];
-            	//this.browser.view.tracks[conf.key]._trackMenuOptions = function(query) {
+            	//var trackConf = this.browser.trackConfigsByName[conf];
+            	var track = thisB.browser.view.tracks[thisB.browser.view.trackIndices[conf]];
+            	var trackConf = track.config;
             	var color_val = false;
             	
-            	if (trackConf.type == 'JBrowse/View/Track/CanvasFeatures' || trackConf.type == 'JBrowse/View/Track/Wiggle/Density')
+            	if (trackConf.type == 'JBrowse/View/Track/CanvasFeatures' || trackConf.type == 'JBrowse/View/Track/Wiggle/Density' ||
+            			conf in this.tracksOverlaid)
             	color_val = true;
             	
             	if(color_val) {
             		this.tracksOverlaid[trackConf.label] = false;
-	                trackConf.menuTemplate = [{
+	                apply3dopt = [
+	                   { type: 'dijit/MenuSeparator' },
+	                   {
 	                    "label": "Apply to 3D",
 	                    "action":function(clickEvent) { applyOverlay(trackConf.label); },
 	                    "iconClass": "dijitIconFunction",
 	                    "title": "Apply to 3D"
 	                   }];
+            		
+            		when( track._trackMenuOptions() )
+                    .then( function( options ) {
+                    	options.push.apply(options,apply3dopt);
+                        if( options && options.length && track.label && track.labelMenuButton ) {
+
+                            // remove our old track menu if we have one
+                            if( track.trackMenu )
+                            	track.trackMenu.destroyRecursive();
+
+                            // render and bind our track menu
+                            var menu = track._renderContextMenu( options, { menuButton: track.labelMenuButton, track: track, browser: track.browser, refSeq: track.refSeq } );
+                            menu.startup();
+                            menu.set('leftClickToOpen', true );
+                            menu.bindDomNode( track.labelMenuButton );
+                            menu.set('leftClickToOpen',  false);
+                            menu.bindDomNode( track.label );
+                            track.trackMenu = menu;
+                            track.own( track.trackMenu );
+                        }
+                      });
+	                
             	}
             },this);
 
