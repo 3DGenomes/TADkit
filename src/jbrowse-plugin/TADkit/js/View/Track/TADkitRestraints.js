@@ -72,7 +72,6 @@ function(
                 domConstruct.destroy(block.featureCanvas);
                 track.fillFeatures( args );
                 
-                
             });
             
         },

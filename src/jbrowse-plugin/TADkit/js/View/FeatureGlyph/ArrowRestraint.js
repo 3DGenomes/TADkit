@@ -51,7 +51,7 @@ function(
             context.beginPath();
             context.globalAlpha = r.opacity;
             
-            if(Math.abs(r.tox-r.fromx)>5) {
+            if(r.scale>=0.005) {
 	            context.moveTo(r.fromx, fromy);
 	            context.lineTo(r.tox-margin_arrow, toy);
 	            context.strokeStyle = r.color;
@@ -71,10 +71,20 @@ function(
 	            context.stroke();
 	            context.fillStyle = r.color;
 	            context.fill();
+//            } else if(r.scale>=0.002) {
+//            	context.font="20px Georgia";
+//            	context.fillStyle = r.color;
+//            	if(r.fromx<r.tox) context.fillText(">",r.fromx,toy);
+//            	else context.fillText("<",r.fromx,toy);
             } else {
-            	context.font="20px Georgia";
             	context.fillStyle = r.color;
-            	context.fillText(">",r.fromx,toy*2);
+            	context.fillRect(
+            			fRect.rect.l,
+            			fRect.rect.t,
+                        fRect.rect.w,
+                        fRect.rect.h
+                    );
+            	
             }
             //context.globalCompositeOperation = 'source-over';
             context.restore();
@@ -88,6 +98,8 @@ function(
             var end = block.bpToX(feature.get('end'));
             var fid = (feature.id()).substr(0,1);
             var margin_feat = 6;
+            if((end-start)<6) margin_feat = 0;
+            
             if( (parseInt(feature.get('start')) > $scope.settings.current.position && fid=='h') ||
                 (parseInt(feature.get('start')) < $scope.settings.current.position && fid=='l')) {
                 start = end;
@@ -98,7 +110,8 @@ function(
             	fromx: start,
                 tox: end-margin_feat,
                 color: feature.get('color'),
-                opacity: feature.get('opacity')
+                opacity: feature.get('opacity'),
+                scale: block.scale
             };
         }
         
