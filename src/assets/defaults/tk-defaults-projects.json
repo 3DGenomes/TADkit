@@ -14,7 +14,7 @@
 			"state" : "active"
 		},
 		"datasets" : [],
-		"layers" : [],
+		"overlays" : [],
 		"storyboards" : []
 	}
 ]

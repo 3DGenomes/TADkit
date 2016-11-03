@@ -3,15 +3,15 @@
 		<h6>{{title}}</h6>
 	</div>
 	<div class="component-controls" data-ng-hide="type=='track-slider'">
-		<a ng-click='togglelayer({index:layer.object.state.index})' class="options toggle-{{layer.object.state.overlaid}}" >
-			<md-icon data-ng-hide="layer.object.state.overlaid" class="toggle-right icon-check-box-outline-blank"></md-icon>
-			<md-icon data-ng-show="layer.object.state.overlaid" class="toggle-right icon-check-box"></md-icon>
+		<a ng-click='toggleoverlay({index:overlay.object.state.index})' class="options toggle-{{overlay.object.state.overlaid}}" >
+			<md-icon data-ng-hide="overlay.object.state.overlaid" class="toggle-right icon-check-box-outline-blank"></md-icon>
+			<md-icon data-ng-show="overlay.object.state.overlaid" class="toggle-right icon-check-box"></md-icon>
 		</a>
 		<!--a ng-click='toggleOptions()' class="options toggle-{{optionsState}}">
 			<md-icon class="icon-settings"></md-icon>
 		</a-->
 	</div>
-	<div class="component-options track" ng-cloak data-ng-show='optionsState'>
+	<div class="component-options track" data-ng-show='optionsState'>
 		<!-- TODO: ENABLE AUTO-GENERATION
 		<ul>
 	 		<li data-ng-repeat='option in options'>
@@ -29,7 +29,5 @@
 		<input id="rotate" type="checkbox" ng-model="view.controls.option3" />
 		<label for="rotate">Option3</label>
 	</div>
-	<div class="component-body">
-		<ui-tooltip title="tooltip.title" content="tooltip.content" styling="tooltip.styling" />
-	</div>
+	<div class="component-body"></div>
 </div>

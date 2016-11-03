@@ -29,11 +29,6 @@
 	"views" : {
 		"strands" : true,
 		"margin" : "4px",
-		"position" : 0,
-		"scale" : 1,
-		"scale3D" : 2
-	},
-	"textures" : {
-		"particle" : "assets/img/sphere-glossy.png"
+		"position" : 0
 	}
 }

@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.directive('tkComponentBedgraph', tkComponentBedgraph);
 
-	function tkComponentBedgraph(VERBOSE, $log, d3Service) {    
+	function tkComponentBedgraph(d3Service) {    
 		return {
 			restrict: 'EA',
 			scope: {
@@ -13,18 +13,13 @@
 				settings: '=',
 				view: '=',
 				data: '=',
-				layer: '=', /* used in template */
-				togglelayer: '&' /* used in template */
+				overlay: '=', /* used in template */
+				toggleoverlay: '&' /* used in template */
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
-<<<<<<< HEAD
 				d3Service.d3().then(function(d3) {
 					// console.log(scope);
-=======
-				d3Service.load().then(function(d3) {
-					if (VERBOSE) $log.debug(scope);
->>>>>>> upstream/develop
 
  					// DATA MANIPULATION >>> MOVE TO CONTROLLER
 					var data = scope.data;

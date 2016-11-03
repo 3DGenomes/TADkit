@@ -1,4 +1,4 @@
-<!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->
+<!-- This file is generated — do not edit by hand! -->
 <div id="currentProject" class="controls">
 	<span>Datasets</span>
 	<md-list layout="column" layout-padding>
@@ -6,10 +6,10 @@
 			<span>{{dataset.object.title}}</span>
 		</md-list-item>
 	</md-list>
-	<span>Layers</span>
+	<span>Overlays</span>
 	<md-list layout="column" layout-padding>
-		<md-list-item data-ng-repeat='layer in layers.loaded track by $index' data-ng-click="setCurrentLayer($index)" ui-sref="layer" data-ng-class="{active: currentProject.state}">
-			<span>{{layer.object.title}}</span>					
+		<md-list-item data-ng-repeat='overlay in overlays.loaded track by $index' data-ng-click="setCurrentOverlay($index)" ui-sref="overlay" data-ng-class="{active: currentProject.state}">
+			<span>{{overlay.object.title}}</span>					
 		</md-list-item>
 	</md-list>
 	<span>Storyboards</span>

@@ -4,11 +4,7 @@
 		.module('TADkit')
 		.directive('tkComponentScene', tkComponentScene);
 
-<<<<<<< HEAD
 	function tkComponentScene(Particles, Chromatin, Network, Settings, Networks, ColorConvert) {
-=======
-	function tkComponentScene($log, $rootScope, THREEService, THREEPlugins, Particles, Chromatin, Network) {
->>>>>>> upstream/develop
 		return {
 			restrict: 'EA',
 			scope: { 
@@ -17,15 +13,14 @@
 				settings: '=',
 				view: '=',
 				data: '=',
-				layer: '=',
+				overlay: '=',
 				state: '=',
 				currentmodel: '=',
 				proximities: '=',
-				currentlayer: '='
+				currentoverlay: '='
 			},
 			templateUrl: 'assets/templates/scene.html',
 			link: function postLink(scope, element, attrs) {
-<<<<<<< HEAD
 				// threeService.three().then(function(THREE) {
 					// console.log(scope);
 
@@ -151,48 +146,6 @@
 						renderer.setClearColor( parseInt(clearColor) );
 						renderer.setSize( width, height );
 						renderer.autoClear = false; // To allow render overlay on top of sprited sphere
-=======
-				THREEPlugins.load(["TrackballControls","OrbitControls"]).then(function(THREE) {
-					// DOM variables
-					var component, viewport;
-					var width, height, contW, contH, windowHalfX, windowHalfY;
-
-					// THREE variables
-					var renderer = THREEService.getRenderer();
-					var animation;
-
-					var scene;
-					var camera, cameraPosition, cameraTarget, cameraTranslate;
-					var ambientLight, pointLight;
-					var autoplay, controls;
-
-					// TADkit variables
-					var particles, chromatin, network;
-					var particleOriginalColor = new THREE.Color();
-					var positionOriginalColor = new THREE.Color();
-					var highlightColor = new THREE.Color("rgb(0,0,0)"); // add to scene component
-
-					scope.init = function () {
-
-						// VIEWPORT
-						/* component = element[0].parentNode
-						 * component-controller == element[0].children[0]
-						 * - component-header == element[0].children[0].children[0]
-						 * - component-body == element[0].children[0].children[3]
-						 */
-						
-						viewport = element[0].children[0].children[3];
-
-						// width = component.clientWidth; // NEED TO WAIT UNTIL DOM LOADED
-						width = parseInt(scope.state.width); // USE UNTIL DOM CHECK AVAILBLE
-						// height = component.clientHeight;
-						height = parseInt(scope.state.height); // USE UNTIL DOM CHECK AVAILBLE
-				
-						var background = scope.view.settings.background;
-						// var clearColor = "0x" + background.substring(1);
-						// renderer.setClearColor( clearColor );
-						renderer.setSize( width, height );
->>>>>>> upstream/develop
 						viewport.appendChild( renderer.domElement );
 
 						// SCENE
@@ -203,16 +156,11 @@
 						camera.position.fromArray(scope.view.viewpoint.camera);
 						camera.name = "Scene Camera";
 						scene.add(camera);
-<<<<<<< HEAD
 	
-=======
-
->>>>>>> upstream/develop
 						// CONTROLS
 						// Use TrackballControls for interaction
 						controls = new THREE.TrackballControls(camera, renderer.domElement);
 						// Use OrbitControls for autoRotate
-<<<<<<< HEAD
 						playback = new THREE.OrbitControls(camera, renderer.domElement);
 						playback.autoRotate = scope.view.controls.autoRotate;
 						playback.autoRotateSpeed = scope.view.controls.autoRotateSpeed;
@@ -222,17 +170,6 @@
 						playback.enablePan = false;
 						playback.enableKeys = false;
 						
-=======
-						autoplay = new THREE.OrbitControls(camera, renderer.domElement);
-						autoplay.autoRotate = scope.view.controls.autoRotate;
-						autoplay.autoRotateSpeed = scope.view.controls.autoRotateSpeed;
-						// interaction FALSE so as not to conflict with controls
-						autoplay.enableZoom = false;
-						autoplay.enableRotate = false;
-						autoplay.enablePan = false;
-						autoplay.enableKeys = false;
-
->>>>>>> upstream/develop
 						// AXIS
 						// TODO: Make local axisHelper
 						var axisHelper = new THREE.AxisHelper( scope.view.settings.axis.size );
@@ -245,32 +182,9 @@
 						var ambientColor = scope.view.settings.lighting.ambient;
 						ambientLight = new THREE.AmbientLight(ambientColor);
 						ambientLight.name = "Scene Ambient Light";
-<<<<<<< HEAD
 						scene.add(ambientLight);
 						
 						scope.complete_scene();
-=======
-						// scene.add(ambientLight);
-						
-						// GEOMETRY: PARTICLES
-						particles = new Particles(scope.currentmodel.data, scope.currentlayer.colors.particles, scope.view.settings.particles);
-						// particles = new Particles(scope.model.data, scope.layer.colors.particles, scope.view.settings.particles);
-						particles.visible = scope.view.settings.particles.visible;
-						scene.add(particles);
-
-						//GEOMETRY: CHROMATIN
-						chromatin = new Chromatin(scope.currentmodel.data, scope.currentlayer.colors.chromatin, scope.view.settings.chromatin);
-						// chromatin = new Chromatin(scope.model.data, scope.layer.colors.chromatin, scope.view.settings.chromatin);
-						chromatin.visible = scope.view.settings.chromatin.visible;
-						scene.add(chromatin);
-						scope.view.settings.chromatin.radius = chromatin.boundingSphere.radius;
-
-						// GEOMETRY: MESH
-						// network = new Network(scope.proximities.positions, scope.proximities.distances, scope.view.settings.network);
-						network = new Network(scope.data, scope.layer.colors.network, scope.view.settings.network);
-						network.visible = scope.view.settings.network.visible;
-						scene.add(network);
->>>>>>> upstream/develop
 
 						// UPDATE CAMERA TARGET
 						cameraPosition = chromatin.boundingSphere.center;
@@ -284,7 +198,6 @@
 						pointLight = new THREE.PointLight(pointColor, pointIntensity);
 						pointLight.name = "Scene Light";
 						camera.add(pointLight);
-<<<<<<< HEAD
 						var lightOffset = cameraTranslate * 1.5; // Up and to the left
 						pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
 						//pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
@@ -292,14 +205,6 @@
 						var sphereSize = 1000;
 						var pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
 						//scene.add(pointLightHelper);
-=======
-						var lightOffset = cameraTranslate * 0.5; // Up and to the left
-						pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
-						// Point Light Helper
-						var sphereSize = 100;
-						var pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
-						// scene.add(pointLightHelper);
->>>>>>> upstream/develop
 						
 						// FOG SCENE
 						var fogNear = cameraTranslate * scope.view.viewpoint.fogNear,
@@ -320,29 +225,17 @@
 						// scope.$watchGroup( componentOptions, function( newValues, oldValues ) {
 						// 	angular.forEach( newValues, function(value, index) {
 						// 		if ( newValues[index] !== oldValues[index] ) {
-<<<<<<< HEAD
 						// 			console.log( value );
 						// 		}
 						// 	});
 						// });
 						
-=======
-						// 			$log.debug( value );
-						// 		}
-						// 	});
-						// });
->>>>>>> upstream/develop
 
 					// FIX: NOT REDRAWING SCENE IF THE ONLY VISBLE OBJECT IS TOGGLED OFF
 						scope.$watch('view.controls.autoRotate', function( newValue, oldValue ) {
 							if ( newValue !== oldValue ) {
-<<<<<<< HEAD
 								// playback.autoRotate = !playback.autoRotate;
 								playback.autoRotate = scope.view.controls.autoRotate;
-=======
-								// autoplay.autoRotate = !autoplay.autoRotate;
-								autoplay.autoRotate = scope.view.controls.autoRotate;
->>>>>>> upstream/develop
 							}
 						});
 						scope.$watch('view.settings.axis.visible', function( newValue, oldValue ) {
@@ -365,7 +258,6 @@
 								network.visible = !network.visible;
 							}
 						});
-<<<<<<< HEAD
 
 						particlesObj = scene.getObjectByName( "Particles Cloud" );
 						chromatinObj = scene.getObjectByName( "Chromatin Fiber" );
@@ -550,102 +442,10 @@
 					// Event listeners
 					// -----------------------------------
 					
-=======
-
-						// /* Watch for Particles colors */
-						// scope.$watch('currentlayer.colors.particles', function( newColors, oldColors ) { // cant deep watch as change through set on service
-						// 	if ( newColors !== oldColors ) {
-						// 		// var particleCount = particles.children.length;
-						// 		// for (var i = 0; i < particleCount; i++) {
-						// 		// 	var newParticleColor =  new THREE.Color(newLayer.colors.particles[i]);
-						// 		// 	particles.children[i].material.color = newParticleColor;
-						// 		// }
-						// 	}
-						// });
-
-						// /* Watch for Chromatin colors */
-						scope.$watch('currentlayer.colors.chromatin', function( newColors, oldColors ) { // cant deep watch as change through set on service
-							if ( newColors !== oldColors ) {
-								var chromatinCount = chromatin.children.length;
-								for (var i = 0; i < chromatinCount; i++) {
-									var newChromatinColor =  new THREE.Color(newColors[i]);
-									chromatin.children[i].material.color = newChromatinColor;
-									chromatin.children[i].material.emissive = newChromatinColor;
-								}
-							}
-						});
-
-						// /* Watch for Network colors */
-						scope.$watch('currentlayer.colors.network', function( newColors, oldColors ) { // cant deep watch as change through set on service
-							if ( newColors !== oldColors ) {
-								network.geometry.addAttribute( 'color', new THREE.BufferAttribute( newColors.RGB, 3 ) );
-								network.geometry.addAttribute( 'alpha', new THREE.BufferAttribute( newColors.alpha, 1 ) );
-							}
-						});
-
-						/* Watch for Browser-wide Position updates */
-						scope.$watch('settings.current.particle', function( newParticle, oldParticle ) {
-							if ( newParticle !== oldParticle ) {
-
-								// SET PARTICLE CURSOR COLOR
-								if (particleOriginalColor) particles.geometry.colors[(oldParticle - 1)] = particleOriginalColor;
-								particleOriginalColor = particles.geometry.colors[(newParticle - 1)];
-								particles.geometry.colors[(newParticle - 1)] = highlightColor;
-								particles.geometry.colorsNeedUpdate = true;
-							}
-						});
-
-						/* Watch for Browser-wide Position updates */
-						scope.$watch('settings.current.segment', function( newSegment, oldSegment ) {
-							if ( newSegment !== oldSegment ) {
-
-								// SET CHROMATIN CURSOR COLOR								
-								var segmentPrevious = chromatin.getObjectByName( "segment-" + oldSegment );
-								if (positionOriginalColor) {
-									segmentPrevious.material.color = positionOriginalColor;
-									segmentPrevious.material.emissive = positionOriginalColor;
-								}
-
-								var segmentCurrent = chromatin.getObjectByName( "segment-" + newSegment );
-								positionOriginalColor = segmentCurrent.material.color;
-
-								segmentCurrent.material.color = highlightColor;
-								segmentCurrent.material.emissive = highlightColor;
-							}
-						});
-
-					};
-
-					// -----------------------------------
-					// Event listeners
-					// -----------------------------------
->>>>>>> upstream/develop
 					scope.onWindowResize = function () {
 						scope.resizeCanvas();
 					};
 
-<<<<<<< HEAD
-=======
-					$rootScope.$on('$stateChangeStart', function() {
-						// cancelAnimationFrame( animation );
-						$log.info("$stateChangeStart");
-					});
-					$rootScope.$on('$stateNotFound', function() {
-						$log.warn("$stateNotFound");
-					});
-					$rootScope.$on('$stateChangeSuccess', function() {
-						$log.info("$stateChangeSuccess");
-					});
-					$rootScope.$on('$stateChangeError', function() {
-						$log.warn("$stateChangeError");
-					});
-					// element.on('mousemove', function(event) {
-					// 	// mouseX = ( event.clientX - width / 2 );
-					// 	// mouseY = ( event.clientX - width / 2 );
-					// 	scope.animate();
-					// });
-
->>>>>>> upstream/develop
 					// -----------------------------------
 					// Updates
 					// -----------------------------------
@@ -663,7 +463,6 @@
 					};
 
 					scope.lookAtTAD = function (position, target, translate) {
-<<<<<<< HEAD
 							position = position || new THREE.Vector3( 50000, 50000, 50000 );
 							var origin = new THREE.Vector3(0,0,0);
 							target = target || origin;
@@ -678,41 +477,19 @@
 							camera.updateMatrixWorld();
 							// Controls target
 							controls.target.copy(position);
-=======
-						position = position || new THREE.Vector3( 50000, 50000, 50000 );
-						var origin = new THREE.Vector3(0,0,0);
-						target = target || origin;
-						translate = translate || 500;
-						// Target on Origin and Translate back
-						// (creates consistent view orientation)
-						camera.position.set(position.x, position.y, position.z);
-						camera.lookAt(origin);
-						camera.translateZ(translate);
-						// Retarget on target
-						camera.lookAt(target);
-						camera.updateMatrixWorld();
-						// Controls target
-						controls.target.copy(position);
->>>>>>> upstream/develop
 					};
 
 					// -----------------------------------
 					// Draw and Animate
 					// -----------------------------------
 					scope.animate = function () {
-<<<<<<< HEAD
 						requestAnimationFrame( scope.animate );
 						playback.update();
-=======
-						animation = requestAnimationFrame( scope.animate );
-						// autoplay.update();
->>>>>>> upstream/develop
 						controls.update();
 						scope.render();
 					};
 
 					scope.render = function () {
-<<<<<<< HEAD
 						renderer.render( scene, camera );
 					};
 
@@ -791,15 +568,6 @@
 					scope.init();
 					scope.animate();
 				// });
-=======
-						renderer.render( scene, camera, null, true ); // forceClear == true
-					};
-
-					// Begin
-					scope.init();
-					scope.animate();
-				});
->>>>>>> upstream/develop
 			}
 		};
 	}

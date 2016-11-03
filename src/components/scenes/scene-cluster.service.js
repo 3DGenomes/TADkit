@@ -5,9 +5,8 @@
 		.factory('Cluster', Cluster);
 
 	// constructor for cluster models ensemble
-	function Cluster(VERBOSE, $log, Color) {
-		return function(data, centroidIndex, layer, settings) {
-			if (VERBOSE) $log.debug(layer);
+	function Cluster(Color) {
+		return function( data, centroidIndex, overlay, settings ) {
 
 			var defaults = {
 				visible: true,
@@ -16,23 +15,17 @@
 			angular.extend(this, angular.copy(defaults), settings);
 
 			// Convert Data (single Model / set of Particles) to Vector triplets
-<<<<<<< HEAD
 			var max_radius = 0;
 			var overlayColors = Color.colorsFromHex(overlay);
-=======
-			var clusterBufferGeometry = new THREE.BufferGeometry(); // to calculate merged bounds
-			var layerColors = Color.THREEColorsFromHex(layer);
->>>>>>> upstream/develop
 
 			// Generate Cluster model
 			var clusterEnsemble = new THREE.Object3D(); // unmerged network
-
 			for ( var i = 0 ; i < data.length; i++) {
 				var modelComponents = data[i];
 				var modelGeometry = getModelGeometry(modelComponents);
-					modelGeometry.colors = layerColors;
+				modelGeometry.colors = overlayColors;
 
-				var modelColor = layer[i];
+				var modelColor = overlay[i];
 				var modelMaterial = new THREE.LineBasicMaterial({
 					color: new THREE.Color(parseInt(this.color)),
 					opacity: this.modelOpacity,
@@ -56,19 +49,11 @@
 				if(model.geometry.boundingSphere.radius>max_radius) max_radius = model.geometry.boundingSphere.radius;
 				clusterEnsemble.add(model);
 			}
-<<<<<<< HEAD
 			for ( i = 0 ; i < clusterEnsemble.children.length; i++) {
 				clusterEnsemble.children[i].geometry.center();
 			}
 			clusterEnsemble.boundingSphere = clusterEnsemble.children[0].geometry.boundingSphere.clone();
 			clusterEnsemble.boundingSphere.radius = max_radius;
-=======
-			clusterBufferGeometry.computeBoundingBox();
-			// clusterBufferGeometry.computeBoundingSphere();
-			clusterEnsemble.boundingBox = clusterBufferGeometry.boundingBox;
-			// clusterEnsemble.boundingSphere = clusterBufferGeometry.boundingSphere;
-			clusterEnsemble.BufferGeometry = clusterBufferGeometry;
->>>>>>> upstream/develop
 			clusterEnsemble.name = "Cluster Ensemble";
 			return clusterEnsemble;
 		};

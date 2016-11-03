@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.directive('tkComponentTrackSlider', tkComponentTrackSlider);
 
-	function tkComponentTrackSlider(VERBOSE, $log, d3Service, Settings) {
+	function tkComponentTrackSlider(d3Service, Settings) {
 		return {
 			restrict: 'EA',
 			scope: {
@@ -13,12 +13,12 @@
 				settings: '=',
 				view: '=',
 				data: '=',
-				layer: '=', /* used in template */
-				togglelayer: '&' /* used in template */
+				overlay: '=', /* used in template */
+				toggleoverlay: '&' /* used in template */
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
-				if (VERBOSE) $log.debug(scope);
+				// console.log(scope);
 
 				d3Service.d3().then(function(d3) {
 				
@@ -52,9 +52,9 @@
 					 * - component-body == children[3]
 					 */
 					var component = element[0].parentNode;
-						$log.debug(component.clientWidth);
+						// console.log(component.clientWidth);
 					var viewport = element[0].children[0].children[3];
-						$log.debug(viewport.clientWidth);
+						// console.log(viewport.clientWidth);
 					// if with controller use line below
 					// var viewport = element[0].children[0].children[3];
 					var svg = d3.select(viewport).append('svg');
