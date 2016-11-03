@@ -1,10 +1,24 @@
 (function() {
 	'use strict';
+	/**
+	 * @ngdoc directive
+	 * @name TADkit.directive:tkComponentWiggle0
+	 * @scope
+	 * @restrict EA
+	 *
+	 * @description
+	 * Track component which generates a d3 graph
+	 * from supplied BigWig (wiggle format) data.
+	 *
+	 * @example
+	 * `<div tk-component-wiggle0 type="component.object.type" title="component.object.title" settings="settings" view="component.view" data="component.data" layer="component.layer" togglelayer="toggleLayer(index)"></div>`
+	 *
+	 */
 	angular
 		.module('TADkit')
 		.directive('tkComponentWiggle0', tkComponentWiggle0);
 
-	function tkComponentWiggle0(d3Service) {    
+	function tkComponentWiggle0(VERBOSE, $log, d3Service) {    
 		return {
 			restrict: 'EA',
 			scope: {
@@ -13,13 +27,18 @@
 				settings: '=',
 				view: '=',
 				data: '=',
-				overlay: '=', /* used in template */
-				toggleoverlay: '&' /* used in template */
+				layer: '=', /* used in template */
+				togglelayer: '&' /* used in template */
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
+<<<<<<< HEAD
 				d3Service.d3().then(function(d3) {
 					// console.log(scope);
+=======
+				d3Service.load().then(function(d3) {
+					if (VERBOSE) $log.debug(scope);
+>>>>>>> upstream/develop
 
  					// DATA MANIPULATION >>> MOVE TO CONTROLLER
 					var data = scope.data;
@@ -97,6 +116,18 @@
 						scope.update();
 					});
 
+					/**
+					 * @ngdoc function
+					 * @name TADkit.directive:tkComponentWiggle0#render
+					 * @methodOf TADkit.directive:tkComponentWiggle0
+					 * @kind function
+					 *
+					 * @description
+					 * Initial render of d3.js graph
+					 *
+					 * @param {Object} Data A colleciton of .
+					 * @returns {Object} A d3.js Object.
+					 */
 					scope.render = function(data) {
 						svg.selectAll('*').remove();
  
@@ -192,6 +223,16 @@
 									.attr("class", "highlight-follow");
 					};
 
+					/**
+					 * @ngdoc function
+					 * @name TADkit.directive:tkComponentWiggle0#update
+					 * @methodOf TADkit.directive:tkComponentWiggle0
+					 * @kind function
+					 *
+					 * @description
+					 * Updates d3.js graph
+					 *
+					 */
 					scope.update = function() {
 						// 	var width = component.clientWidth - (2 * componentMargin) - margin.left - margin.right,
 						// 		height = trackHeight - margin.top - margin.bottom;

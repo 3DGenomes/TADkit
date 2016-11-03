@@ -1,0 +1,52 @@
+<md-dialog aria-label="Import Data">
+	<md-toolbar class="md-accent">
+		<div class="md-toolbar-tools">
+		<h2 class="md-flex">Import Data</h2>
+		</div>
+	</md-toolbar>
+  	<md-content class="sticky-container">
+		<section>
+			<div data-ng-show="preview.data">
+				<h3>File: {{fileTitle}}</h3>
+				Use the checkboxes to indicate which rows and columns are to be imported.
+				<section>
+					<h4>Notes:</h4>
+					<ul>
+						<li>First selected row will be used for track titles</li>
+						<li>First selected columm must be genomic start coords (chromStart)</li>
+						<li>Second selected columm must be genomic end cords (chromEnd)</li>
+					</ul>
+				</section>
+			</div>
+			<div data-ng-hide="preview.data">
+				Select a file with tabular data to load.<br/>
+				The raw file data will be shown here to review before importing.
+			</div>
+			<table class="preview.data" data-ng-show="preview.data">
+				<tbody>
+					<tr>
+						<td></td>
+						<td ng-repeat="selectCol in preview.selection.cols track by $index">
+							<md-checkbox ng-model="preview.selection.cols[$index]" class="md-primary" aria-label="Data Column Selection Checkbox"></md-checkbox>
+						</td>
+					</tr>
+					<tr ng-repeat="row in preview.data">
+						<td>
+							<md-checkbox ng-model="preview.selection.rows[$index]" class="md-primary" aria-label="Data Row Selection Checkbox"></md-checkbox>
+						</td>
+						<td ng-repeat="col in row track by $index">{{col}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
+	</md-content>
+	<div class="md-actions" layout="row">
+		<md-button type=button ng-click="cancel()">Cancel</md-button>
+		<span flex></span>
+		<md-button data-ng-hide="preview.data" type="file" class="md-raised md-primary" >
+			Choose File
+			<input type="file" tk-data-import="previewData($fileContent)" filetitle="filetitle" />
+		</md-button>
+		<md-button data-ng-show="preview.data" type="submit" ng-click="importData()" class="md-raised md-primary">Import Data</md-button>
+	</div>
+</md-dialog>

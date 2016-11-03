@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.directive('tkComponentTrackGenes', tkComponentTrackGenes);
 
-	function tkComponentTrackGenes(d3Service) {    
+	function tkComponentTrackGenes($log, d3Service) {    
 		return {
 			restrict: 'EA',
 			scope: {
@@ -13,13 +13,26 @@
 				settings: '=',
 				view: '=',
 				data: '=',
-				overlay: '=', /* used in template */
-				toggleoverlay: '&' /* used in template */
+				layer: '=', /* used in template */
+				togglelayer: '&' /* used in template */
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
+<<<<<<< HEAD
 				d3Service.d3().then(function(d3) {
 
+=======
+				// uiTooltipService.load();
+				d3Service.load().then(function(d3) {
+					scope.safeApply = function(fn) {
+						var phase = this.$root.$$phase;
+						if(phase == '$apply' || phase == '$digest') {
+							if(fn && (typeof(fn) === 'function')) { fn(); }
+						} else {
+						this.$apply(fn);
+						}
+					};
+>>>>>>> upstream/develop
  					// DATA MANIPULATION >>> MOVE TO CONTROLLER
 					var data = scope.data;
 					var assemblyLength = 3200000000; // CALCULATE
@@ -60,22 +73,23 @@
 					 * - component-header == children[0]
 					 * - component-body == children[3]
 					 */
-					var component = element[0].parentNode;
-					var viewport = element[0].children[0].children[3];
-					// if with controller use line below
-					// var viewport = element[0].children[0].children[3];
-					var svg = d3.select(viewport).append('svg');
+					var browserContent = element[0].parentNode;
+					var componentRect = element[0].getBoundingClientRect();
+					var componentBody = element[0].children[0].children[3];
+
+					var svg = d3.select(componentBody).append('svg');
 					var chart, defs;
 					var xAxis, prime3Axis, prime5Axis;
 					var focus, container, xScale;
 
 					// RESIZE
 					scope.$watch(function(){
-						var w = component.clientWidth;
-						var h = component.clientHeight;
+						var w = browserContent.clientWidth;
+						var h = browserContent.clientHeight;
 						return w + h;
 					}, function() {
 						scope.render(data);
+						componentRect = element[0].getBoundingClientRect();
 					});
 
 					// REDRAW
@@ -93,6 +107,55 @@
 						}
 					});
 
+					// TOOLTIP
+					var tooltipWidth = 160; // TODO: get form settings
+					var tooltipPadding = 10; // TODO: get form settings
+					var backgroundColor = "#fff"; // TODO: get from App
+					var textColor = "#333"; // TODO: get from App
+					var borderWidth = 2; // TODO: get from App
+					var borderColor = "rgb(76,175,80)"; // TODO: get from App
+
+					// Attributees to pass to <tl-tooltip> (dummy values)
+					scope.tooltip = {
+						"title" : "Gene",
+						"content" : {},
+						"styling" : {
+							"width" : tooltipWidth,
+							"padding" : tooltipPadding,
+							"background" : backgroundColor,
+							"color" : textColor,
+							"borderWidth" : borderWidth,
+							"borderColor" : borderColor
+						}
+					};
+
+					var tooltip = d3.select(componentBody).select("ui-tooltip");
+						tooltip.style("width", (tooltipWidth + "px") );
+						tooltip.style("padding", (tooltipPadding + "px") );									
+
+					function setTooltipContent(d) {
+						d["start-end"] = d.start + "-" + d.end;
+						d.length = d.end - d.start;
+
+						var sorting = ["id","biotype","start-end","strand","length","assembly_name","description"];
+						var content = [];
+						angular.forEach(d, function(value, key) {
+							key.toLowerCase();
+							for (var i = sorting.length - 1; i >= 0; i--) {
+								sorting[i].toLowerCase();
+								if (key == sorting[i]) {
+									var name = key.replace("_name","");
+									content.push({"name":name,"value":value});
+								}
+							}
+						});
+						scope.safeApply( function() {
+							scope.tooltip.title = d.feature_type + ": " + d.external_name;
+							scope.tooltip.content = content;
+						});
+					}
+
+
  					// ZOOM
 					var zoom = d3.behavior.zoom()
 						.on("zoom",  function() {
@@ -103,8 +166,8 @@
 						svg.selectAll('*').remove();
  
 						if (!data) return;
- 
-							var width = component.clientWidth - (2 * componentMargin) - margin.left - margin.right,
+
+							var width = browserContent.clientWidth - (2 * componentMargin) - margin.left - margin.right,
 								height = trackHeight - margin.top - margin.bottom;
 
 							xScale = d3.scale.linear()
@@ -112,7 +175,7 @@
 									.clamp(true);
 
 							xScale.domain([focusStart, focusEnd]);
-					
+
 							xAxis = d3.svg.axis()
 									.scale(xScale)
 									.orient("top")
@@ -194,8 +257,18 @@
 									if (d.strand < 1) {biotypeClass += " forward-strand";}
 									else {biotypeClass += " reverse-strand";}
 									return biotypeClass; } )
-								.append("svg:title")
-								.text(function(d) { return d.external_name; });
+								.on("mouseover", function(d) {
+									setTooltipContent(d);
+									tooltip.transition()
+										.duration(200)
+										.style("opacity", 0.8);
+									tooltip.style("left", (d3.event.pageX - (tooltipWidth * 0.5)) + "px");
+								})
+								.on("mouseout", function(d) {
+									tooltip.transition()
+										.duration(200)
+										.style("opacity", 0);
+								});
 
 							var highlight = chart.append("rect")
 									.attr("id", "highlight")

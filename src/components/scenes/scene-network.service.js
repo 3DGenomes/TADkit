@@ -5,12 +5,12 @@
 		.factory('Network', Network);
 
 	// create one line between each pair in dataset
-	function Network(Color, Particles, Networks) {
-		return function(data, overlay, settings) {
-			// console.log(data);
-			// console.log(overlay);
+	function Network(VERBOSE, $log, Color, Particles, Networks) {
+		return function(data, layer, settings) {
+			if (VERBOSE) $log.debug(data);
+			if (VERBOSE) $log.debug(layer);
 
-			// Uses THREE.LinePieces to generate separate lines
+			// Uses THREE.LineSegments to generate separate lines
 			// from an array of vertex pairs
 
 			var defaults = {
@@ -36,7 +36,11 @@
 			//};
 			var parameters = {
 				uniforms: uniforms,
+<<<<<<< HEAD
 				//attributes: attributes,
+=======
+				// attributes: attributes,
+>>>>>>> upstream/develop
 				vertexShader: document.getElementById('vertexShader').textContent,
 				fragmentShader: document.getElementById('fragmentShader').textContent,
 				vertexColors: THREE.VertexColors,
@@ -51,8 +55,8 @@
 			var totalPairs = ((dataLength * dataLength) - dataLength) * 0.5;
 
 			var vertexPairs = getVertexPairs(data, totalPairs);
-			var vertexRGB = overlay.RGB;
-			var vertexAlpha = overlay.alpha;
+			var vertexRGB = layer.RGB;
+			var vertexAlpha = layer.alpha;
 
 			var geometry = new THREE.BufferGeometry();
 			geometry.addAttribute( 'position', new THREE.BufferAttribute( vertexPairs, 3 ) );
@@ -64,9 +68,28 @@
 			var nodeMap = null; // render only point
 			if (this.map) {
 				var loader = new THREE.TextureLoader();
+<<<<<<< HEAD
 				nodeMap = loader.load(this.map);
 			}
 			
+=======
+				loader.load(
+					this.map,
+					function ( texture ) {
+						nodeMap = texture;
+					},
+					// Function called when download progresses
+					function ( xhr ) {
+						$log.debug( (xhr.loaded / xhr.total * 100) + '% loaded' );
+					},
+					// Function called when download errors
+					function ( xhr ) {
+						$log.error( 'An error happened' );
+					}
+				);
+			}
+
+>>>>>>> upstream/develop
 			var nodesMaterial = new THREE.PointsMaterial({
 				color: this.color,
     			vertexColors: THREE.VertexColors,
@@ -79,6 +102,7 @@
 			});
 
 			// NETWORK
+<<<<<<< HEAD
 			var particlesGeometry = getGeometry(data);
 			particlesGeometry.center();
 			particlesGeometry.computeBoundingSphere();
@@ -104,13 +128,26 @@
 			network.boundingSphere = geometry.boundingSphere;
 			//var network = new THREE.Line(geometry, shaderMaterial, THREE.LinePieces); // THREE.LinePieces = separate lines
 			//var network = new THREE.LineSegments( geometry, shaderMaterial );
+=======
+			// var nodes = new THREE.Points(data, nodesMaterial);
+			// nodes.name = "Network Nodes";
+			
+			// var edges = new THREE.LineSegments(geometry, shaderMaterial);
+			// edges.name = "Network Edges";
+
+			// var network = new THREE.Object3D();
+			// network.add(edges);
+			// network.add(nodes);
+			// network.boundingSphere = geometry.boundingSphere;
+			var network = new THREE.LineSegments(geometry, shaderMaterial);
+>>>>>>> upstream/develop
 			network.name = "Network Graph";
-			// console.log(network);
+			if (VERBOSE) $log.debug(network);
 			return network;
 		};
 	}
 
-	function getVertexPairs(data, totalPairs) {
+	function getVertexPairs($log, data, totalPairs) {
 		// from an array of vertex pairs
 		// eg. [x1,y1,z1,x2,y2,z2,x3,y3,z3,...xn,yn,zn]
 		// to a matrix of all-to-all connections
@@ -128,9 +165,9 @@
 			var vertex1 = i;
 			for (var j = i + 3; j < data.length; j += 3) {
 				var vertex2 = j;
-				// console.log(pairPos);
-				// console.log(data[vertex1]+","+data[vertex1+1]+","+data[vertex1+2]);
-				// console.log(data[vertex2]+","+data[vertex2+1]+","+data[vertex2+2]);
+				$log.debug(pairPos);
+				$log.debug(data[vertex1]+","+data[vertex1+1]+","+data[vertex1+2]);
+				$log.debug(data[vertex2]+","+data[vertex2+1]+","+data[vertex2+2]);
 				// from vertex
 				vertexPairs[pairPos] = data[vertex1]; pairPos++;
 				vertexPairs[pairPos] = data[vertex1 + 1]; pairPos++;

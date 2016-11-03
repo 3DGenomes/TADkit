@@ -143,8 +143,13 @@
 					"generator" : "TADkit"
 				},
 				"object" : {
+<<<<<<< HEAD
 					"uuid" : "00000000-0000-0000-0000-000000000000",
 					"id" : "slider-external",
+=======
+					"uuid" : "00000000-0000-0000-0000-000000000002",
+					"id" : "f-slider",
+>>>>>>> upstream/develop
 					"title" : "Navigation",
 					"type" : "panel-jbrowse",
 					"dataset" : "default",
@@ -174,7 +179,46 @@
 						}
 					}
 				}
-			}
+			},
+			{
+				"metadata" : {
+					"version" : 1.0,
+					"type" : "component",
+					"generator" : "TADkit"
+				},
+				"object" : {
+					"uuid" : "00000000-0000-0000-0000-000000000004",
+					"id" : "browser-jsorolla",
+					"title" : "Browser",
+					"type" : "browser-jsorolla",
+					"dataset" : "jsorolla",
+					"state" : {
+						"width" : "100%",
+						"height" : "auto",
+						"margin" : "0px",
+						"position" : 4
+					}
+				},
+				"view" : {
+					"viewpoint" : {
+						"species" : "default",
+						"chrom" : 1,
+						"chromStart" : 1,
+						"chromEnd" : 999999,
+						"scale" : 1
+					},
+					"viewtype" : "linear",
+					"settings" : {
+						"background" : "#ffffff",
+						"heightInner" : "200px",
+						"margin" : "0px",
+						"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
+						"color" : "#0000ff",
+						"nodeSize" : 5,
+						"cursorWidth" : 1
+					}
+				}
+			}	
 		]
 	}
 ]

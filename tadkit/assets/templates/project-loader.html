@@ -1,12 +1,17 @@
-<!-- This file is generated — do not edit by hand! -->
-<md-content id="home" flex class="loader fullheight">
-	<div tk-component-scene-floatingtad class="floatingtad"></div>
-	<div layout="column">
-		<h2 class="tadkit-title">
-			<img alt="TADkit" src="assets/img/tadkit-logo-invert.png" />
-		</h2>
-		<h3>3D genome browser <br class="hide-for-small">and TADbit front-end.</h3>
+<!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->
+<div tk-component-scene-floatingtad id="floating-tad"></div>
+<div layout="column">
+	<h2 id="tadkit-title">
+		<img alt="TADkit" src="assets/img/tadkit-logo-invert.png" />
+	</h2>
+	<h3>3D genome browser <br class="hide-for-small">and TADbit front-end.</h3>
+</div>
+<div layout="column" layout-align="center center" md-theme="darkKit">
+	<div ui-dropzone="addDataset">
+		<md-icon class="icon-file-upload"></md-icon>
+		Drop a data file here (JSON, CSV, etc.)
 	</div>
+<<<<<<< HEAD
 	<div layout="column" layout-align="center center" md-theme="darkKit">
 <!-- 		<md-button class="md-raised md-primary" ng-click="openInput(); $event.stopPropagation();">
 			<label for="file-input">
@@ -30,3 +35,10 @@
 	</div>
 	<md-sidenav  ui-view="sidebaruser" class="md-sidenav-right md-whiteframe-z2" md-component-id="right"></md-sidenav>
 </md-content>
+=======
+	<md-button ui-sref="browser" class="md-raised md-accent" md-theme="darkKit">
+		<md-icon class="icon-open-in-browser"></md-icon>
+		Browse sample datasets
+	</md-button>
+</div>
+>>>>>>> upstream/develop

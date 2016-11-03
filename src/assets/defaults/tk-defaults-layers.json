@@ -1,0 +1,134 @@
+[
+	{
+		"metadata" : {
+			"version" : 1.0,
+			"type" : "layer",
+			"generator" : "TADkit"
+		},
+		"object" : {
+			"uuid" : "00000000-0000-0000-0001-000000000000",
+			"id" : "red",
+			"title" : "Red",
+			"source" : "TADkit",
+			"url" : "local",
+			"description" : "Simple red.",
+			"type" : "gradient",
+			"format" : "hex",
+			"components" : 2,
+			"state" : {
+				"index" : 0,
+				"overlaid" : false
+			}
+		},
+<<<<<<< HEAD:src/assets/defaults/tk-defaults-overlays.json
+		"palette" : ["#ff0000","#ff0000"],
+=======
+		"palette" : ["#0000ff","#ff0000"],
+		"data" : [],
+		"colors" : {
+			"particles" : [],
+			"chromatin" : [],
+			"network" : {
+				"RGB" : [],
+				"alpha" : []
+			}
+		}
+	},
+	{
+		"metadata" : {
+			"version" : 1.0,
+			"type" : "layer",
+			"generator" : "TADkit"
+		},
+		"object" : {
+			"uuid" : "00000000-0000-0000-0001-000000000000",
+			"id" : "proximities",
+			"title" : "Proximity Layer",
+			"source" : "TADkit",
+			"url" : "local",
+			"description" : "Single color for dynamic data.",
+			"type" : "matrix",
+			"format" : "fixed",
+			"components" : 2,
+			"state" : {
+				"index" : 1,
+				"overlaid" : false
+			}
+		},
+		"palette" : ["#0000ff","#cccccc"],
+		"data" : [],
+		"colors" : {
+			"particles" : [],
+			"chromatin" : [],
+			"network" : {
+				"RGB" : [],
+				"alpha" : []
+			}
+		}
+	},
+	{
+		"metadata" : {
+			"version" : 1.0,
+			"type" : "layer",
+			"generator" : "TADkit"
+		},
+		"object" : {
+			"uuid" : "00000000-0000-0000-0001-000000000000",
+			"id" : "restraints",
+			"title" : "Restraints Layer",
+			"source" : "TADkit",
+			"url" : "local",
+			"description" : "Single color for dynamic data.",
+			"type" : "restraints",
+			"format" : "variable",
+			"components" : 2,
+			"state" : {
+				"index" : 1,
+				"overlaid" : false
+			}
+		},
+		"palette" : ["#ff0000","#0000ff"],
+		"data" : [],
+		"colors" : {
+			"particles" : [],
+			"chromatin" : [],
+			"network" : {
+				"RGB" : [],
+				"alpha" : []
+			}
+		}
+	},
+	{
+		"metadata" : {
+			"version" : 1.0,
+			"type" : "layer",
+			"generator" : "TADkit"
+		},
+		"object" : {
+			"uuid" : "00000000-0000-0000-0002-000000000000",
+			"id" : "genes",
+			"title" : "Genes Layer",
+			"source" : "Ensembl RESTful API",
+			"url" : ["http://rest.ensemblgenomes.org/overlap/region/","species","/","chrom",":","chromStart","-","chromEnd","?feature=gene;content-type=application/json"],
+			"description" : "Genes from Ensembl RESTful API",
+			"type" : "ensembl",
+			"format" : "json",
+			"components" : 13,
+			"state" : {
+				"index" : 2,
+				"overlaid" : false
+			}
+		},
+		"palette" : [],
+>>>>>>> upstream/develop:src/assets/defaults/tk-defaults-layers.json
+		"data" : [],
+		"colors" : {
+			"particles" : [],
+			"chromatin" : [],
+			"network" : {
+				"RGB" : [],
+				"alpha" : []
+			}
+		}
+	}
+]

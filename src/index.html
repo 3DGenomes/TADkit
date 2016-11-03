@@ -8,10 +8,12 @@
 	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 	<link rel="stylesheet" href="../bower_components/angular-material/angular-material.css">
 	<link rel="stylesheet" href="assets/css/tadkit.css" />
-	<link rel="stylesheet" href="assets/css/ensembl-genes.css" />
-	
+	<link rel="stylesheet" href="assets/css/tadkit-svg.css" />
+	<link rel="stylesheet" href="assets/css/tadkit-typography.css" />
+	<link rel="stylesheet" href="assets/css/tadkit.css" />
+	<link rel="stylesheet" href="assets/css/ensembl-genes.css" />	
 </head>
-<body ng-app="TADkit">
+<body ng-app="TADkit" route-css-classnames>
 	
 	<div data-ui-view id="main" class="fullheight"></div>
 	
@@ -21,36 +23,74 @@
 	<script src="../bower_components/angular-aria/angular-aria.js"></script>
 	<script src="../bower_components/angular-animate/angular-animate.js"></script>
 	<script src="../bower_components/angular-material/angular-material.js"></script>
-	<script src="../bower_components/angular-file-upload/angular-file-upload.js"></script>
+	<!-- <script src="../bower_components/angular-file-upload/angular-file-upload.js"></script> -->
 	<script src="../bower_components/ng-flow/dist/ng-flow-standalone.js"></script>
 	<script src="../bower_components/angular-uuid4/angular-uuid4.js"></script>
 	<script src="../bower_components/papaparse/papaparse.js"></script>
+<<<<<<< HEAD
 	<script src="../bower_components/d3/d3.js"></script>
 	<script src="../bower_components/threejs/build/three.js"></script>
 	<script src="../bower_components/threejs/examples/js/controls/TrackballControls.js"></script>
 	<script src="../bower_components/threejs/examples/js/controls/OrbitControls.js"></script>
+=======
+	<script src="../bower_components/angular-d3js/dist/angular-d3js.js"></script>
+	<script src="../bower_components/angular-threejs/dist/angular-threejs.js"></script>
+
+>>>>>>> upstream/develop
 	<!-- MAIN TADKIT SCRIPTS -->
 	<script src="tadkit.js"></script>
+	<script src="tadkit.constants.js"></script>
 	<script src="tadkit.config.js"></script>
 	<script src="tadkit.run.js"></script>
 	<script src="tadkit.states.js"></script>
-	<!-- TADKIT LAYOUT -->
-	<script src="layout/home.controller.js"></script>
-	<script src="layout/main.controller.js"></script>
-	<script src="layout/project-content.controller.js"></script>
-	<script src="layout/project-dataset.controller.js"></script>
-	<script src="layout/project-loader.controller.js"></script>
-	<script src="layout/project-loader.directive.js"></script>
-	<script src="layout/project-dropzone.directive.js"></script>
-	<script src="layout/project-overlay.controller.js"></script>
-	<script src="layout/project-storyboard.controller.js"></script>
-	<script src="layout/overlay-import.controller.js"></script>
-	<script src="layout/overlay-import.directive.js"></script>
-	<script src="layout/topbar.controller.js"></script>
-	<script src="layout/sidebar.user.controller.js"></script>
-	<script src="layout/sidebar.project.controller.js"></script>
-	<script src="layout/sidebar.browser.controller.js"></script>
-	<script src="layout/storyboard.controller.js"></script>
+
+	<!-- MODULES: GENERIC -->
+	<script src="modules/generic/generic.module.js"></script>
+	<script src="modules/generic/utils.service.js"></script>
+	<script src="modules/generic/color.service.js"></script>
+	<script src="modules/generic/route-css-classnames.directive.js"></script>
+	<!-- MODULES: UI -->
+	<script src="modules/ui/ui.module.js"></script>
+	<script src="modules/ui/ui-dropzone.directive.js"></script>
+	<script src="modules/ui/ui-loader.directive.js"></script>
+	<script src="modules/ui/ui-tooltip.directive.js"></script>
+	<!-- MODULES: BIOINFORMATICS -->
+	<script src="modules/bioinformatics/bioinformatics.module.js"></script>
+	<script src="modules/bioinformatics/ensembl-features.service.js"></script>
+	<script src="modules/bioinformatics/ensembl-colors.service.js"></script>
+	<!-- MODULES: BROWSERS -->
+	<script src="modules/browsers/browsers.module.js"></script>
+	<!-- <script src="modules/browsers/biodalliance.service.js"></script> -->
+	<!-- <script src="modules/browsers/genoverse.service.js"></script> -->
+	<script src="modules/browsers/jsorolla.service.js"></script>
+	<!-- MODULES: MODELING -->
+	<script src="modules/modeling/modeling.module.js"></script>
+	<script src="modules/modeling/clusters.service.js"></script>
+	<script src="modules/modeling/restraints.service.js"></script>
+	<script src="modules/modeling/proximities.service.js"></script>
+	<!-- MODULES: VISUALIZATION -->
+	<script src="modules/visualization/visualization.module.js"></script>
+	<script src="modules/visualization/networks.service.js"></script>
+	<script src="modules/visualization/path-controls.service.js"></script>
+	<script src="modules/visualization/paths.service.js"></script>
+	<script src="modules/visualization/segments.service.js"></script>
+
+	<!-- TADKIT LAYOUT: SHARED -->
+	<script src="layout/shared/main.controller.js"></script>
+	<script src="layout/shared/sidebar.user.controller.js"></script>
+	<script src="layout/shared/topbar.controller.js"></script>
+	<!-- TADKIT LAYOUT: HOME -->
+	<script src="layout/home/home.controller.js"></script>
+	<!-- TADKIT LAYOUT: PROJECT -->
+	<script src="layout/project/project.controller.js"></script>
+	<script src="layout/project/project-dataset.controller.js"></script>
+	<script src="layout/project/project-loader.controller.js"></script>
+	<!-- TADKIT LAYOUT: BROWSER -->
+	<script src="layout/browser/data-import.controller.js"></script>
+	<script src="layout/browser/data-import.directive.js"></script>
+	<script src="layout/browser/sidebar.browser.controller.js"></script>
+	<script src="layout/browser/storyboard.controller.js"></script>
+
 	<!-- TADKIT COMPONENTS: STORYBOARD -->
 	<script src="components/component.directive.js"></script>
 	<!-- TADKIT COMPONENTS: PANELS -->
@@ -61,7 +101,6 @@
 	<!-- TADKIT COMPONENTS: SCENES -->
 	<script src="components/scenes/scene.controller.js"></script>
 	<script src="components/scenes/scene-chromatin.service.js"></script>
-	<script src="components/scenes/scene-cluster.directive.js"></script>
 	<script src="components/scenes/scene-cluster.service.js"></script>
 	<script src="components/scenes/scene-floatingtad.directive.js"></script>
 	<script src="components/scenes/scene-network.service.js"></script>
@@ -69,13 +108,13 @@
 	<script src="components/scenes/scene.directive.js"></script>
 	<!-- TADKIT COMPONENTS: TRACKS -->
 	<script src="components/tracks/track.controller.js"></script>
-	<script src="components/tracks/track-barchart.directive.js"></script>
 	<script src="components/tracks/track-bedgraph.directive.js"></script>
 	<script src="components/tracks/track-genes.directive.js"></script>
 	<script src="components/tracks/track-proximities.directive.js"></script>
 	<script src="components/tracks/track-restraints.directive.js"></script>
 	<script src="components/tracks/track-slider.directive.js"></script>
 	<script src="components/tracks/track-wiggle.directive.js"></script>
+<<<<<<< HEAD
 	<!-- TADKIT SERVICES -->
 	<script src="services/color.service.js"></script>
 	<script src="services/color-convert.service.js"></script>
@@ -96,6 +135,36 @@
 	<script src="services/settings.service.js"></script>
 	<script src="services/storyboards.service.js"></script>
 	<script src="services/users.service.js"></script>
+=======
+	<!-- TADKIT COMPONENTS: BROWSERS -->
+	<script src="components/browsers/browser.controller.js"></script>
+	<!-- <script src="components/browsers/browser-biodalliance.directive.js"></script> -->
+	<!-- <script src="components/browsers/browser-genoverse.directive.js"></script> -->
+	<script src="components/browsers/browser-jsorolla.directive.js"></script>
+
+	<!-- TADKIT CORE SERVICES -->
+	<script src="core/app.service.js"></script>
+	<script src="core/components.service.js"></script>
+	<script src="core/init.service.js"></script>
+	<script src="core/projects.service.js"></script>
+	<script src="core/settings.service.js"></script>
+	<script src="core/storyboards.service.js"></script>
+	<script src="core/users.service.js"></script>
+
+	<!-- TADKIT LAYERS DATASETS -->
+	<script src="datasets/datasets.module.js"></script>
+	<script src="datasets/datasets.service.js"></script>
+	<script src="datasets/data-import.service.js"></script>
+	<!-- <script src="datasets/spatial-tadbit.service.js"></script> -->
+	<!-- <script src="datasets/annotations-ensembl.service.js"></script> -->
+	<!-- <script src="datasets/annotations-tabular.service.js"></script> -->
+
+	<!-- TADKIT LAYERS SERVICES -->
+	<script src="layers/layers.module.js"></script>
+	<script src="layers/layers.service.js"></script>
+	<!-- <script src="layers/layers-import.service.js"></script> -->
+	<script src="layers/layer-annotations.service.js"></script>
+>>>>>>> upstream/develop
 
 	<!--base href="/src/"></base-->
 

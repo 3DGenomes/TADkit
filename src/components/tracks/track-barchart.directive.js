@@ -1,10 +1,34 @@
 (function() {
 	'use strict';
+	/**
+	 * @ngdoc directive
+	 * @name TADkit.directive:tkComponentTrackBarchart
+	 * @scope
+	 * @restrict EA
+	 * @param {Object} type Track type.
+	 * @param {Object} title Track title.
+	 * @param {Array} settings Track settings.
+	 * @param {Array} view Track view.
+	 * @param {Array} data Track data.
+	 * @param {Array} layer Value for toggle in template.
+	 * @param {function} togglelayer Toggle function in template.
+	 *
+	 * @description
+	 * Generates a d3 Barchart from the supplied data.
+
+	 * @example
+	 * <example>
+	 * 	<file name="index.html">
+	 * 		<tk-component-track-barchart></tk-component-track-barchart>
+	 * 	</file>
+	 * </example>
+	 *
+	 */
 	angular
 		.module('TADkit')
 		.directive('tkComponentTrackBarchart', tkComponentTrackBarchart);
 
-	function tkComponentTrackBarchart(d3Service, Settings) {    
+	function tkComponentTrackBarchart(VERBOSE, $log, d3Service, Settings) {    
 		return {
 			restrict: 'EA',
 			scope: {
@@ -13,12 +37,12 @@
 				settings: '=',
 				view: '=',
 				data: '=',
-				overlay: '=', /* used in template */
-				toggleoverlay: '&' /* used in template */
+				layer: '=', /* used in template */
+				togglelayer: '&' /* used in template */
 			},
 			templateUrl: 'assets/templates/track.html',
 			link: function(scope, element, attrs) {
-				// console.log(scope);
+				if (VERBOSE) $log.debug(scope);
 
 				d3Service.d3().then(function(d3) {
 
@@ -51,8 +75,8 @@
 						nodeHeight = 10,
 						nodePadding = 0,
 						nodeColor = scope.view.settings.color,
-						harmonicsColor = scope.overlay.palette[0],
-						lowerBoundsColor = scope.overlay.palette[1];
+						harmonicsColor = scope.layer.palette[0],
+						lowerBoundsColor = scope.layer.palette[1];
 
 					// VIEWPORT
 					/* component-controller == children[0]

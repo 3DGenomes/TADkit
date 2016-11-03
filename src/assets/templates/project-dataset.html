@@ -1,7 +1,7 @@
-<!-- This file is generated — do not edit by hand! -->
+<!-- This file is duplicated to ./templates by Gulp. DO NOT EDIT! -->
 <md-toolbar ng-show="$state.includes('disabled')" layout-padding class="md-accent tk-toolbar" layout="row" layout-align="space-between center">
 	<md-input-container>
-	<md-input type="file" accept=".json" tk-project-loader="addDataset($fileContent)" />
+	<md-input type="file" accept=".json" ui-file-loader="addDataset($fileContent)" />
 	</md-input-container>
 	<md-button ui-sref="cluster" class="md-raised">
 		Examine Cluster <md-icon class="icon-view-carousel"></md-icon></md-button>
@@ -9,6 +9,7 @@
 		Browse with Tracks <span class="icon-open-in-browser"></span></md-button>
 </md-toolbar>
 <md-content>
+<<<<<<< HEAD
 	<md-grid-list md-cols="5" md-gutter="0.2em" md-row-height="4:5">
 		<md-grid-tile ng-repeat='cluster in clusters | startFrom:currentPage*pageSize | limitTo:pageSize' ng-click="selectCluster($index)">
 			<tk-component-scene-cluster id="{{clusterComponent.object.id}}-{{$index+1}}" cluster="cluster" type="clusterComponent.object.type" state="clusterComponent.object.state" view="clusterComponent.view" overlay="clusterComponent.overlay" ng-class="{selected: $index+1 == datasets.current.cluster}" class="tile-content"></tk-component-scene-cluster>
@@ -24,4 +25,7 @@
 		    </button>
 		</div>
 	
+=======
+	<tk-component-scene-clusters title="clusterComponent.object.title" clusters="clusters" view="clusterComponent.view" layer="clusterComponent.layer" class="clusters"></tk-component-scene-clusters>
+>>>>>>> upstream/develop
 </md-content>
