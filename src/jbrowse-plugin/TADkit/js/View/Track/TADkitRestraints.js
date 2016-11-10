@@ -85,7 +85,7 @@ function(
             if (tadkittrackbar.length == 0) {
                 var widget = registry.byId("dijit_layout_ContentPane_1").containerNode.view;
                 
-                widget.clickscaleTrackTadkit = function(event){
+                /*widget.clickscaleTrackTadkit = function(event){
                     require(["dojo/query","dijit/registry", "dojo/dom-style",], function(query, registry, domStyle){
                         var $scope = parent.angular.element( parent.document.querySelector( '#jbrowse-iframe' ) ).scope();
                         var widget = registry.byId("dijit_layout_ContentPane_1").containerNode.view;
@@ -96,7 +96,7 @@ function(
                         var Bp = Math.floor(widget.absXtoBp(c));
                         $scope.updatePosition(Bp);
                     });
-                };
+                };*/
                 widget.updatePositioninTadkit = function(event){
                     require(["dojo/query","dijit/registry", "dojo/dom-style",], function(query, registry, domStyle){
                         var widget = registry.byId("dijit_layout_ContentPane_1").containerNode.view;
@@ -134,7 +134,8 @@ function(
                         $scope.updatePosition(Bp+(parseInt(widget.maxVisible())-parseInt(widget.minVisible())));
                     });
                 };
-                dojo.connect(widget.scaleTrackDiv,"onclick",widget,'clickscaleTrackTadkit');
+                //dojo.connect(widget.scaleTrackDiv,"onclick",widget,'clickscaleTrackTadkit');
+                dojo.disconnect(widget.behaviorManager.behaviors.always.handles[6]);
                 dojo.connect(widget.outerTrackContainer,"mousemove",widget,'updatePositioninTadkit');
                 dojo.connect(dojo.byId("moveLeft"),"onclick",widget,'clickmoveLeftTadkit');
                 dojo.connect(dojo.byId("moveRight"),"onclick",widget,'clickmoveRightTadkit');
@@ -146,12 +147,12 @@ function(
                     leftpos = widget.getWidth()/2;
                 };
                 
-                var dr = dojo.create("div", {id: "trackbar-tadkit-right-mark"}, "static_track");
+                var dr = dojo.create("div", {id: "trackbar-tadkit-right-mark"}, "zoomContainer");
                 dr.style.display = "none";
                 dr.style.left = "0px";
                 dr.style.top = toppos + "px";
                 
-                var dl = dojo.create("div", {id: "trackbar-tadkit-left-mark"}, "static_track");
+                var dl = dojo.create("div", {id: "trackbar-tadkit-left-mark"}, "zoomContainer");
                 dl.style.display = "none";
                 dl.style.left = "0px";
                 dl.style.top = toppos + "px";
@@ -173,7 +174,8 @@ function(
                 	dr.style.display = "block";
                 };
                 
-                var d = dojo.create("div", {id: "trackbar-tadkit"}, "static_track");
+                //var d = dojo.create("div", {id: "trackbar-tadkit"}, "static_track");
+                var d = dojo.create("div", {id: "trackbar-tadkit"}, "zoomContainer");            
                 d.style.display = "block";
                 d.style.left = Math.floor(leftpos) + "px";
                 d.style.top = toppos + "px";
