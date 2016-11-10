@@ -34,7 +34,6 @@ function(
             		, function (visibleTrackNames) {
             			if(visibleTrackNames) thisB._addOverlayMenuItem(visibleTrackNames[0]);
             		});
-
         },
         _createRestraintsTrack: function() {
 

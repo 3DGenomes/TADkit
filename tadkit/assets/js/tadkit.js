@@ -969,13 +969,12 @@
 		//$scope.jbrowsedataurl = 'http://172.16.54.4/JBrowse/data';
 		//$scope.jbrowsedataurl = $scope.view.settings.jbrowse_data+'_'+$scope.settings.current.speciesUrl;
 		$scope.jbrowsedataurl = encodeURIComponent($scope.view.settings.species_data[$scope.settings.current.speciesUrl]);
+		
 		$scope.iframe_src = $scope.view.settings.jbrowse_path+'index.html?data='+$scope.jbrowsedataurl+'&loc='+chrom+':'+
 		jbrowse_start+'..'+($scope.settings.current.chromEnd+30000)+'&tracks=Restraints'+
 			'&highlight='+chrom+':'+$scope.settings.current.chromStart+'..'+$scope.settings.current.chromEnd;
-			//'&addBookmarks=%5B%7B%22start%22%3A'+$scope.settings.current.chromStart+
-			//'%2C%22end%22%3A'+$scope.settings.current.chromEnd+'%2C%22color%22%3A%20%22rgba(190%2C50%2C50%2C0.5)%22%2C%22ref%22%3A%20%22'+
-			//($scope.settings.current.chrom).replace('chr','')+'%22%7D%5D';
 		
+			
 		$scope.updatePosition =  function(position) {
 			//alert(position);
 			if(position >= $scope.settings.current.chromStart && position <= $scope.settings.current.chromEnd) {
