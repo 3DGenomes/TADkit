@@ -362,7 +362,7 @@ md-checkbox.md-checked .md-icon {
 }
 .component #hic_data_container{
 	overflow: hidden;
-	border: 5px solid #ddd;
+	/*border: 5px solid #ddd;*/
 }
 .component #hic_data_container #zoom-buttons {
 	z-index: 2;

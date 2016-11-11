@@ -20,11 +20,11 @@
 		$scope.jbrowsedataurl = encodeURIComponent($scope.view.settings.species_data[$scope.settings.current.speciesUrl]);
 		
 		$scope.iframe_src = $scope.view.settings.jbrowse_path+'index.html?data='+$scope.jbrowsedataurl+'&loc='+chrom+':'+
-		jbrowse_start+'..'+($scope.settings.current.chromEnd+30000)+'&tracks=Restraints'+
+		jbrowse_start+'..'+($scope.settings.current.chromEnd+30000)+'&tracks=Restraints&overview=0'+
 			'&highlight='+chrom+':'+$scope.settings.current.chromStart+'..'+$scope.settings.current.chromEnd;
 		
 			
-		$scope.updatePosition =  function(position) {
+		$scope.updatePosition =  function(position, leftborder, rightborder) {
 			//alert(position);
 			if(position >= $scope.settings.current.chromStart && position <= $scope.settings.current.chromEnd) {
 				$scope.settings.current.position = position;
@@ -34,6 +34,10 @@
 			}  
 			if(position > $scope.settings.current.chromEnd) {
 				$scope.settings.current.position = $scope.settings.current.chromEnd;
+			}
+			if($scope.settings.current.leftborder != leftborder || $scope.settings.current.rightborder != rightborder) {
+				$scope.settings.current.leftborder = leftborder;
+				$scope.settings.current.rightborder = rightborder;
 			}
 			$scope.hideTadkitMarkers();
 			$scope.$apply();

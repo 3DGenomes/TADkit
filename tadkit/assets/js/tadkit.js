@@ -463,8 +463,8 @@
 		                	}
 		                }
 		                
-		                //scope.restore_image = ctx.getImageData(0, 0, canvas.width, canvas.height);
-		                scope.scale = (container_width-2*parseInt(scope.state.margin))/(Math.sqrt(2)*data.n);
+		                //let browser resize it
+		                //scope.scale = (container_width-2*parseInt(scope.state.margin))/(Math.sqrt(2)*data.n); 
 		                scope.imageObject.src=canvas.toDataURL();
 		                
 		                if(scope.rendered) return;
@@ -568,11 +568,11 @@
 								.style("color", "#333")
 								.text("0");
 
-			                svg.on("mousedown", function(){
+			                /*svg.on("mousedown", function(){
 						        mouseDown = true;
 						        startDragOffset.x = d3.event.clientX - scope.translatePos.x;
 						        startDragOffset.y = d3.event.clientY- scope.translatePos.y;
-						    });
+						    });*/
 						 
 						    svg.on("mouseup", function(){
 						    	if(!mouseMove) {
@@ -646,10 +646,24 @@
 		        };
 		        scope.$watch('settings.current.particle', function(newParticle, oldParticle) {
 					if ( newParticle !== oldParticle) {
+						if (typeof scope.settings.current.leftborder != 'undefined') {
+							var rect = hic_data_container.getBoundingClientRect();
+							scope.translatePos.x = scope.settings.current.leftborder-rect.left;
+						}
 						scope.update();
 						scope.update_marks();
 					}
 				});
+		        scope.$watch('settings.current.leftborder', function(newPos, oldPos) {
+					if ( newPos !== oldPos) {
+						var rect = hic_data_container.getBoundingClientRect();
+						scope.translatePos.x = scope.settings.current.leftborder-rect.left;
+						scope.scale = (scope.settings.current.rightborder-scope.settings.current.leftborder)/(Math.sqrt(2)*data.n); 
+						scope.update();
+						scope.update_marks();
+					}
+				});
+		        
 		        scope.$watch('settings.slidevalue', function(newvalue,oldvalue) {
 		        	if ( newvalue !== oldvalue) {
 		        		var slide_value = newvalue.split(";");
@@ -678,7 +692,7 @@
 		                //ctx.rotate(-Math.PI/4);
 		                //ctx.scale(scope.scale, scope.scale);
 		                t.reset();
-		                t.translate(scope.translatePos.x, container_height-10);
+		                t.translate(scope.translatePos.x, container_height);
 		                t.rotate(-Math.PI/4);
 		                t.scale(scope.scale, scope.scale);
 		                ti.m  = t.m.slice();
@@ -971,11 +985,11 @@
 		$scope.jbrowsedataurl = encodeURIComponent($scope.view.settings.species_data[$scope.settings.current.speciesUrl]);
 		
 		$scope.iframe_src = $scope.view.settings.jbrowse_path+'index.html?data='+$scope.jbrowsedataurl+'&loc='+chrom+':'+
-		jbrowse_start+'..'+($scope.settings.current.chromEnd+30000)+'&tracks=Restraints'+
+		jbrowse_start+'..'+($scope.settings.current.chromEnd+30000)+'&tracks=Restraints&overview=0'+
 			'&highlight='+chrom+':'+$scope.settings.current.chromStart+'..'+$scope.settings.current.chromEnd;
 		
 			
-		$scope.updatePosition =  function(position) {
+		$scope.updatePosition =  function(position, leftborder, rightborder) {
 			//alert(position);
 			if(position >= $scope.settings.current.chromStart && position <= $scope.settings.current.chromEnd) {
 				$scope.settings.current.position = position;
@@ -985,6 +999,10 @@
 			}  
 			if(position > $scope.settings.current.chromEnd) {
 				$scope.settings.current.position = $scope.settings.current.chromEnd;
+			}
+			if($scope.settings.current.leftborder != leftborder || $scope.settings.current.rightborder != rightborder) {
+				$scope.settings.current.leftborder = leftborder;
+				$scope.settings.current.rightborder = rightborder;
 			}
 			$scope.hideTadkitMarkers();
 			$scope.$apply();
