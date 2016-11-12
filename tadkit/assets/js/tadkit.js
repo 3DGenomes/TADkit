@@ -774,7 +774,6 @@
 		        		start_tad_segment = Math.round((parseInt(polygon_tads[newvalue].attr("start")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
 		        		end_tad_segment = Math.ceil((parseInt(polygon_tads[newvalue].attr("end")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
 		        		scope.settings.current.tad_selected = newvalue;
-		        		
 		        	}
 				});
 				scope.translatePos = {
@@ -2442,6 +2441,7 @@
 											if(newValue == -1) {
 												sphereObj.visible = false;
 											} else {
+												sphereObj.visible = true;
 												sphereObj.children[i].material.opacity = 0.3;
 												sphereObj.children[i].material.color.set(oldColor);
 												sphereObj.children[i].material.emissive.set(oldColor);

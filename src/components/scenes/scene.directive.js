@@ -339,6 +339,7 @@
 											if(newValue == -1) {
 												sphereObj.visible = false;
 											} else {
+												sphereObj.visible = true;
 												sphereObj.children[i].material.opacity = 0.3;
 												sphereObj.children[i].material.color.set(oldColor);
 												sphereObj.children[i].material.emissive.set(oldColor);

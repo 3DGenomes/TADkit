@@ -186,7 +186,7 @@ function(
                 dojo.connect(dojo.byId("bigZoomOut"),"onclick",widget,'updateTadkitonZoom');
                 dojo.connect(dojo.byId("zoomOut"),"onclick",widget,'updateTadkitonZoom');
                 dojo.connect( widget.outerTrackContainer, "dblclick",       widget, 'updateTadkitonZoom'    );
-                var toppos = '55';
+                var toppos = '0';
                 var $scope = parent.angular.element( parent.document.querySelector( '#jbrowse-iframe' ) ).scope();
                 var c = widget.bpToPx($scope.settings.current.position);
                 var leftpos = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
