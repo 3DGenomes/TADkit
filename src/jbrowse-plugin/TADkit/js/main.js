@@ -130,7 +130,7 @@ function(
 	                   {
 	                    "label": "Apply to 3D",
 	                    "action":function(clickEvent) { applyOverlay(trackConf.label); },
-	                    "iconClass": "dijitIconFunction",
+	                    "type": 'dijit/CheckedMenuItem',
 	                    "title": "Apply to 3D"
 	                   }];
             		
