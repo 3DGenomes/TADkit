@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.directive('tkComponentPanelHicdata', tkComponentPanelHicdata);
 
-	function tkComponentPanelHicdata(d3Service,$timeout, Overlays, uuid4, Networks) {
+	function tkComponentPanelHicdata(d3Service, $timeout, Overlays, uuid4, Networks) {
 		return {
 			restrict: 'EA',
 			scope: { 
@@ -32,7 +32,7 @@
 				
 			    var slidevalue = scope.slidevalue;
 				var brush;
-				var hic_svg, handle, position, contact_marker, contact_marker_value;
+				var svg, hic_svg, handle, position, contact_marker, contact_marker_value;
 				var polygon_tads = [];
 				scope.highlighted_tad = -1;
 				var canvas;
@@ -187,10 +187,10 @@
 
 			                //tads svg
 			                var hic_data_container = angular.element(document.querySelector('#hic_data_container'));
-							var svg = d3.select(hic_data_container[0]).append('svg');
-							
+							if(!svg) {
+								svg = d3.select(hic_data_container[0]).append('svg');
+							}
 							svg.selectAll('*').remove();
-							
 							hic_svg = svg.attr('width', container_width-2*parseInt(scope.state.margin))
 									.attr('height', container_height-2*parseInt(scope.state.margin))
 									.style("position", "absolute")
@@ -221,6 +221,7 @@
 							var stroke_width = 0;
 							var resolution, start_tad, end_tad = 0;
 							var polygon_tad, start_tad_scaled, end_tad_scaled, tad_height; 
+							polygon_tads = [];
 							for(i=0;i<data.tads.length;i++) {
 			                	stroke_width = Math.round(data.tads[i][3]/10);
 			                	// assuming tads given in absolute position
@@ -348,6 +349,12 @@
 		                };
 		            }
 		        };
+		        scope.$watch('state.width', function(newWidth, oldWidth) {
+		        	if(newWidth !== oldWidth){
+		        		scope.rendered = false;
+		                scope.render(data.max, data.min);
+		        	}
+		        });
 		        scope.$watch('settings.current.particle', function(newParticle, oldParticle) {
 					if ( newParticle !== oldParticle) {
 						if (typeof scope.settings.current.leftborder != 'undefined') {
@@ -492,6 +499,7 @@
 			        scope.update_marks();
 			    };
 
+			    
 			    /*// Better tubed by default. Maybe add button to toggle red
 			    var originalOverlay = Overlays.getCurrentIndex();
 				var overlays = Overlays.get();

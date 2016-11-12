@@ -115,7 +115,7 @@
                     "type" : "panel-hicdata",
                     "dataset" : "default",
                     "state" : {
-                        "width" : "1200px",
+                        "width" : "800px",
                         "height" : "400px",
                         "margin" : "0px",
                         "position" : 1

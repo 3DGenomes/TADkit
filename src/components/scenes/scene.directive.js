@@ -131,7 +131,7 @@
 
 						// width = component.clientWidth; // NEED TO WAIT UNTIL DOM LOADED
 						width = parseInt(scope.state.width); // USE UNTIL DOM CHECK AVAILBLE
-						if(window.innerWidth <= 1280) width = 600;
+						//if(window.innerWidth <= 1280) width = 600;
 						// height = component.clientHeight;
 						height = parseInt(scope.state.height); // USE UNTIL DOM CHECK AVAILBLE
 						// OJO! DOM NOT READY

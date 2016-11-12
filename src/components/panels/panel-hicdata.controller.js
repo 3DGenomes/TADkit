@@ -4,10 +4,12 @@
 		.module('TADkit')
 		.controller('PanelHicdataController', PanelHicdataController);
 
-	function PanelHicdataController($scope) {
+	function PanelHicdataController($scope,$window,Storyboards) {
 
-		$scope.width = $scope.canvas_width = parseInt($scope.state.width)-2*parseInt($scope.state.margin); // strip PX units
-		$scope.height = $scope.canvas_height = parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units
+		//$scope.width = $scope.canvas_width = parseInt($scope.state.width)-2*parseInt($scope.state.margin); // strip PX units
+		var scene_component = Storyboards.getComponentById('default-scene');
+		$scope.width = $scope.state.width = $window.innerWidth - parseInt(scene_component.object.state.width) - 20 - 2*parseInt($scope.state.margin);
+		$scope.height = $scope.state.height = $scope.canvas_height = parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units
 		if($scope.data.n === 0) {
 			$scope.no_hic_data = true; 
 			$scope.slidevalue = "10;0.001";
@@ -17,14 +19,28 @@
 			$scope.no_hic_data = false;
 		}
 		
+		var w = angular.element($window);
+		$scope.$watch(
+		  function () {
+		    return $window.innerWidth;
+		  },
+		  function (value) {
+		    $scope.width = $scope.state.width = $scope.canvas_width = value - parseInt(scene_component.object.state.width) - 20 - 2*parseInt($scope.state.margin);
+		  	//$scope.$apply();
+		  },
+		  true
+		);
 
-		
-		if(parseInt($scope.data.n)>$scope.width) {
-			$scope.canvas_width = parseInt($scope.data.n); // strip PX units
-		}
-		if(parseInt($scope.data.n)>$scope.height) {
-			$scope.canvas_height = parseInt($scope.data.n); // strip PX units
-		}
+		w.bind('resize', function(){
+		  $scope.$apply();
+		});
+
+		//if(parseInt($scope.data.n)>$scope.width) {
+		//	$scope.canvas_width = parseInt($scope.data.n); // strip PX units
+		//}
+		//if(parseInt($scope.data.n)>$scope.height) {
+		//	$scope.canvas_height = parseInt($scope.data.n); // strip PX units
+		//}
 		//$scope.slidevalue = $scope.data.min+";"+$scope.data.max;
 		$scope.slidevalue = "10;0.001";
 		$scope.slideoptions = {       

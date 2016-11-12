@@ -237,10 +237,12 @@
 		.module('TADkit')
 		.controller('PanelHicdataController', PanelHicdataController);
 
-	function PanelHicdataController($scope) {
+	function PanelHicdataController($scope,$window,Storyboards) {
 
-		$scope.width = $scope.canvas_width = parseInt($scope.state.width)-2*parseInt($scope.state.margin); // strip PX units
-		$scope.height = $scope.canvas_height = parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units
+		//$scope.width = $scope.canvas_width = parseInt($scope.state.width)-2*parseInt($scope.state.margin); // strip PX units
+		var scene_component = Storyboards.getComponentById('default-scene');
+		$scope.width = $scope.state.width = $window.innerWidth - parseInt(scene_component.object.state.width) - 20 - 2*parseInt($scope.state.margin);
+		$scope.height = $scope.state.height = $scope.canvas_height = parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units
 		if($scope.data.n === 0) {
 			$scope.no_hic_data = true; 
 			$scope.slidevalue = "10;0.001";
@@ -250,14 +252,28 @@
 			$scope.no_hic_data = false;
 		}
 		
+		var w = angular.element($window);
+		$scope.$watch(
+		  function () {
+		    return $window.innerWidth;
+		  },
+		  function (value) {
+		    $scope.width = $scope.state.width = $scope.canvas_width = value - parseInt(scene_component.object.state.width) - 20 - 2*parseInt($scope.state.margin);
+		  	//$scope.$apply();
+		  },
+		  true
+		);
 
-		
-		if(parseInt($scope.data.n)>$scope.width) {
-			$scope.canvas_width = parseInt($scope.data.n); // strip PX units
-		}
-		if(parseInt($scope.data.n)>$scope.height) {
-			$scope.canvas_height = parseInt($scope.data.n); // strip PX units
-		}
+		w.bind('resize', function(){
+		  $scope.$apply();
+		});
+
+		//if(parseInt($scope.data.n)>$scope.width) {
+		//	$scope.canvas_width = parseInt($scope.data.n); // strip PX units
+		//}
+		//if(parseInt($scope.data.n)>$scope.height) {
+		//	$scope.canvas_height = parseInt($scope.data.n); // strip PX units
+		//}
 		//$scope.slidevalue = $scope.data.min+";"+$scope.data.max;
 		$scope.slidevalue = "10;0.001";
 		$scope.slideoptions = {       
@@ -300,7 +316,7 @@
 		.module('TADkit')
 		.directive('tkComponentPanelHicdata', tkComponentPanelHicdata);
 
-	function tkComponentPanelHicdata(d3Service,$timeout, Overlays, uuid4, Networks) {
+	function tkComponentPanelHicdata(d3Service, $timeout, Overlays, uuid4, Networks) {
 		return {
 			restrict: 'EA',
 			scope: { 
@@ -328,7 +344,7 @@
 				
 			    var slidevalue = scope.slidevalue;
 				var brush;
-				var hic_svg, handle, position, contact_marker, contact_marker_value;
+				var svg, hic_svg, handle, position, contact_marker, contact_marker_value;
 				var polygon_tads = [];
 				scope.highlighted_tad = -1;
 				var canvas;
@@ -483,10 +499,10 @@
 
 			                //tads svg
 			                var hic_data_container = angular.element(document.querySelector('#hic_data_container'));
-							var svg = d3.select(hic_data_container[0]).append('svg');
-							
+							if(!svg) {
+								svg = d3.select(hic_data_container[0]).append('svg');
+							}
 							svg.selectAll('*').remove();
-							
 							hic_svg = svg.attr('width', container_width-2*parseInt(scope.state.margin))
 									.attr('height', container_height-2*parseInt(scope.state.margin))
 									.style("position", "absolute")
@@ -517,6 +533,7 @@
 							var stroke_width = 0;
 							var resolution, start_tad, end_tad = 0;
 							var polygon_tad, start_tad_scaled, end_tad_scaled, tad_height; 
+							polygon_tads = [];
 							for(i=0;i<data.tads.length;i++) {
 			                	stroke_width = Math.round(data.tads[i][3]/10);
 			                	// assuming tads given in absolute position
@@ -644,6 +661,12 @@
 		                };
 		            }
 		        };
+		        scope.$watch('state.width', function(newWidth, oldWidth) {
+		        	if(newWidth !== oldWidth){
+		        		scope.rendered = false;
+		                scope.render(data.max, data.min);
+		        	}
+		        });
 		        scope.$watch('settings.current.particle', function(newParticle, oldParticle) {
 					if ( newParticle !== oldParticle) {
 						if (typeof scope.settings.current.leftborder != 'undefined') {
@@ -788,6 +811,7 @@
 			        scope.update_marks();
 			    };
 
+			    
 			    /*// Better tubed by default. Maybe add button to toggle red
 			    var originalOverlay = Overlays.getCurrentIndex();
 				var overlays = Overlays.get();
@@ -2210,7 +2234,7 @@
 
 						// width = component.clientWidth; // NEED TO WAIT UNTIL DOM LOADED
 						width = parseInt(scope.state.width); // USE UNTIL DOM CHECK AVAILBLE
-						if(window.innerWidth <= 1280) width = 600;
+						//if(window.innerWidth <= 1280) width = 600;
 						// height = component.clientHeight;
 						height = parseInt(scope.state.height); // USE UNTIL DOM CHECK AVAILBLE
 						// OJO! DOM NOT READY
