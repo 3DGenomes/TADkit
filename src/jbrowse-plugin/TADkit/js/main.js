@@ -2,12 +2,14 @@ define([
     'dojo/_base/declare',
     'dojo/_base/lang',
     'dojo/when',
+    'dojo/on',
     'JBrowse/Plugin'
 ],
 function(
     declare,
     lang,
     when,
+    on,
     JBrowsePlugin
 ) {
     return declare(JBrowsePlugin, {
@@ -27,13 +29,21 @@ function(
             var thisB = this;
             this.browser.afterMilestone('initView', function() {
                 this._createRestraintsTrack();
+                this._pullDownMenu();
+                on(window, 'resize', function() {
+                    thisB._pullDownMenu();               
+                }); 
                 
             }, this );
             //dojo.subscribe("/jbrowse/v1/n/tracks/visibleChanged",  lang.hitch( this, '_addOverlayMenuItem' ));
             dojo.subscribe('/jbrowse/v1/n/tracks/visibleChanged'
             		, function (visibleTrackNames) {
-            			if(visibleTrackNames) thisB._addOverlayMenuItem(visibleTrackNames[0]);
+            			if(visibleTrackNames) {
+                            thisB._addOverlayMenuItem(visibleTrackNames[0]);
+                        }
             		});
+            
+            
         },
         _createRestraintsTrack: function() {
 
@@ -61,8 +71,14 @@ function(
 
             // send out a message about how the user wants to create the new track
             thisB.browser.publish( '/jbrowse/v1/v/tracks/new', [restraintsTrackConfig] );
-
                
+        },
+        _pullDownMenu: function() {
+            var topPane = dojo.byId("dijit_layout_ContentPane_0");
+            var trackPane = dojo.byId("dijit_layout_ContentPane_1");
+            
+            topPane.style.top = (parseInt(this.browser.container.clientHeight)-parseInt(topPane.clientHeight))+"px";
+            trackPane.style.top = "0px";
         },
         _addOverlayMenuItem: function( visibleTrackNames ) {
         	
