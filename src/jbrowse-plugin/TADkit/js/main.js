@@ -111,6 +111,7 @@ function(
         },
         _createTadkitNavigation: function() {
             if(parent.angular==undefined) return false;
+            var thisB = this;
             var tadkittrackbar = query("#trackbar-tadkit", "static_track");
             var trackbar = query(".trackVerticalPositionIndicatorMain", "static_track");
             if (tadkittrackbar.length == 0) {
@@ -136,6 +137,7 @@ function(
                     if($scope.settings.current.chromStart>Bp) {
                         if(widget.dragging) widget.dragEnd(event);
                         widget.centerAtBase($scope.settings.current.chromStart,true);
+                        thisB._addOverlayMenuItem();
                         $scope.updateTadkitBar($scope.settings.current.chromStart);
                         leftborder = parseInt(tadkittrackbar.style.left);
                         rightborder = leftborder+left_right;
@@ -145,6 +147,7 @@ function(
                     } else if($scope.settings.current.chromEnd<Bp) {
                         if(widget.dragging) widget.dragEnd(event);
                         widget.centerAtBase($scope.settings.current.chromEnd,true);
+                        thisB._addOverlayMenuItem();
                         $scope.updateTadkitBar($scope.settings.current.chromEnd);
                         rightborder = parseInt(tadkittrackbar.style.left);
                         leftborder = rightborder-left_right;
@@ -200,6 +203,7 @@ function(
                            if(!widget.animation) {
                                 
                                 updatePosition(event);
+                                thisB._addOverlayMenuItem();
                                 clearInterval(timer);
                            }
                         }, 1000);
@@ -328,9 +332,10 @@ function(
         _pullDownMenu: function() {
             var topPane = dojo.byId("dijit_layout_ContentPane_0");
             var trackPane = dojo.byId("dijit_layout_ContentPane_1");
-            
-            topPane.style.top = (parseInt(this.browser.container.clientHeight)-parseInt(topPane.clientHeight))+"px";
-            trackPane.style.top = "0px";
+            topPane.children[0].style.height = "0px";
+            topPane.children[0].style.display = "None";
+            //topPane.style.top = (parseInt(this.browser.container.clientHeight)-parseInt(topPane.clientHeight))+"px";
+            trackPane.style.top = "33px";
         },
         _addOverlayMenuItem: function( visibleTrackNames ) {
         	
@@ -346,24 +351,50 @@ function(
 	                   end: $scope.settings.current.chromEnd
 	                 };
 	                var feat = [];
-	                track.store.getFeatures( region,
-	                                        function( feature ) {
-	                							if(typeof feature.get('color') == 'undefined' && typeof feature.get('score') == 'undefined') {
-	                								return;
-	                							}
-	                                            feat.push(feature);
-	                                        },
-	                                        // callback when all features sent
-	                                        function () {
-	                                            $scope.applyOverlay(track.key,feat);
-	                                        });
-	                thisB.tracksOverlaid[track_label] = true;
+	                for(var key in track.blocks) break;
+	                var showFeatures = track.blocks[key].scale >= (track.config.style.featureScale || 0 / track.config.maxFeatureScreenDensity );
+	                if(showFeatures) {
+	                	for(var key in thisB.tracksOverlaid) {
+	                		if(thisB.tracksOverlaid[key]) {
+	                			var other_track = thisB.browser.view.tracks[thisB.browser.view.trackIndices[key]];
+	                			var menuIt = other_track.trackMenu.getChildren();
+	                			for(var key in menuIt) {
+	                				if(menuIt[key].title == 'Apply to 3D') {
+	                					menuIt[key].set('checked',false);
+	                					thisB.tracksOverlaid[key]=false;
+	                				}
+	                			}
+	                			break;
+	                		}
+	                		
+	                	}
+		                track.store.getFeatures( region,
+		                                        function( feature ) {
+		                							if(typeof feature.get('color') == 'undefined' && typeof feature.get('score') == 'undefined') {
+		                								return;
+		                							}
+		                                            feat.push(feature);
+		                                        },
+		                                        // callback when all features sent
+		                                        function () {
+		                                            $scope.applyOverlay(track.key,feat);
+		                                        });
+		                thisB.tracksOverlaid[track_label] = true;
+		                track.config.applied3D = true;
+	                }
                 } else {
                 	$scope.removeOverlay(track.key);
                 	thisB.tracksOverlaid[track_label] = false;
+                	track.config.applied3D = false;
                 }
                 
             };
+            if(!visibleTrackNames) {
+            	var visibleTrackNames = [];
+            	for(var key in thisB.browser.view.trackIndices) visibleTrackNames.push(key);
+            	
+            }
+            	
             dojo.forEach( visibleTrackNames, function(conf) {
             	
             	//var trackConf = this.browser.trackConfigsByName[conf];
@@ -376,14 +407,20 @@ function(
             	color_val = true;
             	
             	if(color_val) {
-            		this.tracksOverlaid[trackConf.label] = false;
+            		
+            		if(!(trackConf.label in this. tracksOverlaid)) {
+            			this.tracksOverlaid[trackConf.label] = false;
+            			track.config.applied3D = false;
+            		}
+            		
 	                apply3dopt = [
 	                   { type: 'dijit/MenuSeparator' },
 	                   {
 	                    "label": "Apply to 3D",
 	                    "action":function(clickEvent) { applyOverlay(trackConf.label); },
 	                    "type": 'dijit/CheckedMenuItem',
-	                    "title": "Apply to 3D"
+	                    "title": "Apply to 3D",
+	                    "checked": !! track.config.applied3D
 	                   }];
             		
             		when( track._trackMenuOptions() )
