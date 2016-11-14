@@ -28,9 +28,9 @@
 		angular.forEach( $scope.current.storyboard.components, function(component, index) {
 
 			// if (component.object.dataset == "default") {
-				var overlay, overlayProximities;
+				var overlay, overlayProximities, all_data;
 				if (component.object.type == "scene") {
-					var all_data = {
+					all_data = {
 						tad_data: Hic_data.get(),
 						data: $scope.current.model.data 
 					};
@@ -67,7 +67,12 @@
 					component.data = Hic_data.get();
 				} else if (component.object.type == "panel-jbrowse") {
 					//component.data = Restraints.get();
-					component.data = $scope.currentRestraints;
+					all_data = {
+							tad_data: Hic_data.get(),
+							data: $scope.currentRestraints,
+					};
+					component.data = all_data;
+					//component.data = $scope.currentRestraints;
 					overlay = Overlays.getOverlayById("restraints");
 					component.overlay = overlay;
 				}

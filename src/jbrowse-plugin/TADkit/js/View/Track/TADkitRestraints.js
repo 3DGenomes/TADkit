@@ -5,9 +5,7 @@ define([
     'dojo/_base/event',
     'dojo/dom-construct',
     'JBrowse/Util',
-    'dojo/query',
     'dojo/on',
-    'dijit/registry',
     'JBrowse/View/Track/CanvasFeatures',    
 ],
 function(
@@ -17,21 +15,20 @@ function(
     domEvent,
     domConstruct,
     Util,
-    query,
     on,
-    registry,
     CanvasFeatureTrack
 ) {
     return declare(CanvasFeatureTrack, {
         constructor: function( args ) {
         	var track=this;
-            this._createTadkitNavigation();
+            
             var $scope = parent.angular.element( parent.document.querySelector( '#jbrowse-iframe' ) ).scope();
-            $scope.$watch('data.dimension', function(newPosition, oldPosition) {
+            $scope.$watch('data.data.dimension', function(newPosition, oldPosition) {
                 if ( newPosition !== oldPosition ) {
                     track._refreshTrack(track, newPosition, oldPosition);
                 }
             });
+            
         },
         _defaultConfig: function() {
             return Util.deepUpdate(
@@ -77,170 +74,6 @@ function(
         },
         _finish_callback: function() {
             // to do
-        },
-        _createTadkitNavigation: function() {
-            if(parent.angular==undefined) return false;
-            var tadkittrackbar = query("#trackbar-tadkit", "static_track");
-            var trackbar = query(".trackVerticalPositionIndicatorMain", "static_track");
-            if (tadkittrackbar.length == 0) {
-                var widget = registry.byId("dijit_layout_ContentPane_1").containerNode.view;
-                
-                /*widget.clickscaleTrackTadkit = function(event){
-                    require(["dojo/query","dijit/registry", "dojo/dom-style",], function(query, registry, domStyle){
-                        var $scope = parent.angular.element( parent.document.querySelector( '#jbrowse-iframe' ) ).scope();
-                        var widget = registry.byId("dijit_layout_ContentPane_1").containerNode.view;
-                        var tadkittrackbar = dojo.byId("trackbar-tadkit");
-                        var c = track.clientX + 2;
-                        tadkittrackbar.style.display = "block";
-                        tadkittrackbar.style.left = Math.floor(c) + "px";
-                        var Bp = Math.floor(widget.absXtoBp(c));
-                        $scope.updatePosition(Bp);
-                    });
-                };*/
-                updatePosition = function(event){
-                    var $scope = parent.angular.element( parent.document.querySelector( '#jbrowse-iframe' ) ).scope();
-                    var tadkittrackbar = dojo.byId("trackbar-tadkit");
-                    var Bp = Math.floor(widget.absXtoBp(parseInt(tadkittrackbar.style.left)));
-                    var left_right = $scope.settings.current.rightborder-$scope.settings.current.leftborder;
-                    if($scope.settings.current.chromStart>Bp) {
-                        if(widget.dragging) widget.dragEnd(event);
-                        widget.centerAtBase($scope.settings.current.chromStart,true);
-                        $scope.updateTadkitBar($scope.settings.current.chromStart);
-                        leftborder = parseInt(tadkittrackbar.style.left);
-                        rightborder = leftborder+left_right;
-                        $scope.updatePosition($scope.settings.current.chromStart, leftborder, rightborder);
-                        
-
-                    } else if($scope.settings.current.chromEnd<Bp) {
-                        if(widget.dragging) widget.dragEnd(event);
-                        widget.centerAtBase($scope.settings.current.chromEnd,true);
-                        $scope.updateTadkitBar($scope.settings.current.chromEnd);
-                        rightborder = parseInt(tadkittrackbar.style.left);
-                        leftborder = rightborder-left_right;
-                        $scope.updatePosition(Bp, leftborder, rightborder);    
-                        
-                        
-                    } else {
-                        c = widget.bpToPx($scope.settings.current.chromStart);
-                        leftborder = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
-                        c = widget.bpToPx($scope.settings.current.chromEnd);
-                        rightborder = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
-                        $scope.updatePosition(Bp, leftborder, rightborder);
-                    }
-                    
-                        
-                };
-                widget.updatePositioninTadkit = function(event){
-                    require(["dojo/query","dijit/registry", "dojo/dom-style",], function(query, registry, domStyle){
-                    	
-                    	if(widget.dragging) {
-	                        updatePosition(event);
-                    	}
-                        
-                    });
-                };
-                
-                widget.clickmoveLeftTadkit = function(event){
-                    require(["dojo/query","dijit/registry", "dojo/dom-style",], function(query, registry, domStyle){
-                        var timer = setInterval(function () {
-                           if(!widget.animation) {
-                                
-                                updatePosition(event);
-                                clearInterval(timer);
-                           }
-                        }, 1000);
-                    });
-                };
-                widget.clickmoveRightTadkit = function(event){
-                    require(["dojo/query","dijit/registry", "dojo/dom-style",], function(query, registry, domStyle){
-                    	var timer = setInterval(function () {
-                           if(!widget.animation) {
-                                
-                                updatePosition(event);
-                                clearInterval(timer);
-                           }
-                        }, 1000);
-                    });
-                };
-                widget.updateTadkitonZoom = function(event){
-                	require(["dojo/query","dijit/registry", "dojo/dom-style",], function(query, registry, domStyle){
-                		var timer = setInterval(function () {
-                           if(!widget.animation) {
-                                
-                                updatePosition(event);
-                                clearInterval(timer);
-                           }
-                        }, 1000);
-
-                        //});
-                		
-                	});
-                };
-                //dojo.connect(widget.scaleTrackDiv,"onclick",widget,'clickscaleTrackTadkit');
-                dojo.disconnect(widget.behaviorManager.behaviors.always.handles[6]);
-                dojo.connect(widget.outerTrackContainer,"mousemove",widget,'updatePositioninTadkit');
-                dojo.connect(dojo.byId("moveLeft"),"onclick",widget,'clickmoveLeftTadkit');
-                dojo.connect(dojo.byId("moveRight"),"onclick",widget,'clickmoveRightTadkit');
-                dojo.connect(dojo.byId("bigZoomIn"),"onclick",widget,'updateTadkitonZoom');
-                dojo.connect(dojo.byId("zoomIn"),"onclick",widget,'updateTadkitonZoom');
-                dojo.connect(dojo.byId("bigZoomOut"),"onclick",widget,'updateTadkitonZoom');
-                dojo.connect(dojo.byId("zoomOut"),"onclick",widget,'updateTadkitonZoom');
-                dojo.connect( widget.outerTrackContainer, "dblclick",       widget, 'updateTadkitonZoom'    );
-                var toppos = '0';
-                var $scope = parent.angular.element( parent.document.querySelector( '#jbrowse-iframe' ) ).scope();
-                var c = widget.bpToPx($scope.settings.current.position);
-                var leftpos = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
-                if (Math.floor(leftpos) < 0) {
-                    leftpos = widget.getWidth()/2;
-                };
-                
-                var dr = dojo.create("div", {id: "trackbar-tadkit-right-mark"}, "zoomContainer");
-                dr.style.display = "none";
-                dr.style.left = "0px";
-                dr.style.top = toppos + "px";
-                
-                var dl = dojo.create("div", {id: "trackbar-tadkit-left-mark"}, "zoomContainer");
-                dl.style.display = "none";
-                dl.style.left = "0px";
-                dl.style.top = toppos + "px";
-                
-                $scope.hideTadkitMarkers = function() {
-                	dl.style.display = "none";
-                	dr.style.display = "none";
-                };
-                $scope.updateTadkitMarkers = function(x,y) {
-                	c = widget.bpToPx(y);
-                    leftpos = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
-                	dl.style.left = Math.floor(leftpos) + "px";
-                	
-                	c = widget.bpToPx(x);
-                    leftpos = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
-                	dr.style.left = Math.floor(leftpos) + "px";
-                	
-                	dl.style.display = "block";
-                	dr.style.display = "block";
-                };
-                
-                //var d = dojo.create("div", {id: "trackbar-tadkit"}, "static_track");
-                var d = dojo.create("div", {id: "trackbar-tadkit"}, "zoomContainer");            
-                d.style.display = "block";
-                d.style.left = Math.floor(leftpos) + "px";
-                d.style.top = toppos + "px";
-                var Bp = Math.floor(widget.absXtoBp(leftpos));
-                
-                c = widget.bpToPx($scope.settings.current.chromStart);
-                leftborder = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
-                c = widget.bpToPx($scope.settings.current.chromEnd);
-                rightborder = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
-                
-                $scope.updatePosition(Bp,leftborder, rightborder);
-
-                $scope.updateTadkitBar = function(x) {
-                    c = widget.bpToPx(x);
-                    leftpos = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
-                    d.style.left = Math.floor(leftpos) + "px";
-                };
-            };
         }
     });
 });

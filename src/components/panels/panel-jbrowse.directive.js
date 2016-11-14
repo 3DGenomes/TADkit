@@ -19,28 +19,30 @@
 			templateUrl: 'assets/templates/panel-jbrowse.html',
 			link:function(scope, element, attrs){
 				// console.log(scope.data);
-					
-				//window.jbrowseUp=function(){
-					//var jbrowseiframe = angular.element( document.querySelector( '#jbrowse-iframe' ) );
-					//var trackbar = element[0].querySelector('.trackVerticalPositionIndicatorMain' );
-					//trackbar.style.display = 'block';
-				  	//jbrowseiframe.contents().find("html").bind('click', function () {
-				           //alert("hello");
-				     //});
-				//};
-				
-				
+//				angular.element(document.querySelector('#jbrowse-iframe'))[0].onload= function() {
+//					var jbrowse_scope = angular.element(document.querySelector('#jbrowse-iframe')).scope();
+//					jbrowse_scope.updateTadkitBar(scope.settings.current.position);
+//				};				
 				scope.$watch('settings.current.position', function(newPosition, oldPosition) {
 					if ( newPosition !== oldPosition ) {
 						scope.update();
 					}
+				});
+				scope.$watch('settings.current.tad_selected', function( newValue, oldValue ) {
+					if ( newValue === -1 || oldValue === -1) {
+						var jbrowse_scope = angular.element(document.querySelector('#jbrowse-iframe')).scope();
+						if(!angular.isUndefined(jbrowse_scope) && jbrowse_scope.updateTadkitBar) {
+							jbrowse_scope.updateTadkitTAD();
+						}
+		        	}
 				});
 				scope.update = function(data) {
 					scope.settings.current.particle = Settings.getParticle();
 					scope.settings.current.segment = Settings.getSegment();
 					scope.settings.current.segmentLower = scope.settings.current.position - (scope.settings.current.segment * 5); // * 0.5???
 					scope.settings.current.segmentUpper = scope.settings.current.position + (scope.settings.current.segment * 5); // * 0.5???
-					var jbrowse_scope = angular.element(document.querySelector('#jbrowse-iframe')).scope();
+					
+					//var jbrowse_scope = angular.element(document.querySelector('#jbrowse-iframe')).scope();
 					//if(!angular.isUndefined(jbrowse_scope) && jbrowse_scope.updateTadkitBar) {
 					//	jbrowse_scope.updateTadkitBar(scope.settings.current.position);
 					//}

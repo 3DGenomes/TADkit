@@ -20,8 +20,8 @@
 		$scope.jbrowsedataurl = encodeURIComponent($scope.view.settings.species_data[$scope.settings.current.speciesUrl]);
 		
 		$scope.iframe_src = $scope.view.settings.jbrowse_path+'index.html?data='+$scope.jbrowsedataurl+'&loc='+chrom+':'+
-		jbrowse_start+'..'+($scope.settings.current.chromEnd+30000)+'&tracks=Restraints&overview=0'+
-			'&highlight='+chrom+':'+$scope.settings.current.chromStart+'..'+$scope.settings.current.chromEnd;
+		jbrowse_start+'..'+($scope.settings.current.chromEnd+30000)+'&tracks=Restraints&overview=0';
+		//+'&highlight='+chrom+':'+$scope.settings.current.chromStart+'..'+$scope.settings.current.chromEnd;
 		
 			
 		$scope.updatePosition =  function(position, leftborder, rightborder) {

@@ -1008,8 +1008,8 @@
 		$scope.jbrowsedataurl = encodeURIComponent($scope.view.settings.species_data[$scope.settings.current.speciesUrl]);
 		
 		$scope.iframe_src = $scope.view.settings.jbrowse_path+'index.html?data='+$scope.jbrowsedataurl+'&loc='+chrom+':'+
-		jbrowse_start+'..'+($scope.settings.current.chromEnd+30000)+'&tracks=Restraints&overview=0'+
-			'&highlight='+chrom+':'+$scope.settings.current.chromStart+'..'+$scope.settings.current.chromEnd;
+		jbrowse_start+'..'+($scope.settings.current.chromEnd+30000)+'&tracks=Restraints&overview=0';
+		//+'&highlight='+chrom+':'+$scope.settings.current.chromStart+'..'+$scope.settings.current.chromEnd;
 		
 			
 		$scope.updatePosition =  function(position, leftborder, rightborder) {
@@ -1175,28 +1175,30 @@
 			templateUrl: 'assets/templates/panel-jbrowse.html',
 			link:function(scope, element, attrs){
 				// console.log(scope.data);
-					
-				//window.jbrowseUp=function(){
-					//var jbrowseiframe = angular.element( document.querySelector( '#jbrowse-iframe' ) );
-					//var trackbar = element[0].querySelector('.trackVerticalPositionIndicatorMain' );
-					//trackbar.style.display = 'block';
-				  	//jbrowseiframe.contents().find("html").bind('click', function () {
-				           //alert("hello");
-				     //});
-				//};
-				
-				
+//				angular.element(document.querySelector('#jbrowse-iframe'))[0].onload= function() {
+//					var jbrowse_scope = angular.element(document.querySelector('#jbrowse-iframe')).scope();
+//					jbrowse_scope.updateTadkitBar(scope.settings.current.position);
+//				};				
 				scope.$watch('settings.current.position', function(newPosition, oldPosition) {
 					if ( newPosition !== oldPosition ) {
 						scope.update();
 					}
+				});
+				scope.$watch('settings.current.tad_selected', function( newValue, oldValue ) {
+					if ( newValue === -1 || oldValue === -1) {
+						var jbrowse_scope = angular.element(document.querySelector('#jbrowse-iframe')).scope();
+						if(!angular.isUndefined(jbrowse_scope) && jbrowse_scope.updateTadkitBar) {
+							jbrowse_scope.updateTadkitTAD();
+						}
+		        	}
 				});
 				scope.update = function(data) {
 					scope.settings.current.particle = Settings.getParticle();
 					scope.settings.current.segment = Settings.getSegment();
 					scope.settings.current.segmentLower = scope.settings.current.position - (scope.settings.current.segment * 5); // * 0.5???
 					scope.settings.current.segmentUpper = scope.settings.current.position + (scope.settings.current.segment * 5); // * 0.5???
-					var jbrowse_scope = angular.element(document.querySelector('#jbrowse-iframe')).scope();
+					
+					//var jbrowse_scope = angular.element(document.querySelector('#jbrowse-iframe')).scope();
 					//if(!angular.isUndefined(jbrowse_scope) && jbrowse_scope.updateTadkitBar) {
 					//	jbrowse_scope.updateTadkitBar(scope.settings.current.position);
 					//}
@@ -5028,9 +5030,9 @@
 		angular.forEach( $scope.current.storyboard.components, function(component, index) {
 
 			// if (component.object.dataset == "default") {
-				var overlay, overlayProximities;
+				var overlay, overlayProximities, all_data;
 				if (component.object.type == "scene") {
-					var all_data = {
+					all_data = {
 						tad_data: Hic_data.get(),
 						data: $scope.current.model.data 
 					};
@@ -5067,7 +5069,12 @@
 					component.data = Hic_data.get();
 				} else if (component.object.type == "panel-jbrowse") {
 					//component.data = Restraints.get();
-					component.data = $scope.currentRestraints;
+					all_data = {
+							tad_data: Hic_data.get(),
+							data: $scope.currentRestraints,
+					};
+					component.data = all_data;
+					//component.data = $scope.currentRestraints;
 					overlay = Overlays.getOverlayById("restraints");
 					component.overlay = overlay;
 				}

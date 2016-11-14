@@ -1,6 +1,8 @@
 define([
     'dojo/_base/declare',
     'dojo/_base/lang',
+    'dojo/query',
+    'dijit/registry',
     'dojo/when',
     'dojo/on',
     'JBrowse/Plugin'
@@ -8,6 +10,8 @@ define([
 function(
     declare,
     lang,
+    query,
+    registry,
     when,
     on,
     JBrowsePlugin
@@ -16,7 +20,16 @@ function(
         constructor: function(args) {
             var browser = args.browser;
             this.tracksOverlaid = {};
-            // Do anything you need to initialize your plugin here
+            this.init = false;
+            if( typeof(parent.angular) == 'undefined') {
+            	console.log('TADkit plugin failed. No TADkit scope found');
+            	return;
+            }
+            var $scope = parent.angular.element( parent.document.querySelector( '#jbrowse-iframe' ) ).scope();
+            if(!$scope) {
+            	console.log('TADkit plugin failed. No TADkit scope found');
+            	return;
+            }
             console.log('TADkit Overlay plugin starting');
             browser.registerTrackType({
                 label: 'TADkitRestraints',
@@ -27,19 +40,28 @@ function(
                 type: 'TADkit/View/Track/TADkitOverlay'
             });
             var thisB = this;
-            this.browser.afterMilestone('initView', function() {
+            this.browser.afterMilestone('completely initialized', function() {
                 this._createRestraintsTrack();
+                this._createTadkitNavigation();    
                 this._pullDownMenu();
+                
                 on(window, 'resize', function() {
-                    thisB._pullDownMenu();               
+                    thisB._pullDownMenu();
+                    
                 }); 
                 
             }, this );
+
             //dojo.subscribe("/jbrowse/v1/n/tracks/visibleChanged",  lang.hitch( this, '_addOverlayMenuItem' ));
             dojo.subscribe('/jbrowse/v1/n/tracks/visibleChanged'
             		, function (visibleTrackNames) {
             			if(visibleTrackNames) {
                             thisB._addOverlayMenuItem(visibleTrackNames[0]);
+                            if(!thisB.init) {
+                            	thisB._initPosition();
+                            	thisB._createTADHighlight();
+                            	thisB.init = true;
+                            }
                         }
             		});
             
@@ -72,6 +94,236 @@ function(
             // send out a message about how the user wants to create the new track
             thisB.browser.publish( '/jbrowse/v1/v/tracks/new', [restraintsTrackConfig] );
                
+        },
+        _initPosition: function() {
+        	
+        	var $scope = parent.angular.element( parent.document.querySelector( '#jbrowse-iframe' ) ).scope();
+        	var widget = registry.byId("dijit_layout_ContentPane_1").containerNode.view;
+        	var chrom = ($scope.settings.current.chrom);
+    		if(!$scope.view.settings.leading_chr) chrom = ($scope.settings.current.chrom).replace('chr','');
+        	widget.setLocation(chrom,$scope.settings.current.chromStart,$scope.settings.current.chromEnd)
+        	$scope.updateTadkitBar($scope.settings.current.position);
+        	c = widget.bpToPx($scope.settings.current.chromStart);
+        	leftborder = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
+        	c = widget.bpToPx($scope.settings.current.chromEnd);
+        	rightborder = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
+        	$scope.updatePosition($scope.settings.current.position,leftborder, rightborder);
+        },
+        _createTadkitNavigation: function() {
+            if(parent.angular==undefined) return false;
+            var tadkittrackbar = query("#trackbar-tadkit", "static_track");
+            var trackbar = query(".trackVerticalPositionIndicatorMain", "static_track");
+            if (tadkittrackbar.length == 0) {
+                var widget = registry.byId("dijit_layout_ContentPane_1").containerNode.view;
+                
+                /*widget.clickscaleTrackTadkit = function(event){
+                    require(["dojo/query","dijit/registry", "dojo/dom-style",], function(query, registry, domStyle){
+                        var $scope = parent.angular.element( parent.document.querySelector( '#jbrowse-iframe' ) ).scope();
+                        var widget = registry.byId("dijit_layout_ContentPane_1").containerNode.view;
+                        var tadkittrackbar = dojo.byId("trackbar-tadkit");
+                        var c = track.clientX + 2;
+                        tadkittrackbar.style.display = "block";
+                        tadkittrackbar.style.left = Math.floor(c) + "px";
+                        var Bp = Math.floor(widget.absXtoBp(c));
+                        $scope.updatePosition(Bp);
+                    });
+                };*/
+                updatePosition = function(event){
+                    var $scope = parent.angular.element( parent.document.querySelector( '#jbrowse-iframe' ) ).scope();
+                    var tadkittrackbar = dojo.byId("trackbar-tadkit");
+                    var Bp = Math.floor(widget.absXtoBp(parseInt(tadkittrackbar.style.left)));
+                    var left_right = $scope.settings.current.rightborder-$scope.settings.current.leftborder;
+                    if($scope.settings.current.chromStart>Bp) {
+                        if(widget.dragging) widget.dragEnd(event);
+                        widget.centerAtBase($scope.settings.current.chromStart,true);
+                        $scope.updateTadkitBar($scope.settings.current.chromStart);
+                        leftborder = parseInt(tadkittrackbar.style.left);
+                        rightborder = leftborder+left_right;
+                        $scope.updatePosition($scope.settings.current.chromStart, leftborder, rightborder);
+                        $scope.updateTadkitTAD();
+
+                    } else if($scope.settings.current.chromEnd<Bp) {
+                        if(widget.dragging) widget.dragEnd(event);
+                        widget.centerAtBase($scope.settings.current.chromEnd,true);
+                        $scope.updateTadkitBar($scope.settings.current.chromEnd);
+                        rightborder = parseInt(tadkittrackbar.style.left);
+                        leftborder = rightborder-left_right;
+                        $scope.updatePosition(Bp, leftborder, rightborder);    
+                        $scope.updateTadkitTAD();
+                        
+                    } else {
+                        c = widget.bpToPx($scope.settings.current.chromStart);
+                        leftborder = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
+                        c = widget.bpToPx($scope.settings.current.chromEnd);
+                        rightborder = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
+                        $scope.updatePosition(Bp, leftborder, rightborder);
+                        $scope.updateTadkitTAD();
+                    }
+                    
+                        
+                };
+                widget.updatePositioninTadkit = function(event){
+                    require(["dojo/query","dijit/registry", "dojo/dom-style",], function(query, registry, domStyle){
+                    	
+                    	if(widget.dragging) {
+	                        updatePosition(event);
+                    	}
+                        
+                    });
+                };
+                
+                widget.clickmoveLeftTadkit = function(event){
+                    require(["dojo/query","dijit/registry", "dojo/dom-style",], function(query, registry, domStyle){
+                        var timer = setInterval(function () {
+                           if(!widget.animation) {
+                                
+                                updatePosition(event);
+                                clearInterval(timer);
+                           }
+                        }, 1000);
+                    });
+                };
+                widget.clickmoveRightTadkit = function(event){
+                    require(["dojo/query","dijit/registry", "dojo/dom-style",], function(query, registry, domStyle){
+                    	var timer = setInterval(function () {
+                           if(!widget.animation) {
+                                
+                                updatePosition(event);
+                                clearInterval(timer);
+                           }
+                        }, 1000);
+                    });
+                };
+                widget.updateTadkitonZoom = function(event){
+                	require(["dojo/query","dijit/registry", "dojo/dom-style",], function(query, registry, domStyle){
+                		var timer = setInterval(function () {
+                           if(!widget.animation) {
+                                
+                                updatePosition(event);
+                                clearInterval(timer);
+                           }
+                        }, 1000);
+
+                        //});
+                		
+                	});
+                };
+                //dojo.connect(widget.scaleTrackDiv,"onclick",widget,'clickscaleTrackTadkit');
+                dojo.disconnect(widget.behaviorManager.behaviors.always.handles[6]);
+                dojo.connect(widget.outerTrackContainer,"mousemove",widget,'updatePositioninTadkit');
+                dojo.connect(dojo.byId("moveLeft"),"onclick",widget,'clickmoveLeftTadkit');
+                dojo.connect(dojo.byId("moveRight"),"onclick",widget,'clickmoveRightTadkit');
+                dojo.connect(dojo.byId("bigZoomIn"),"onclick",widget,'updateTadkitonZoom');
+                dojo.connect(dojo.byId("zoomIn"),"onclick",widget,'updateTadkitonZoom');
+                dojo.connect(dojo.byId("bigZoomOut"),"onclick",widget,'updateTadkitonZoom');
+                dojo.connect(dojo.byId("zoomOut"),"onclick",widget,'updateTadkitonZoom');
+                dojo.connect( widget.outerTrackContainer, "dblclick",       widget, 'updateTadkitonZoom'    );
+                var toppos = '0';
+                var $scope = parent.angular.element( parent.document.querySelector( '#jbrowse-iframe' ) ).scope();
+                //widget.centerAtBase($scope.settings.current.position,true);
+                var c = widget.bpToPx($scope.settings.current.position);
+                var leftpos = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
+                if (Math.floor(leftpos) < 0) {
+                    leftpos = widget.getWidth()/2;
+                };
+                
+                var dr = dojo.create("div", {id: "trackbar-tadkit-right-mark"}, "zoomContainer");
+                dr.style.display = "none";
+                dr.style.left = "0px";
+                dr.style.top = toppos + "px";
+                
+                var dl = dojo.create("div", {id: "trackbar-tadkit-left-mark"}, "zoomContainer");
+                dl.style.display = "none";
+                dl.style.left = "0px";
+                dl.style.top = toppos + "px";
+                
+                $scope.hideTadkitMarkers = function() {
+                	dl.style.display = "none";
+                	dr.style.display = "none";
+                };
+                $scope.updateTadkitMarkers = function(x,y) {
+                	c = widget.bpToPx(y);
+                    leftpos = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
+                	dl.style.left = Math.floor(leftpos) + "px";
+                	
+                	c = widget.bpToPx(x);
+                    leftpos = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
+                	dr.style.left = Math.floor(leftpos) + "px";
+                	
+                	dl.style.display = "block";
+                	dr.style.display = "block";
+                };
+                
+                //var d = dojo.create("div", {id: "trackbar-tadkit"}, "static_track");
+                var d = dojo.create("div", {id: "trackbar-tadkit"}, "zoomContainer");            
+                d.style.display = "block";
+                d.style.left = Math.floor(leftpos) + "px";
+                d.style.top = toppos + "px";
+                var Bp = Math.floor(widget.absXtoBp(leftpos));
+
+                $scope.updateTadkitBar = function(x) {
+                    c = widget.bpToPx(x);
+                    leftpos = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
+                    d.style.left = Math.floor(leftpos) + "px";
+                };
+            };
+        },
+        _createTADHighlight: function() {
+        	var $scope = parent.angular.element( parent.document.querySelector( '#jbrowse-iframe' ) ).scope();
+            var trackPane = dojo.byId("dijit_layout_ContentPane_1");
+            var widget = registry.byId("dijit_layout_ContentPane_1").containerNode.view;
+            var d = dojo.create("div", {id: "tad-highlight-tadkit"}, "gridtrack");            
+            d.style.display = "block";
+            d.style.height = "100%";
+            d.style.position = "fixed";
+            d.style.backgroundColor = "white";
+            d.style.width = "0px";
+            $scope.updateTadkitTAD = function() {
+            	if(typeof($scope.settings.current.tad_selected) != 'undefined' && $scope.settings.current.tad_selected!=-1) {
+            		
+                	trackPane.style.backgroundColor = "rgba(0,0,0,0.05)";
+                	var start_tad = $scope.data.tad_data.tads[$scope.settings.current.tad_selected][1];
+                	var end_tad = $scope.data.tad_data.tads[$scope.settings.current.tad_selected][2];
+                	
+                	var c = widget.bpToPx(start_tad);
+                    var leftpos = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
+                    d.style.left = Math.floor(leftpos) + "px";
+                    c = widget.bpToPx(end_tad);
+                    var rightpos = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
+                    d.style.width = Math.floor(rightpos-leftpos) + "px";
+                    
+                } else {
+                	trackPane.style.backgroundColor = "";
+                	d.style.width = "0px";
+                	
+                }
+            };
+            $scope.updateTadkitTAD();
+            
+        },
+        _updateTADHighlight: function() {
+        	var $scope = parent.angular.element( parent.document.querySelector( '#jbrowse-iframe' ) ).scope();
+            var trackPane = dojo.byId("dijit_layout_ContentPane_1");
+            var widget = registry.byId("dijit_layout_ContentPane_1").containerNode.view;
+            
+        	if(typeof($scope.settings.current.tad_selected) != 'undefined' && $scope.settings.current.tad_selected!=-1) {
+        		
+            	trackPane.style.backgroundColor = "rgba(0,0,0,0.05)";
+            	var start_tad = $scope.data.tad_data.tads[$scope.settings.current.tad_selected][1];
+            	var end_tad = $scope.data.tad_data.tads[$scope.settings.current.tad_selected][2];
+            	
+            	var c = widget.bpToPx(start_tad);
+                var leftpos = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
+                d.style.left = Math.floor(leftpos) + "px";
+                c = widget.bpToPx(end_tad);
+                var rightpos = c-widget.getPosition().x-widget.offset+dojo.position(widget.elem, !0).x;
+                d.style.width = Math.floor(rightpos-leftpos) + "px";
+                
+            } else {
+            	trackPane.style.backgroundColor = "";
+            	
+            	
+            }
         },
         _pullDownMenu: function() {
             var topPane = dojo.byId("dijit_layout_ContentPane_0");

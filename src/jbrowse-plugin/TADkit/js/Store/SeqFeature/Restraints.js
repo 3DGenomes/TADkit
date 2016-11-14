@@ -21,13 +21,13 @@ function(
             var harmonicsColor = '#ff0000'//$scope.overlay.palette[0];
             var lowerBoundsColor = '#0000ff'//$scope.overlay.palette[1];
             var resolution = $scope.settings.current.segmentLength*$scope.settings.current.particleSegments;
-            if($scope.data.harmonics.length == 0 && $scope.data.lowerBounds.length == 0) {
+            if($scope.data.data.harmonics.length == 0 && $scope.data.data.lowerBounds.length == 0) {
             	//var restraint = new SimpleFeature({});
             	var restraint = new SimpleFeature({});
             	featureCallback(restraint);
             	finishCallback();
             }
-            array.forEach($scope.data.harmonics, function(f) {
+            array.forEach($scope.data.data.harmonics, function(f) {
             	var start = $scope.settings.current.chromStart+resolution*(f[1]);
                 var end = $scope.settings.current.chromStart+resolution*(f[1]+0.9);
                 if(start>=query.start && end<=query.end) {
@@ -48,7 +48,7 @@ function(
                 }
             });
             
-            array.forEach($scope.data.lowerBounds, function(f) {
+            array.forEach($scope.data.data.lowerBounds, function(f) {
                 var start = $scope.settings.current.chromStart+resolution*(f[1]);
                 var end = $scope.settings.current.chromStart+resolution*(f[1]+0.9);
                 if(start>=query.start && end<=query.end) {
