@@ -364,6 +364,7 @@ function(
 	                			for(var key_menu in menuIt) {
 	                				if(menuIt[key_menu].title == 'Apply to 3D') {
 	                					menuIt[key_menu].set('checked',false);
+	                					$scope.removeOverlay(key);
 	                					other_track.config.applied3D = false;
 	                					thisB.tracksOverlaid[key]=false;
 	                				}
