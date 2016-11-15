@@ -375,9 +375,14 @@ md-checkbox.md-checked .md-icon {
 }
 .component #hic_data_container #slider-hic {
 	position: absolute;
-    left: 100px;
-    width: 200px;
-    top: 10px;
+    /*left: 100px;*/
+    width: 20px;
+    top: 0;
+    float: right;
+    /*top: 10px;*/
+}
+.component #hic_data_container .jslider.vertical {
+	height: 100px;
 }
 .component #hic_data_container .md-button.md-default-theme.md-fab {
 	font-size: 30px;

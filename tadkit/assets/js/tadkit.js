@@ -279,12 +279,17 @@
 		$scope.slideoptions = {       
 		    //from: Math.round($scope.data.min*100)/100,
 		    //to: Math.round($scope.data.max*100)/100,
+			vertical: true,
 		    from: 10,
 		    to: 0.001,
 		    //step: ($scope.data.max-$scope.data.min)/255,
 		    step: 0.01,
 		    round: 2,
 		    skin: 'blue',
+		    css: { 
+		    	before: {"background-color": "red"},
+		    	after: {"background-color": "red"}
+		    },
 		    modelLabels: function(value) {
 		    	if(value==10) {
 		    		return '';
@@ -304,7 +309,7 @@
 		    		$scope.settings.slidevalue = $scope.slidevalue;
 		    		$scope.$apply();
 		    	}
-		    }
+		    } 
 		  };
 		
 	}

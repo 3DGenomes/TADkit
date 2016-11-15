@@ -26,6 +26,14 @@
     border: 1px solid rgb(255, 178, 13);
     border-width: 0;
 }
+#tad-highlight-tadkit {
+	display: block;
+    height: 100%;
+    position: fixed;
+    background-color: white;
+	border-left: 3px dashed black;
+    border-right: 3px dashed black;
+}
 div.gridline_minor {
     border-color: rgba(0,0,0,0);
 }

@@ -277,10 +277,10 @@ function(
             var trackPane = dojo.byId("dijit_layout_ContentPane_1");
             var widget = registry.byId("dijit_layout_ContentPane_1").containerNode.view;
             var d = dojo.create("div", {id: "tad-highlight-tadkit"}, "gridtrack");            
-            d.style.display = "block";
-            d.style.height = "100%";
-            d.style.position = "fixed";
-            d.style.backgroundColor = "white";
+            //d.style.display = "block";
+            //d.style.height = "100%";
+            //d.style.position = "fixed";
+            //d.style.backgroundColor = "white";
             d.style.width = "0px";
             $scope.updateTadkitTAD = function() {
             	if(typeof($scope.settings.current.tad_selected) != 'undefined' && $scope.settings.current.tad_selected!=-1) {
@@ -351,16 +351,20 @@ function(
 	                   end: $scope.settings.current.chromEnd
 	                 };
 	                var feat = [];
-	                for(var key in track.blocks) break;
-	                var showFeatures = track.blocks[key].scale >= (track.config.style.featureScale || 0 / track.config.maxFeatureScreenDensity );
+	                // This has to be further developed to overlay histograms, but I don't have time now
+	                //for(var key in track.blocks) break;
+	                //var showFeatures = track.blocks[key].scale >= (track.config.style.featureScale || 0 / track.config.maxFeatureScreenDensity );
+	                
+	                var showFeatures = true;
 	                if(showFeatures) {
 	                	for(var key in thisB.tracksOverlaid) {
-	                		if(thisB.tracksOverlaid[key]) {
+	                		if(thisB.tracksOverlaid[key] && key != track_label) {
 	                			var other_track = thisB.browser.view.tracks[thisB.browser.view.trackIndices[key]];
 	                			var menuIt = other_track.trackMenu.getChildren();
-	                			for(var key in menuIt) {
-	                				if(menuIt[key].title == 'Apply to 3D') {
-	                					menuIt[key].set('checked',false);
+	                			for(var key_menu in menuIt) {
+	                				if(menuIt[key_menu].title == 'Apply to 3D') {
+	                					menuIt[key_menu].set('checked',false);
+	                					other_track.config.applied3D = false;
 	                					thisB.tracksOverlaid[key]=false;
 	                				}
 	                			}
@@ -377,22 +381,32 @@ function(
 		                                        },
 		                                        // callback when all features sent
 		                                        function () {
-		                                            $scope.applyOverlay(track.key,feat);
+		                                            $scope.applyOverlay(track_label,feat);
 		                                        });
 		                thisB.tracksOverlaid[track_label] = true;
 		                track.config.applied3D = true;
 	                }
                 } else {
-                	$scope.removeOverlay(track.key);
+                	$scope.removeOverlay(track_label);
                 	thisB.tracksOverlaid[track_label] = false;
                 	track.config.applied3D = false;
                 }
                 
             };
+            
+            
             if(!visibleTrackNames) {
             	var visibleTrackNames = [];
             	for(var key in thisB.browser.view.trackIndices) visibleTrackNames.push(key);
             	
+            } else {
+            	for(var key in thisB.tracksOverlaid) {
+            		if(visibleTrackNames.indexOf(key)<0) {
+            			var $scope = parent.angular.element( parent.document.querySelector( '#jbrowse-iframe' ) ).scope();
+                        $scope.removeOverlay(key);
+            			delete thisB.tracksOverlaid[key];
+            		}
+                }
             }
             	
             dojo.forEach( visibleTrackNames, function(conf) {
@@ -408,7 +422,7 @@ function(
             	
             	if(color_val) {
             		
-            		if(!(trackConf.label in this. tracksOverlaid)) {
+            		if(!(trackConf.label in this.tracksOverlaid)) {
             			this.tracksOverlaid[trackConf.label] = false;
             			track.config.applied3D = false;
             		}
