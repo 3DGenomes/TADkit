@@ -170,7 +170,7 @@ gulp.task('assets-offline', function() {
 // Transfer Examples
 gulp.task('assets-examples', function() {
 	return gulp.src([
-		'src/assets/examples/readme.txt'
+		'src/assets/examples/*'
 		])
 		.pipe(gulp.dest('tadkit/assets/examples'));
 });
