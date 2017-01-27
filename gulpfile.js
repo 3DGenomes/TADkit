@@ -4,6 +4,7 @@ var gulp = require('gulp');
 // Include Our Plugins
 var jshint = require('gulp-jshint');
 // var sass = require('gulp-sass');
+var Dgeni = require('dgeni');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify'); // ng-min
 var rename = require('gulp-rename');
@@ -29,6 +30,13 @@ gulp.task('lint', function() {
 		])
 		.pipe(jshint({ devel: true }))
 		.pipe(jshint.reporter('default'));
+});
+
+// Dgeni documentation for GitHub Pages
+gulp.task('docs-dgeni', function() {
+    // Import the index.js from the /docs/config folder
+    var dgeni = new Dgeni([require('./docs/config')]);
+    return dgeni.generate();
 });
 
 // Concatenate & Minify TADkit JS
@@ -212,6 +220,7 @@ gulp.task('watch', function() {
 	], [
 		'lint',
 		// 'sass',
+        'docs-dgeni',
 		'dist-scripts',
 		'dist-vendor',
 		'app-index',
@@ -232,6 +241,7 @@ gulp.task('watch', function() {
 gulp.task('default', [
 	'lint',
 	// 'sass',
+    'docs-dgeni',
 	'dist-scripts',
 	'dist-vendor',
 	'app-index',

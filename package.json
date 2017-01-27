@@ -1,6 +1,6 @@
 {
   "name": "TADkit",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "description": "Frontend Visualization Tool for TADbit",
   "main": "index.js",
   "scripts": {
@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/3DGenomes/TADkit",
   "devDependencies": {
+    "dgeni": "^0.4.2",
+    "dgeni-markdown": "0.0.4",
+    "dgeni-packages": "^0.16.5",
     "gulp": "^3.8.7",
     "gulp-concat": "^2.3.4",
     "gulp-header": "^1.2.2",
