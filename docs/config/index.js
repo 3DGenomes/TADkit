@@ -9,6 +9,8 @@ module.exports = new Package('myDoc', [
     require('dgeni-markdown')
 ])
 
+.processor(require('./index-page'))
+
 .config(function(log, readFilesProcessor, writeFilesProcessor) {
 
     // Set the log level to 'info', switch to 'debug' when troubleshooting
