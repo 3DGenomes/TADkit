@@ -17,6 +17,15 @@
 		if(!$scope.view.settings.leading_chr) chrom = ($scope.settings.current.chrom).replace('chr','');
 		//$scope.jbrowsedataurl = 'http://172.16.54.4/JBrowse/data';
 		//$scope.jbrowsedataurl = $scope.view.settings.jbrowse_data+'_'+$scope.settings.current.speciesUrl;
+		
+		/*
+		Configuration of igvjs object
+
+		$scope.view.settings.species_data: configuration array containing the location of the reference genome. 
+			It can be a file or url where the browser will fetch the data.
+		$scope.view.settings.showNav: true/false whether to show the navigation panel in igvjs 
+		$scope.view.settings.showCyto: true/false wheter to show cytoband panel in igvjs
+		*/
 		if($scope.view.settings.species_data[$scope.settings.current.speciesUrl].fastaURL) {
 			$scope.view.settings.fastaurl = $scope.view.settings.species_data[$scope.settings.current.speciesUrl].fastaURL;
 			$scope.view.settings.showNav = true;
@@ -30,7 +39,13 @@
 			$scope.view.settings.showCyto = false;
 		}
 		
+		/* 
+		div dom element where to include igvjs browser
+		*/
 		$scope.igvDiv = angular.element(document.querySelector('#igvDiv'))[0];
+		/* 
+		igvjs options. See igvjs docs for details
+		*/
 		$scope.igvOptions = {
 		            showNavigation: $scope.view.settings.showNav,
 		            showRuler: true,
@@ -200,22 +215,38 @@
 
 			});
 		};
+		/* 
+		Creation of igvjs javascript object
+		*/
 		$scope.myIgv = igv.createBrowser($scope.igvDiv, $scope.igvOptions);
-		
+		// Show center guide by default. The centerguide will be tadkit position in the 2D and 3D
 		$scope.myIgv.centerGuide.$centerGuideToggle.click();
 		
+		/*
+		Create div indicating selected tad in the browser.
+		#tad-highlight-tadkit should be styled in the main css
+		*/
 		var d = angular.element("<div id=\"tad-highlight-tadkit\" style=\"width='0px;'\"></div>");
 		var trackContainer = angular.element($scope.myIgv.trackContainerDiv);
 		trackContainer.append(d);
 		
+		/*
+		Main function moving and resizing the #tad-highlight-tadkit depending on the current tad
+		*/
 		$scope.updateTadkitTAD = function() {
         	if(typeof($scope.settings.current.tad_selected) != 'undefined' && $scope.settings.current.tad_selected!=-1) {
         		var referenceFrame;
+        		/* Look for the referenceFrame of the reference sequence.
+        		referenceFrame contains:
+        			start: the genomic position corresponding to the left border of the browser
+        			bpPerPixel: corresponding base pairs per 1 pixel
+        		*/
         		$scope.myIgv.trackViews.forEach(function (trackView) {
         			if(trackView.track.id == 'sequence') {
         				referenceFrame = trackView.viewports[0].genomicState.referenceFrame;
         			}
         		});
+        		// Compute left position and width of the #tad-highlight-tadkit
         		if(typeof(referenceFrame) != 'undefined') {
 	            	//trackPane.style.backgroundColor = "rgba(0,0,0,0.05)";
 	            	var start_tad = $scope.data.tad_data.tads[$scope.settings.current.tad_selected][1];
@@ -233,48 +264,73 @@
             	
             }
         };
-        
-		$scope.myIgv.on('locuschange', function (referenceFrame, label) {
-//			var locus = label;
-//			var chr_locus = locus.split(':');
-//			var start_end = chr_locus[1].split('-');
-//			var start = parseInt(start_end[0].replace(/,/g , ""));
-//			var end = parseInt(start_end[1].replace(/,/g , ""));
-//			var pos_span = ((end - start)/2);
-//			var px_center = pos_span/referenceFrame.bpPerPixel + 50;
-//			var px_start = px_center - (pos_span+start-$scope.settings.current.chromStart)/referenceFrame.bpPerPixel;
-//			var px_end = px_center + ($scope.settings.current.chromEnd-(pos_span+start))/referenceFrame.bpPerPixel;
-			
-			var px_start = ($scope.settings.current.chromStart-referenceFrame.start)/referenceFrame.bpPerPixel;
-			var px_end = ($scope.settings.current.chromEnd-referenceFrame.start)/referenceFrame.bpPerPixel;
-			var center_bp = ((px_end-px_start)/2)*referenceFrame.bpPerPixel;
-			
-			
-			var igv_chrom = $scope.myIgv.genome.getChromosome(referenceFrame.chrName);
-			igv_chrom.bpLength = ($scope.settings.current.chromEnd+px_end*referenceFrame.bpPerPixel);
-			
-			if((center_bp+referenceFrame.start)<$scope.settings.current.chromStart) {
-				$scope.myIgv.trackViews.forEach(function (trackView) {
-					var ps = px_end*referenceFrame.bpPerPixel;
-					trackView.viewports.forEach(function(viewPort){
-						if(viewPort.genomicState.referenceFrame) {
-							if($scope.settings.current.chromStart-ps<=0) {
-								viewPort.genomicState.referenceFrame.start = 0;
-							} else {
-								viewPort.genomicState.referenceFrame.start = $scope.settings.current.chromStart-ps;
-							}
-							
-							//viewPort.genomicState.referenceFrame.end = $scope.settings.current.chromEnd+2*ps;
-						}
-					});
-				});
-				$scope.myIgv.update();
+        /*
+        We override the zoom handlers of igvjs to update tadkit on zoom, otherwise
+        2D panel does not get updated
+        */
+        $scope.updatePos = function() {
+        	$scope.myIgv.genomicStateList.forEach(function (genomicState) {
+        		$scope.myIgv.fireEvent('locuschange',[genomicState.referenceFrame,$scope.myIgv.config.locus]);
+		    });
+
+        };
+        $scope.myIgv.zoomHandlers = {
+                in: {
+                    click: function (e) {
+                    	$scope.updatePos();
+                        $scope.myIgv.zoomIn();
+                    }
+                },
+                out:{
+                    click: function (e) {
+                    	$scope.updatePos();
+                        $scope.myIgv.zoomOut();
+                    }
+                }
+            };
+
+        /*
+        igvjs developers expose an event when the browser changes locus.
+        We profit from it to update tadkit position in the 2D and 3D panels
+        */
+        $scope.myIgv.on('locuschange', function (referenceFrame, label) {
 				
+			$scope.myIgv.genomicStateList.forEach(function (genomicState) {
+	        	var referenceFrame = genomicState.referenceFrame;
+	            var viewportWidth = Math.floor($scope.myIgv.viewportContainerWidth()/genomicState.locusCount);
+
+	            // window center (base-pair units)
+	            var centerBP = referenceFrame.start + referenceFrame.bpPerPixel * (viewportWidth/2);
+	            var ps = (centerBP-referenceFrame.start);
+	            /* 
+	            We limit the left border of the browser so the center guide cannot go further
+	            than the start of our chromatin model*/
+	            if($scope.settings.current.chromStart>centerBP) {
+					if($scope.settings.current.chromStart-ps<=0) {
+						referenceFrame.start = 0;
+					} else {
+						referenceFrame.start = $scope.settings.current.chromStart-ps;
+					}
+				}
+				/* 
+				We limit the right border of the browser so the center guide cannot go further
+	            than the end of our chromatin model.
+				I haven't found other way than limiting artificially the length of the whole chromosome.
+	            */
+				var igv_chrom = $scope.myIgv.genome.getChromosome(referenceFrame.chrName);
+				igv_chrom.bpLength = ($scope.settings.current.chromEnd+($scope.settings.current.chromEnd-referenceFrame.start));
 				
-			}	
+				/*
+				Finally inform tadkit about the center genomic position and the position in the screen
+				of the left and right border of our model, so we can synchronize the 2D panel
+				*/
+				var px_start = ($scope.settings.current.chromStart-referenceFrame.start)/referenceFrame.bpPerPixel;
+				var px_end = ($scope.settings.current.chromEnd-referenceFrame.start)/referenceFrame.bpPerPixel;
+		
+				$scope.updatePosition(centerBP, px_start+50 , px_end+50);
+					
+			});
 			
-			$scope.updatePosition(referenceFrame.start+center_bp, px_start+50 , px_end+50);
 		});
-		//$scope.updateTadkitTAD();
 	}
 })();
