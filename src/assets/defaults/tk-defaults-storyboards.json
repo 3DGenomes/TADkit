@@ -118,6 +118,7 @@
                         "width" : "800px",
                         "height" : "400px",
                         "margin" : "0px",
+                        "offsetx" : "10px",
                         "position" : 1
                     }
                 },
@@ -143,10 +144,10 @@
 					"generator" : "TADkit"
 				},
 				"object" : {
-					"uuid" : "00000000-0000-0000-0000-000000000000",
+					"uuid" : "00000000-0000-0000-0000-000000000007",
 					"id" : "slider-external",
 					"title" : "Navigation",
-					"type" : "panel-jbrowse",
+					"type" : "panel-igvjs",
 					"dataset" : "default",
 					"state" : {
 						"width" : "100%",
@@ -165,12 +166,13 @@
 						"background" : "#ffffff",
 						"margin" : "4px",
 						"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
-						"jbrowse_path" : "../JBrowse/",
-						"leading_chr" : false,
+						"leading_chr" : true,
 						"species_data" : {
-							"human": "http://inb.bsc.es/MuG/JBrowse-1.12.1/data",
-							"drosophila_melanogaster" : "data",
-							"saccharomyces_cerevisiae" : "http://mmb.irbbarcelona.org/NucleosomeDynamics/JBrowse/JBrowse-1.12.0/user_jbrowse/R64-1-1/jbrowse"
+							"drosophila_melanogaster" : {
+								"id" : "dmel",
+								"fastaURL" : "../data/dmel-all-chromosome-r6.13.fasta",
+								"cytobandURL" : "../data/dmel-cytoBandIdeo.txt"
+							}
 						}
 					}
 				}

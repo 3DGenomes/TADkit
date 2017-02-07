@@ -65,7 +65,7 @@
 					component.overlay = overlay;
 				} else if (component.object.type == "panel-hicdata") {
 					component.data = Hic_data.get();
-				} else if (component.object.type == "panel-jbrowse") {
+				} else if (component.object.type == "panel-jbrowse" || component.object.type == "panel-igvjs") {
 					//component.data = Restraints.get();
 					all_data = {
 							tad_data: Hic_data.get(),

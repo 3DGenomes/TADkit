@@ -195,7 +195,7 @@
 									.attr('height', container_height-2*parseInt(scope.state.margin))
 									.style("position", "absolute")
 									.style("top", 2*parseInt(scope.state.margin)+'px')
-									.style("left", 2*parseInt(scope.state.margin)+'px')
+									.style("left", (2*parseInt(scope.state.margin)+parseInt(scope.state.offsetx))+'px')
 									.append("g")
 									.attr("id", "tads_svg");
 							
@@ -403,7 +403,7 @@
 		                //ctx.rotate(-Math.PI/4);
 		                //ctx.scale(scope.scale, scope.scale);
 		                t.reset();
-		                t.translate(scope.translatePos.x, container_height);
+		                t.translate(scope.translatePos.x+parseInt(scope.state.offsetx), container_height);
 		                t.rotate(-Math.PI/4);
 		                t.scale(scope.scale, scope.scale);
 		                ti.m  = t.m.slice();

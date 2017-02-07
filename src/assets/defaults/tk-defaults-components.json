@@ -219,5 +219,40 @@
 				}
 			}
 		}
+	},
+	{
+		"metadata" : {
+			"version" : 1.0,
+			"type" : "component",
+			"generator" : "TADkit"
+		},
+		"object" : {
+			"uuid" : "00000000-0000-0000-0000-000000000007",
+			"id" : "slider-external",
+			"title" : "Navigation",
+			"type" : "panel-igvjs",
+			"dataset" : "default",
+			"state" : {
+				"width" : "100%",
+				"height" : "400px",
+				"position" : 1
+			}
+		},
+		"view" : {
+			"viewpoint" : {
+				"chromStart" : 1,
+				"chromEnd" : 999999,
+				"scale" : 1
+			},
+			"viewtype" : "linear",
+			"settings" : {
+				"background" : "#ffffff",
+				"margin" : "4px",
+				"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
+				"species_data" : {
+					"drosophila_melanogaster" : "data"
+				}
+			}
+		}
 	}
 ]

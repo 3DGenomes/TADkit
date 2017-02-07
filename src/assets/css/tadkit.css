@@ -412,6 +412,23 @@ md-checkbox.md-checked .md-icon {
 	width: 20px;
 	height: 20px;
 }
+.component-body .igv-root-div {
+	line-height: normal;	
+}
+.component-controller .igv-logo {
+	background: rgba(0, 0, 0, 0) url("../img/igv-logo.svg") no-repeat scroll 0 0 / 34px 16px;
+}
+
+#tad-highlight-tadkit {
+	z-index: 99999;
+	pointer-events: none;
+	display: block;
+    height: 100%;
+    position: absolute;
+    background-color: transparent;
+	border-left: 3px dashed black;
+    border-right: 3px dashed black;
+}
 
 /**
  * MODALS
