@@ -13,7 +13,7 @@ module.exports = new Package('TADkitDocs', [
 
 .config(function(templateFinder, templateEngine) {
   templateFinder.templateFolders
-      .unshift(path.resolve(packagePath, 'templates'));
+      .unshift(path.resolve(packagePath, 'dgeni'));
   templateFinder.templatePatterns = [
     '${ doc.template }',
     '${ doc.area }/${ doc.id }.${ doc.docType }.template.md',
