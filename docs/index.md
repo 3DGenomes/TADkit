@@ -1,6 +1,6 @@
 ---
 title: TADkit Documentation
-layout: post
+layout: default
 ---
 
 TADkit is a 3D genome browser which can be used
