@@ -1,3 +1,4 @@
+exclude: [dgeni]
 theme: jekyll-theme-minimal
 title: [TADkit Documentation]
 description: [Documentation for the TADkit 3D genome browser]
