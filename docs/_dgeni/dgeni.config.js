@@ -71,6 +71,6 @@ module.exports = new Package('TADkitDocs', [
         },
     ];
 
-    writeFilesProcessor.outputFolder = 'docs';
+    writeFilesProcessor.outputFolder = 'docs/pages/tadkit';
     
 });

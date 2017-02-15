@@ -1,0 +1,6 @@
+exclude: [dgeni]
+theme: jekyll-theme-minimal
+title: [TADkit Documentation]
+description: [Documentation for the TADkit 3D genome browser]
+show_downloads: ["true"]
+#google_analytics: [Your Google Analytics tracking ID]
