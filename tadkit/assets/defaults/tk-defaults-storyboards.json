@@ -133,6 +133,12 @@
                         "background" : "#ffffff",
                         "margin" : "4px",
                         "padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
+                        "species_data" : {
+							"drosophila_melanogaster" : {
+								"id" : "dmel",
+								"url" : "http://wwwdev.ebi.ac.uk/mug/api/adjacency/getInteractions?user_id=test&file_id=test&no_links=1"
+							}
+						},
                         "example" : 1
                     }
                 }

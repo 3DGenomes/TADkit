@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.controller('PanelIgvjsController', PanelIgvjsController);
 
-	function PanelIgvjsController($scope, $mdDialog, Overlays, uuid4, Networks, d3Service) {
+	function PanelIgvjsController($scope, $mdDialog, Overlays, uuid4, Networks, d3Service, Users) {
 
 		$scope.width = $scope.state.width; // strip PX units
 		$scope.height = $scope.state.height; // strip PX units
@@ -57,19 +57,22 @@
 						cytobandURL: $scope.view.settings.cytourl
 					    },
 					locus: chrom+':'+igvjs_start+'-'+($scope.settings.current.chromEnd),
-		            tracks: [
-		      {
-		                    name: "Fillion Colors",
-		                    type: "annotation",
-		                    format: "bed",
-		                    sourceType: "file",
-		                    url: "../data/fillion_colors.bed",
-		                    indexed: false,
-		                    order: Number.MAX_VALUE,
-		                    visibilityWindow: 300000000,
-		                    displayMode: "EXPANDED"
-		                }
-		            ]
+					tracks: Users.getTracks()
+//		            tracks: [
+//		      {
+//		                    name: "Fillion Colors",
+//		                    type: "annotation",
+//		                    //format: "bed",
+//		                    format: "gff3",
+//		                    sourceType: "file",
+//		                    //url: "../data/fillion_colors.bed",
+//		                    url: "../data/fill.gff",
+//		                    indexed: false,
+//		                    order: Number.MAX_VALUE,
+//		                    visibilityWindow: 300000000,
+//		                    displayMode: "EXPANDED"
+//		                }
+//		            ]
 		        };
 		
 		
@@ -89,7 +92,7 @@
 				$scope.settings.current.leftborder = leftborder;
 				$scope.settings.current.rightborder = rightborder;
 			}
-			//$scope.hideTadkitMarkers();
+			$scope.hideTadkitMarkers();
 			$scope.updateTadkitTAD();
 			$scope.$apply();
 		};
@@ -226,9 +229,14 @@
 		Create div indicating selected tad in the browser.
 		#tad-highlight-tadkit should be styled in the main css
 		*/
-		var d = angular.element("<div id=\"tad-highlight-tadkit\" style=\"width='0px;'\"></div>");
+		var d = angular.element("<div id=\"tad-highlight-tadkit\" style=\"width='0px;';display=none;\"></div>");
 		var trackContainer = angular.element($scope.myIgv.trackContainerDiv);
 		trackContainer.append(d);
+		
+		var dl = angular.element("<div id=\"trackbar-tadkit-left-mark\" style=\"display=none\"></div>");
+		trackContainer.append(dl);
+		var dr = angular.element("<div id=\"trackbar-tadkit-right-mark\" style=\"display=none\"></div>");
+		trackContainer.append(dr);
 		
 		/*
 		Main function moving and resizing the #tad-highlight-tadkit depending on the current tad
@@ -241,26 +249,26 @@
         			start: the genomic position corresponding to the left border of the browser
         			bpPerPixel: corresponding base pairs per 1 pixel
         		*/
-        		$scope.myIgv.trackViews.forEach(function (trackView) {
-        			if(trackView.track.id == 'sequence') {
-        				referenceFrame = trackView.viewports[0].genomicState.referenceFrame;
-        			}
+        		$scope.myIgv.genomicStateList.forEach(function (genomicState) {
+            		var referenceFrame = genomicState.referenceFrame;
+	        		// Compute left position and width of the #tad-highlight-tadkit
+	        		if(typeof(referenceFrame) != 'undefined') {
+		            	//trackPane.style.backgroundColor = "rgba(0,0,0,0.05)";
+		            	var start_tad = $scope.data.tad_data.tads[$scope.settings.current.tad_selected][1];
+		            	var end_tad = $scope.data.tad_data.tads[$scope.settings.current.tad_selected][2];
+		            	
+		            	var leftpos = Math.round((start_tad-referenceFrame.start)/referenceFrame.bpPerPixel);
+		                d.css("left",Math.floor(leftpos+50) + "px");
+		                var rightpos = Math.round((end_tad-referenceFrame.start)/referenceFrame.bpPerPixel);
+		                d.css("width",Math.floor(rightpos-leftpos) + "px");
+		                d.css("display","block");
+	        		}
         		});
-        		// Compute left position and width of the #tad-highlight-tadkit
-        		if(typeof(referenceFrame) != 'undefined') {
-	            	//trackPane.style.backgroundColor = "rgba(0,0,0,0.05)";
-	            	var start_tad = $scope.data.tad_data.tads[$scope.settings.current.tad_selected][1];
-	            	var end_tad = $scope.data.tad_data.tads[$scope.settings.current.tad_selected][2];
-	            	
-	            	var leftpos = Math.round((start_tad-referenceFrame.start)/referenceFrame.bpPerPixel);
-	                d.css("left",Math.floor(leftpos+50) + "px");
-	                var rightpos = Math.round((end_tad-referenceFrame.start)/referenceFrame.bpPerPixel);
-	                d.css("width",Math.floor(rightpos-leftpos) + "px");
-        		}
                 
             } else {
             	//trackPane.style.backgroundColor = "";
             	d.css("width","0px");
+            	d.css("display","none");
             	
             }
         };
@@ -288,7 +296,38 @@
                     }
                 }
             };
-
+        /*
+         markers_position gets updated when we click on the 2D panel with the genomic positions that are interacting in the
+         clicked position.
+         Listen for left and right markers positions and then move them to the genomic position in the browser.
+         */
+        $scope.$watch('settings.current.markers_position', function( newValue, oldValue ) {
+			if ( newValue !== oldValue) {
+				if ( newValue[0] === -1 || newValue[1] === -1) {
+					$scope.hideTadkitMarkers();
+	        	} else {
+	        		$scope.updateTadkitMarkers(newValue);
+	        	}
+			}
+		});
+        $scope.hideTadkitMarkers = function() {
+        	dr.css("display","none");
+        	dl.css("display","none");
+        };
+        $scope.updateTadkitMarkers = function(markerspos) {
+        	$scope.myIgv.genomicStateList.forEach(function (genomicState) {
+        		var referenceFrame = genomicState.referenceFrame;
+        		var leftpx = (markerspos[1]-referenceFrame.start)/referenceFrame.bpPerPixel; 
+	        	dl.css("display","block");
+	        	dl.css("left",Math.floor(leftpx+50) + "px");
+	        	dl.css("position","absolute");
+	        	
+	        	var rightpx = (markerspos[0]-referenceFrame.start)/referenceFrame.bpPerPixel; 
+	        	dr.css("display","block");
+	        	dr.css("left",Math.floor(rightpx+50) + "px");
+	        	dr.css("position","absolute");
+        	});
+        };
         /*
         igvjs developers expose an event when the browser changes locus.
         We profit from it to update tadkit position in the 2D and 3D panels

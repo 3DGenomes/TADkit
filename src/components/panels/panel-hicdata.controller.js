@@ -4,20 +4,20 @@
 		.module('TADkit')
 		.controller('PanelHicdataController', PanelHicdataController);
 
-	function PanelHicdataController($scope,$window,Storyboards) {
+	function PanelHicdataController($scope,$window,Storyboards,Datasets) {
 
 		//$scope.width = $scope.canvas_width = parseInt($scope.state.width)-2*parseInt($scope.state.margin); // strip PX units
 		var scene_component = Storyboards.getComponentById('default-scene');
 		$scope.width = $scope.state.width = $window.innerWidth - parseInt(scene_component.object.state.width) - 50 - 2*parseInt($scope.state.margin);
 		$scope.height = $scope.state.height = $scope.canvas_height = parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units
-		if($scope.data.n === 0) {
-			$scope.no_hic_data = true; 
-			$scope.slidevalue = "10;0.001";
-			$scope.slideoptions = {};
-			return;
-		} else  {
-			$scope.no_hic_data = false;
-		}
+//		if($scope.data.n === 0) {
+//			$scope.no_hic_data = true; 
+//			$scope.slidevalue = "10;0.001";
+//			$scope.slideoptions = {};
+//			return;
+//		} else  {
+//			$scope.no_hic_data = false;
+//		}
 		
 		var w = angular.element($window);
 		$scope.$watch(
@@ -30,7 +30,21 @@
 		  },
 		  true
 		);
-
+		if($scope.data.n === 0) {
+			var promise = Datasets.loadHic();
+			promise.then(function(data) {
+			    if(data.n === 0) {
+					$scope.no_hic_data = true; 
+					$scope.slidevalue = "10;0.001";
+					$scope.slideoptions = {};
+					return;
+				} else  {
+					$scope.no_hic_data = false;
+				}
+			    $scope.update_data(data);
+			});
+		}
+        
 		w.bind('resize', function(){
 		  $scope.$apply();
 		});

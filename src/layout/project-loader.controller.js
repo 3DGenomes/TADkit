@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.controller('ProjectLoaderController', ProjectLoaderController);
 
-	function ProjectLoaderController($q, $state, $stateParams, $scope, Datasets, Overlays, Storyboards, Hic_data) {
+	function ProjectLoaderController($q, $http, $state, $stateParams, $scope, Datasets, Overlays, Storyboards, Users, Hic_data) {
 
 		$scope.updateCurrent = function() {
 			$scope.current.dataset = Datasets.getDataset();
@@ -19,18 +19,27 @@
 			console.log("Current dataset, model, overlay and storyboard updated.");			
 		};
 
-		// On click load dataset from URL Params
-		// Loads local JSON and then associated TSV tracks from /examples folder
-		$scope.loadDatasetFromParam = function() {
-			var loading = Datasets.load($stateParams.loadDataset);
-			return $q.all([ loading ])
-			.then(function(results){
-				$scope.updateCurrent();
-				console.log("Dataset loaded: " + $stateParams.loadDataset);			
-				$state.go('browser');
+		$scope.loadConfigFromParam = function() {
+			var config_file;
+			var deferral = $q.defer();
+			
+			$http.get($stateParams.conf)
+			.success( function(conf) {
+				if(conf.tracks) {
+					Users.setTracks(conf.tracks);
+				}
+				var loading = Datasets.load(conf.dataset);
+				return $q.all([ loading ])
+				.then(function(results){
+					$scope.updateCurrent();
+					console.log("Dataset loaded: " + conf.dataset);			
+					$state.go('browser');
+				});
 			});
+			return deferral.promise;
+			
 		};
-		if ($stateParams.loadDataset) $scope.loadDatasetFromParam();
+		if ($stateParams.conf) $scope.loadConfigFromParam();
 
 		// On dropzone (load external file)
 		// Adds JSON to current project - load TSV when in browser
@@ -42,12 +51,12 @@
 				// ADD FILENAME (SEE OVERLAY-IMPORT)
 				console.log("Dataset added."); //: " + $stateParams.loadDataset);			
 				$state.go('dataset');
-			});
+			});			
 		};
 		$scope.cleanDataset = function(event) {
 			Datasets.clear();
 			Hic_data.clear();
-			var loadexample = Datasets.load();
+			var loadexample = Datasets.load('assets/defaults/tk-example-dataset.json');
 			return $q.all([ loadexample ])
 			.then(function(results){
 				$scope.updateCurrent();

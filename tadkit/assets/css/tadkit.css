@@ -429,7 +429,14 @@ md-checkbox.md-checked .md-icon {
 	border-left: 3px dashed black;
     border-right: 3px dashed black;
 }
-
+#trackbar-tadkit-left-mark, #trackbar-tadkit-right-mark{
+    background-color: #ff0000;
+    display: block;
+    height: 100%;
+    position: fixed;
+    width: 1px;
+    z-index: 15;
+}
 /**
  * MODALS
  */

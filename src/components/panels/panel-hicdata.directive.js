@@ -18,12 +18,11 @@
 			templateUrl: 'assets/templates/panel-hicdata.html',
 			link:function(scope, element, attrs){
 				
-				if(scope.data.n<=0) return; 
+				//if(scope.data.n<=0) return; 
 					
-				var data = scope.data;
 				scope.rendered = false;
 				scope.imageObject=new Image();
-				scope.show_tads = (data.tads.length !== 0);
+				scope.show_tads = (scope.data.tads.length !== 0);
 				
 				var scaleMultiplier = 0.8;
 			    var startDragOffset = {};
@@ -139,24 +138,24 @@
 		                
 		                var val, x , y = 0;
 		                var Logmin, Logmax = 0;
-		                if(data.max !== 0) Logmax = Math.log(data.max);
-		                if(data.min !== 0) Logmin = Math.log(data.min);
+		                if(scope.data.max !== 0) Logmax = Math.log(scope.data.max);
+		                if(scope.data.min !== 0) Logmin = Math.log(scope.data.min);
 		                var container_width = parseInt(scope.state.width);
 		                var container_height = parseInt(scope.state.height);
-		                for(var i=0;i<data.value.length;i++) {
-		                	x = Math.floor(data.pos[i]%data.n);
-							y = Math.floor(data.pos[i]/data.n);
+		                for(var i=0;i<scope.data.value.length;i++) {
+		                	x = Math.floor(scope.data.pos[i]%scope.data.n);
+							y = Math.floor(scope.data.pos[i]/scope.data.n);
 		                	if(x >= parseInt(canvas.width) && y >= parseInt(canvas.height)) {
 		                		break; // avoid overflow
 		                	}
 		                	//if(x >= (container_width-scope.translatePos.x)/scope.scale && y >= (container_height-scope.translatePos.y)/scope.scale) break;
 		                	if(x < parseInt(canvas.width) && y < parseInt(canvas.height)) {
-		                		if(data.value[i]!==0) {
-		                			//if(data.max<=1) val = Math.floor((Math.log(data.value[i])/Math.log(data.max))*5);
+		                		if(scope.data.value[i]!==0) {
+		                			//if(scope.data.max<=1) val = Math.floor((Math.log(scope.data.value[i])/Math.log(scope.data.max))*5);
 		                			//else 
-		                			//val = Math.floor((Math.log(data.value[i])/Math.log(data.max))*255);
-		                			if(data.value[i] <= data_max && data.value[i] >= data_min)
-		                				val = Math.floor( ((Math.log(data.value[i])-Logmin)/(Logmax-Logmin))*255 );
+		                			//val = Math.floor((Math.log(scope.data.value[i])/Math.log(scope.data.max))*255);
+		                			if(scope.data.value[i] <= data_max && scope.data.value[i] >= data_min)
+		                				val = Math.floor( ((Math.log(scope.data.value[i])-Logmin)/(Logmax-Logmin))*255 );
 		                			else
 		                				val = 0;
 		                		} else {
@@ -168,7 +167,7 @@
 		                }
 		                
 		                //let browser resize it
-		                //scope.scale = (container_width-2*parseInt(scope.state.margin))/(Math.sqrt(2)*data.n); 
+		                //scope.scale = (container_width-2*parseInt(scope.state.margin))/(Math.sqrt(2)*scope.data.n); 
 		                scope.imageObject.src=canvas.toDataURL();
 		                
 		                if(scope.rendered) return;
@@ -195,7 +194,7 @@
 									.attr('height', container_height-2*parseInt(scope.state.margin))
 									.style("position", "absolute")
 									.style("top", 2*parseInt(scope.state.margin)+'px')
-									.style("left", (2*parseInt(scope.state.margin)+parseInt(scope.state.offsetx))+'px')
+									.style("left", (2*parseInt(scope.state.margin))+'px')
 									.append("g")
 									.attr("id", "tads_svg");
 							
@@ -222,18 +221,18 @@
 							var resolution, start_tad, end_tad = 0;
 							var polygon_tad, start_tad_scaled, end_tad_scaled, tad_height; 
 							polygon_tads = [];
-							for(i=0;i<data.tads.length;i++) {
-			                	stroke_width = Math.round(data.tads[i][3]/10);
+							for(i=0;i<scope.data.tads.length;i++) {
+			                	stroke_width = Math.round(scope.data.tads[i][3]/10);
 			                	// assuming tads given in absolute position
 			                	resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
-								start_tad = Math.round(((data.tads[i][1])-scope.settings.current.chromStart)/resolution);
-			                	end_tad = Math.round((data.tads[i][2]-scope.settings.current.chromStart)/resolution);
+								start_tad = Math.round(((scope.data.tads[i][1])-scope.settings.current.chromStart)/resolution);
+			                	end_tad = Math.round((scope.data.tads[i][2]-scope.settings.current.chromStart)/resolution);
 			                 	start_tad_scaled = Math.round((start_tad*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2)));
 			                	polygon_tad = hic_svg.append("rect")
-			                 		.attr("id",data.tads[i][0])
-			                 		.attr("start",(data.tads[i][1]))
-			                 		.attr("end",(data.tads[i][2]))
-			                 		.attr("score",(data.tads[i][3]))
+			                 		.attr("id",scope.data.tads[i][0])
+			                 		.attr("start",(scope.data.tads[i][1]))
+			                 		.attr("end",(scope.data.tads[i][2]))
+			                 		.attr("score",(scope.data.tads[i][3]))
 			                 		.style("fill", "white")
 									.style("fill-opacity", 0)
 									.style("stroke", "black")
@@ -247,7 +246,7 @@
 								 	.attr("y", 0)
 								 	.attr("transform", "translate(" + (start_tad_scaled) + ","+(container_height-2*parseInt(scope.state.margin))+") scale("+scope.scale+") rotate(-45 0 0)");
 			                		
-			                	polygon_tad.append("svg:title").text("Start:"+data.tads[i][1]+",End:"+data.tads[i][2]+",Score:"+data.tads[i][3]);
+			                	polygon_tad.append("svg:title").text("Start:"+scope.data.tads[i][1]+",End:"+scope.data.tads[i][2]+",Score:"+scope.data.tads[i][3]);
 			                	polygon_tads.push(polygon_tad);
 			       
 			                }
@@ -281,39 +280,38 @@
 						 
 						    svg.on("mouseup", function(){
 						    	if(!mouseMove) {
-						    		var jbrowse_scope = angular.element(document.querySelector('#jbrowse-iframe')).scope();
+						    		var markers_position = [-1,-1];
 						    		
 						    		var mouseCoords = d3.mouse(this);   
 						    		var transformCoords = ti.transformPoint(mouseCoords[0],mouseCoords[1]);
-						            if(transformCoords[0]<0 || transformCoords[1]<0 || transformCoords[0]>data.n || transformCoords[0]>data.n) {
+						            if(transformCoords[0]<0 || transformCoords[1]<0 || transformCoords[0]>scope.data.n || transformCoords[0]>scope.data.n) {
 						            	contact_marker.attr('display', 'none');
 						            	contact_marker_value.attr('display', 'none');
-						            	if(!angular.isUndefined(jbrowse_scope)) {
-						            		jbrowse_scope.hideTadkitMarkers();
-						            	}
+						            	scope.settings.current.markers_position = markers_position;
+						            	scope.$apply(scope.settings.current.markers_position);
 						            } else {
 						            	contact_marker
 						            		.attr("x", mouseCoords[0])
 						            		.attr("y", mouseCoords[1])
-						            		.attr('width', data.n*scope.scale)
-						            		.attr('height', data.n*scope.scale)
+						            		.attr('width', scope.data.n*scope.scale)
+						            		.attr('height', scope.data.n*scope.scale)
 						            		.attr("transform", "rotate(45 "+mouseCoords[0]+" "+mouseCoords[1]+")")
 						            		.attr('display', 'block');
 						            	
-						            	var pos = Math.round(transformCoords[0])+ Math.round(transformCoords[1])*data.n;
-						            	var value_index = data.pos.indexOf(pos);
+						            	var pos = Math.round(transformCoords[0])+ Math.round(transformCoords[1])*scope.data.n;
+						            	var value_index = scope.data.pos.indexOf(pos);
 						            	var value_text = 0;
-						            	if(value_index >= 0) value_text = data.value[value_index];
+						            	if(value_index >= 0) value_text = scope.data.value[value_index];
 						            	contact_marker_value
 						            		.attr("x", mouseCoords[0])
 						            		.attr("y", mouseCoords[1]-10)
 						            		.text(value_text)
 						            		.attr('display', 'block');
 						            	
-						            	if(!angular.isUndefined(jbrowse_scope)) {
-						            		var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
-											jbrowse_scope.updateTadkitMarkers(transformCoords[0]*resolution+scope.settings.current.chromStart,transformCoords[1]*resolution+scope.settings.current.chromStart);
-						            	}
+						            	var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
+						            	markers_position = [transformCoords[0]*resolution+scope.settings.current.chromStart,transformCoords[1]*resolution+scope.settings.current.chromStart];
+						            	scope.settings.current.markers_position = markers_position;
+						            	scope.$apply(scope.settings.current.markers_position);
 						            }
 						            
 						    	}
@@ -352,7 +350,7 @@
 		        scope.$watch('state.width', function(newWidth, oldWidth) {
 		        	if(newWidth !== oldWidth){
 		        		scope.rendered = false;
-		                scope.render(data.max, data.min);
+		                scope.render(scope.data.max, scope.data.min);
 		        	}
 		        });
 		        scope.$watch('settings.current.particle', function(newParticle, oldParticle) {
@@ -366,10 +364,10 @@
 					}
 				});
 		        scope.$watch('settings.current.leftborder', function(newPos, oldPos) {
-					if ( newPos !== oldPos) {
+					if ( newPos !== oldPos && scope.data.n > 0) {
 						var rect = hic_data_container.getBoundingClientRect();
 						scope.translatePos.x = scope.settings.current.leftborder-rect.left;
-						scope.scale = (scope.settings.current.rightborder-scope.settings.current.leftborder)/(Math.sqrt(2)*data.n); 
+						scope.scale = (scope.settings.current.rightborder-scope.settings.current.leftborder)/(Math.sqrt(2)*scope.data.n); 
 						scope.update();
 						scope.update_marks();
 					}
@@ -392,7 +390,7 @@
 				scope.update = function() {
 					
 					
-	                if(!scope.rendered)	scope.render(data.max, data.min);
+	                if(!scope.rendered)	scope.render(scope.data.max, scope.data.min);
 					var canvas = document.getElementById("hic_canvas");
 					var container_height = parseInt(scope.state.height);
 		            if (canvas.getContext) {
@@ -419,7 +417,7 @@
 				};
 
 				scope.update_marks =  function() {
-					var x = (scope.settings.current.particle*Math.sqrt(2))*scope.scale+(scope.translatePos.x);
+					var x = (scope.settings.current.particle*Math.sqrt(2))*scope.scale+(scope.translatePos.x)+parseInt(scope.state.offsetx);
 					handle.attr("cx",x);
 					position.attr("x",x).text(scope.settings.current.particle);
 					
@@ -433,8 +431,8 @@
 					if(scope.show_tads) {
 						for(var i=0;i<polygon_tads.length;i++) {
 							resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
-							start_tad = Math.round(((data.tads[i][1])-scope.settings.current.chromStart)/resolution);
-							start_tad_scaled = Math.round((start_tad*Math.sqrt(2))*scope.scale+(scope.translatePos.x));
+							start_tad = Math.round(((scope.data.tads[i][1])-scope.settings.current.chromStart)/resolution);
+							start_tad_scaled = Math.round((start_tad*Math.sqrt(2))*scope.scale+(scope.translatePos.x)+parseInt(scope.state.offsetx));
 							
 							polygon_tads[i]
 								.attr("transform", "translate(" + (start_tad_scaled) + ","+(container_height-2*parseInt(scope.state.margin))+") scale("+scope.scale+") rotate(-45 0 0)");
@@ -497,7 +495,18 @@
 			        }
 			        scope.update_marks();
 			    };
-
+			    scope.update_data = function(data){
+			    	scope.data = data;
+			    	scope.scale = (scope.settings.current.rightborder-scope.settings.current.leftborder)/(Math.sqrt(2)*scope.data.n);
+			    	if (typeof scope.settings.current.leftborder != 'undefined') {
+						var rect = hic_data_container.getBoundingClientRect();
+						scope.translatePos.x = scope.settings.current.leftborder-rect.left;
+					}
+			    	scope.rendered = false;
+	                scope.render(data.max, data.min);
+	                scope.update();
+	                scope.update_marks();
+			    }; 
 			    
 			    /*// Better tubed by default. Maybe add button to toggle red
 			    var originalOverlay = Overlays.getCurrentIndex();

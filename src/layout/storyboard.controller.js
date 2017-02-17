@@ -4,11 +4,15 @@
 		.module('TADkit')
 		.controller('StoryboardController', StoryboardController);
 
-	function StoryboardController($window, $scope, Settings, Storyboards, Components, Overlays, Proximities, Restraints, Hic_data) {
+	function StoryboardController($window, $scope, $state, Settings, Storyboards, Components, Overlays, Proximities, Restraints, Hic_data, Datasets) {
 
 		// WATCH FOR WINDOW RESIZE
 		angular.element($window).on('resize', function(){ $scope.$apply(); });
-
+		var datasets = Datasets.get();
+		if(datasets.loaded.length===0) { 
+			$state.go('loader'); 
+			return;
+		}
 		// $scope.current.storyboard.components[0].view.settings.chromatin.segmentLength = $scope.settings.current.segmentLength;
 
 		$scope.settings.views.scale = 1; //$scope.current.dataset.object.scale;

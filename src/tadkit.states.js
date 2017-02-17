@@ -68,7 +68,8 @@
 		})
 		.state('loader', {
 			parent: 'project',
-			url: '/loader/:loadDataset',
+			//url: '/loader/:loadDataset',
+			url: '/loader/?conf',
 			views: {
 				'topbar@main': {
 					templateUrl: 'assets/templates/topbar.html',

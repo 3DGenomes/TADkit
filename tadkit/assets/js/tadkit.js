@@ -112,7 +112,8 @@
 		})
 		.state('loader', {
 			parent: 'project',
-			url: '/loader/:loadDataset',
+			//url: '/loader/:loadDataset',
+			url: '/loader/?conf',
 			views: {
 				'topbar@main': {
 					templateUrl: 'assets/templates/topbar.html',
@@ -237,20 +238,20 @@
 		.module('TADkit')
 		.controller('PanelHicdataController', PanelHicdataController);
 
-	function PanelHicdataController($scope,$window,Storyboards) {
+	function PanelHicdataController($scope,$window,Storyboards,Datasets) {
 
 		//$scope.width = $scope.canvas_width = parseInt($scope.state.width)-2*parseInt($scope.state.margin); // strip PX units
 		var scene_component = Storyboards.getComponentById('default-scene');
 		$scope.width = $scope.state.width = $window.innerWidth - parseInt(scene_component.object.state.width) - 50 - 2*parseInt($scope.state.margin);
 		$scope.height = $scope.state.height = $scope.canvas_height = parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units
-		if($scope.data.n === 0) {
-			$scope.no_hic_data = true; 
-			$scope.slidevalue = "10;0.001";
-			$scope.slideoptions = {};
-			return;
-		} else  {
-			$scope.no_hic_data = false;
-		}
+//		if($scope.data.n === 0) {
+//			$scope.no_hic_data = true; 
+//			$scope.slidevalue = "10;0.001";
+//			$scope.slideoptions = {};
+//			return;
+//		} else  {
+//			$scope.no_hic_data = false;
+//		}
 		
 		var w = angular.element($window);
 		$scope.$watch(
@@ -263,7 +264,21 @@
 		  },
 		  true
 		);
-
+		if($scope.data.n === 0) {
+			var promise = Datasets.loadHic();
+			promise.then(function(data) {
+			    if(data.n === 0) {
+					$scope.no_hic_data = true; 
+					$scope.slidevalue = "10;0.001";
+					$scope.slideoptions = {};
+					return;
+				} else  {
+					$scope.no_hic_data = false;
+				}
+			    $scope.update_data(data);
+			});
+		}
+        
 		w.bind('resize', function(){
 		  $scope.$apply();
 		});
@@ -335,12 +350,11 @@
 			templateUrl: 'assets/templates/panel-hicdata.html',
 			link:function(scope, element, attrs){
 				
-				if(scope.data.n<=0) return; 
+				//if(scope.data.n<=0) return; 
 					
-				var data = scope.data;
 				scope.rendered = false;
 				scope.imageObject=new Image();
-				scope.show_tads = (data.tads.length !== 0);
+				scope.show_tads = (scope.data.tads.length !== 0);
 				
 				var scaleMultiplier = 0.8;
 			    var startDragOffset = {};
@@ -456,24 +470,24 @@
 		                
 		                var val, x , y = 0;
 		                var Logmin, Logmax = 0;
-		                if(data.max !== 0) Logmax = Math.log(data.max);
-		                if(data.min !== 0) Logmin = Math.log(data.min);
+		                if(scope.data.max !== 0) Logmax = Math.log(scope.data.max);
+		                if(scope.data.min !== 0) Logmin = Math.log(scope.data.min);
 		                var container_width = parseInt(scope.state.width);
 		                var container_height = parseInt(scope.state.height);
-		                for(var i=0;i<data.value.length;i++) {
-		                	x = Math.floor(data.pos[i]%data.n);
-							y = Math.floor(data.pos[i]/data.n);
+		                for(var i=0;i<scope.data.value.length;i++) {
+		                	x = Math.floor(scope.data.pos[i]%scope.data.n);
+							y = Math.floor(scope.data.pos[i]/scope.data.n);
 		                	if(x >= parseInt(canvas.width) && y >= parseInt(canvas.height)) {
 		                		break; // avoid overflow
 		                	}
 		                	//if(x >= (container_width-scope.translatePos.x)/scope.scale && y >= (container_height-scope.translatePos.y)/scope.scale) break;
 		                	if(x < parseInt(canvas.width) && y < parseInt(canvas.height)) {
-		                		if(data.value[i]!==0) {
-		                			//if(data.max<=1) val = Math.floor((Math.log(data.value[i])/Math.log(data.max))*5);
+		                		if(scope.data.value[i]!==0) {
+		                			//if(scope.data.max<=1) val = Math.floor((Math.log(scope.data.value[i])/Math.log(scope.data.max))*5);
 		                			//else 
-		                			//val = Math.floor((Math.log(data.value[i])/Math.log(data.max))*255);
-		                			if(data.value[i] <= data_max && data.value[i] >= data_min)
-		                				val = Math.floor( ((Math.log(data.value[i])-Logmin)/(Logmax-Logmin))*255 );
+		                			//val = Math.floor((Math.log(scope.data.value[i])/Math.log(scope.data.max))*255);
+		                			if(scope.data.value[i] <= data_max && scope.data.value[i] >= data_min)
+		                				val = Math.floor( ((Math.log(scope.data.value[i])-Logmin)/(Logmax-Logmin))*255 );
 		                			else
 		                				val = 0;
 		                		} else {
@@ -485,7 +499,7 @@
 		                }
 		                
 		                //let browser resize it
-		                //scope.scale = (container_width-2*parseInt(scope.state.margin))/(Math.sqrt(2)*data.n); 
+		                //scope.scale = (container_width-2*parseInt(scope.state.margin))/(Math.sqrt(2)*scope.data.n); 
 		                scope.imageObject.src=canvas.toDataURL();
 		                
 		                if(scope.rendered) return;
@@ -512,7 +526,7 @@
 									.attr('height', container_height-2*parseInt(scope.state.margin))
 									.style("position", "absolute")
 									.style("top", 2*parseInt(scope.state.margin)+'px')
-									.style("left", (2*parseInt(scope.state.margin)+parseInt(scope.state.offsetx))+'px')
+									.style("left", (2*parseInt(scope.state.margin))+'px')
 									.append("g")
 									.attr("id", "tads_svg");
 							
@@ -539,18 +553,18 @@
 							var resolution, start_tad, end_tad = 0;
 							var polygon_tad, start_tad_scaled, end_tad_scaled, tad_height; 
 							polygon_tads = [];
-							for(i=0;i<data.tads.length;i++) {
-			                	stroke_width = Math.round(data.tads[i][3]/10);
+							for(i=0;i<scope.data.tads.length;i++) {
+			                	stroke_width = Math.round(scope.data.tads[i][3]/10);
 			                	// assuming tads given in absolute position
 			                	resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
-								start_tad = Math.round(((data.tads[i][1])-scope.settings.current.chromStart)/resolution);
-			                	end_tad = Math.round((data.tads[i][2]-scope.settings.current.chromStart)/resolution);
+								start_tad = Math.round(((scope.data.tads[i][1])-scope.settings.current.chromStart)/resolution);
+			                	end_tad = Math.round((scope.data.tads[i][2]-scope.settings.current.chromStart)/resolution);
 			                 	start_tad_scaled = Math.round((start_tad*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2)));
 			                	polygon_tad = hic_svg.append("rect")
-			                 		.attr("id",data.tads[i][0])
-			                 		.attr("start",(data.tads[i][1]))
-			                 		.attr("end",(data.tads[i][2]))
-			                 		.attr("score",(data.tads[i][3]))
+			                 		.attr("id",scope.data.tads[i][0])
+			                 		.attr("start",(scope.data.tads[i][1]))
+			                 		.attr("end",(scope.data.tads[i][2]))
+			                 		.attr("score",(scope.data.tads[i][3]))
 			                 		.style("fill", "white")
 									.style("fill-opacity", 0)
 									.style("stroke", "black")
@@ -564,7 +578,7 @@
 								 	.attr("y", 0)
 								 	.attr("transform", "translate(" + (start_tad_scaled) + ","+(container_height-2*parseInt(scope.state.margin))+") scale("+scope.scale+") rotate(-45 0 0)");
 			                		
-			                	polygon_tad.append("svg:title").text("Start:"+data.tads[i][1]+",End:"+data.tads[i][2]+",Score:"+data.tads[i][3]);
+			                	polygon_tad.append("svg:title").text("Start:"+scope.data.tads[i][1]+",End:"+scope.data.tads[i][2]+",Score:"+scope.data.tads[i][3]);
 			                	polygon_tads.push(polygon_tad);
 			       
 			                }
@@ -598,39 +612,38 @@
 						 
 						    svg.on("mouseup", function(){
 						    	if(!mouseMove) {
-						    		var jbrowse_scope = angular.element(document.querySelector('#jbrowse-iframe')).scope();
+						    		var markers_position = [-1,-1];
 						    		
 						    		var mouseCoords = d3.mouse(this);   
 						    		var transformCoords = ti.transformPoint(mouseCoords[0],mouseCoords[1]);
-						            if(transformCoords[0]<0 || transformCoords[1]<0 || transformCoords[0]>data.n || transformCoords[0]>data.n) {
+						            if(transformCoords[0]<0 || transformCoords[1]<0 || transformCoords[0]>scope.data.n || transformCoords[0]>scope.data.n) {
 						            	contact_marker.attr('display', 'none');
 						            	contact_marker_value.attr('display', 'none');
-						            	if(!angular.isUndefined(jbrowse_scope)) {
-						            		jbrowse_scope.hideTadkitMarkers();
-						            	}
+						            	scope.settings.current.markers_position = markers_position;
+						            	scope.$apply(scope.settings.current.markers_position);
 						            } else {
 						            	contact_marker
 						            		.attr("x", mouseCoords[0])
 						            		.attr("y", mouseCoords[1])
-						            		.attr('width', data.n*scope.scale)
-						            		.attr('height', data.n*scope.scale)
+						            		.attr('width', scope.data.n*scope.scale)
+						            		.attr('height', scope.data.n*scope.scale)
 						            		.attr("transform", "rotate(45 "+mouseCoords[0]+" "+mouseCoords[1]+")")
 						            		.attr('display', 'block');
 						            	
-						            	var pos = Math.round(transformCoords[0])+ Math.round(transformCoords[1])*data.n;
-						            	var value_index = data.pos.indexOf(pos);
+						            	var pos = Math.round(transformCoords[0])+ Math.round(transformCoords[1])*scope.data.n;
+						            	var value_index = scope.data.pos.indexOf(pos);
 						            	var value_text = 0;
-						            	if(value_index >= 0) value_text = data.value[value_index];
+						            	if(value_index >= 0) value_text = scope.data.value[value_index];
 						            	contact_marker_value
 						            		.attr("x", mouseCoords[0])
 						            		.attr("y", mouseCoords[1]-10)
 						            		.text(value_text)
 						            		.attr('display', 'block');
 						            	
-						            	if(!angular.isUndefined(jbrowse_scope)) {
-						            		var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
-											jbrowse_scope.updateTadkitMarkers(transformCoords[0]*resolution+scope.settings.current.chromStart,transformCoords[1]*resolution+scope.settings.current.chromStart);
-						            	}
+						            	var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
+						            	markers_position = [transformCoords[0]*resolution+scope.settings.current.chromStart,transformCoords[1]*resolution+scope.settings.current.chromStart];
+						            	scope.settings.current.markers_position = markers_position;
+						            	scope.$apply(scope.settings.current.markers_position);
 						            }
 						            
 						    	}
@@ -669,7 +682,7 @@
 		        scope.$watch('state.width', function(newWidth, oldWidth) {
 		        	if(newWidth !== oldWidth){
 		        		scope.rendered = false;
-		                scope.render(data.max, data.min);
+		                scope.render(scope.data.max, scope.data.min);
 		        	}
 		        });
 		        scope.$watch('settings.current.particle', function(newParticle, oldParticle) {
@@ -683,10 +696,10 @@
 					}
 				});
 		        scope.$watch('settings.current.leftborder', function(newPos, oldPos) {
-					if ( newPos !== oldPos) {
+					if ( newPos !== oldPos && scope.data.n > 0) {
 						var rect = hic_data_container.getBoundingClientRect();
 						scope.translatePos.x = scope.settings.current.leftborder-rect.left;
-						scope.scale = (scope.settings.current.rightborder-scope.settings.current.leftborder)/(Math.sqrt(2)*data.n); 
+						scope.scale = (scope.settings.current.rightborder-scope.settings.current.leftborder)/(Math.sqrt(2)*scope.data.n); 
 						scope.update();
 						scope.update_marks();
 					}
@@ -709,7 +722,7 @@
 				scope.update = function() {
 					
 					
-	                if(!scope.rendered)	scope.render(data.max, data.min);
+	                if(!scope.rendered)	scope.render(scope.data.max, scope.data.min);
 					var canvas = document.getElementById("hic_canvas");
 					var container_height = parseInt(scope.state.height);
 		            if (canvas.getContext) {
@@ -736,7 +749,7 @@
 				};
 
 				scope.update_marks =  function() {
-					var x = (scope.settings.current.particle*Math.sqrt(2))*scope.scale+(scope.translatePos.x);
+					var x = (scope.settings.current.particle*Math.sqrt(2))*scope.scale+(scope.translatePos.x)+parseInt(scope.state.offsetx);
 					handle.attr("cx",x);
 					position.attr("x",x).text(scope.settings.current.particle);
 					
@@ -750,8 +763,8 @@
 					if(scope.show_tads) {
 						for(var i=0;i<polygon_tads.length;i++) {
 							resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
-							start_tad = Math.round(((data.tads[i][1])-scope.settings.current.chromStart)/resolution);
-							start_tad_scaled = Math.round((start_tad*Math.sqrt(2))*scope.scale+(scope.translatePos.x));
+							start_tad = Math.round(((scope.data.tads[i][1])-scope.settings.current.chromStart)/resolution);
+							start_tad_scaled = Math.round((start_tad*Math.sqrt(2))*scope.scale+(scope.translatePos.x)+parseInt(scope.state.offsetx));
 							
 							polygon_tads[i]
 								.attr("transform", "translate(" + (start_tad_scaled) + ","+(container_height-2*parseInt(scope.state.margin))+") scale("+scope.scale+") rotate(-45 0 0)");
@@ -814,7 +827,18 @@
 			        }
 			        scope.update_marks();
 			    };
-
+			    scope.update_data = function(data){
+			    	scope.data = data;
+			    	scope.scale = (scope.settings.current.rightborder-scope.settings.current.leftborder)/(Math.sqrt(2)*scope.data.n);
+			    	if (typeof scope.settings.current.leftborder != 'undefined') {
+						var rect = hic_data_container.getBoundingClientRect();
+						scope.translatePos.x = scope.settings.current.leftborder-rect.left;
+					}
+			    	scope.rendered = false;
+	                scope.render(data.max, data.min);
+	                scope.update();
+	                scope.update_marks();
+			    }; 
 			    
 			    /*// Better tubed by default. Maybe add button to toggle red
 			    var originalOverlay = Overlays.getCurrentIndex();
@@ -893,7 +917,7 @@
 		.module('TADkit')
 		.controller('PanelIgvjsController', PanelIgvjsController);
 
-	function PanelIgvjsController($scope, $mdDialog, Overlays, uuid4, Networks, d3Service) {
+	function PanelIgvjsController($scope, $mdDialog, Overlays, uuid4, Networks, d3Service, Users) {
 
 		$scope.width = $scope.state.width; // strip PX units
 		$scope.height = $scope.state.height; // strip PX units
@@ -946,19 +970,22 @@
 						cytobandURL: $scope.view.settings.cytourl
 					    },
 					locus: chrom+':'+igvjs_start+'-'+($scope.settings.current.chromEnd),
-		            tracks: [
-		      {
-		                    name: "Fillion Colors",
-		                    type: "annotation",
-		                    format: "bed",
-		                    sourceType: "file",
-		                    url: "../data/fillion_colors.bed",
-		                    indexed: false,
-		                    order: Number.MAX_VALUE,
-		                    visibilityWindow: 300000000,
-		                    displayMode: "EXPANDED"
-		                }
-		            ]
+					tracks: Users.getTracks()
+//		            tracks: [
+//		      {
+//		                    name: "Fillion Colors",
+//		                    type: "annotation",
+//		                    //format: "bed",
+//		                    format: "gff3",
+//		                    sourceType: "file",
+//		                    //url: "../data/fillion_colors.bed",
+//		                    url: "../data/fill.gff",
+//		                    indexed: false,
+//		                    order: Number.MAX_VALUE,
+//		                    visibilityWindow: 300000000,
+//		                    displayMode: "EXPANDED"
+//		                }
+//		            ]
 		        };
 		
 		
@@ -978,7 +1005,7 @@
 				$scope.settings.current.leftborder = leftborder;
 				$scope.settings.current.rightborder = rightborder;
 			}
-			//$scope.hideTadkitMarkers();
+			$scope.hideTadkitMarkers();
 			$scope.updateTadkitTAD();
 			$scope.$apply();
 		};
@@ -1115,9 +1142,14 @@
 		Create div indicating selected tad in the browser.
 		#tad-highlight-tadkit should be styled in the main css
 		*/
-		var d = angular.element("<div id=\"tad-highlight-tadkit\" style=\"width='0px;'\"></div>");
+		var d = angular.element("<div id=\"tad-highlight-tadkit\" style=\"width='0px;';display=none;\"></div>");
 		var trackContainer = angular.element($scope.myIgv.trackContainerDiv);
 		trackContainer.append(d);
+		
+		var dl = angular.element("<div id=\"trackbar-tadkit-left-mark\" style=\"display=none\"></div>");
+		trackContainer.append(dl);
+		var dr = angular.element("<div id=\"trackbar-tadkit-right-mark\" style=\"display=none\"></div>");
+		trackContainer.append(dr);
 		
 		/*
 		Main function moving and resizing the #tad-highlight-tadkit depending on the current tad
@@ -1130,26 +1162,26 @@
         			start: the genomic position corresponding to the left border of the browser
         			bpPerPixel: corresponding base pairs per 1 pixel
         		*/
-        		$scope.myIgv.trackViews.forEach(function (trackView) {
-        			if(trackView.track.id == 'sequence') {
-        				referenceFrame = trackView.viewports[0].genomicState.referenceFrame;
-        			}
+        		$scope.myIgv.genomicStateList.forEach(function (genomicState) {
+            		var referenceFrame = genomicState.referenceFrame;
+	        		// Compute left position and width of the #tad-highlight-tadkit
+	        		if(typeof(referenceFrame) != 'undefined') {
+		            	//trackPane.style.backgroundColor = "rgba(0,0,0,0.05)";
+		            	var start_tad = $scope.data.tad_data.tads[$scope.settings.current.tad_selected][1];
+		            	var end_tad = $scope.data.tad_data.tads[$scope.settings.current.tad_selected][2];
+		            	
+		            	var leftpos = Math.round((start_tad-referenceFrame.start)/referenceFrame.bpPerPixel);
+		                d.css("left",Math.floor(leftpos+50) + "px");
+		                var rightpos = Math.round((end_tad-referenceFrame.start)/referenceFrame.bpPerPixel);
+		                d.css("width",Math.floor(rightpos-leftpos) + "px");
+		                d.css("display","block");
+	        		}
         		});
-        		// Compute left position and width of the #tad-highlight-tadkit
-        		if(typeof(referenceFrame) != 'undefined') {
-	            	//trackPane.style.backgroundColor = "rgba(0,0,0,0.05)";
-	            	var start_tad = $scope.data.tad_data.tads[$scope.settings.current.tad_selected][1];
-	            	var end_tad = $scope.data.tad_data.tads[$scope.settings.current.tad_selected][2];
-	            	
-	            	var leftpos = Math.round((start_tad-referenceFrame.start)/referenceFrame.bpPerPixel);
-	                d.css("left",Math.floor(leftpos+50) + "px");
-	                var rightpos = Math.round((end_tad-referenceFrame.start)/referenceFrame.bpPerPixel);
-	                d.css("width",Math.floor(rightpos-leftpos) + "px");
-        		}
                 
             } else {
             	//trackPane.style.backgroundColor = "";
             	d.css("width","0px");
+            	d.css("display","none");
             	
             }
         };
@@ -1177,7 +1209,38 @@
                     }
                 }
             };
-
+        /*
+         markers_position gets updated when we click on the 2D panel with the genomic positions that are interacting in the
+         clicked position.
+         Listen for left and right markers positions and then move them to the genomic position in the browser.
+         */
+        $scope.$watch('settings.current.markers_position', function( newValue, oldValue ) {
+			if ( newValue !== oldValue) {
+				if ( newValue[0] === -1 || newValue[1] === -1) {
+					$scope.hideTadkitMarkers();
+	        	} else {
+	        		$scope.updateTadkitMarkers(newValue);
+	        	}
+			}
+		});
+        $scope.hideTadkitMarkers = function() {
+        	dr.css("display","none");
+        	dl.css("display","none");
+        };
+        $scope.updateTadkitMarkers = function(markerspos) {
+        	$scope.myIgv.genomicStateList.forEach(function (genomicState) {
+        		var referenceFrame = genomicState.referenceFrame;
+        		var leftpx = (markerspos[1]-referenceFrame.start)/referenceFrame.bpPerPixel; 
+	        	dl.css("display","block");
+	        	dl.css("left",Math.floor(leftpx+50) + "px");
+	        	dl.css("position","absolute");
+	        	
+	        	var rightpx = (markerspos[0]-referenceFrame.start)/referenceFrame.bpPerPixel; 
+	        	dr.css("display","block");
+	        	dr.css("left",Math.floor(rightpx+50) + "px");
+	        	dr.css("position","absolute");
+        	});
+        };
         /*
         igvjs developers expose an event when the browser changes locus.
         We profit from it to update tadkit position in the 2D and 3D panels
@@ -1253,8 +1316,7 @@
 					if ( newValue === -1 || oldValue === -1) {
 						scope.updateTadkitTAD();
 		        	}
-				});
-				
+				});			
 				scope.update = function(data) {
 					scope.settings.current.particle = Settings.getParticle();
 					scope.settings.current.segment = Settings.getSegment();
@@ -1280,8 +1342,10 @@
 		.controller('PanelInfoboxController', PanelInfoboxController);
 
 	function PanelInfoboxController($scope) {
-		$scope.species = $scope.current.dataset.object.species;
-		$scope.region = $scope.current.dataset.object.region;
+		if($scope.current.dataset) {
+			$scope.species = $scope.current.dataset.object.species;
+			$scope.region = $scope.current.dataset.object.region;
+		}
 	}
 })();
 (function() {
@@ -1421,6 +1485,15 @@
 			$scope.hideTadkitMarkers();
 			$scope.$apply();
 		};
+		$scope.$watch('settings.current.markers_position', function( newValue, oldValue ) {
+			if ( newValue !== oldValue) {
+				if ( newValue[0] === -1 || newValue[1] === -1) {
+					$scope.hideTadkitMarkers();
+	        	} else {
+	        		$scope.updateTadkitMarkers(newValue[0],newValue[1]);
+	        	}
+			}
+		});
 		$scope.applyOverlay =  function(track,features) {
 			var self = this;
 			var overlays = Overlays.get();
@@ -4915,7 +4988,7 @@
 		.module('TADkit')
 		.controller('MainController', MainController);
 
-	function MainController($state, $stateParams, $scope, Settings, Users, Projects, Datasets, Overlays, Storyboards) {
+	function MainController($state, $stateParams, $scope, Settings, Overlays, Storyboards, Users) {
 
 		if (!$scope.settings) {
 			$scope.settings = Settings.get();
@@ -4927,25 +5000,25 @@
 
 		// BUILD DEFAULT DATA HIERARCHY
 		// USERS >> PROJECTS >> DATASETS | OVERLAYS | STORYBOARDS
-		if (!$scope.users) {
-			$scope.users = Users.get();
-			if (typeof $scope.users.loaded[0].projects !== "undefined" && $scope.users.loaded[0].projects.length === 0) {
-				$scope.users.loaded[0].projects = Projects.get();
-				if (typeof $scope.users.loaded[0].projects.loaded[0].datasets !== "undefined" &&  $scope.users.loaded[0].projects.loaded[0].datasets.length === 0)
-					$scope.users.loaded[0].projects.loaded[0].datasets = Datasets.get();
-				if (typeof $scope.users.loaded[0].projects.loaded[0].overlays !== "undefined" &&  $scope.users.loaded[0].projects.loaded[0].overlays.length === 0)
-					$scope.users.loaded[0].projects.loaded[0].overlays = Overlays.get();
-				if (typeof $scope.users.loaded[0].projects.loaded[0].storyboards !== "undefined" &&  $scope.users.loaded[0].projects.loaded[0].storyboards.length === 0)
-					$scope.users.loaded[0].projects.loaded[0].storyboards = Storyboards.get();
-			}
-		}
-		
+//		if (!$scope.users) {
+//			$scope.users = Users.get();
+//			if (typeof $scope.users.loaded[0].projects !== "undefined" && $scope.users.loaded[0].projects.length === 0) {
+//				$scope.users.loaded[0].projects = Projects.get();
+//				if (typeof $scope.users.loaded[0].projects.loaded[0].datasets !== "undefined" &&  $scope.users.loaded[0].projects.loaded[0].datasets.length === 0)
+//					$scope.users.loaded[0].projects.loaded[0].datasets = Datasets.get();
+//				if (typeof $scope.users.loaded[0].projects.loaded[0].overlays !== "undefined" &&  $scope.users.loaded[0].projects.loaded[0].overlays.length === 0)
+//					$scope.users.loaded[0].projects.loaded[0].overlays = Overlays.get();
+//				if (typeof $scope.users.loaded[0].projects.loaded[0].storyboards !== "undefined" &&  $scope.users.loaded[0].projects.loaded[0].storyboards.length === 0)
+//					$scope.users.loaded[0].projects.loaded[0].storyboards = Storyboards.get();
+//			}
+//		}
+//		
 		// SET SHARED CURRENT PROJECT LEVEL DATA
 		$scope.current = {};
 		$scope.current.user = Users.getUser();
-		$scope.current.project = Projects.getProject();
-		$scope.current.dataset = Datasets.getDataset();
-		$scope.current.model = Datasets.getModel();
+//		$scope.current.project = Projects.getProject();
+//		$scope.current.dataset = Datasets.getDataset();
+//		$scope.current.model = Datasets.getModel();
 		$scope.current.overlay = Overlays.getOverlay();
 		$scope.current.storyboard = Storyboards.getStoryboard();
 
@@ -5223,7 +5296,7 @@
 		.module('TADkit')
 		.controller('ProjectLoaderController', ProjectLoaderController);
 
-	function ProjectLoaderController($q, $state, $stateParams, $scope, Datasets, Overlays, Storyboards, Hic_data) {
+	function ProjectLoaderController($q, $http, $state, $stateParams, $scope, Datasets, Overlays, Storyboards, Users, Hic_data) {
 
 		$scope.updateCurrent = function() {
 			$scope.current.dataset = Datasets.getDataset();
@@ -5238,18 +5311,27 @@
 			console.log("Current dataset, model, overlay and storyboard updated.");			
 		};
 
-		// On click load dataset from URL Params
-		// Loads local JSON and then associated TSV tracks from /examples folder
-		$scope.loadDatasetFromParam = function() {
-			var loading = Datasets.load($stateParams.loadDataset);
-			return $q.all([ loading ])
-			.then(function(results){
-				$scope.updateCurrent();
-				console.log("Dataset loaded: " + $stateParams.loadDataset);			
-				$state.go('browser');
+		$scope.loadConfigFromParam = function() {
+			var config_file;
+			var deferral = $q.defer();
+			
+			$http.get($stateParams.conf)
+			.success( function(conf) {
+				if(conf.tracks) {
+					Users.setTracks(conf.tracks);
+				}
+				var loading = Datasets.load(conf.dataset);
+				return $q.all([ loading ])
+				.then(function(results){
+					$scope.updateCurrent();
+					console.log("Dataset loaded: " + conf.dataset);			
+					$state.go('browser');
+				});
 			});
+			return deferral.promise;
+			
 		};
-		if ($stateParams.loadDataset) $scope.loadDatasetFromParam();
+		if ($stateParams.conf) $scope.loadConfigFromParam();
 
 		// On dropzone (load external file)
 		// Adds JSON to current project - load TSV when in browser
@@ -5261,12 +5343,12 @@
 				// ADD FILENAME (SEE OVERLAY-IMPORT)
 				console.log("Dataset added."); //: " + $stateParams.loadDataset);			
 				$state.go('dataset');
-			});
+			});			
 		};
 		$scope.cleanDataset = function(event) {
 			Datasets.clear();
 			Hic_data.clear();
-			var loadexample = Datasets.load();
+			var loadexample = Datasets.load('assets/defaults/tk-example-dataset.json');
 			return $q.all([ loadexample ])
 			.then(function(results){
 				$scope.updateCurrent();
@@ -5397,11 +5479,15 @@
 		.module('TADkit')
 		.controller('StoryboardController', StoryboardController);
 
-	function StoryboardController($window, $scope, Settings, Storyboards, Components, Overlays, Proximities, Restraints, Hic_data) {
+	function StoryboardController($window, $scope, $state, Settings, Storyboards, Components, Overlays, Proximities, Restraints, Hic_data, Datasets) {
 
 		// WATCH FOR WINDOW RESIZE
 		angular.element($window).on('resize', function(){ $scope.$apply(); });
-
+		var datasets = Datasets.get();
+		if(datasets.loaded.length===0) { 
+			$state.go('loader'); 
+			return;
+		}
 		// $scope.current.storyboard.components[0].view.settings.chromatin.segmentLength = $scope.settings.current.segmentLength;
 
 		$scope.settings.views.scale = 1; //$scope.current.dataset.object.scale;
@@ -6146,27 +6232,14 @@
 			}
 		};
 		return {
-			load: function(filename, clear) {
-				filename = filename || "tk-example-dataset";
-				clear = clear || false;
+			load: function(dataUrl, clear) {
 				var self = this;
-				if (clear) self.clear();
-
-				var datapath = "defaults";
-				var dataUrl;
-				if(filename.indexOf('%2F')>-1) {
-					dataUrl = filename.split('%2F').join('/') + ".json";
-				} else {
-					if (filename != "tk-example-dataset") datapath = "examples";
-					dataUrl = "assets/" + datapath + "/" + filename + ".json";
-				}
-
 				var deferral = $q.defer();
 				
 				$http.get(dataUrl)
 				.success( function(dataset) {
 					// TADkit defaults and examples are already validated
-					dataset.object.filename = filename;
+					dataset.object.filename = dataUrl;
 					self.add(dataset);
 					deferral.resolve(datasets);
 				});
@@ -6212,7 +6285,7 @@
 				Settings.set(dataset);
 				Proximities.set(currentModelData);
 				Restraints.set(currentModelData, dataset.restraints);
-				if(!angular.isUndefined(dataset.hic_data))	Hic_data.set(dataset.hic_data);
+				if(!angular.isUndefined(dataset.hic_data)) Hic_data.set(dataset.hic_data);
 				else Hic_data.clear();
 				Overlays.update(Proximities.get().distances, dataset.restraints);
 				// if (dataset.object.filename) {
@@ -6308,6 +6381,10 @@
 				}
 				// console.log(model);
 				return model; // array of model vertices
+			},
+			loadHic: function() {
+				var dataset = this.getDataset();
+				return Hic_data.loadExternal(dataset);
 			}
 		};
 	}
@@ -6386,7 +6463,7 @@
 		.module('TADkit')
 		.factory('Hic_data', Hic_data);
 
-	function Hic_data() {
+	function Hic_data($q, $http, Storyboards) {
 		var hic_data = {
 			n: 0,
 			max: 0,
@@ -6415,11 +6492,66 @@
 				
 				return hic_data;
 			},
+			setDirect: function (datasetHic_data) {
+				var self = this;
+				self.clear();
+				hic_data = datasetHic_data;
+							
+				return hic_data;
+			},
 			setTADS: function (datasetTADS) {
 				hic_data.tads = datasetTADS;
 			},
 			get: function() {
 				return hic_data;
+			},
+			loadExternal: function(dataset) {
+				
+				var self = this;
+				self.clear();
+				var hic_panel = Storyboards.getComponentById('Hic Data');
+				if(angular.isUndefined(hic_panel.view.settings.species_data[dataset.object.speciesUrl])) return false;
+				var dataUrl = hic_panel.view.settings.species_data[dataset.object.speciesUrl].url;
+				//dataUrl += '&res=10000';
+				dataUrl += '&res='+dataset.object.resolution;
+				var chrom = dataset.object.chrom[0].replace('chr','');
+				dataUrl += '&chr='+chrom+'&limit_chr='+chrom;
+				//dataUrl += '&chr=1&limit_chr=1';
+				dataUrl += '&start='+dataset.object.chromStart+'&end='+dataset.object.chromEnd+'&limit_start='+dataset.object.chromStart+'&limit_end='+dataset.object.chromEnd;
+				
+				var deferred = $q.defer();
+			    
+				$http.get(dataUrl)
+				.then( function(datasetHic) {
+					var datasetHic_data = datasetHic.data;
+					var hic_data = {
+							n: 0,
+							max: 0,
+							min: 99999999999,
+							pos: [],
+							value: [],
+							tads: []
+					};
+					var start_pos = parseInt(datasetHic_data.start);
+					var end_pos = parseInt(datasetHic_data.end);
+					hic_data.n = Math.round((end_pos-start_pos)/datasetHic_data.resolution);
+					for (var val_id in datasetHic_data.values) {
+						var val = datasetHic_data.values[val_id];
+						var col,row;
+						if(val.chrA == val.chrB && val.startA < end_pos && val.startA >= start_pos && val.startB < end_pos && val.startB >= start_pos) {
+							col = (val.startB-start_pos)/datasetHic_data.resolution;
+							row = (val.startA-start_pos)/datasetHic_data.resolution;
+							hic_data.pos.push(Math.round(row*hic_data.n+col));
+							hic_data.value.push(val.value);
+							if(val.value<hic_data.min) hic_data.min = val.value;
+							if(val.value>hic_data.max) hic_data.max = val.value;
+						}	
+					}
+					self.setDirect(hic_data);
+					deferred.resolve(hic_data);
+				});
+				return deferred.promise;
+				
 			},
 			clear: function() {
 				hic_data = {
@@ -6440,29 +6572,26 @@
 		.module('TADkit')
 		.service('initMain', initMain);
 
-	function initMain($q, Settings, Users, Projects, Datasets, Overlays, Components, Storyboards, Resources) {
+	function initMain($q, Settings, Components, Storyboards, Overlays, Users, Datasets) {
 
 		return function() {
 			var settings = Settings.load();
 			var users = Users.load();
-			var projects = Projects.load();
-			var datasets = Datasets.load();
+			//var projects = Projects.load();
+			var datasets = Datasets.get();
 			var overlays = Overlays.load();
 			var components = Components.load();
 			var storyboards = Storyboards.load();
-			var featureColors = Resources.loadBiotypeColors();
+			//var featureColors = Resources.loadBiotypeColors();
 
-			return $q.all([settings, users, projects, datasets, overlays, components, storyboards, featureColors])
+			return $q.all([settings, components, storyboards, users, datasets])
 			.then(function(results){
 				return {
 					settings: results[0],
-					users: results[1],
-					projects: results[2],
-					datasets: results[3],
-					overlays: results[4],
-					components: results[5],
-					storyboards: results[6],
-					featureColors: results[7],
+					components: results[1],
+					storyboards: results[2],
+					users: results[3],
+					datasets: results[4]
 				};
 			});
 		};
@@ -8281,7 +8410,10 @@
 	function Users($q, $http, uuid4) {
 		var users = {
 			loaded : [],
-			current : {index:0}
+			current : {
+				index:0,
+				tracks: []
+			}
 		};
 
 		return {
@@ -8345,6 +8477,13 @@
 				if (index === undefined || index === false) index = users.current.index;
 				var permissions = users.loaded[index].permissions;
 				return permissions;
+			},
+			setTracks: function(tracks) {
+				users.current.tracks = tracks;
+				return;
+			},
+			getTracks: function(index) {
+				return users.current.tracks;
 			}
 		};
 	}

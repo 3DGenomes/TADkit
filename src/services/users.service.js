@@ -7,7 +7,10 @@
 	function Users($q, $http, uuid4) {
 		var users = {
 			loaded : [],
-			current : {index:0}
+			current : {
+				index:0,
+				tracks: []
+			}
 		};
 
 		return {
@@ -71,6 +74,13 @@
 				if (index === undefined || index === false) index = users.current.index;
 				var permissions = users.loaded[index].permissions;
 				return permissions;
+			},
+			setTracks: function(tracks) {
+				users.current.tracks = tracks;
+				return;
+			},
+			getTracks: function(index) {
+				return users.current.tracks;
 			}
 		};
 	}

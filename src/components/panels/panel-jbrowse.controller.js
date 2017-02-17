@@ -42,6 +42,15 @@
 			$scope.hideTadkitMarkers();
 			$scope.$apply();
 		};
+		$scope.$watch('settings.current.markers_position', function( newValue, oldValue ) {
+			if ( newValue !== oldValue) {
+				if ( newValue[0] === -1 || newValue[1] === -1) {
+					$scope.hideTadkitMarkers();
+	        	} else {
+	        		$scope.updateTadkitMarkers(newValue[0],newValue[1]);
+	        	}
+			}
+		});
 		$scope.applyOverlay =  function(track,features) {
 			var self = this;
 			var overlays = Overlays.get();

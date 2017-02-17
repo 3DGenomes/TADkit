@@ -5,7 +5,9 @@
 		.controller('PanelInfoboxController', PanelInfoboxController);
 
 	function PanelInfoboxController($scope) {
-		$scope.species = $scope.current.dataset.object.species;
-		$scope.region = $scope.current.dataset.object.region;
+		if($scope.current.dataset) {
+			$scope.species = $scope.current.dataset.object.species;
+			$scope.region = $scope.current.dataset.object.region;
+		}
 	}
 })();

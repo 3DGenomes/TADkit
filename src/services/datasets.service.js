@@ -14,27 +14,14 @@
 			}
 		};
 		return {
-			load: function(filename, clear) {
-				filename = filename || "tk-example-dataset";
-				clear = clear || false;
+			load: function(dataUrl, clear) {
 				var self = this;
-				if (clear) self.clear();
-
-				var datapath = "defaults";
-				var dataUrl;
-				if(filename.indexOf('%2F')>-1) {
-					dataUrl = filename.split('%2F').join('/') + ".json";
-				} else {
-					if (filename != "tk-example-dataset") datapath = "examples";
-					dataUrl = "assets/" + datapath + "/" + filename + ".json";
-				}
-
 				var deferral = $q.defer();
 				
 				$http.get(dataUrl)
 				.success( function(dataset) {
 					// TADkit defaults and examples are already validated
-					dataset.object.filename = filename;
+					dataset.object.filename = dataUrl;
 					self.add(dataset);
 					deferral.resolve(datasets);
 				});
@@ -80,7 +67,7 @@
 				Settings.set(dataset);
 				Proximities.set(currentModelData);
 				Restraints.set(currentModelData, dataset.restraints);
-				if(!angular.isUndefined(dataset.hic_data))	Hic_data.set(dataset.hic_data);
+				if(!angular.isUndefined(dataset.hic_data)) Hic_data.set(dataset.hic_data);
 				else Hic_data.clear();
 				Overlays.update(Proximities.get().distances, dataset.restraints);
 				// if (dataset.object.filename) {
@@ -176,6 +163,10 @@
 				}
 				// console.log(model);
 				return model; // array of model vertices
+			},
+			loadHic: function() {
+				var dataset = this.getDataset();
+				return Hic_data.loadExternal(dataset);
 			}
 		};
 	}
