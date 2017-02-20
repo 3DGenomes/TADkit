@@ -939,18 +939,31 @@
 		$scope.view.settings.showNav: true/false whether to show the navigation panel in igvjs 
 		$scope.view.settings.showCyto: true/false wheter to show cytoband panel in igvjs
 		*/
+		var igv_reference;
 		if($scope.view.settings.species_data[$scope.settings.current.speciesUrl].fastaURL) {
-			$scope.view.settings.fastaurl = $scope.view.settings.species_data[$scope.settings.current.speciesUrl].fastaURL;
+			igv_reference = {
+				id: $scope.settings.current.speciesUrl,
+				fastaURL:$scope.view.settings.species_data[$scope.settings.current.speciesUrl].fastaURL,
+				cytobandURL:null
+			};
 			$scope.view.settings.showNav = true;
+			if($scope.view.settings.species_data[$scope.settings.current.speciesUrl].cytobandURL) {
+				igv_reference.cytobandURL = $scope.view.settings.species_data[$scope.settings.current.speciesUrl].cytobandURL;
+				$scope.view.settings.showCyto = false;
+			} else {
+				$scope.view.settings.showCyto = false;
+			}
 		} else {
-			$scope.view.settings.showNav = false;
+			igv_reference = {
+				id: $scope.settings.current.speciesUrl
+			};
+			$scope.view.settings.showNav = true;
 		}
-		if($scope.view.settings.species_data[$scope.settings.current.speciesUrl].cytobandURL) {
-			$scope.view.settings.cytourl = $scope.view.settings.species_data[$scope.settings.current.speciesUrl].cytobandURL;
-			$scope.view.settings.showCyto = false;
-		} else {
-			$scope.view.settings.showCyto = false;
+		var tracks = Users.getTracks();
+		if($scope.view.settings.species_data[$scope.settings.current.speciesUrl].genes) {
+			tracks = tracks.concat($scope.view.settings.species_data[$scope.settings.current.speciesUrl].genes);
 		}
+		
 		
 		/* 
 		div dom element where to include igvjs browser
@@ -964,28 +977,9 @@
 		            showRuler: true,
 		            showIdeogram: $scope.view.settings.showCyto,
 		            flanking: 0,
-		            reference: {
-						id: $scope.settings.current.speciesUrl,
-						fastaURL: $scope.view.settings.fastaurl,
-						cytobandURL: $scope.view.settings.cytourl
-					    },
+		            reference: igv_reference,
 					locus: chrom+':'+igvjs_start+'-'+($scope.settings.current.chromEnd),
-					tracks: Users.getTracks()
-//		            tracks: [
-//		      {
-//		                    name: "Fillion Colors",
-//		                    type: "annotation",
-//		                    //format: "bed",
-//		                    format: "gff3",
-//		                    sourceType: "file",
-//		                    //url: "../data/fillion_colors.bed",
-//		                    url: "../data/fill.gff",
-//		                    indexed: false,
-//		                    order: Number.MAX_VALUE,
-//		                    visibilityWindow: 300000000,
-//		                    displayMode: "EXPANDED"
-//		                }
-//		            ]
+					tracks: tracks
 		        };
 		
 		
