@@ -3,7 +3,7 @@ title: Getting started with TADkit
 keywords: tadkit genome homepage
 tags: [getting_started]
 sidebar: home_sidebar
-permalink: index.html
+permalink: introduction.html
 summary: These brief instructions will help you get started quickly with TADkit. The other topics in this help provide additional information and detail about working with other related tools, in particular TADbit.
 ---
 
@@ -323,3 +323,4 @@ If you want to use an automated system for managing links, see [Automated Links]
 The content here is just a getting started guide only. For other details in working with the theme, see the various sections in the sidebar.
 
 {% include links.html %}
+ 

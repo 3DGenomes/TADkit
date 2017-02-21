@@ -23,6 +23,6 @@ topnav_dropdowns:
     - title: Online Example Data
       folderitems:
         - title: TADkit Documentation
-          url: /tadkit_introduction.html
+          url: /introduction.html
         - title: Example 1
           url: /eg1_landing_page.html

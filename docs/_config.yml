@@ -3,7 +3,13 @@ repository: 3DGenomes/TADkit
 output: web
 # this property is useful for conditional filtering of content that is separate from the PDF.
 
-topnav_logo_url: ./images/tadkit-logo-invert.png
+topnav_logo_url: ./images/tadkit-logo.png
+# this is the logo image URL
+
+topnav_logo_w: 18
+# this is the logo image URL
+
+topnav_logo_h: 32
 # this is the logo image URL
 
 topnav_title: TADkit Documentation

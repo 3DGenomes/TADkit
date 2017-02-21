@@ -28,17 +28,6 @@
 
 
 {
-"title": "Getting started with TADkit",
-"tags": "getting_started",
-"keywords": "tadkit genome homepage",
-"url": "index.html",
-"summary": "These brief instructions will help you get started quickly with TADkit. The other topics in this help provide additional information and detail about working with other related tools, in particular TADbit."
-}
-,
-
-
-
-{
 "title": "Home",
 "tags": "getting_started",
 "keywords": "tadkit genome homepage",
@@ -55,6 +44,17 @@
 "keywords": "",
 "url": "index_orig.html",
 "summary": ""
+}
+,
+
+
+
+{
+"title": "Getting started with TADkit",
+"tags": "getting_started",
+"keywords": "tadkit genome homepage",
+"url": "introduction.html",
+"summary": "These brief instructions will help you get started quickly with TADkit. The other topics in this help provide additional information and detail about working with other related tools, in particular TADbit."
 }
 ,
 
