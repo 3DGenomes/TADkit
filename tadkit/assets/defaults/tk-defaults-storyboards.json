@@ -177,16 +177,28 @@
 							"drosophila_melanogaster" : {
 								"id" : "dmel",
 								"fastaURL" : "../data/dmel-all-chromosome-r6.13.fasta",
-								"cytobandURL" : "../data/dmel-cytoBandIdeo.txt"
+								"cytobandURL" : "../data/dmel-cytoBandIdeo.txt",
+								"tracks": [
+									    {
+									      "name": "Fillion Colors",
+									      "type": "annotation",
+									      "format": "gff3",
+									      "sourceType": "file",
+									      "url": "../data/fill.gff",
+									      "indexed": false
+									    }
+								]
 							},
 							"human" : {
 								"id" : "hg19",
-								"genes" : {
-									"name": "Genes",
-				                    "url": "//igv.broadinstitute.org/annotations/hg19/genes/gencode.v18.collapsed.bed",
-				                    "index": "//igv.broadinstitute.org/annotations/hg19/genes/gencode.v18.collapsed.bed.idx",
-				                    "displayMode": "EXPANDED"
-				                }
+								"tracks": [
+									{
+										"name": "Genes",
+					                    "url": "//igv.broadinstitute.org/annotations/hg19/genes/gencode.v18.collapsed.bed",
+					                    "index": "//igv.broadinstitute.org/annotations/hg19/genes/gencode.v18.collapsed.bed.idx",
+					                    "displayMode": "EXPANDED"
+				                	}
+				                ]
 							}
 						}
 					}

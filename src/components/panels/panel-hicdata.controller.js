@@ -6,6 +6,9 @@
 
 	function PanelHicdataController($scope,$window,Storyboards,Datasets) {
 
+		$scope.slideoptions = {};
+		$scope.slidevalue = "10;0.001";
+		if(angular.isUndefined($scope.data)) return;
 		//$scope.width = $scope.canvas_width = parseInt($scope.state.width)-2*parseInt($scope.state.margin); // strip PX units
 		var scene_component = Storyboards.getComponentById('default-scene');
 		$scope.width = $scope.state.width = $window.innerWidth - parseInt(scene_component.object.state.width) - 50 - 2*parseInt($scope.state.margin);

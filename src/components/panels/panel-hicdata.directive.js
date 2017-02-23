@@ -19,7 +19,8 @@
 			link:function(scope, element, attrs){
 				
 				//if(scope.data.n<=0) return; 
-					
+				if(angular.isUndefined(scope.data)) return;
+				
 				scope.rendered = false;
 				scope.imageObject=new Image();
 				scope.show_tads = (scope.data.tads.length !== 0);
@@ -374,7 +375,7 @@
 				});
 		        
 		        scope.$watch('settings.slidevalue', function(newvalue,oldvalue) {
-		        	if ( newvalue !== oldvalue) {
+		        	if ( newvalue !== oldvalue && !angular.isUndefined(newvalue)) {
 		        		var slide_value = newvalue.split(";");
 		        		var datamin = parseFloat(slide_value[0]);
 		        		var datamax = parseFloat(slide_value[1]);

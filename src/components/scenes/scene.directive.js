@@ -23,7 +23,8 @@
 			link: function postLink(scope, element, attrs) {
 				// threeService.three().then(function(THREE) {
 					// console.log(scope);
-
+					if(angular.isUndefined(scope.currentmodel)) return;
+				
 					var scene, component, viewport;
 					var camera, cameraPosition, cameraTarget, cameraTranslate;
 					var ambientLight, pointLight;

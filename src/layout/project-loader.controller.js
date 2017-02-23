@@ -25,6 +25,7 @@
 			
 			$http.get($stateParams.conf)
 			.success( function(conf) {
+				var url_conf = $stateParams.conf;
 				if(conf.tracks) {
 					Users.setTracks(conf.tracks);
 				}
@@ -33,7 +34,7 @@
 				.then(function(results){
 					$scope.updateCurrent();
 					console.log("Dataset loaded: " + conf.dataset);			
-					$state.go('browser');
+					$state.go('browser',{ conf: url_conf });
 				});
 			});
 			return deferral.promise;

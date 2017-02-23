@@ -16,7 +16,7 @@
                    "end" : 1020000,
                    "chromStart" : [15590000.0],
                    "resolution" : 10000,
-                   "species" : "Human",
+                   "species" : "Drosophila melanogaster",
                    "uuid": "c973e81d-b558-5048-ab07-83e8dcf3cdc8",
                    "title": "Sample TADbit data",
                    "datatype": "xyz",

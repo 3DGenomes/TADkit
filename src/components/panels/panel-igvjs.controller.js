@@ -4,8 +4,10 @@
 		.module('TADkit')
 		.controller('PanelIgvjsController', PanelIgvjsController);
 
-	function PanelIgvjsController($scope, $mdDialog, Overlays, uuid4, Networks, d3Service, Users) {
+	function PanelIgvjsController($scope, $timeout, Overlays, uuid4, Networks, d3Service, Users) {
 
+		if(angular.isUndefined($scope.settings.current.speciesUrl)) return;
+		
 		$scope.width = $scope.state.width; // strip PX units
 		$scope.height = $scope.state.height; // strip PX units
 
@@ -15,8 +17,6 @@
 		if(igvjs_start<0) igvjs_start = 0;
 		var chrom = ($scope.settings.current.chrom);
 		if(!$scope.view.settings.leading_chr) chrom = ($scope.settings.current.chrom).replace('chr','');
-		//$scope.jbrowsedataurl = 'http://172.16.54.4/JBrowse/data';
-		//$scope.jbrowsedataurl = $scope.view.settings.jbrowse_data+'_'+$scope.settings.current.speciesUrl;
 		
 		/*
 		Configuration of igvjs object
@@ -46,9 +46,9 @@
 			};
 			$scope.view.settings.showNav = true;
 		}
-		var tracks = Users.getTracks();
-		if($scope.view.settings.species_data[$scope.settings.current.speciesUrl].genes) {
-			tracks = tracks.concat($scope.view.settings.species_data[$scope.settings.current.speciesUrl].genes);
+		$scope.tracks = Users.getTracks();
+		if($scope.view.settings.species_data[$scope.settings.current.speciesUrl].tracks) {
+			$scope.tracks = $scope.tracks.concat($scope.view.settings.species_data[$scope.settings.current.speciesUrl].tracks);
 		}
 		
 		
@@ -62,11 +62,15 @@
 		$scope.igvOptions = {
 		            showNavigation: $scope.view.settings.showNav,
 		            showRuler: true,
+		            search:  {
+		                url: null,
+		                resultsField: null
+		            },
 		            showIdeogram: $scope.view.settings.showCyto,
 		            flanking: 0,
 		            reference: igv_reference,
 					locus: chrom+':'+igvjs_start+'-'+($scope.settings.current.chromEnd),
-					tracks: tracks
+					tracks: $scope.tracks.slice()
 		        };
 		
 		
@@ -100,7 +104,7 @@
 				}
 			}
 			
-			var jbrowseOverlay =
+			var igvJsOverlay =
 							{
 								"metadata": {
 									"version" : 1.0,
@@ -111,10 +115,10 @@
 									"uuid" : uuid4.generate(),
 									"id" : overlays.loaded.length,
 									"title" : track,
-									"source" : "JBrowse track",
+									"source" : "igvJs track",
 									"url" : "local",
-									"description" : "JBrowse track overlay", 
-									"type" : "jbrowse",
+									"description" : "igvJs track overlay", 
+									"type" : "igvJs",
 									"format" : "variable",
 									"components" : 2,
 									"name" : track,
@@ -140,17 +144,17 @@
 			var l = 0;
 			
 			for(k=0;k<$scope.settings.current.segmentsCount;k++) {
-				jbrowseOverlay.colors.chromatin[k] = "gray";
+				igvJsOverlay.colors.chromatin[k] = "gray";
 			}
 
 			var featureColor = [];
 			var scored_color = false;
 			angular.forEach(features, function(feature) {
-				if(typeof feature.get('color') == 'undefined') {
-					featureColor.push(feature.get('score'));
+				if(typeof feature.color == 'undefined') {
+					if(typeof feature.score !== 'undefined') featureColor.push(feature.score);
 					scored_color = true;
 				} else {
-					featureColor.push(feature.get('color'));
+					featureColor.push(feature.color);
 				}
 			});
 			if(scored_color) {
@@ -163,19 +167,15 @@
 				}
 			}
 			angular.forEach(features, function(feature) {
-				j = Math.round((feature.get('start') - $scope.settings.current.chromStart)/$scope.settings.current.segmentLength);
-				totallength = Math.round((feature.get('end') - feature.get('start'))/$scope.settings.current.segmentLength);
+				j = Math.round((feature.start - $scope.settings.current.chromStart)/$scope.settings.current.segmentLength);
+				totallength = Math.round((feature.end - feature.start)/$scope.settings.current.segmentLength);
 				for(k=j;k<(j+totallength) && k<$scope.settings.current.segmentsCount;k++) {
-					jbrowseOverlay.colors.chromatin[k] = featureColor[l];
+					igvJsOverlay.colors.chromatin[k] = featureColor[l];
 				}
 				l++;
-				//j += totallength;
 			});
-//			j += totallength;
-//			for(i=j;i<$scope.settings.current.segmentsCount;i++) {
-//				jbrowseOverlay.colors.chromatin[i] = "gray";
-//			}
-			var newOverlay = Overlays.addDirect(jbrowseOverlay);
+
+			var newOverlay = Overlays.addDirect(igvJsOverlay);
 			var overlay = overlays.loaded[newOverlay];
 			
 			overlay.colors.particles = [];
@@ -216,6 +216,13 @@
 		Creation of igvjs javascript object
 		*/
 		$scope.myIgv = igv.createBrowser($scope.igvDiv, $scope.igvOptions);
+		
+		// Disable search input
+		$scope.myIgv.$searchInput.off('change');
+        
+		// Hide search icon
+		var search_icon = angular.element(document.querySelector('.igv-fa-search'))[0];
+		$(search_icon).hide();
 		// Show center guide by default. The centerguide will be tadkit position in the 2D and 3D
 		$scope.myIgv.centerGuide.$centerGuideToggle.click();
 		
@@ -365,5 +372,170 @@
 			});
 			
 		});
+        
+        
+//        $scope.includeOverlayMenu = function() {
+//        	
+//        	if($scope.myIgv.trackViews.length === 0 ||
+//        			angular.isUndefined($scope.myIgv.trackViews[$scope.myIgv.trackViews.length-1].track.config) ||
+//        			$scope.myIgv.trackViews[$scope.myIgv.trackViews.length-1].track.config.url != $scope.tracks[$scope.tracks.length-1].url 
+//        			) {
+//        		$timeout($scope.includeOverlayMenu, 1000);
+//        		return;
+//        	}
+//        	$scope.myIgv.trackViews.forEach(function (trackView) {
+//        		if(!angular.isUndefined(trackView.track.type)) {
+//        			var gearButton = trackView.rightHandGutter.children[0];
+//        			$(gearButton).click(function (e) {
+//        	            igv.popover.presentTrackGearMenu(e.pageX, e.pageY, trackView);
+//        	        });
+//        		} 
+//        	});
+//        };
+//
+//        
+//        $timeout($scope.includeOverlayMenu, 1000);
+        
+        $scope.tracksOverlaid = {};
+        
+        igv.trackMenuItemList = function (popover, trackView) {
+
+            var menuItems = [],
+                all;
+
+            menuItems.push(igv.trackMenuItem(popover, trackView, "Set track name", function () {
+                return "Track Name";
+            }, trackView.track.name, function () {
+
+                var alphanumeric = parseAlphanumeric(igv.dialog.$dialogInput.val());
+
+                if (undefined !== alphanumeric) {
+                    igv.setTrackLabel(trackView.track, alphanumeric);
+                    trackView.update();
+                }
+
+                function parseAlphanumeric(value) {
+
+                    var alphanumeric_re = /(?=.*[a-zA-Z].*)([a-zA-Z0-9 ]+)/,
+                        alphanumeric = alphanumeric_re.exec(value);
+
+                    return (null !== alphanumeric) ? alphanumeric[0] : "untitled";
+                }
+
+            }, undefined));
+
+            menuItems.push(igv.trackMenuItem(popover, trackView, "Set track height", function () {
+                return "Track Height";
+            }, trackView.trackDiv.clientHeight, function () {
+
+                var number = parseFloat(igv.dialog.$dialogInput.val(), 10);
+
+                if (undefined !== number) {
+                	// If explicitly setting the height adust min or max, if neccessary.
+                    if (trackView.track.minHeight !== undefined && trackView.track.minHeight > number) {
+                        trackView.track.minHeight = number;
+                    }
+                    if (trackView.track.maxHeight !== undefined && trackView.track.maxHeight < number) {
+                        trackView.track.minHeight = number;
+                    }
+                    trackView.setTrackHeight(number);
+                    trackView.track.autoHeight = false;   // Explicitly setting track height turns off autoHeight
+
+                }
+
+            }, undefined));
+            
+            if (typeof $scope.tracksOverlaid[trackView.track.id] === "undefined") {
+            	$scope.tracksOverlaid[trackView.track.id] = false;
+            }
+            var apply3D, $e;
+
+            apply3D = '<div class="igv-track-menu-item igv-track-menu-border-top">';
+            if (false === $scope.tracksOverlaid[trackView.track.id]) {
+            	apply3D = apply3D + '<i class="fa fa-check fa-check-shim fa-check-hidden"></i>Apply to 3D</div>';
+            } else {
+            	apply3D = apply3D + '<i class="fa fa-check fa-check-shim"></i>Apply to 3D</div>';
+            }
+
+            var clickHandler = function(){
+                if($scope.tracksOverlaid[trackView.track.id]) {
+                	$scope.removeOverlay(trackView.track.id);
+                	$scope.tracksOverlaid[trackView.track.id] = false;
+                } else {
+                	var referenceFrame = trackView.viewports[0].genomicState.referenceFrame;
+                	trackView.track.getFeatures(referenceFrame.chrName, $scope.settings.current.chromStart, $scope.settings.current.chromEnd, referenceFrame.bpPerPixel).then(function (features) {
+                        if (features) {
+                        	$scope.applyOverlay(trackView.track.id,features);
+                        }
+                	}).catch(function (error) {
+                        if (error instanceof igv.AbortLoad) {
+                            console.log("Aborted ---");
+                        } else {
+                            igv.presentAlert(error);
+                        }
+                    });
+                	$scope.tracksOverlaid[trackView.track.id] = true;
+            	}
+                popover.hide();
+            };
+
+            $e = $(apply3D);
+            
+            $e.click(clickHandler);
+
+            menuItems = menuItems.concat({ object: $e, init: undefined });
+            
+            all = [];
+            if (trackView.track.menuItemList) {
+                all = menuItems.concat( trackMenuList(trackView.track.menuItemList(popover)) );
+            }
+            
+            if (trackView.track.removable !== false) {
+
+                all.push(
+                    igv.trackMenuItem(popover, trackView, "Remove track", function () {
+                        var label = "Remove " + trackView.track.name;
+                        return '<div class="igv-dialog-label-centered">' + label + '</div>';
+                    }, undefined, function () {
+                        popover.hide();
+                        trackView.browser.removeTrack(trackView.track);
+                    }, true)
+                );
+            }
+
+            return all;
+        };
+        
+        function trackMenuList(itemList) {
+
+            var list = [];
+
+            if (_.size(itemList) > 0) {
+
+                list = _.map(itemList, function(item, i) {
+                    var $e;
+
+                    if (item.name) {
+                        $e = $('<div class="igv-track-menu-item">');
+                        $e.text(item.name);
+                    } else {
+                        $e = item.object;
+                    }
+
+                    if (0 === i) {
+                        $e.addClass('igv-track-menu-border-top');
+                    }
+
+                    if (item.click) {
+                        $e.click(item.click);
+                    }
+
+                    return { object: $e, init: (item.init || undefined) };
+                });
+            }
+
+            return list;
+        }
+        
 	}
 })();

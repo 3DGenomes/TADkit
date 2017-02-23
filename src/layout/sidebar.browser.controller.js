@@ -10,7 +10,7 @@
 		$scope.toggleSetting = function(setting) {
 			$scope.settings = Settings.toggle(setting); // update $scope.settings defined in browser controller
 		};
-
+		
 		// Scene Settings
 		// $scope.toggleScene = function(scene) {
 		// 	$scope.scenes = Scenes.toggle(scene); // update $scope.scenes defined in browser controller

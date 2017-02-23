@@ -5,7 +5,7 @@
 		.config(config);
 
 	function config($stateProvider, $urlRouterProvider) {
-		$urlRouterProvider.otherwise("/project/loader/");
+		$urlRouterProvider.otherwise("/project/loader");
 		
 		$stateProvider
 		// .state('home', {
@@ -69,7 +69,7 @@
 		.state('loader', {
 			parent: 'project',
 			//url: '/loader/:loadDataset',
-			url: '/loader/?conf',
+			url: '/loader?conf',
 			views: {
 				'topbar@main': {
 					templateUrl: 'assets/templates/topbar.html',
@@ -117,7 +117,7 @@
 		})
 		.state('browser', {
 			parent: 'project',
-			url: '/browser',
+			url: '/browser?conf',
 			views: {
 				'sidebar-left@main': {
 					templateUrl: 'assets/templates/sidebar.browser.html',
