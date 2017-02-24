@@ -176,15 +176,15 @@
 						"species_data" : {
 							"drosophila_melanogaster" : {
 								"id" : "dmel",
-								"fastaURL" : "../data/dmel-all-chromosome-r6.13.fasta",
-								"cytobandURL" : "../data/dmel-cytoBandIdeo.txt",
+								"fastaURL" : "assets/data/dmel-all-chromosome-r6.13.fasta",
+								"cytobandURL" : "assets/data/dmel-cytoBandIdeo.txt",
 								"tracks": [
 									    {
 									      "name": "Fillion Colors",
 									      "type": "annotation",
 									      "format": "gff3",
 									      "sourceType": "file",
-									      "url": "../data/fill.gff",
+									      "url": "assets/data/fill.gff",
 									      "indexed": false
 									    }
 								]

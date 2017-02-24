@@ -63,6 +63,12 @@
 			},
 			init: function(dataset) {
 				var self = this;
+				if(dataset.centroids.length===0) {
+					for (var m = 0; m < dataset.models.length; m++) {
+						dataset.centroids.push(dataset.models[m].ref);
+						dataset.clusters.push([dataset.models[m].ref]);
+					}
+				}
 				var currentModelData = self.getModel().data;
 				Settings.set(dataset);
 				Proximities.set(currentModelData);

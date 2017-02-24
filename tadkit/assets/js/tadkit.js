@@ -1293,31 +1293,15 @@
 			
 		});
         
-        
-//        $scope.includeOverlayMenu = function() {
-//        	
-//        	if($scope.myIgv.trackViews.length === 0 ||
-//        			angular.isUndefined($scope.myIgv.trackViews[$scope.myIgv.trackViews.length-1].track.config) ||
-//        			$scope.myIgv.trackViews[$scope.myIgv.trackViews.length-1].track.config.url != $scope.tracks[$scope.tracks.length-1].url 
-//        			) {
-//        		$timeout($scope.includeOverlayMenu, 1000);
-//        		return;
-//        	}
-//        	$scope.myIgv.trackViews.forEach(function (trackView) {
-//        		if(!angular.isUndefined(trackView.track.type)) {
-//        			var gearButton = trackView.rightHandGutter.children[0];
-//        			$(gearButton).click(function (e) {
-//        	            igv.popover.presentTrackGearMenu(e.pageX, e.pageY, trackView);
-//        	        });
-//        		} 
-//        	});
-//        };
-//
-//        
-//        $timeout($scope.includeOverlayMenu, 1000);
-        
+        // List to store the status of the overlayed tracks
         $scope.tracksOverlaid = {};
         
+        /* 
+        This is a nasty override. Currently there is no way to inject a menu item in track menus.
+        Therefore we override igv.trackMenuItemList to include a new item to overlay the track.
+        It should be updated if it changes in new releases of igvjs.
+        The injected code is properly marked. 
+        */
         igv.trackMenuItemList = function (popover, trackView) {
 
             var menuItems = [],
@@ -1365,9 +1349,14 @@
 
             }, undefined));
             
+            /*
+             Start of injected code
+             */
+            // Init tracksOverlaid to false
             if (typeof $scope.tracksOverlaid[trackView.track.id] === "undefined") {
             	$scope.tracksOverlaid[trackView.track.id] = false;
             }
+            // Creation of the DOM element of the menu item
             var apply3D, $e;
 
             apply3D = '<div class="igv-track-menu-item igv-track-menu-border-top">';
@@ -1376,13 +1365,15 @@
             } else {
             	apply3D = apply3D + '<i class="fa fa-check fa-check-shim"></i>Apply to 3D</div>';
             }
-
+            
+            // Handler function when clicking the menu item
             var clickHandler = function(){
                 if($scope.tracksOverlaid[trackView.track.id]) {
                 	$scope.removeOverlay(trackView.track.id);
                 	$scope.tracksOverlaid[trackView.track.id] = false;
                 } else {
                 	var referenceFrame = trackView.viewports[0].genomicState.referenceFrame;
+                	// get features and pass them for overlay
                 	trackView.track.getFeatures(referenceFrame.chrName, $scope.settings.current.chromStart, $scope.settings.current.chromEnd, referenceFrame.bpPerPixel).then(function (features) {
                         if (features) {
                         	$scope.applyOverlay(trackView.track.id,features);
@@ -1396,14 +1387,18 @@
                     });
                 	$scope.tracksOverlaid[trackView.track.id] = true;
             	}
+                // Hide menu
                 popover.hide();
             };
 
             $e = $(apply3D);
-            
             $e.click(clickHandler);
 
+            // Add the new menu item to the track menu
             menuItems = menuItems.concat({ object: $e, init: undefined });
+            /*
+             End of injected code
+             */
             
             all = [];
             if (trackView.track.menuItemList) {
@@ -5377,6 +5372,7 @@
 		$scope.selectCluster = function(index) {
 			$scope.clusterArray = Datasets.setCluster(index + 1);
 			$scope.centroidRef = Datasets.getCentroid();
+			$scope.current.model = Datasets.getModel();
 			console.log("Current Cluster: " + (index + 1) + "(Centroid Model: " + $scope.centroidRef + ")");
 			$state.go('browser');
 		};
@@ -6456,6 +6452,12 @@
 			},
 			init: function(dataset) {
 				var self = this;
+				if(dataset.centroids.length===0) {
+					for (var m = 0; m < dataset.models.length; m++) {
+						dataset.centroids.push(dataset.models[m].ref);
+						dataset.clusters.push([dataset.models[m].ref]);
+					}
+				}
 				var currentModelData = self.getModel().data;
 				Settings.set(dataset);
 				Proximities.set(currentModelData);
