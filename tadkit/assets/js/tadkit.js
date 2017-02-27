@@ -247,8 +247,12 @@
 		$scope.slidevalue = "10;0.001";
 		if(angular.isUndefined($scope.data)) return;
 		//$scope.width = $scope.canvas_width = parseInt($scope.state.width)-2*parseInt($scope.state.margin); // strip PX units
-		var scene_component = Storyboards.getComponentById('default-scene');
-		$scope.width = $scope.state.width = $window.innerWidth - parseInt(scene_component.object.state.width) - 50 - 2*parseInt($scope.state.margin);
+		var scene_component = Storyboards.getComponentById('Chromatin');
+		var scene_width = 0;
+		if(typeof scene_component !== 'undefined') {
+			scene_width = parseInt(scene_component.object.state.width);
+		}
+		$scope.width = $scope.state.width = $scope.canvas_width = $window.innerWidth - scene_width - 50 - 2*parseInt($scope.state.margin);
 		$scope.height = $scope.state.height = $scope.canvas_height = parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units
 //		if($scope.data.n === 0) {
 //			$scope.no_hic_data = true; 
@@ -265,7 +269,7 @@
 		    return $window.innerWidth;
 		  },
 		  function (value) {
-		    $scope.width = $scope.state.width = $scope.canvas_width = value - parseInt(scene_component.object.state.width) - 50 - 2*parseInt($scope.state.margin);
+		    $scope.width = $scope.state.width = $scope.canvas_width = value - scene_width - 50 - 2*parseInt($scope.state.margin);
 		  	//$scope.$apply();
 		  },
 		  true
@@ -987,6 +991,7 @@
 		                resultsField: null
 		            },
 		            showIdeogram: $scope.view.settings.showCyto,
+		            showKaryo: $scope.view.settings.showCyto,
 		            flanking: 0,
 		            reference: igv_reference,
 					locus: chrom+':'+igvjs_start+'-'+($scope.settings.current.chromEnd),
@@ -5487,17 +5492,24 @@
 			
 			$http.get($stateParams.conf)
 			.success( function(conf) {
+				var dataset;
 				var url_conf = $stateParams.conf;
-				if(conf.tracks) {
-					Users.setTracks(conf.tracks);
+				if(typeof conf.dataset !== 'undefined') {
+					if(conf.tracks) {
+						Users.setTracks(conf.tracks);
+					}
+					dataset = conf.dataset;
+				} else if(typeof conf.models !== 'undefined') {
+					dataset = conf;
 				}
-				var loading = Datasets.load(conf.dataset);
+				var loading = Datasets.load(dataset);
 				return $q.all([ loading ])
 				.then(function(results){
 					$scope.updateCurrent();
 					console.log("Dataset loaded: " + conf.dataset);			
 					$state.go('browser',{ conf: url_conf });
 				});
+				
 			});
 			return deferral.promise;
 			
@@ -5668,12 +5680,15 @@
 		// Calculating Initial Proximities
 		//NOTE in future if more than 1 currentModel need same number of currentProximities
 		$scope.allProximities = Proximities.get(); // for Scene
-		$scope.currentProximities = Proximities.at($scope.settings.current.particle); // for D3 tracks
-
-		// Calculating Initial Restraints
-		//NOTE in future if more than 1 currentModel need same number of currentRestraints
-		$scope.currentRestraints = Restraints.at($scope.settings.current.particle); // for D3 tracks
-
+		if($scope.allProximities.dimension > 0) { // we have models
+			$scope.currentProximities = Proximities.at($scope.settings.current.particle); // for D3 tracks
+	
+			// Calculating Initial Restraints
+			//NOTE in future if more than 1 currentModel need same number of currentRestraints
+			$scope.currentRestraints = Restraints.at($scope.settings.current.particle); // for D3 tracks
+		} else { // we have only the matrix
+			Storyboards.removeComponentById("Chromatin");
+		}
 		// Assign data and overlays for each component by type
 		angular.forEach( $scope.current.storyboard.components, function(component, index) {
 
@@ -5739,8 +5754,8 @@
 		// Watch for Slider Position updates
 		$scope.$watch('settings.current.particle', function(newParticle, oldParticle) { // deep watch as change direct and changes all?
 			if ( newParticle !== oldParticle ) {
-				$scope.currentProximities = Proximities.at(newParticle); // for D3 tracks
-				$scope.currentRestraints = Restraints.at(newParticle); // for D3 tracks
+				// $scope.currentProximities = Proximities.at(newParticle); // for D3 tracks
+				// $scope.currentRestraints = Restraints.at(newParticle); // for D3 tracks
 				if ($scope.current.overlay.object.type == "matrix") {
 					Overlays.at(newParticle);
 					$scope.current.overlay = Overlays.getOverlay();
@@ -6409,7 +6424,6 @@
 				
 				$http.get(dataUrl)
 				.success( function(dataset) {
-					// TADkit defaults and examples are already validated
 					dataset.object.filename = dataUrl;
 					self.add(dataset);
 					deferral.resolve(datasets);
@@ -6458,13 +6472,16 @@
 						dataset.clusters.push([dataset.models[m].ref]);
 					}
 				}
-				var currentModelData = self.getModel().data;
+				var currentModel = self.getModel();
 				Settings.set(dataset);
-				Proximities.set(currentModelData);
-				Restraints.set(currentModelData, dataset.restraints);
+				if(typeof currentModel !== 'undefined') {
+					Proximities.set(currentModel.data);
+					Restraints.set(currentModel.data, dataset.restraints);
+					Overlays.update(Proximities.get().distances, dataset.restraints);
+				}
 				if(!angular.isUndefined(dataset.hic_data)) Hic_data.set(dataset.hic_data);
 				else Hic_data.clear();
-				Overlays.update(Proximities.get().distances, dataset.restraints);
+				
 				// if (dataset.object.filename) {
 				//	var filetype = "tsv";
 				//	var resetToDefaults = true;
@@ -8238,7 +8255,8 @@
 				//settings.current.particleSegments = 20; // ((dataset.object.chromEnd - dataset.object.chromStart) / dataset.object.resolution);
 				//settings.current.particleSegments = Math.round((dataset.object.chromEnd - dataset.object.chromStart) / (5*dataset.object.resolution));
 				// Max rings in 3d aprox 2000
-				settings.current.particlesCount = dataset.models[0].data.length / dataset.object.components;
+				//settings.current.particlesCount = dataset.models[0].data.length / dataset.object.components;
+				settings.current.particlesCount = Math.round((dataset.object.end/dataset.object.resolution-dataset.object.start/dataset.object.resolution) / dataset.object.components);
 				settings.current.particleSegments = Math.ceil(2500/settings.current.particlesCount);
 				settings.current.edgesCount = ((settings.current.particlesCount*settings.current.particlesCount)-settings.current.particlesCount)*0.5;
 				settings.current.segmentsCount = settings.current.particlesCount * settings.current.particleSegments;
@@ -8535,10 +8553,10 @@
 						}
 					}
 				}
-				if (!found) {
-					component = components[0];
-					console.log("Component '" + id + "' not found: returning first.");
-				}
+//				if (!found) {
+//					component = components[0];
+//					console.log("Component '" + id + "' not found: returning first.");
+//				}
 				// console.log(component);
 				return component;
 			}

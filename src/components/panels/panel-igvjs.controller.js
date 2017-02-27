@@ -67,6 +67,7 @@
 		                resultsField: null
 		            },
 		            showIdeogram: $scope.view.settings.showCyto,
+		            showKaryo: $scope.view.settings.showCyto,
 		            flanking: 0,
 		            reference: igv_reference,
 					locus: chrom+':'+igvjs_start+'-'+($scope.settings.current.chromEnd),

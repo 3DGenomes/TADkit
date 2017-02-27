@@ -10,8 +10,12 @@
 		$scope.slidevalue = "10;0.001";
 		if(angular.isUndefined($scope.data)) return;
 		//$scope.width = $scope.canvas_width = parseInt($scope.state.width)-2*parseInt($scope.state.margin); // strip PX units
-		var scene_component = Storyboards.getComponentById('default-scene');
-		$scope.width = $scope.state.width = $window.innerWidth - parseInt(scene_component.object.state.width) - 50 - 2*parseInt($scope.state.margin);
+		var scene_component = Storyboards.getComponentById('Chromatin');
+		var scene_width = 0;
+		if(typeof scene_component !== 'undefined') {
+			scene_width = parseInt(scene_component.object.state.width);
+		}
+		$scope.width = $scope.state.width = $scope.canvas_width = $window.innerWidth - scene_width - 50 - 2*parseInt($scope.state.margin);
 		$scope.height = $scope.state.height = $scope.canvas_height = parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units
 //		if($scope.data.n === 0) {
 //			$scope.no_hic_data = true; 
@@ -28,7 +32,7 @@
 		    return $window.innerWidth;
 		  },
 		  function (value) {
-		    $scope.width = $scope.state.width = $scope.canvas_width = value - parseInt(scene_component.object.state.width) - 50 - 2*parseInt($scope.state.margin);
+		    $scope.width = $scope.state.width = $scope.canvas_width = value - scene_width - 50 - 2*parseInt($scope.state.margin);
 		  	//$scope.$apply();
 		  },
 		  true

@@ -218,10 +218,10 @@
 						}
 					}
 				}
-				if (!found) {
-					component = components[0];
-					console.log("Component '" + id + "' not found: returning first.");
-				}
+//				if (!found) {
+//					component = components[0];
+//					console.log("Component '" + id + "' not found: returning first.");
+//				}
 				// console.log(component);
 				return component;
 			}

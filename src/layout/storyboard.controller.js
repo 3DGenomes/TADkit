@@ -22,12 +22,15 @@
 		// Calculating Initial Proximities
 		//NOTE in future if more than 1 currentModel need same number of currentProximities
 		$scope.allProximities = Proximities.get(); // for Scene
-		$scope.currentProximities = Proximities.at($scope.settings.current.particle); // for D3 tracks
-
-		// Calculating Initial Restraints
-		//NOTE in future if more than 1 currentModel need same number of currentRestraints
-		$scope.currentRestraints = Restraints.at($scope.settings.current.particle); // for D3 tracks
-
+		if($scope.allProximities.dimension > 0) { // we have models
+			$scope.currentProximities = Proximities.at($scope.settings.current.particle); // for D3 tracks
+	
+			// Calculating Initial Restraints
+			//NOTE in future if more than 1 currentModel need same number of currentRestraints
+			$scope.currentRestraints = Restraints.at($scope.settings.current.particle); // for D3 tracks
+		} else { // we have only the matrix
+			Storyboards.removeComponentById("Chromatin");
+		}
 		// Assign data and overlays for each component by type
 		angular.forEach( $scope.current.storyboard.components, function(component, index) {
 
@@ -93,8 +96,8 @@
 		// Watch for Slider Position updates
 		$scope.$watch('settings.current.particle', function(newParticle, oldParticle) { // deep watch as change direct and changes all?
 			if ( newParticle !== oldParticle ) {
-				$scope.currentProximities = Proximities.at(newParticle); // for D3 tracks
-				$scope.currentRestraints = Restraints.at(newParticle); // for D3 tracks
+				// $scope.currentProximities = Proximities.at(newParticle); // for D3 tracks
+				// $scope.currentRestraints = Restraints.at(newParticle); // for D3 tracks
 				if ($scope.current.overlay.object.type == "matrix") {
 					Overlays.at(newParticle);
 					$scope.current.overlay = Overlays.getOverlay();

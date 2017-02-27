@@ -20,7 +20,6 @@
 				
 				$http.get(dataUrl)
 				.success( function(dataset) {
-					// TADkit defaults and examples are already validated
 					dataset.object.filename = dataUrl;
 					self.add(dataset);
 					deferral.resolve(datasets);
@@ -69,13 +68,16 @@
 						dataset.clusters.push([dataset.models[m].ref]);
 					}
 				}
-				var currentModelData = self.getModel().data;
+				var currentModel = self.getModel();
 				Settings.set(dataset);
-				Proximities.set(currentModelData);
-				Restraints.set(currentModelData, dataset.restraints);
+				if(typeof currentModel !== 'undefined') {
+					Proximities.set(currentModel.data);
+					Restraints.set(currentModel.data, dataset.restraints);
+					Overlays.update(Proximities.get().distances, dataset.restraints);
+				}
 				if(!angular.isUndefined(dataset.hic_data)) Hic_data.set(dataset.hic_data);
 				else Hic_data.clear();
-				Overlays.update(Proximities.get().distances, dataset.restraints);
+				
 				// if (dataset.object.filename) {
 				//	var filetype = "tsv";
 				//	var resetToDefaults = true;

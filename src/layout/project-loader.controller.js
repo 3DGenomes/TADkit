@@ -25,17 +25,24 @@
 			
 			$http.get($stateParams.conf)
 			.success( function(conf) {
+				var dataset;
 				var url_conf = $stateParams.conf;
-				if(conf.tracks) {
-					Users.setTracks(conf.tracks);
+				if(typeof conf.dataset !== 'undefined') {
+					if(conf.tracks) {
+						Users.setTracks(conf.tracks);
+					}
+					dataset = conf.dataset;
+				} else if(typeof conf.models !== 'undefined') {
+					dataset = conf;
 				}
-				var loading = Datasets.load(conf.dataset);
+				var loading = Datasets.load(dataset);
 				return $q.all([ loading ])
 				.then(function(results){
 					$scope.updateCurrent();
 					console.log("Dataset loaded: " + conf.dataset);			
 					$state.go('browser',{ conf: url_conf });
 				});
+				
 			});
 			return deferral.promise;
 			

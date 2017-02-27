@@ -177,7 +177,7 @@
 							"drosophila_melanogaster" : {
 								"id" : "dmel",
 								"fastaURL" : "assets/data/dmel-all-chromosome-r6.13.fasta",
-								"cytobandURL" : "assets/data/dmel-cytoBandIdeo.txt",
+								"cytobandURL" : "assets/data/dmel-cytoBand.txt",
 								"tracks": [
 									    {
 									      "name": "Fillion Colors",
