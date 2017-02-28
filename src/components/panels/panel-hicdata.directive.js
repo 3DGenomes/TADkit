@@ -133,12 +133,13 @@
 		                ctx.imageSmoothingEnabled = false;
 		                ctx.mozImageSmoothingEnabled = false;
 		                ctx.imageSmoothingEnabled = false;
-		                
+				  
 		                //clear the canvas
 		                ctx.clearRect(0,0, canvas.width, canvas.height);
 		                
 		                var val, x , y = 0;
-		                var Logmin, Logmax = 0;
+		                var Logmin = 0;
+				var Logmax = 0;
 		                if(scope.data.max !== 0) Logmax = Math.log(scope.data.max);
 		                if(scope.data.min !== 0) Logmin = Math.log(scope.data.min);
 		                var container_width = parseInt(scope.state.width);

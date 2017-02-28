@@ -253,7 +253,8 @@
 			scene_width = parseInt(scene_component.object.state.width);
 		}
 		$scope.width = $scope.state.width = $scope.canvas_width = $window.innerWidth - scene_width - 50 - 2*parseInt($scope.state.margin);
-		$scope.height = $scope.state.height = $scope.canvas_height = parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units
+		$scope.height = $scope.state.height =  parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units
+		$scope.canvas_height = $scope.canvas_width;
 //		if($scope.data.n === 0) {
 //			$scope.no_hic_data = true; 
 //			$scope.slidevalue = "10;0.001";
@@ -475,12 +476,13 @@
 		                ctx.imageSmoothingEnabled = false;
 		                ctx.mozImageSmoothingEnabled = false;
 		                ctx.imageSmoothingEnabled = false;
-		                
+				  
 		                //clear the canvas
 		                ctx.clearRect(0,0, canvas.width, canvas.height);
 		                
 		                var val, x , y = 0;
-		                var Logmin, Logmax = 0;
+		                var Logmin = 0;
+				var Logmax = 0;
 		                if(scope.data.max !== 0) Logmax = Math.log(scope.data.max);
 		                if(scope.data.min !== 0) Logmin = Math.log(scope.data.min);
 		                var container_width = parseInt(scope.state.width);
@@ -986,10 +988,6 @@
 		$scope.igvOptions = {
 		            showNavigation: $scope.view.settings.showNav,
 		            showRuler: true,
-		            search:  {
-		                url: null,
-		                resultsField: null
-		            },
 		            showIdeogram: $scope.view.settings.showCyto,
 		            showKaryo: $scope.view.settings.showCyto,
 		            flanking: 0,
@@ -8256,7 +8254,7 @@
 				//settings.current.particleSegments = Math.round((dataset.object.chromEnd - dataset.object.chromStart) / (5*dataset.object.resolution));
 				// Max rings in 3d aprox 2000
 				//settings.current.particlesCount = dataset.models[0].data.length / dataset.object.components;
-				settings.current.particlesCount = Math.round((dataset.object.end/dataset.object.resolution-dataset.object.start/dataset.object.resolution) / dataset.object.components);
+				settings.current.particlesCount = Math.round((dataset.object.end/dataset.object.resolution-dataset.object.start/dataset.object.resolution));
 				settings.current.particleSegments = Math.ceil(2500/settings.current.particlesCount);
 				settings.current.edgesCount = ((settings.current.particlesCount*settings.current.particlesCount)-settings.current.particlesCount)*0.5;
 				settings.current.segmentsCount = settings.current.particlesCount * settings.current.particleSegments;

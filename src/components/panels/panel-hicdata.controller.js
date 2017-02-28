@@ -16,7 +16,8 @@
 			scene_width = parseInt(scene_component.object.state.width);
 		}
 		$scope.width = $scope.state.width = $scope.canvas_width = $window.innerWidth - scene_width - 50 - 2*parseInt($scope.state.margin);
-		$scope.height = $scope.state.height = $scope.canvas_height = parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units
+		$scope.height = $scope.state.height =  parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units
+		$scope.canvas_height = $scope.canvas_width;
 //		if($scope.data.n === 0) {
 //			$scope.no_hic_data = true; 
 //			$scope.slidevalue = "10;0.001";

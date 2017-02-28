@@ -62,10 +62,6 @@
 		$scope.igvOptions = {
 		            showNavigation: $scope.view.settings.showNav,
 		            showRuler: true,
-		            search:  {
-		                url: null,
-		                resultsField: null
-		            },
 		            showIdeogram: $scope.view.settings.showCyto,
 		            showKaryo: $scope.view.settings.showCyto,
 		            flanking: 0,

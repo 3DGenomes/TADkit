@@ -189,7 +189,7 @@
 									    }
 								]
 							},
-							"human" : {
+							"homo_sapiens" : {
 								"id" : "hg19",
 								"tracks": [
 									{

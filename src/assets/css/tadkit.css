@@ -381,6 +381,12 @@ md-checkbox.md-checked .md-icon {
     float: right;
     /*top: 10px;*/
 }
+.component #hic_data_container table,
+.component #hic_data_container tr,
+.component #hic_data_container td
+{
+    border-style: none;
+}
 .component #hic_data_container .jslider.vertical {
 	height: 100px;
 }
