@@ -8,6 +8,12 @@
 
 		// WATCH FOR WINDOW RESIZE
 		angular.element($window).on('resize', function(){ $scope.$apply(); });
+		
+		$scope.current.dataset = Datasets.getDataset();
+		$scope.current.model = Datasets.getModel();
+		$scope.current.overlay = Overlays.getOverlay();
+		$scope.current.storyboard = Storyboards.getStoryboard();
+		
 		var datasets = Datasets.get();
 		if(datasets.loaded.length===0) { 
 			$state.go('loader',{ conf: $stateParams.conf });
@@ -29,7 +35,8 @@
 			//NOTE in future if more than 1 currentModel need same number of currentRestraints
 			$scope.currentRestraints = Restraints.at($scope.settings.current.particle); // for D3 tracks
 		} else { // we have only the matrix
-			Storyboards.removeComponentById("Chromatin");
+			var scene_component = Storyboards.getComponentById('Chromatin');
+			if(typeof scene_component !== 'undefined') Storyboards.removeComponentById("Chromatin");
 		}
 		// Assign data and overlays for each component by type
 		angular.forEach( $scope.current.storyboard.components, function(component, index) {
@@ -136,7 +143,7 @@
 		$scope.testfn = function() {
 			console.log("test worked");
 		};
-
+		
 		// $scope.keyControls = function (e, component) {
 		// 	if (event.keyCode === 32 || event.charCode === 32) {
 		// 		component.view.controls.autoRotate = !component.view.controls.autoRotate; 

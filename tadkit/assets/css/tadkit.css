@@ -74,8 +74,8 @@ md-input-container.md-icon-float>md-icon {
 	left: 24px;
 }
 .md-toolbar-tools {
-	height: 48px;
-	max-height: 48px;
+	height: 50px;
+	max-height: 50px;
 }
 #tklogo {
 	z-index: 1000;

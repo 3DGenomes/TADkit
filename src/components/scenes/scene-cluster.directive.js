@@ -117,7 +117,8 @@
 						// (creates consistent view orientation)
 						camera.position.set(position.x, position.y, position.z);
 						camera.lookAt(origin);
-						camera.translateZ(translate);
+						orbit.target = target;
+						camera.translateY(translate);
 						// Retarget on target
 						camera.lookAt(target);
 						camera.updateMatrixWorld();

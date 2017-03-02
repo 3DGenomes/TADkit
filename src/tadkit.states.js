@@ -46,7 +46,7 @@
 		})
 		.state('project', {
 			parent: 'main',
-			url: '/project',
+			url: '/project?conf',
 			views: {
 				'topbar@main': {
 					templateUrl: 'assets/templates/topbar.html',
@@ -64,12 +64,43 @@
 					templateUrl: 'assets/templates/sidebar.user.html',
 					controller: 'SidebarUserController'
 				}
-			}
+			},
+			resolve: {
+		         loadfromparam: ['$q','$http', '$stateParams', 'Users', 'Datasets', function($q, $http, $stateParams, Users, Datasets) {
+		        	 	
+		        	 	if (!$stateParams.conf) return;
+		        	 	
+		        	 	var config_file;
+			 			var deferral = $q.defer();
+			 			
+			 			$http.get($stateParams.conf)
+			 			.success( function(conf) {
+			 				var dataset;
+			 				var url_conf = $stateParams.conf;
+			 				if(typeof conf.dataset !== 'undefined') {
+			 					if(conf.tracks) {
+			 						Users.setTracks(conf.tracks);
+			 					}
+			 					dataset = conf.dataset;
+			 				} else if(typeof conf.models !== 'undefined') {
+			 					dataset = conf;
+			 				}
+			 				var loading = Datasets.load(dataset);
+			 				return $q.all([ loading ])
+			 				.then(function(results){
+			 					console.log("Dataset loaded: " + conf.dataset);
+			 					deferral.resolve(conf.dataset);
+			 				});
+			 				
+			 			});
+			 			return deferral.promise;
+		         }]
+		    }
 		})
 		.state('loader', {
 			parent: 'project',
 			//url: '/loader/:loadDataset',
-			url: '/loader?conf',
+			url: '/loader',
 			views: {
 				'topbar@main': {
 					templateUrl: 'assets/templates/topbar.html',
@@ -117,7 +148,7 @@
 		})
 		.state('browser', {
 			parent: 'project',
-			url: '/browser?conf',
+			url: '/browser',
 			views: {
 				'sidebar-left@main': {
 					templateUrl: 'assets/templates/sidebar.browser.html',
@@ -127,12 +158,7 @@
 					templateUrl: 'assets/templates/storyboard.html',
 					controller: 'StoryboardController'
 				}
-			},
-			// resolve: {
-			// 	'initialData': function(initBrowser) {
-			// 		return initBrowser();
-			// 	}
-			// }
+			}
 		})
 		.state('overlay-import', {
 			parent: 'browser',

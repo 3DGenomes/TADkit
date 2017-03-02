@@ -36,7 +36,7 @@
 			$scope.view.settings.showNav = true;
 			if($scope.view.settings.species_data[$scope.settings.current.speciesUrl].cytobandURL) {
 				igv_reference.cytobandURL = $scope.view.settings.species_data[$scope.settings.current.speciesUrl].cytobandURL;
-				$scope.view.settings.showCyto = false;
+				$scope.view.settings.showCyto = true;
 			} else {
 				$scope.view.settings.showCyto = false;
 			}
@@ -223,6 +223,15 @@
 		// Show center guide by default. The centerguide will be tadkit position in the 2D and 3D
 		$scope.myIgv.centerGuide.$centerGuideToggle.click();
 		
+		/* 
+		 Remove Karyo panel. With the igv config is not working very well with firefox
+		 So we do it the hard way
+		 *  */
+		$scope.myIgv.karyoPanel.$karyoPanelToggle.hide();
+		var karyo = angular.element(document.querySelector('#igvKaryoDiv'))[0];
+        karyo.remove();
+        $scope.myIgv.karyoPanel = null;
+        
 		/*
 		Create div indicating selected tad in the browser.
 		#tad-highlight-tadkit should be styled in the main css

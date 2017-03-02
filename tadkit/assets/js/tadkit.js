@@ -93,7 +93,7 @@
 		})
 		.state('project', {
 			parent: 'main',
-			url: '/project',
+			url: '/project?conf',
 			views: {
 				'topbar@main': {
 					templateUrl: 'assets/templates/topbar.html',
@@ -111,12 +111,43 @@
 					templateUrl: 'assets/templates/sidebar.user.html',
 					controller: 'SidebarUserController'
 				}
-			}
+			},
+			resolve: {
+		         loadfromparam: ['$q','$http', '$stateParams', 'Users', 'Datasets', function($q, $http, $stateParams, Users, Datasets) {
+		        	 	
+		        	 	if (!$stateParams.conf) return;
+		        	 	
+		        	 	var config_file;
+			 			var deferral = $q.defer();
+			 			
+			 			$http.get($stateParams.conf)
+			 			.success( function(conf) {
+			 				var dataset;
+			 				var url_conf = $stateParams.conf;
+			 				if(typeof conf.dataset !== 'undefined') {
+			 					if(conf.tracks) {
+			 						Users.setTracks(conf.tracks);
+			 					}
+			 					dataset = conf.dataset;
+			 				} else if(typeof conf.models !== 'undefined') {
+			 					dataset = conf;
+			 				}
+			 				var loading = Datasets.load(dataset);
+			 				return $q.all([ loading ])
+			 				.then(function(results){
+			 					console.log("Dataset loaded: " + conf.dataset);
+			 					deferral.resolve(conf.dataset);
+			 				});
+			 				
+			 			});
+			 			return deferral.promise;
+		         }]
+		    }
 		})
 		.state('loader', {
 			parent: 'project',
 			//url: '/loader/:loadDataset',
-			url: '/loader?conf',
+			url: '/loader',
 			views: {
 				'topbar@main': {
 					templateUrl: 'assets/templates/topbar.html',
@@ -164,7 +195,7 @@
 		})
 		.state('browser', {
 			parent: 'project',
-			url: '/browser?conf',
+			url: '/browser',
 			views: {
 				'sidebar-left@main': {
 					templateUrl: 'assets/templates/sidebar.browser.html',
@@ -174,12 +205,7 @@
 					templateUrl: 'assets/templates/storyboard.html',
 					controller: 'StoryboardController'
 				}
-			},
-			// resolve: {
-			// 	'initialData': function(initBrowser) {
-			// 		return initBrowser();
-			// 	}
-			// }
+			}
 		})
 		.state('overlay-import', {
 			parent: 'browser',
@@ -962,7 +988,7 @@
 			$scope.view.settings.showNav = true;
 			if($scope.view.settings.species_data[$scope.settings.current.speciesUrl].cytobandURL) {
 				igv_reference.cytobandURL = $scope.view.settings.species_data[$scope.settings.current.speciesUrl].cytobandURL;
-				$scope.view.settings.showCyto = false;
+				$scope.view.settings.showCyto = true;
 			} else {
 				$scope.view.settings.showCyto = false;
 			}
@@ -1149,6 +1175,15 @@
 		// Show center guide by default. The centerguide will be tadkit position in the 2D and 3D
 		$scope.myIgv.centerGuide.$centerGuideToggle.click();
 		
+		/* 
+		 Remove Karyo panel. With the igv config is not working very well with firefox
+		 So we do it the hard way
+		 *  */
+		$scope.myIgv.karyoPanel.$karyoPanelToggle.hide();
+		var karyo = angular.element(document.querySelector('#igvKaryoDiv'))[0];
+        karyo.remove();
+        $scope.myIgv.karyoPanel = null;
+        
 		/*
 		Create div indicating selected tad in the browser.
 		#tad-highlight-tadkit should be styled in the main css
@@ -2193,7 +2228,8 @@
 						// (creates consistent view orientation)
 						camera.position.set(position.x, position.y, position.z);
 						camera.lookAt(origin);
-						camera.translateZ(translate);
+						orbit.target = target;
+						camera.translateY(translate);
 						// Retarget on target
 						camera.lookAt(target);
 						camera.updateMatrixWorld();
@@ -2796,7 +2832,7 @@
 							chromatin.visible = scope.view.settings.chromatin.visible;
 							scene.add(chromatin);
 							scope.view.settings.chromatin.radius = chromatin.boundingSphere.radius;
-
+							
 							if(scope.view.settings.chromatin.tubed) {
 
 								var ringGeometry = new THREE.RingGeometry(6, 10, 50);
@@ -3212,7 +3248,8 @@
 							// (creates consistent view orientation)
 							camera.position.set(position.x, position.y, position.z);
 							camera.lookAt(origin);
-							camera.translateZ(translate);
+							camera.translateY(translate);
+							playback.target = target;
 							// Retarget on target
 							camera.lookAt(target);
 							camera.updateMatrixWorld();
@@ -5160,7 +5197,7 @@
 		.module('TADkit')
 		.controller('MainController', MainController);
 
-	function MainController($state, $stateParams, $scope, Settings, Overlays, Storyboards, Users) {
+	function MainController($state, $scope, Settings, Overlays, Storyboards, Users, Datasets) {
 
 		if (!$scope.settings) {
 			$scope.settings = Settings.get();
@@ -5169,23 +5206,7 @@
 		$scope.$on("$stateChangeSuccess", function updatePage() {
 			$scope.settings.app.isProject = $state.is('project');
 		});
-
-		// BUILD DEFAULT DATA HIERARCHY
-		// USERS >> PROJECTS >> DATASETS | OVERLAYS | STORYBOARDS
-//		if (!$scope.users) {
-//			$scope.users = Users.get();
-//			if (typeof $scope.users.loaded[0].projects !== "undefined" && $scope.users.loaded[0].projects.length === 0) {
-//				$scope.users.loaded[0].projects = Projects.get();
-//				if (typeof $scope.users.loaded[0].projects.loaded[0].datasets !== "undefined" &&  $scope.users.loaded[0].projects.loaded[0].datasets.length === 0)
-//					$scope.users.loaded[0].projects.loaded[0].datasets = Datasets.get();
-//				if (typeof $scope.users.loaded[0].projects.loaded[0].overlays !== "undefined" &&  $scope.users.loaded[0].projects.loaded[0].overlays.length === 0)
-//					$scope.users.loaded[0].projects.loaded[0].overlays = Overlays.get();
-//				if (typeof $scope.users.loaded[0].projects.loaded[0].storyboards !== "undefined" &&  $scope.users.loaded[0].projects.loaded[0].storyboards.length === 0)
-//					$scope.users.loaded[0].projects.loaded[0].storyboards = Storyboards.get();
-//			}
-//		}
-//		
-		// SET SHARED CURRENT PROJECT LEVEL DATA
+		
 		$scope.current = {};
 		$scope.current.user = Users.getUser();
 //		$scope.current.project = Projects.getProject();
@@ -5302,9 +5323,9 @@
 		.module('TADkit')
 		.controller('ProjectContentController', ProjectContentController);
 
-	function ProjectContentController($scope) {
+	function ProjectContentController() {
 
-
+		
 	}
 })();
 (function() {
@@ -5318,9 +5339,12 @@
 		    };})
 		.controller('ProjectDatasetController', ProjectDatasetController);
 
-	function ProjectDatasetController ($state, $scope, Datasets, Overlays, Components, Segments){
+	function ProjectDatasetController ($state, $scope, $stateParams, Datasets, Overlays, Components, Segments){
 		// console.log($scope);
 
+		$scope.current.dataset = Datasets.getDataset();
+		$scope.current.model = Datasets.getModel();
+		
 		// Get dataset scene icon component
 		$scope.clusterComponent = Components.getComponentById("datasets-scene-icon");
 
@@ -5469,7 +5493,7 @@
 		.module('TADkit')
 		.controller('ProjectLoaderController', ProjectLoaderController);
 
-	function ProjectLoaderController($q, $http, $state, $stateParams, $scope, Datasets, Overlays, Storyboards, Users, Hic_data) {
+	function ProjectLoaderController($q, $http, $state, $scope, Datasets, Overlays, Storyboards, Users, Hic_data) {
 
 		$scope.updateCurrent = function() {
 			$scope.current.dataset = Datasets.getDataset();
@@ -5483,36 +5507,6 @@
 			$scope.current.storyboard = Storyboards.getStoryboard();
 			console.log("Current dataset, model, overlay and storyboard updated.");			
 		};
-
-		$scope.loadConfigFromParam = function() {
-			var config_file;
-			var deferral = $q.defer();
-			
-			$http.get($stateParams.conf)
-			.success( function(conf) {
-				var dataset;
-				var url_conf = $stateParams.conf;
-				if(typeof conf.dataset !== 'undefined') {
-					if(conf.tracks) {
-						Users.setTracks(conf.tracks);
-					}
-					dataset = conf.dataset;
-				} else if(typeof conf.models !== 'undefined') {
-					dataset = conf;
-				}
-				var loading = Datasets.load(dataset);
-				return $q.all([ loading ])
-				.then(function(results){
-					$scope.updateCurrent();
-					console.log("Dataset loaded: " + conf.dataset);			
-					$state.go('browser',{ conf: url_conf });
-				});
-				
-			});
-			return deferral.promise;
-			
-		};
-		if ($stateParams.conf) $scope.loadConfigFromParam();
 
 		// On dropzone (load external file)
 		// Adds JSON to current project - load TSV when in browser
@@ -5535,7 +5529,7 @@
 				$scope.updateCurrent();
 				// ADD FILENAME (SEE OVERLAY-IMPORT)
 				console.log("Dataset example loaded.");			
-				$state.go('browser');
+				$state.go('browser', { conf: null });
 			});
 		};
 		
@@ -5664,6 +5658,12 @@
 
 		// WATCH FOR WINDOW RESIZE
 		angular.element($window).on('resize', function(){ $scope.$apply(); });
+		
+		$scope.current.dataset = Datasets.getDataset();
+		$scope.current.model = Datasets.getModel();
+		$scope.current.overlay = Overlays.getOverlay();
+		$scope.current.storyboard = Storyboards.getStoryboard();
+		
 		var datasets = Datasets.get();
 		if(datasets.loaded.length===0) { 
 			$state.go('loader',{ conf: $stateParams.conf });
@@ -5685,7 +5685,8 @@
 			//NOTE in future if more than 1 currentModel need same number of currentRestraints
 			$scope.currentRestraints = Restraints.at($scope.settings.current.particle); // for D3 tracks
 		} else { // we have only the matrix
-			Storyboards.removeComponentById("Chromatin");
+			var scene_component = Storyboards.getComponentById('Chromatin');
+			if(typeof scene_component !== 'undefined') Storyboards.removeComponentById("Chromatin");
 		}
 		// Assign data and overlays for each component by type
 		angular.forEach( $scope.current.storyboard.components, function(component, index) {
@@ -5792,7 +5793,7 @@
 		$scope.testfn = function() {
 			console.log("test worked");
 		};
-
+		
 		// $scope.keyControls = function (e, component) {
 		// 	if (event.keyCode === 32 || event.charCode === 32) {
 		// 		component.view.controls.autoRotate = !component.view.controls.autoRotate; 
@@ -5821,6 +5822,10 @@
 		$scope.toggleRight = function() {
 			$mdSidenav('right').toggle();
 		};
+		$scope.showDatasetCluster = $state.includes('browser');
+		$scope.$watch('current.model', function(newModel, oldModel) { 
+			if(typeof(newModel) == 'undefined') $scope.showDatasetCluster = false;
+		});
 	}
 })();
 (function() {
@@ -6768,22 +6773,20 @@
 
 		return function() {
 			var settings = Settings.load();
-			var users = Users.load();
+			//var users = Users.load();
 			//var projects = Projects.load();
-			var datasets = Datasets.get();
+			//var datasets = Datasets.get();
 			var overlays = Overlays.load();
 			var components = Components.load();
 			var storyboards = Storyboards.load();
 			//var featureColors = Resources.loadBiotypeColors();
 
-			return $q.all([settings, components, storyboards, users, datasets])
+			return $q.all([settings, components, storyboards])
 			.then(function(results){
 				return {
 					settings: results[0],
 					components: results[1],
-					storyboards: results[2],
-					users: results[3],
-					datasets: results[4]
+					storyboards: results[2]
 				};
 			});
 		};

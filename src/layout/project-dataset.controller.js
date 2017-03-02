@@ -9,9 +9,12 @@
 		    };})
 		.controller('ProjectDatasetController', ProjectDatasetController);
 
-	function ProjectDatasetController ($state, $scope, Datasets, Overlays, Components, Segments){
+	function ProjectDatasetController ($state, $scope, $stateParams, Datasets, Overlays, Components, Segments){
 		// console.log($scope);
 
+		$scope.current.dataset = Datasets.getDataset();
+		$scope.current.model = Datasets.getModel();
+		
 		// Get dataset scene icon component
 		$scope.clusterComponent = Components.getComponentById("datasets-scene-icon");
 

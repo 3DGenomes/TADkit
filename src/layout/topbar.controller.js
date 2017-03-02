@@ -18,5 +18,9 @@
 		$scope.toggleRight = function() {
 			$mdSidenav('right').toggle();
 		};
+		$scope.showDatasetCluster = $state.includes('browser');
+		$scope.$watch('current.model', function(newModel, oldModel) { 
+			if(typeof(newModel) == 'undefined') $scope.showDatasetCluster = false;
+		});
 	}
 })();

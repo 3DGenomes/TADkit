@@ -57,7 +57,7 @@
 							chromatin.visible = scope.view.settings.chromatin.visible;
 							scene.add(chromatin);
 							scope.view.settings.chromatin.radius = chromatin.boundingSphere.radius;
-
+							
 							if(scope.view.settings.chromatin.tubed) {
 
 								var ringGeometry = new THREE.RingGeometry(6, 10, 50);
@@ -473,7 +473,8 @@
 							// (creates consistent view orientation)
 							camera.position.set(position.x, position.y, position.z);
 							camera.lookAt(origin);
-							camera.translateZ(translate);
+							camera.translateY(translate);
+							playback.target = target;
 							// Retarget on target
 							camera.lookAt(target);
 							camera.updateMatrixWorld();

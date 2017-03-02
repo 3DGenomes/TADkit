@@ -191,6 +191,8 @@
 							},
 							"homo_sapiens" : {
 								"id" : "hg19",
+								"fastaURL" : "assets/data/hg19.fa",
+								"cytobandURL" : "assets/data/cytoBand.txt",
 								"tracks": [
 									{
 										"name": "Genes",
