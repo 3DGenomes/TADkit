@@ -39,7 +39,7 @@
 				//settings.current.particleSegments = Math.round((dataset.object.chromEnd - dataset.object.chromStart) / (5*dataset.object.resolution));
 				// Max rings in 3d aprox 2000
 				//settings.current.particlesCount = dataset.models[0].data.length / dataset.object.components;
-				settings.current.particlesCount = Math.round((dataset.object.end/dataset.object.resolution-dataset.object.start/dataset.object.resolution));
+				settings.current.particlesCount = Math.round((dataset.object.chromEnd-dataset.object.chromStart)/dataset.object.resolution);
 				settings.current.particleSegments = Math.ceil(2500/settings.current.particlesCount);
 				settings.current.edgesCount = ((settings.current.particlesCount*settings.current.particlesCount)-settings.current.particlesCount)*0.5;
 				settings.current.segmentsCount = settings.current.particlesCount * settings.current.particleSegments;

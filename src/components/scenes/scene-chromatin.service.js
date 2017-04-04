@@ -80,7 +80,7 @@
 			
 			var chromatinGeometry;
 			if(settings.tubed) {
-				chromatinGeometry = new THREE.TubeGeometry(cubicPath, pathSegments, 4, 8, this.pathClosed);
+				chromatinGeometry = new THREE.TubeGeometry(cubicPath, pathSegments, this.radius, 8, this.pathClosed);
 				
 				
 //					
