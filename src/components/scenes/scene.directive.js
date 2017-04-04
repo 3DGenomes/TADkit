@@ -59,8 +59,9 @@
 							scope.view.settings.chromatin.radius = chromatin.boundingSphere.radius;
 							
 							if(scope.view.settings.chromatin.tubed) {
-
-								var ringGeometry = new THREE.RingGeometry(6, 10, 50);
+								
+								var radius = chromatin.children[0].geometry.parameters.radius+0.2*chromatin.children[0].geometry.parameters.radius;
+								var ringGeometry = new THREE.RingGeometry(radius, radius+1.0*radius, 50);
 								//ringGeometry.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI / 2 ) );
 								ring = new THREE.Mesh(ringGeometry, new THREE.MeshBasicMaterial({ color: 0x32cd32, side: THREE.DoubleSide}));
 								ring.position.x = particles.geometry.vertices[0].x;

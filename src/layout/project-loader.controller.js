@@ -4,17 +4,21 @@
 		.module('TADkit')
 		.controller('ProjectLoaderController', ProjectLoaderController);
 
-	function ProjectLoaderController($q, $http, $state, $scope, Datasets, Overlays, Storyboards, Users, Hic_data) {
+	function ProjectLoaderController($q, $http, $state, $scope, Datasets, Overlays, Components, Storyboards, Users, Hic_data) {
 
 		$scope.updateCurrent = function() {
 			$scope.current.dataset = Datasets.getDataset();
+			delete $scope.settings.current.tad_selected;
 			$scope.current.model = Datasets.getModel();
 			var overlays = Overlays.get();
 			while (overlays.loaded.length > 1) { // remove all overlays
 				overlays.loaded.pop();
 			}
 			Overlays.set(0);
+			
 			$scope.current.overlay = Overlays.getOverlay();
+			$scope.current.components = Components.load();
+			$scope.current.storyboards = Storyboards.load();
 			$scope.current.storyboard = Storyboards.getStoryboard();
 			console.log("Current dataset, model, overlay and storyboard updated.");			
 		};
@@ -28,7 +32,10 @@
 				$scope.updateCurrent();
 				// ADD FILENAME (SEE OVERLAY-IMPORT)
 				console.log("Dataset added."); //: " + $stateParams.loadDataset);			
-				$state.go('dataset');
+				if($scope.current.dataset.models.length>0)
+					$state.go('dataset');
+				else
+					$state.go('browser');
 			});			
 		};
 		$scope.cleanDataset = function(event) {

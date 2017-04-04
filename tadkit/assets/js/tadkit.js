@@ -2834,8 +2834,9 @@
 							scope.view.settings.chromatin.radius = chromatin.boundingSphere.radius;
 							
 							if(scope.view.settings.chromatin.tubed) {
-
-								var ringGeometry = new THREE.RingGeometry(6, 10, 50);
+								
+								var radius = chromatin.children[0].geometry.parameters.radius+0.2*chromatin.children[0].geometry.parameters.radius;
+								var ringGeometry = new THREE.RingGeometry(radius, radius+1.0*radius, 50);
 								//ringGeometry.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI / 2 ) );
 								ring = new THREE.Mesh(ringGeometry, new THREE.MeshBasicMaterial({ color: 0x32cd32, side: THREE.DoubleSide}));
 								ring.position.x = particles.geometry.vertices[0].x;
@@ -5497,17 +5498,21 @@
 		.module('TADkit')
 		.controller('ProjectLoaderController', ProjectLoaderController);
 
-	function ProjectLoaderController($q, $http, $state, $scope, Datasets, Overlays, Storyboards, Users, Hic_data) {
+	function ProjectLoaderController($q, $http, $state, $scope, Datasets, Overlays, Components, Storyboards, Users, Hic_data) {
 
 		$scope.updateCurrent = function() {
 			$scope.current.dataset = Datasets.getDataset();
+			delete $scope.settings.current.tad_selected;
 			$scope.current.model = Datasets.getModel();
 			var overlays = Overlays.get();
 			while (overlays.loaded.length > 1) { // remove all overlays
 				overlays.loaded.pop();
 			}
 			Overlays.set(0);
+			
 			$scope.current.overlay = Overlays.getOverlay();
+			$scope.current.components = Components.load();
+			$scope.current.storyboards = Storyboards.load();
 			$scope.current.storyboard = Storyboards.getStoryboard();
 			console.log("Current dataset, model, overlay and storyboard updated.");			
 		};
@@ -5521,7 +5526,10 @@
 				$scope.updateCurrent();
 				// ADD FILENAME (SEE OVERLAY-IMPORT)
 				console.log("Dataset added."); //: " + $stateParams.loadDataset);			
-				$state.go('dataset');
+				if($scope.current.dataset.models.length>0)
+					$state.go('dataset');
+				else
+					$state.go('browser');
 			});			
 		};
 		$scope.cleanDataset = function(event) {
@@ -5681,15 +5689,16 @@
 
 		// Calculating Initial Proximities
 		//NOTE in future if more than 1 currentModel need same number of currentProximities
+		var scene_component;
 		$scope.allProximities = Proximities.get(); // for Scene
-		if($scope.allProximities.dimension > 0) { // we have models
+		if($scope.current.dataset.models.length > 0) { // we have models
 			$scope.currentProximities = Proximities.at($scope.settings.current.particle); // for D3 tracks
 	
 			// Calculating Initial Restraints
 			//NOTE in future if more than 1 currentModel need same number of currentRestraints
 			$scope.currentRestraints = Restraints.at($scope.settings.current.particle); // for D3 tracks
 		} else { // we have only the matrix
-			var scene_component = Storyboards.getComponentById('Chromatin');
+			scene_component = Storyboards.getComponentById('Chromatin');
 			if(typeof scene_component !== 'undefined') Storyboards.removeComponentById("Chromatin");
 		}
 		// Assign data and overlays for each component by type
@@ -6351,6 +6360,7 @@
 			},
 			getComponentByType: function (type) {
 				var component, defaultComponent, found;
+				found = -1;
 				if (type !== undefined || type !== false) {
 					for (var i = components.loaded.length - 1; i >= 0; i--) {
 						if (components.loaded[i].object.type === type) {
@@ -6363,7 +6373,7 @@
 						}
 					}
 				}
-				if (!found) {
+				if (found<0) {
 					component = defaultComponent;
 					console.log("Component type '" + type + "' not found: returning default.");
 				}
@@ -8354,17 +8364,14 @@
 			load: function() {
 				var deferral = $q.defer();
 				var dataUrl = "assets/defaults/tk-defaults-storyboards.json";
-				if( storyboards.loaded.length > 0 ) {
-					console.log("Storyboards already loaded.");
+				
+				$http.get(dataUrl)
+				.success( function(data) {
+					storyboards.loaded = data;
+					console.log("Storyboards (" + data.length + ") loaded from " + dataUrl);
 					deferral.resolve(storyboards);
-				} else {
-					$http.get(dataUrl)
-					.success( function(data) {
-						storyboards.loaded = data;
-						console.log("Storyboards (" + data.length + ") loaded from " + dataUrl);
-						deferral.resolve(storyboards);
-					});
-				}
+				});
+				
 				return deferral.promise;
 			},
 			add: function(details) {

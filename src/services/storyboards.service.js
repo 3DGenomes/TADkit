@@ -14,17 +14,14 @@
 			load: function() {
 				var deferral = $q.defer();
 				var dataUrl = "assets/defaults/tk-defaults-storyboards.json";
-				if( storyboards.loaded.length > 0 ) {
-					console.log("Storyboards already loaded.");
+				
+				$http.get(dataUrl)
+				.success( function(data) {
+					storyboards.loaded = data;
+					console.log("Storyboards (" + data.length + ") loaded from " + dataUrl);
 					deferral.resolve(storyboards);
-				} else {
-					$http.get(dataUrl)
-					.success( function(data) {
-						storyboards.loaded = data;
-						console.log("Storyboards (" + data.length + ") loaded from " + dataUrl);
-						deferral.resolve(storyboards);
-					});
-				}
+				});
+				
 				return deferral.promise;
 			},
 			add: function(details) {

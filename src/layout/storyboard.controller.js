@@ -27,15 +27,16 @@
 
 		// Calculating Initial Proximities
 		//NOTE in future if more than 1 currentModel need same number of currentProximities
+		var scene_component;
 		$scope.allProximities = Proximities.get(); // for Scene
-		if($scope.allProximities.dimension > 0) { // we have models
+		if($scope.current.dataset.models.length > 0) { // we have models
 			$scope.currentProximities = Proximities.at($scope.settings.current.particle); // for D3 tracks
 	
 			// Calculating Initial Restraints
 			//NOTE in future if more than 1 currentModel need same number of currentRestraints
 			$scope.currentRestraints = Restraints.at($scope.settings.current.particle); // for D3 tracks
 		} else { // we have only the matrix
-			var scene_component = Storyboards.getComponentById('Chromatin');
+			scene_component = Storyboards.getComponentById('Chromatin');
 			if(typeof scene_component !== 'undefined') Storyboards.removeComponentById("Chromatin");
 		}
 		// Assign data and overlays for each component by type
