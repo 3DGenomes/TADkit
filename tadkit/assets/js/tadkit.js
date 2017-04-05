@@ -592,9 +592,15 @@
 							var resolution, start_tad, end_tad = 0;
 							var polygon_tad, start_tad_scaled, end_tad_scaled, tad_height; 
 							polygon_tads = [];
+							var max_score_tad = 0;
+							var min_score_tad = 99;
 							for(i=0;i<scope.data.tads.length;i++) {
-			                	stroke_width = Math.round(scope.data.tads[i][3]/10);
-			                	// assuming tads given in absolute position
+								if(scope.data.tads[i][3] > max_score_tad) max_score_tad = scope.data.tads[i][3];
+								if(scope.data.tads[i][3] < min_score_tad) min_score_tad = scope.data.tads[i][3];
+							}
+							for(i=0;i<scope.data.tads.length;i++) {
+			                	stroke_width = (scope.data.tads[i][3]-min_score_tad)/(max_score_tad-min_score_tad)+0.1;
+								// assuming tads given in absolute position
 			                	resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
 								start_tad = Math.round(((scope.data.tads[i][1])-scope.settings.current.chromStart)/resolution);
 			                	end_tad = Math.round((scope.data.tads[i][2]-scope.settings.current.chromStart)/resolution);
