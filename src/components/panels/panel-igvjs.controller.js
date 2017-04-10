@@ -163,8 +163,6 @@
 				var hexEnd = '#0000ff';
 				var hexStart = '#ffffff';
 				var first_start = 0;
-				max_val = Math.max.apply(Math, featureColor);
-				min_val = Math.min.apply(Math, featureColor);
 				var n = 0;
 				l = 0;
 				while(n<featureColor.length) {
@@ -179,7 +177,24 @@
 						nbrmotif++;
 						n++;
 					}
-					featureColor[l] = d3.interpolateHcl(hexStart, hexEnd)(((motifcolor/nbrmotif)-min_val)/(max_val-min_val));
+					tmpfeature.push(motifcolor);
+				}
+				max_val = Math.max.apply(Math, tmpfeature);
+				min_val = Math.min.apply(Math, tmpfeature);
+				
+				n = 0;
+				l = 0;
+				while(n<featureColor.length) {
+					totallength = 0;
+					motifcolor = 0;
+					first_start = features[n].start;
+					while(totallength < 1 && n < featureColor.length) {
+						feature = features[n];
+						totallength = (feature.end - first_start)/$scope.settings.current.segmentLength;
+						motifcolor = motifcolor + parseFloat(featureColor[n]);
+						n++;
+					}
+					featureColor[l] = d3.interpolateHcl(hexStart, hexEnd)((motifcolor-min_val)/(max_val-min_val));
 					j = Math.round((first_start - $scope.settings.current.chromStart)/$scope.settings.current.segmentLength);
 					for(k=j;k<(j+Math.round(totallength)) && k<$scope.settings.current.segmentsCount;k++) {
 						igvJsOverlay.colors.chromatin[k] = featureColor[l];
