@@ -146,9 +146,14 @@
 
 			var featureColor = [];
 			var scored_color = false;
+			var motifcolor;
+			var feature;
+			var nbrmotif;
+			var tmpfeature = [];
 			angular.forEach(features, function(feature) {
 				if(typeof feature.color == 'undefined') {
 					if(typeof feature.score !== 'undefined') featureColor.push(feature.score);
+					if(typeof feature.value !== 'undefined') featureColor.push(feature.value);
 					scored_color = true;
 				} else {
 					featureColor.push(feature.color);
@@ -157,21 +162,40 @@
 			if(scored_color) {
 				var hexEnd = '#0000ff';
 				var hexStart = '#ffffff';
+				var first_start = 0;
 				max_val = Math.max.apply(Math, featureColor);
 				min_val = Math.min.apply(Math, featureColor);
-				for(k=0;k<featureColor.length;k++) {
-					featureColor[k] = d3.interpolateHcl(hexStart, hexEnd)((featureColor[k]-min_val)/(max_val-min_val));
+				var n = 0;
+				l = 0;
+				while(n<featureColor.length) {
+					totallength = 0;
+					motifcolor = 0;
+					nbrmotif = 0;
+					first_start = features[n].start;
+					while(totallength < 1 && n < featureColor.length) {
+						feature = features[n];
+						totallength = (feature.end - first_start)/$scope.settings.current.segmentLength;
+						motifcolor = motifcolor + parseFloat(featureColor[n]);
+						nbrmotif++;
+						n++;
+					}
+					featureColor[l] = d3.interpolateHcl(hexStart, hexEnd)(((motifcolor/nbrmotif)-min_val)/(max_val-min_val));
+					j = Math.round((first_start - $scope.settings.current.chromStart)/$scope.settings.current.segmentLength);
+					for(k=j;k<(j+Math.round(totallength)) && k<$scope.settings.current.segmentsCount;k++) {
+						igvJsOverlay.colors.chromatin[k] = featureColor[l];
+					}
+					l++;
 				}
+			} else {
+				angular.forEach(features, function(feature) {
+					j = Math.round((feature.start - $scope.settings.current.chromStart)/$scope.settings.current.segmentLength);
+					totallength = Math.round((feature.end - feature.start)/$scope.settings.current.segmentLength);
+					for(k=j;k<(j+totallength) && k<$scope.settings.current.segmentsCount;k++) {
+						igvJsOverlay.colors.chromatin[k] = featureColor[l];
+					}
+					l++;
+				});
 			}
-			angular.forEach(features, function(feature) {
-				j = Math.round((feature.start - $scope.settings.current.chromStart)/$scope.settings.current.segmentLength);
-				totallength = Math.round((feature.end - feature.start)/$scope.settings.current.segmentLength);
-				for(k=j;k<(j+totallength) && k<$scope.settings.current.segmentsCount;k++) {
-					igvJsOverlay.colors.chromatin[k] = featureColor[l];
-				}
-				l++;
-			});
-
 			var newOverlay = Overlays.addDirect(igvJsOverlay);
 			var overlay = overlays.loaded[newOverlay];
 			
