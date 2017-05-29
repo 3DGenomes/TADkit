@@ -994,7 +994,7 @@
 			$scope.view.settings.showNav = true;
 			if($scope.view.settings.species_data[$scope.settings.current.speciesUrl].cytobandURL) {
 				igv_reference.cytobandURL = $scope.view.settings.species_data[$scope.settings.current.speciesUrl].cytobandURL;
-				$scope.view.settings.showCyto = true;
+				$scope.view.settings.showCyto = false;
 			} else {
 				$scope.view.settings.showCyto = false;
 			}
@@ -1215,7 +1215,8 @@
 		$scope.myIgv.$searchInput.off('change');
         
 		// Hide search icon
-		var search_icon = angular.element(document.querySelector('.igv-fa-search'))[0];
+		//var search_icon = angular.element(document.querySelector('.igv-fa-search'))[0];
+		var search_icon = angular.element(document.querySelector('.igv-search-container'))[0];
 		$(search_icon).hide();
 		// Show center guide by default. The centerguide will be tadkit position in the 2D and 3D
 		$scope.myIgv.centerGuide.$centerGuideToggle.click();
@@ -1224,7 +1225,7 @@
 		 Remove Karyo panel. With the igv config is not working very well with firefox
 		 So we do it the hard way
 		 *  */
-		$scope.myIgv.karyoPanel.$karyoPanelToggle.hide();
+		//$scope.myIgv.karyoPanel.$karyoPanelToggle.hide();
 		var karyo = angular.element(document.querySelector('#igvKaryoDiv'))[0];
         karyo.remove();
         $scope.myIgv.karyoPanel = null;
@@ -1485,7 +1486,7 @@
             
             all = [];
             if (trackView.track.menuItemList) {
-                all = menuItems.concat( trackMenuList(trackView.track.menuItemList(popover)) );
+                all = menuItems.concat( trackMenuItemListHelper(trackView.track.menuItemList(popover)) );
             }
             
             if (trackView.track.removable !== false) {
@@ -1504,36 +1505,36 @@
             return all;
         };
         
-        function trackMenuList(itemList) {
+        function trackMenuItemListHelper(itemList) {
 
-            var list = [];
+	        var list = [];
 
-            if (_.size(itemList) > 0) {
+	        if (_.size(itemList) > 0) {
 
-                list = _.map(itemList, function(item, i) {
-                    var $e;
+	            list = _.map(itemList, function(item, i) {
+	                var $e;
 
-                    if (item.name) {
-                        $e = $('<div class="igv-track-menu-item">');
-                        $e.text(item.name);
-                    } else {
-                        $e = item.object;
-                    }
+	                if (item.name) {
+	                    $e = $('<div "igv-track-menu-item">');
+	                    $e.text(item.name);
+	                } else {
+	                    $e = item.object;
+	                }
 
-                    if (0 === i) {
-                        $e.addClass('igv-track-menu-border-top');
-                    }
+	                if (0 === i) {
+	                    $e.addClass('igv-track-menu-border-top');
+	                }
 
-                    if (item.click) {
-                        $e.click(item.click);
-                    }
+	                if (item.click) {
+	                    $e.click(item.click);
+	                }
 
-                    return { object: $e, init: (item.init || undefined) };
-                });
-            }
+	                return { object: $e, init: (item.init || undefined) };
+	            });
+	        }
 
-            return list;
-        }
+	        return list;
+	    }
         
 	}
 })();
