@@ -71,6 +71,7 @@ gulp.task('dist-vendor', function() {
 		'bower_components/threejs/examples/js/controls/TrackballControls.js',
 		'bower_components/threejs/examples/js/controls/OrbitControls.js',
 		'bower_components/angular-awesome-slider/dist/angular-awesome-slider.min.js',
+		'bower_components/angular-resizable/angular-resizable.min.js',
 		'bower_components/jquery/dist/jquery.min.js',
 		'bower_components/jquery-ui/jquery-ui.min.js',
 		//'src/assets/js/igv-all.js',
@@ -142,7 +143,8 @@ gulp.task('assets-css', function() {
 		'src/assets/css/ensembl-genes.css',
 		'src/assets/css/angular-awesome-slider.min.css',
 		'src/assets/css/igv.css',
-		'bower_components/jquery-ui/themes/cupertino/jquery-ui.css'
+		'bower_components/jquery-ui/themes/cupertino/jquery-ui.css',
+		'bower_components/angular-resizable/angular-resizable.min.css'
 		])
 		.pipe(gulp.dest('tadkit/assets/css'));
 });

@@ -195,7 +195,7 @@
 			"type" : "panel-jbrowse",
 			"dataset" : "default",
 			"state" : {
-				"width" : "100%",
+				"width" : "800px",
 				"height" : "400px",
 				"position" : 1
 			}

@@ -242,6 +242,7 @@ md-checkbox.md-checked .md-icon {
 .component-controller {
 	position: relative;
 	display: inline-block;
+	float: left;
 }
 .component-header {
 	position: absolute;
@@ -480,12 +481,8 @@ md-checkbox.md-checked .md-icon {
 /**
  * PANELS
  */
-.panel-inspector .component-body {
-	margin-top: 1.4rem;
-	padding: 0.4rem;
-}
 .panel-inspector .component-body div {
-	overflow: scroll;
+	overflow: overlay;
 }
 .panel-inspector .component-body .accordion .accordion-navigation > a,
 .panel-inspector .component-body .accordion dd > a {

@@ -52,7 +52,16 @@
 
 							//GEOMETRY: CHROMATIN
 							scope.view.settings.chromatin.particleSegments = scope.settings.current.particleSegments;
-							chromatin = new Chromatin(scope.currentmodel.data, scope.currentoverlay.colors.chromatin, scope.view.settings.chromatin);
+							var resolution = scope.data.object.resolution; // base pairs
+							var resolution_scale;
+							if(angular.isUndefined(scope.data.object.radius_scale)) {
+								angular.forEach(scope.view.settings.chromatin.resolution_scales, function(value, key) {
+									  if(parseInt(key) <= resolution) resolution_scale = value;
+								});
+							} else {
+								resolution_scale = parseInt(scope.data.object.radius_scale);
+							}
+							chromatin = new Chromatin(scope.currentmodel.data, scope.currentoverlay.colors.chromatin, scope.view.settings.chromatin, resolution_scale);
 							// chromatin = new Chromatin(scope.model.data, scope.overlay.colors.chromatin, scope.view.settings.chromatin);
 							chromatin.visible = scope.view.settings.chromatin.visible;
 							scene.add(chromatin);
@@ -71,7 +80,6 @@
 								scene.add(ring);
 
 								spheres = new THREE.Object3D();
-								var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
 								var start_tad, end_tad, radius_cloud, centre_of_mass;
 								for (var i = 0; i < scope.data.tad_data.tads.length; i++) {
 									start_tad = Math.round(((scope.data.tad_data.tads[i][1])-scope.settings.current.chromStart)/resolution);
@@ -454,13 +462,13 @@
 					// -----------------------------------
 					scope.resizeCanvas = function () {
 
-						contW = viewport.parentNode.clientWidth * 0.66;
+						/*contW = viewport.parentNode.clientWidth * 0.66;
 						contH = contW * 0.66;
 						windowHalfX = contW / 2;
 						windowHalfY = contH / 2;
 
 						camera.aspect = contW / contH;
-						camera.updateProjectionMatrix();
+						camera.updateProjectionMatrix();*/
 
 						renderer.setSize( contW, contH );
 					};

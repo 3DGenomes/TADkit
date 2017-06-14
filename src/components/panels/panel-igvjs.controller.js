@@ -4,13 +4,33 @@
 		.module('TADkit')
 		.controller('PanelIgvjsController', PanelIgvjsController);
 
-	function PanelIgvjsController($scope, $timeout, Overlays, uuid4, Networks, d3Service, Users) {
+	function PanelIgvjsController($scope, $window, $timeout, Overlays,Storyboards, uuid4, Networks, d3Service, Users) {
 
 		if(angular.isUndefined($scope.settings.current.speciesUrl)) return;
-		
-		$scope.width = $scope.state.width; // strip PX units
-		$scope.height = $scope.state.height; // strip PX units
 
+		var scene_component = Storyboards.getComponentById('Chromatin');
+		var scene_width = 0;
+		if(typeof scene_component !== 'undefined') {
+			scene_width = parseInt(scene_component.object.state.width);
+		}
+		$scope.width = $scope.state.width = $window.innerWidth - scene_width - 50 - 2*parseInt($scope.state.margin);
+		$scope.height = $scope.state.height =  parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units
+		
+		//$scope.width = $scope.state.width; // strip PX units
+		//$scope.height = $scope.state.height; // strip PX units
+
+		var w = angular.element($window);
+		$scope.$watch(
+		  function () {
+		    return $window.innerWidth;
+		  },
+		  function (value) {
+		    $scope.width = $scope.state.width = value - scene_width - 50 - 2*parseInt($scope.state.margin);
+		  	//$scope.$apply();
+		  },
+		  true
+		);
+		
 		var originalOverlay = Overlays.getCurrentIndex();
 		
 		var igvjs_start = (($scope.settings.current.chromStart));
@@ -64,7 +84,7 @@
 		            showRuler: true,
 		            showIdeogram: $scope.view.settings.showCyto,
 		            showKaryo: $scope.view.settings.showCyto,
-		            flanking: 0,
+		            flanking: 100000,
 		            reference: igv_reference,
 					locus: chrom+':'+igvjs_start+'-'+($scope.settings.current.chromEnd),
 					tracks: $scope.tracks.slice()

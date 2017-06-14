@@ -5,8 +5,8 @@
 		.factory('Chromatin', Chromatin);
 
 	// constructor for chromatin model instances
-	function Chromatin(Paths, PathControls) {
-		return function(data, colors, settings) {
+	function Chromatin(Paths, PathControls, ColorConvert) {
+		return function(data, colors, settings, resolution_scale) {
 			// console.log(colors);
 
 			var defaults = {
@@ -19,7 +19,13 @@
 				radiusSegments: 16,
 				endcap: false,
 				pathClosed: false,
-				tubed: true
+				tubed: true,
+				resolution_scales : {
+					"2000" : 1,
+					"10000" : 10,
+					"50000" : 20,
+					"100000" : 50
+				}
 			};		
 			settings = settings || {};
 			angular.extend(this, angular.copy(defaults), settings);
@@ -71,12 +77,14 @@
 			var chromatinRadius = 5; // 10nm * 0.5
 			// Chromatin density == 1080 BP : 11nm
 			var chromatinLength = this.genomeLength * 11 / 1080;
-			this.radius = (pathLength * chromatinRadius) / chromatinLength;
-			// console.log(this.radius);
+			//this.radius = (pathLength * chromatinRadius) / chromatinLength;
+			this.radius = resolution_scale*chromatinRadius;
+			//console.log(this.radius);
 
 
 			// Generate Chromatin model
 			var chromatinFiber = new THREE.Object3D(); // unmerged network
+			var i;
 			
 			var chromatinGeometry;
 			if(settings.tubed) {
@@ -109,11 +117,23 @@
 			        overdraw: true
 			    }));
 
-			    for(var k=0;k< chromatinGeometry.faces.length;k++) {
+			    //for(var k=0;k< chromatinGeometry.faces.length;k++) {
 			    	//if(k%12) chromatinGeometry.faces[k].color.setRGB(1,0,0);
 			    	//else chromatinGeometry.faces[k].color.setRGB(0,0,0);
-			    	chromatinGeometry.faces[k].color.setRGB(1,0,0);
+			    //	chromatinGeometry.faces[k].color.setRGB(1,0,0);
+				//}
+			    var newChromatinColor;
+			    for (i = 0; i < colors.length; i++) {
+					if(ColorConvert.testIfHex(colors[i]) || colors[i].indexOf('#')===0) {
+						newChromatinColor =  new THREE.Color(colors[i]);	 
+					} else {
+						newChromatinColor =  new THREE.Color(ColorConvert.nameToHex(colors[i]));
+					} 
+					for (j = 0; j < 16; j++) {
+						tubeMesh.geometry.faces[i*16+j].color.set(newChromatinColor);
+					}
 				}
+			 
 			    
 			    tubeMesh.dynamic = true;
 			    tubeMesh.needsUpdate = true;
@@ -125,7 +145,7 @@
 				// Rings
 					chromatinGeometry = new THREE.Geometry(); // to calculate merged bounds
 
-				for ( var i = 0 ; i < pathSegments; i++) {
+				for ( i = 0 ; i < pathSegments; i++) {
 					// cap if end segment
 					this.endcap = ( i === 0 || i === pathSegments - 1 ) ? false : true ;
 					// color linked to scene scope

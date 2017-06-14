@@ -2,7 +2,7 @@
 	'use strict';
 
 	// ANGULAR APP
-	angular.module('TADkit',['ui.router','ngMaterial','uuid4','d3','angularAwesomeSlider']);
+	angular.module('TADkit',['ui.router','ngMaterial','uuid4','d3','angularAwesomeSlider','angularResizable']);
 	     
 })();
 (function() {
@@ -973,13 +973,33 @@
 		.module('TADkit')
 		.controller('PanelIgvjsController', PanelIgvjsController);
 
-	function PanelIgvjsController($scope, $timeout, Overlays, uuid4, Networks, d3Service, Users) {
+	function PanelIgvjsController($scope, $window, $timeout, Overlays,Storyboards, uuid4, Networks, d3Service, Users) {
 
 		if(angular.isUndefined($scope.settings.current.speciesUrl)) return;
-		
-		$scope.width = $scope.state.width; // strip PX units
-		$scope.height = $scope.state.height; // strip PX units
 
+		var scene_component = Storyboards.getComponentById('Chromatin');
+		var scene_width = 0;
+		if(typeof scene_component !== 'undefined') {
+			scene_width = parseInt(scene_component.object.state.width);
+		}
+		$scope.width = $scope.state.width = $window.innerWidth - scene_width - 50 - 2*parseInt($scope.state.margin);
+		$scope.height = $scope.state.height =  parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units
+		
+		//$scope.width = $scope.state.width; // strip PX units
+		//$scope.height = $scope.state.height; // strip PX units
+
+		var w = angular.element($window);
+		$scope.$watch(
+		  function () {
+		    return $window.innerWidth;
+		  },
+		  function (value) {
+		    $scope.width = $scope.state.width = value - scene_width - 50 - 2*parseInt($scope.state.margin);
+		  	//$scope.$apply();
+		  },
+		  true
+		);
+		
 		var originalOverlay = Overlays.getCurrentIndex();
 		
 		var igvjs_start = (($scope.settings.current.chromStart));
@@ -1033,7 +1053,7 @@
 		            showRuler: true,
 		            showIdeogram: $scope.view.settings.showCyto,
 		            showKaryo: $scope.view.settings.showCyto,
-		            flanking: 0,
+		            flanking: 100000,
 		            reference: igv_reference,
 					locus: chrom+':'+igvjs_start+'-'+($scope.settings.current.chromEnd),
 					tracks: $scope.tracks.slice()
@@ -1958,8 +1978,8 @@
 		.factory('Chromatin', Chromatin);
 
 	// constructor for chromatin model instances
-	function Chromatin(Paths, PathControls) {
-		return function(data, colors, settings) {
+	function Chromatin(Paths, PathControls, ColorConvert) {
+		return function(data, colors, settings, resolution_scale) {
 			// console.log(colors);
 
 			var defaults = {
@@ -1972,7 +1992,13 @@
 				radiusSegments: 16,
 				endcap: false,
 				pathClosed: false,
-				tubed: true
+				tubed: true,
+				resolution_scales : {
+					"2000" : 1,
+					"10000" : 10,
+					"50000" : 20,
+					"100000" : 50
+				}
 			};		
 			settings = settings || {};
 			angular.extend(this, angular.copy(defaults), settings);
@@ -2024,12 +2050,14 @@
 			var chromatinRadius = 5; // 10nm * 0.5
 			// Chromatin density == 1080 BP : 11nm
 			var chromatinLength = this.genomeLength * 11 / 1080;
-			this.radius = (pathLength * chromatinRadius) / chromatinLength;
-			// console.log(this.radius);
+			//this.radius = (pathLength * chromatinRadius) / chromatinLength;
+			this.radius = resolution_scale*chromatinRadius;
+			//console.log(this.radius);
 
 
 			// Generate Chromatin model
 			var chromatinFiber = new THREE.Object3D(); // unmerged network
+			var i;
 			
 			var chromatinGeometry;
 			if(settings.tubed) {
@@ -2062,11 +2090,23 @@
 			        overdraw: true
 			    }));
 
-			    for(var k=0;k< chromatinGeometry.faces.length;k++) {
+			    //for(var k=0;k< chromatinGeometry.faces.length;k++) {
 			    	//if(k%12) chromatinGeometry.faces[k].color.setRGB(1,0,0);
 			    	//else chromatinGeometry.faces[k].color.setRGB(0,0,0);
-			    	chromatinGeometry.faces[k].color.setRGB(1,0,0);
+			    //	chromatinGeometry.faces[k].color.setRGB(1,0,0);
+				//}
+			    var newChromatinColor;
+			    for (i = 0; i < colors.length; i++) {
+					if(ColorConvert.testIfHex(colors[i]) || colors[i].indexOf('#')===0) {
+						newChromatinColor =  new THREE.Color(colors[i]);	 
+					} else {
+						newChromatinColor =  new THREE.Color(ColorConvert.nameToHex(colors[i]));
+					} 
+					for (j = 0; j < 16; j++) {
+						tubeMesh.geometry.faces[i*16+j].color.set(newChromatinColor);
+					}
 				}
+			 
 			    
 			    tubeMesh.dynamic = true;
 			    tubeMesh.needsUpdate = true;
@@ -2078,7 +2118,7 @@
 				// Rings
 					chromatinGeometry = new THREE.Geometry(); // to calculate merged bounds
 
-				for ( var i = 0 ; i < pathSegments; i++) {
+				for ( i = 0 ; i < pathSegments; i++) {
 					// cap if end segment
 					this.endcap = ( i === 0 || i === pathSegments - 1 ) ? false : true ;
 					// color linked to scene scope
@@ -2832,6 +2872,14 @@
 			bool = !bool;
 			console.log(bool);
 		};
+		
+		$scope.$on("angular-resizable.resizeEnd", function (event, args) {
+			if(args.width)
+				$scope.state.width = args.width;
+			if(args.height)
+				$scope.state.height = args.height;
+			$scope.resizeCanvas();
+        });
 		// $scope.keyControls = function (e, component) {
 		// 	if (event.keyCode === 32 || event.charCode === 32) {
 		// 		component.view.controls.autoRotate = !component.view.controls.autoRotate; 
@@ -2894,7 +2942,16 @@
 
 							//GEOMETRY: CHROMATIN
 							scope.view.settings.chromatin.particleSegments = scope.settings.current.particleSegments;
-							chromatin = new Chromatin(scope.currentmodel.data, scope.currentoverlay.colors.chromatin, scope.view.settings.chromatin);
+							var resolution = scope.data.object.resolution; // base pairs
+							var resolution_scale;
+							if(angular.isUndefined(scope.data.object.radius_scale)) {
+								angular.forEach(scope.view.settings.chromatin.resolution_scales, function(value, key) {
+									  if(parseInt(key) <= resolution) resolution_scale = value;
+								});
+							} else {
+								resolution_scale = parseInt(scope.data.object.radius_scale);
+							}
+							chromatin = new Chromatin(scope.currentmodel.data, scope.currentoverlay.colors.chromatin, scope.view.settings.chromatin, resolution_scale);
 							// chromatin = new Chromatin(scope.model.data, scope.overlay.colors.chromatin, scope.view.settings.chromatin);
 							chromatin.visible = scope.view.settings.chromatin.visible;
 							scene.add(chromatin);
@@ -2913,7 +2970,6 @@
 								scene.add(ring);
 
 								spheres = new THREE.Object3D();
-								var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
 								var start_tad, end_tad, radius_cloud, centre_of_mass;
 								for (var i = 0; i < scope.data.tad_data.tads.length; i++) {
 									start_tad = Math.round(((scope.data.tad_data.tads[i][1])-scope.settings.current.chromStart)/resolution);
@@ -3296,13 +3352,13 @@
 					// -----------------------------------
 					scope.resizeCanvas = function () {
 
-						contW = viewport.parentNode.clientWidth * 0.66;
+						/*contW = viewport.parentNode.clientWidth * 0.66;
 						contH = contW * 0.66;
 						windowHalfX = contW / 2;
 						windowHalfY = contH / 2;
 
 						camera.aspect = contW / contH;
-						camera.updateProjectionMatrix();
+						camera.updateProjectionMatrix();*/
 
 						renderer.setSize( contW, contH );
 					};
@@ -5776,7 +5832,8 @@
 				if (component.object.type == "scene") {
 					all_data = {
 						tad_data: Hic_data.get(),
-						data: $scope.current.model.data 
+						data: $scope.current.model.data,
+						object: $scope.current.dataset.object
 					};
 					component.data = all_data;
 					//component.data = $scope.current.model.data;

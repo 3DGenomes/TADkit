@@ -47,7 +47,8 @@
 				if (component.object.type == "scene") {
 					all_data = {
 						tad_data: Hic_data.get(),
-						data: $scope.current.model.data 
+						data: $scope.current.model.data,
+						object: $scope.current.dataset.object
 					};
 					component.data = all_data;
 					//component.data = $scope.current.model.data;

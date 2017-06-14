@@ -89,7 +89,13 @@
 							"endcap" : false,
 							"pathClosed" : false,
 							"visible" : true,
-							"tubed" : true
+							"tubed" : true,
+							"resolution_scales" : {
+								"2000" : 1,
+								"10000" : 10,
+								"50000" : 20,
+								"100000" : 50
+							}
 						},
 						"network" : {
 							"transparent": false,
@@ -118,7 +124,7 @@
                         "width" : "800px",
                         "height" : "400px",
                         "margin" : "0px",
-                        "offsetx" : "10px",
+                        "offsetx" : "510px",
                         "position" : 1
                     }
                 },
@@ -150,14 +156,49 @@
 					"generator" : "TADkit"
 				},
 				"object" : {
+					"uuid" : "00000000-0000-0000-0000-000000000002",
+					"id" : "e-default-panel",
+					"title" : "Inspector",
+					"type" : "panel-inspector",
+					"dataset" : "genes",
+					"state" : {
+						"width" : "500px",
+						"height" : "500px",
+						"margin" : "4px",
+						"position" : 1
+					}
+				},
+				"view" : {
+					"viewpoint" : {
+						"chromStart" : 1,
+						"chromEnd" : 10,
+						"scale" : 1
+					},
+					"viewtype" : "list",
+					"settings" : {
+						"background" : "#ffffff",
+						"margin" : "4px",
+						"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
+						"example" : 1
+					}
+				}
+			},
+            {
+				"metadata" : {
+					"version" : 1.0,
+					"type" : "component",
+					"generator" : "TADkit"
+				},
+				"object" : {
 					"uuid" : "00000000-0000-0000-0000-000000000007",
 					"id" : "slider-external",
 					"title" : "Navigation",
 					"type" : "panel-igvjs",
 					"dataset" : "default",
 					"state" : {
-						"width" : "100%",
-						"height" : "400px",
+						"width" : "800px",
+						"height" : "500px",
+						"margin" : "0px",
 						"position" : 1
 					}
 				},
