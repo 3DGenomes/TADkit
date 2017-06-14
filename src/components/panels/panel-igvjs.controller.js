@@ -89,7 +89,8 @@
 			}
 			$scope.hideTadkitMarkers();
 			$scope.updateTadkitTAD();
-			$scope.$apply();
+			
+			$timeout(function() {$scope.$apply();});
 		};
 		$scope.applyOverlay =  function(track,features) {
 			var self = this;
@@ -215,9 +216,10 @@
 			var overlay = overlays.loaded[newOverlay];
 			
 			overlay.colors.particles = [];
-			overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, $scope.settings.current.edgesCount);
-			overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, $scope.settings.current.edgesCount);
-
+			//overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, $scope.settings.current.edgesCount);
+			//overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, $scope.settings.current.edgesCount);
+			overlay.colors.network.RGB = [];
+			overlay.colors.network.alpha = [];
 			$scope.toggleOverlay(newOverlay);
 			//Overlays.setOverlaid(newOverlay);
 			//Overlays.set(newOverlay);
@@ -343,6 +345,13 @@
                     }
                 }
             };
+        
+        $scope.$watch('settings.current.hic_position', function(newPos, oldPos) {
+            if(!angular.equals(newPos, oldPos)) {
+            	$scope.myIgv.goto(($scope.settings.current.chrom),newPos);
+            }    
+        });            
+        
         /*
          markers_position gets updated when we click on the 2D panel with the genomic positions that are interacting in the
          clicked position.
@@ -393,7 +402,8 @@
 	            than the start of our chromatin model*/
 	            if($scope.settings.current.chromStart>centerBP) {
 					if($scope.settings.current.chromStart-ps<=0) {
-						referenceFrame.start = 0;
+						//referenceFrame.start = 0;
+						referenceFrame.start = $scope.settings.current.chromStart-ps;
 					} else {
 						referenceFrame.start = $scope.settings.current.chromStart-ps;
 					}
@@ -412,7 +422,7 @@
 				*/
 				var px_start = ($scope.settings.current.chromStart-referenceFrame.start)/referenceFrame.bpPerPixel;
 				var px_end = ($scope.settings.current.chromEnd-referenceFrame.start)/referenceFrame.bpPerPixel;
-		
+				
 				$scope.updatePosition(centerBP, px_start+50 , px_end+50);
 					
 			});

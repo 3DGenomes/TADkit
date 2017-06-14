@@ -84,16 +84,20 @@
 			getSegment: function (chromPosition) {
 				chromPosition = chromPosition || settings.current.position;
 				var self = this;
-				var chromOffset = self.getRange(settings.current.chromStart, chromPosition);
-				var chromRange = self.getRange(settings.current.chromStart, settings.current.chromEnd);
+				//var chromOffset = self.getRange(settings.current.chromStart, chromPosition);
+				//var chromRange = self.getRange(settings.current.chromStart, settings.current.chromEnd);
+				var chromOffset = chromPosition-settings.current.chromStart;
+				var chromRange = settings.current.chromEnd-settings.current.chromStart;
 				var segment = Math.ceil((chromOffset * settings.current.segmentsCount) / chromRange);
 				return segment;
 			},
 			getParticle: function (chromPosition) {
 				chromPosition = chromPosition || settings.current.position;
 				var self = this;
-				var chromOffset = self.getRange(settings.current.chromStart, chromPosition);
-				var chromRange = self.getRange(settings.current.chromStart, settings.current.chromEnd);
+				//var chromOffset = self.getRange(settings.current.chromStart, chromPosition);
+				//var chromRange = self.getRange(settings.current.chromStart, settings.current.chromEnd);
+				var chromOffset = chromPosition-settings.current.chromStart;
+				var chromRange = settings.current.chromEnd-settings.current.chromStart;
 				var particle = Math.ceil((chromOffset * settings.current.particlesCount) / chromRange);
 				return particle;
 			},

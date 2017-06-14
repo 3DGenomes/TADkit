@@ -508,7 +508,7 @@
 		                
 		                var val, x , y = 0;
 		                var Logmin = 0;
-				var Logmax = 0;
+		                var Logmax = 0;
 		                if(scope.data.max !== 0) Logmax = Math.log(scope.data.max);
 		                if(scope.data.min !== 0) Logmin = Math.log(scope.data.min);
 		                var container_width = parseInt(scope.state.width);
@@ -649,11 +649,11 @@
 								.style("color", "#333")
 								.text("0");
 
-			                /*svg.on("mousedown", function(){
+			                svg.on("mousedown", function(){
 						        mouseDown = true;
 						        startDragOffset.x = d3.event.clientX - scope.translatePos.x;
-						        startDragOffset.y = d3.event.clientY- scope.translatePos.y;
-						    });*/
+						        //startDragOffset.y = d3.event.clientY- scope.translatePos.y;
+						    });
 						 
 						    svg.on("mouseup", function(){
 						    	if(!mouseMove) {
@@ -708,10 +708,24 @@
 						    svg.on("mousemove", function(){
 						        if (mouseDown) {
 						            scope.translatePos.x = d3.event.clientX - startDragOffset.x;
-						            scope.translatePos.y = d3.event.clientY - startDragOffset.y;
+						            //scope.translatePos.y = d3.event.clientY - startDragOffset.y;
 						            mouseMove = true;
-						            scope.update();
-						            scope.update_marks();
+						            
+						            //scope.update();
+						            var x_orig = parseFloat(handle.attr("cx"));
+						            
+						            //scope.update();
+						            var part = (x_orig-parseInt(scope.state.offsetx)-scope.translatePos.x)/(scope.scale*Math.sqrt(2));
+						            var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments;	
+						            if(part <= scope.data.value.length && part > 0) {
+							            scope.settings.current.particle = parseInt(part);
+							            scope.settings.current.hic_position = part*resolution;
+							            scope.$apply(scope.settings.current.hic_position);
+							            //scope.update_marks();
+						            }
+						            
+						            
+					            	
 						        }
 						    });
 							
@@ -785,10 +799,7 @@
 		                ti.invert();
 		                var m = t.m;
 		                ctx.setTransform(m[0], m[1], m[2], m[3], m[4], m[5]);
-		                
 		                ctx.drawImage(scope.imageObject,0,0);
-
-		                
             			ctx.restore();
 		            }
 				};
@@ -1047,7 +1058,8 @@
 			}
 			$scope.hideTadkitMarkers();
 			$scope.updateTadkitTAD();
-			$scope.$apply();
+			
+			$timeout(function() {$scope.$apply();});
 		};
 		$scope.applyOverlay =  function(track,features) {
 			var self = this;
@@ -1173,9 +1185,10 @@
 			var overlay = overlays.loaded[newOverlay];
 			
 			overlay.colors.particles = [];
-			overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, $scope.settings.current.edgesCount);
-			overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, $scope.settings.current.edgesCount);
-
+			//overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, $scope.settings.current.edgesCount);
+			//overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, $scope.settings.current.edgesCount);
+			overlay.colors.network.RGB = [];
+			overlay.colors.network.alpha = [];
 			$scope.toggleOverlay(newOverlay);
 			//Overlays.setOverlaid(newOverlay);
 			//Overlays.set(newOverlay);
@@ -1301,6 +1314,13 @@
                     }
                 }
             };
+        
+        $scope.$watch('settings.current.hic_position', function(newPos, oldPos) {
+            if(!angular.equals(newPos, oldPos)) {
+            	$scope.myIgv.goto(($scope.settings.current.chrom),newPos);
+            }    
+        });            
+        
         /*
          markers_position gets updated when we click on the 2D panel with the genomic positions that are interacting in the
          clicked position.
@@ -1351,7 +1371,8 @@
 	            than the start of our chromatin model*/
 	            if($scope.settings.current.chromStart>centerBP) {
 					if($scope.settings.current.chromStart-ps<=0) {
-						referenceFrame.start = 0;
+						//referenceFrame.start = 0;
+						referenceFrame.start = $scope.settings.current.chromStart-ps;
 					} else {
 						referenceFrame.start = $scope.settings.current.chromStart-ps;
 					}
@@ -1370,7 +1391,7 @@
 				*/
 				var px_start = ($scope.settings.current.chromStart-referenceFrame.start)/referenceFrame.bpPerPixel;
 				var px_end = ($scope.settings.current.chromEnd-referenceFrame.start)/referenceFrame.bpPerPixel;
-		
+				
 				$scope.updatePosition(centerBP, px_start+50 , px_end+50);
 					
 			});
@@ -6873,7 +6894,9 @@
 				//     4         ==  ((4*4)-4)*0.5  = 6 pairs of colors
 				var self = this;
 				var featuresCount = overlay.data.length;
-				var colorPairs = new Float32Array(edgeCount * 6); // ie. * 2 (vertices) * 3 (RGB)
+				var usedEdgeCount = edgeCount*6;
+				if( usedEdgeCount > Math.pow(2, 10)-1) usedEdgeCount = Math.pow(2, 10)-1;
+				var colorPairs = new Float32Array(usedEdgeCount); // ie. * 2 (vertices) * 3 (RGB)
 				var defaultRGB = new THREE.Color("#000000");
 				for (var h = colorPairs.length - 1; h >= 0; h--) {
 					colorPairs[i] = defaultRGB;
@@ -6903,7 +6926,10 @@
 			},
 			linePiecesAlpha: function(overlay, edgeCount) {
 				var self = this;
-				var alphaPairs = new Float32Array(edgeCount * 2); // ie. * 2 (vertices)
+				var usedEdgeCount = edgeCount*2;
+				if( usedEdgeCount > Math.pow(2, 10)-1) usedEdgeCount = Math.pow(2, 10)-1;
+				
+				var alphaPairs = new Float32Array(usedEdgeCount); // ie. * 2 (vertices)
 				var defaultAlpha = 0.0;
 				for (var h = alphaPairs.length - 1; h >= 0; h--) {
 					alphaPairs[h] = defaultAlpha;
@@ -8362,16 +8388,20 @@
 			getSegment: function (chromPosition) {
 				chromPosition = chromPosition || settings.current.position;
 				var self = this;
-				var chromOffset = self.getRange(settings.current.chromStart, chromPosition);
-				var chromRange = self.getRange(settings.current.chromStart, settings.current.chromEnd);
+				//var chromOffset = self.getRange(settings.current.chromStart, chromPosition);
+				//var chromRange = self.getRange(settings.current.chromStart, settings.current.chromEnd);
+				var chromOffset = chromPosition-settings.current.chromStart;
+				var chromRange = settings.current.chromEnd-settings.current.chromStart;
 				var segment = Math.ceil((chromOffset * settings.current.segmentsCount) / chromRange);
 				return segment;
 			},
 			getParticle: function (chromPosition) {
 				chromPosition = chromPosition || settings.current.position;
 				var self = this;
-				var chromOffset = self.getRange(settings.current.chromStart, chromPosition);
-				var chromRange = self.getRange(settings.current.chromStart, settings.current.chromEnd);
+				//var chromOffset = self.getRange(settings.current.chromStart, chromPosition);
+				//var chromRange = self.getRange(settings.current.chromStart, settings.current.chromEnd);
+				var chromOffset = chromPosition-settings.current.chromStart;
+				var chromRange = settings.current.chromEnd-settings.current.chromStart;
 				var particle = Math.ceil((chromOffset * settings.current.particlesCount) / chromRange);
 				return particle;
 			},

@@ -139,7 +139,7 @@
 		                
 		                var val, x , y = 0;
 		                var Logmin = 0;
-				var Logmax = 0;
+		                var Logmax = 0;
 		                if(scope.data.max !== 0) Logmax = Math.log(scope.data.max);
 		                if(scope.data.min !== 0) Logmin = Math.log(scope.data.min);
 		                var container_width = parseInt(scope.state.width);
@@ -280,11 +280,11 @@
 								.style("color", "#333")
 								.text("0");
 
-			                /*svg.on("mousedown", function(){
+			                svg.on("mousedown", function(){
 						        mouseDown = true;
 						        startDragOffset.x = d3.event.clientX - scope.translatePos.x;
-						        startDragOffset.y = d3.event.clientY- scope.translatePos.y;
-						    });*/
+						        //startDragOffset.y = d3.event.clientY- scope.translatePos.y;
+						    });
 						 
 						    svg.on("mouseup", function(){
 						    	if(!mouseMove) {
@@ -339,10 +339,24 @@
 						    svg.on("mousemove", function(){
 						        if (mouseDown) {
 						            scope.translatePos.x = d3.event.clientX - startDragOffset.x;
-						            scope.translatePos.y = d3.event.clientY - startDragOffset.y;
+						            //scope.translatePos.y = d3.event.clientY - startDragOffset.y;
 						            mouseMove = true;
-						            scope.update();
-						            scope.update_marks();
+						            
+						            //scope.update();
+						            var x_orig = parseFloat(handle.attr("cx"));
+						            
+						            //scope.update();
+						            var part = (x_orig-parseInt(scope.state.offsetx)-scope.translatePos.x)/(scope.scale*Math.sqrt(2));
+						            var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments;	
+						            if(part <= scope.data.value.length && part > 0) {
+							            scope.settings.current.particle = parseInt(part);
+							            scope.settings.current.hic_position = part*resolution;
+							            scope.$apply(scope.settings.current.hic_position);
+							            //scope.update_marks();
+						            }
+						            
+						            
+					            	
 						        }
 						    });
 							
@@ -416,10 +430,7 @@
 		                ti.invert();
 		                var m = t.m;
 		                ctx.setTransform(m[0], m[1], m[2], m[3], m[4], m[5]);
-		                
 		                ctx.drawImage(scope.imageObject,0,0);
-
-		                
             			ctx.restore();
 		            }
 				};
