@@ -6,6 +6,13 @@
 
 	function PanelInspectorController($scope, $mdDialog) {
 
+		$scope.$watch('settings.views.scene_width', function( newValue, oldValue ) {
+			if ( newValue !== oldValue ) {
+				// playback.autoRotate = !playback.autoRotate;
+				$scope.width = $scope.state.width = newValue;
+		  		
+			}
+		});
 		$scope.optionsState = false;
 		$scope.toggleOptions = function() {
 			$scope.optionsState = !$scope.optionsState;

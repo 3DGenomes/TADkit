@@ -462,15 +462,13 @@
 					// -----------------------------------
 					scope.resizeCanvas = function () {
 
-						/*contW = viewport.parentNode.clientWidth * 0.66;
-						contH = contW * 0.66;
-						windowHalfX = contW / 2;
-						windowHalfY = contH / 2;
-
+						contW = parseInt(scope.state.width);
+						contH = parseInt(scope.state.height);
+						
 						camera.aspect = contW / contH;
-						camera.updateProjectionMatrix();*/
+						camera.updateProjectionMatrix();
 
-						renderer.setSize( contW, contH );
+						renderer.setSize( contW, contH  );
 					};
 
 					scope.lookAtTAD = function (position, target, translate) {

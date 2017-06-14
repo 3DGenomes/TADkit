@@ -18,6 +18,13 @@
 		
 		//$scope.width = $scope.state.width; // strip PX units
 		//$scope.height = $scope.state.height; // strip PX units
+		$scope.$watch('settings.views.scene_width', function( newValue, oldValue ) {
+			if ( newValue !== oldValue ) {
+				// playback.autoRotate = !playback.autoRotate;
+				$scope.width = $scope.state.width = $window.innerWidth - newValue - 50 - 2*parseInt($scope.state.margin);
+		  		
+			}
+		});
 
 		var w = angular.element($window);
 		$scope.$watch(

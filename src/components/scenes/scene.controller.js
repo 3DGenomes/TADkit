@@ -18,7 +18,8 @@
 		
 		$scope.$on("angular-resizable.resizeEnd", function (event, args) {
 			if(args.width)
-				$scope.state.width = args.width;
+				$scope.state.width = $scope.settings.views.scene_width = args.width;
+
 			if(args.height)
 				$scope.state.height = args.height;
 			$scope.resizeCanvas();

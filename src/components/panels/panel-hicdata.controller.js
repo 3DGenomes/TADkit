@@ -13,7 +13,7 @@
 		var scene_component = Storyboards.getComponentById('Chromatin');
 		var scene_width = 0;
 		if(typeof scene_component !== 'undefined') {
-			scene_width = parseInt(scene_component.object.state.width);
+			$scope.settings.views.scene_width = scene_width = parseInt(scene_component.object.state.width);
 		}
 		$scope.width = $scope.state.width = $scope.canvas_width = $window.innerWidth - scene_width - 50 - 2*parseInt($scope.state.margin);
 		$scope.height = $scope.state.height =  parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units
@@ -38,6 +38,13 @@
 		  },
 		  true
 		);
+		$scope.$watch('settings.views.scene_width', function( newValue, oldValue ) {
+			if ( newValue !== oldValue ) {
+				// playback.autoRotate = !playback.autoRotate;
+				$scope.width = $scope.state.width = $scope.canvas_width = $window.innerWidth - newValue - 50 - 2*parseInt($scope.state.margin);
+		  		$scope.state.offsetx = parseInt($scope.state.offsetx) - (oldValue-newValue);
+			}
+		});
 		if($scope.data.n === 0) {
 			var promise = Datasets.loadHic();
 			promise.then(function(data) {
