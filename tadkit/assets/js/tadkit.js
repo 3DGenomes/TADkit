@@ -276,7 +276,7 @@
 		var scene_component = Storyboards.getComponentById('Chromatin');
 		var scene_width = 0;
 		if(typeof scene_component !== 'undefined') {
-			scene_width = parseInt(scene_component.object.state.width);
+			$scope.settings.views.scene_width = scene_width = parseInt(scene_component.object.state.width);
 		}
 		$scope.width = $scope.state.width = $scope.canvas_width = $window.innerWidth - scene_width - 50 - 2*parseInt($scope.state.margin);
 		$scope.height = $scope.state.height =  parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units
@@ -301,6 +301,13 @@
 		  },
 		  true
 		);
+		$scope.$watch('settings.views.scene_width', function( newValue, oldValue ) {
+			if ( newValue !== oldValue ) {
+				// playback.autoRotate = !playback.autoRotate;
+				$scope.width = $scope.state.width = $scope.canvas_width = $window.innerWidth - newValue - 50 - 2*parseInt($scope.state.margin);
+		  		$scope.state.offsetx = parseInt($scope.state.offsetx) - (oldValue-newValue);
+			}
+		});
 		if($scope.data.n === 0) {
 			var promise = Datasets.loadHic();
 			promise.then(function(data) {
@@ -987,6 +994,15 @@
 		
 		//$scope.width = $scope.state.width; // strip PX units
 		//$scope.height = $scope.state.height; // strip PX units
+		$scope.$watch('settings.views.scene_width', function( newValue, oldValue ) {
+			if ( newValue !== oldValue ) {
+				// playback.autoRotate = !playback.autoRotate;
+				$scope.width = $scope.state.width = $window.innerWidth - newValue - 50 - 2*parseInt($scope.state.margin);
+		  		$scope.myIgv.genomicStateList.forEach(function (genomicState) {
+            		$scope.myIgv.updateWithLocusIndex( genomicState );
+        		});
+			}
+		});
 
 		var w = angular.element($window);
 		$scope.$watch(
@@ -1664,6 +1680,13 @@
 
 	function PanelInspectorController($scope, $mdDialog) {
 
+		$scope.$watch('settings.views.scene_width', function( newValue, oldValue ) {
+			if ( newValue !== oldValue ) {
+				// playback.autoRotate = !playback.autoRotate;
+				$scope.width = $scope.state.width = newValue;
+		  		
+			}
+		});
 		$scope.optionsState = false;
 		$scope.toggleOptions = function() {
 			$scope.optionsState = !$scope.optionsState;
@@ -2031,10 +2054,11 @@
 			/*** TODO: Calculate PathSegments based on number of base pairs in the model ***/
 			var cubicPath = Paths.cubicBezier(pathControls.vertices, pathSegments, this.pathClosed);
 			var cubicGeom = cubicPath.createPointsGeometry(pathSegments);
-			for (var j = cubicGeom.vertices.length - 1; j >= 0; j--) {
-				var cubicGeomColor = new THREE.Color(colors[j]);
-				cubicGeom.colors.unshift(cubicGeomColor);
-			}
+			//for (var j = cubicGeom.vertices.length - 1; j >= 0; j--) {
+			//	var cubicGeomColor = new THREE.Color(colors[j]);
+			//	cubicGeom.colors.unshift(cubicGeomColor);
+			//}
+			var j;
 			cubicGeom.name = "cubicGeom";
 
 			// ********************************************
@@ -2875,7 +2899,8 @@
 		
 		$scope.$on("angular-resizable.resizeEnd", function (event, args) {
 			if(args.width)
-				$scope.state.width = args.width;
+				$scope.state.width = $scope.settings.views.scene_width = args.width;
+
 			if(args.height)
 				$scope.state.height = args.height;
 			$scope.resizeCanvas();
@@ -3352,15 +3377,13 @@
 					// -----------------------------------
 					scope.resizeCanvas = function () {
 
-						/*contW = viewport.parentNode.clientWidth * 0.66;
-						contH = contW * 0.66;
-						windowHalfX = contW / 2;
-						windowHalfY = contH / 2;
-
+						contW = parseInt(scope.state.width);
+						contH = parseInt(scope.state.height);
+						
 						camera.aspect = contW / contH;
-						camera.updateProjectionMatrix();*/
+						camera.updateProjectionMatrix();
 
-						renderer.setSize( contW, contH );
+						renderer.setSize( contW, contH  );
 					};
 
 					scope.lookAtTAD = function (position, target, translate) {
@@ -7932,9 +7955,10 @@
 			getMaxDistance: function(vertices) {
 				// Where maxDistance is the max diameter of the cluster of vertices
 				// Calculation is of distance from center to each vertex.
+				var typedArr = new Float32Array(vertices);
 				var maxDistCalc = 0;
 				var clusterGeometry = new THREE.BufferGeometry();
-				clusterGeometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+				clusterGeometry.addAttribute( 'position', new THREE.BufferAttribute( typedArr, 3 ) );
 				clusterGeometry.computeBoundingSphere();
 				var clusterDiameter = Math.ceil(clusterGeometry.boundingSphere.radius * 2.0);
 				return clusterDiameter;

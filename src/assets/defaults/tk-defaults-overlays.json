@@ -30,37 +30,5 @@
 				"alpha" : []
 			}
 		}
-	},
-	{
-		"metadata" : {
-			"version" : 1.0,
-			"type" : "overlay",
-			"generator" : "TADkit"
-		},
-		"object" : {
-			"uuid" : "00000000-0000-0000-0001-000000000001",
-			"id" : "red",
-			"title" : "Red",
-			"source" : "TADkit",
-			"url" : "local",
-			"description" : "Simple red.",
-			"type" : "gradient",
-			"format" : "hex",
-			"components" : 2,
-			"state" : {
-				"index" : 0,
-				"overlaid" : false
-			}
-		},
-		"palette" : ["#ff0000","#ff0000"],
-		"data" : [],
-		"colors" : {
-			"particles" : [],
-			"chromatin" : [],
-			"network" : {
-				"RGB" : [],
-				"alpha" : []
-			}
-		}
 	}
 ]

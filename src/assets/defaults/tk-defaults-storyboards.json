@@ -91,10 +91,10 @@
 							"visible" : true,
 							"tubed" : true,
 							"resolution_scales" : {
-								"2000" : 1,
-								"10000" : 10,
-								"50000" : 20,
-								"100000" : 50
+								"2000" : 30,
+								"10000" : 20,
+								"50000" : 10,
+								"100000" : 5
 							}
 						},
 						"network" : {
@@ -124,7 +124,7 @@
                         "width" : "800px",
                         "height" : "400px",
                         "margin" : "0px",
-                        "offsetx" : "510px",
+                        "offsetx" : "520px",
                         "position" : 1
                     }
                 },
