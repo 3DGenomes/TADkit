@@ -12,10 +12,13 @@
 		//$scope.width = $scope.canvas_width = parseInt($scope.state.width)-2*parseInt($scope.state.margin); // strip PX units
 		var scene_component = Storyboards.getComponentById('Chromatin');
 		var scene_width = 0;
+		var scene_height = 0;
 		if(typeof scene_component !== 'undefined') {
 			$scope.settings.views.scene_width = scene_width = parseInt(scene_component.object.state.width);
+			$scope.settings.views.scene_height = scene_height = parseInt(scene_component.object.state.height);
 		}
-		$scope.width = $scope.state.width = $scope.canvas_width = $window.innerWidth - scene_width - 50 - 2*parseInt($scope.state.margin);
+		$scope.width = $scope.state.width = $window.innerWidth - scene_width - 50 - 2*parseInt($scope.state.margin);
+		$scope.canvas_width = 2*$scope.width;
 		$scope.height = $scope.state.height =  parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units
 		$scope.canvas_height = $scope.canvas_width;
 //		if($scope.data.n === 0) {
@@ -33,7 +36,8 @@
 		    return $window.innerWidth;
 		  },
 		  function (value) {
-		    $scope.width = $scope.state.width = $scope.canvas_width = value - scene_width - 50 - 2*parseInt($scope.state.margin);
+		    $scope.width = $scope.state.width = value - scene_width - 50 - 2*parseInt($scope.state.margin);
+		  	$scope.canvas_width = 2*$scope.width;
 		  	//$scope.$apply();
 		  },
 		  true
@@ -41,8 +45,17 @@
 		$scope.$watch('settings.views.scene_width', function( newValue, oldValue ) {
 			if ( newValue !== oldValue ) {
 				// playback.autoRotate = !playback.autoRotate;
-				$scope.width = $scope.state.width = $scope.canvas_width = $window.innerWidth - newValue - 50 - 2*parseInt($scope.state.margin);
+				$scope.width = $scope.state.width = $window.innerWidth - newValue - 50 - 2*parseInt($scope.state.margin);
+		  		$scope.canvas_width = 2*$scope.width;
 		  		$scope.state.offsetx = parseInt($scope.state.offsetx) - (oldValue-newValue);
+		  		$scope.update_width();
+			}
+		});
+		$scope.$watch('settings.views.scene_height', function( newValue, oldValue ) {
+			if ( newValue !== oldValue ) {
+				// playback.autoRotate = !playback.autoRotate;
+				$scope.height = $scope.state.height =  parseInt(newValue)-2*parseInt($scope.state.margin)+1; 
+				$scope.update_height();
 			}
 		});
 		if($scope.data.n === 0) {

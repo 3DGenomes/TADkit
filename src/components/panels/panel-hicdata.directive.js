@@ -348,9 +348,8 @@
 						            //scope.update();
 						            var part = (x_orig-parseInt(scope.state.offsetx)-scope.translatePos.x)/(scope.scale*Math.sqrt(2));
 						            var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments;	
-						            if(part <= scope.data.value.length && part > 0) {
-							            scope.settings.current.particle = parseInt(part);
-							            scope.settings.current.hic_position = part*resolution;
+						            if(part != scope.settings.current.particle && part <= scope.data.value.length && part > 0) {
+							            scope.settings.current.hic_position += (part-scope.settings.current.particle)*resolution;
 							            scope.$apply(scope.settings.current.hic_position);
 							            //scope.update_marks();
 						            }
@@ -390,6 +389,7 @@
 						var rect = hic_data_container.getBoundingClientRect();
 						scope.translatePos.x = scope.settings.current.leftborder-rect.left;
 						scope.scale = (scope.settings.current.rightborder-scope.settings.current.leftborder)/(Math.sqrt(2)*scope.data.n); 
+						scope.settings.current.hic_position = scope.settings.current.position;
 						scope.update();
 						scope.update_marks();
 					}
@@ -463,6 +463,16 @@
 					}
 				};
 				
+				scope.update_width =  function() {
+					scope.settings.current.hic_position += 1;
+				};
+
+				scope.update_height =  function() {
+					scope.rendered = false;
+					scope.update();
+					scope.update_marks();
+				};
+					
 				scope.$watch('highlighted_tad', function(newvalue,oldvalue) {
 		        	if ( newvalue !== oldvalue) {
 		        		if(newvalue ==-1) {

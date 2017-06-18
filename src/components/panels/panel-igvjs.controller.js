@@ -376,7 +376,7 @@
             };
         
         $scope.$watch('settings.current.hic_position', function(newPos, oldPos) {
-            if(!angular.equals(newPos, oldPos)) {
+            if(!angular.equals(newPos, oldPos) && newPos != $scope.settings.current.position) {
             	$scope.myIgv.goto(($scope.settings.current.chrom),newPos);
             }    
         });            
