@@ -275,10 +275,13 @@
 		//$scope.width = $scope.canvas_width = parseInt($scope.state.width)-2*parseInt($scope.state.margin); // strip PX units
 		var scene_component = Storyboards.getComponentById('Chromatin');
 		var scene_width = 0;
+		var scene_height = 0;
 		if(typeof scene_component !== 'undefined') {
 			$scope.settings.views.scene_width = scene_width = parseInt(scene_component.object.state.width);
+			$scope.settings.views.scene_height = scene_height = parseInt(scene_component.object.state.height);
 		}
-		$scope.width = $scope.state.width = $scope.canvas_width = $window.innerWidth - scene_width - 50 - 2*parseInt($scope.state.margin);
+		$scope.width = $scope.state.width = $window.innerWidth - scene_width - 50 - 2*parseInt($scope.state.margin);
+		$scope.canvas_width = 2*$scope.width;
 		$scope.height = $scope.state.height =  parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units
 		$scope.canvas_height = $scope.canvas_width;
 //		if($scope.data.n === 0) {
@@ -296,7 +299,8 @@
 		    return $window.innerWidth;
 		  },
 		  function (value) {
-		    $scope.width = $scope.state.width = $scope.canvas_width = value - scene_width - 50 - 2*parseInt($scope.state.margin);
+		    $scope.width = $scope.state.width = value - scene_width - 50 - 2*parseInt($scope.state.margin);
+		  	$scope.canvas_width = 2*$scope.width;
 		  	//$scope.$apply();
 		  },
 		  true
@@ -304,8 +308,17 @@
 		$scope.$watch('settings.views.scene_width', function( newValue, oldValue ) {
 			if ( newValue !== oldValue ) {
 				// playback.autoRotate = !playback.autoRotate;
-				$scope.width = $scope.state.width = $scope.canvas_width = $window.innerWidth - newValue - 50 - 2*parseInt($scope.state.margin);
+				$scope.width = $scope.state.width = $window.innerWidth - newValue - 50 - 2*parseInt($scope.state.margin);
+		  		$scope.canvas_width = 2*$scope.width;
 		  		$scope.state.offsetx = parseInt($scope.state.offsetx) - (oldValue-newValue);
+		  		$scope.update_width();
+			}
+		});
+		$scope.$watch('settings.views.scene_height', function( newValue, oldValue ) {
+			if ( newValue !== oldValue ) {
+				// playback.autoRotate = !playback.autoRotate;
+				$scope.height = $scope.state.height =  parseInt(newValue)-2*parseInt($scope.state.margin)+1; 
+				$scope.update_height();
 			}
 		});
 		if($scope.data.n === 0) {
@@ -724,9 +737,8 @@
 						            //scope.update();
 						            var part = (x_orig-parseInt(scope.state.offsetx)-scope.translatePos.x)/(scope.scale*Math.sqrt(2));
 						            var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments;	
-						            if(part <= scope.data.value.length && part > 0) {
-							            scope.settings.current.particle = parseInt(part);
-							            scope.settings.current.hic_position = part*resolution;
+						            if(part != scope.settings.current.particle && part <= scope.data.value.length && part > 0) {
+							            scope.settings.current.hic_position += (part-scope.settings.current.particle)*resolution;
 							            scope.$apply(scope.settings.current.hic_position);
 							            //scope.update_marks();
 						            }
@@ -766,6 +778,7 @@
 						var rect = hic_data_container.getBoundingClientRect();
 						scope.translatePos.x = scope.settings.current.leftborder-rect.left;
 						scope.scale = (scope.settings.current.rightborder-scope.settings.current.leftborder)/(Math.sqrt(2)*scope.data.n); 
+						scope.settings.current.hic_position = scope.settings.current.position;
 						scope.update();
 						scope.update_marks();
 					}
@@ -839,6 +852,16 @@
 					}
 				};
 				
+				scope.update_width =  function() {
+					scope.settings.current.hic_position += 1;
+				};
+
+				scope.update_height =  function() {
+					scope.rendered = false;
+					scope.update();
+					scope.update_marks();
+				};
+					
 				scope.$watch('highlighted_tad', function(newvalue,oldvalue) {
 		        	if ( newvalue !== oldvalue) {
 		        		if(newvalue ==-1) {
@@ -1352,7 +1375,7 @@
             };
         
         $scope.$watch('settings.current.hic_position', function(newPos, oldPos) {
-            if(!angular.equals(newPos, oldPos)) {
+            if(!angular.equals(newPos, oldPos) && newPos != $scope.settings.current.position) {
             	$scope.myIgv.goto(($scope.settings.current.chrom),newPos);
             }    
         });            
@@ -2902,7 +2925,7 @@
 				$scope.state.width = $scope.settings.views.scene_width = args.width;
 
 			if(args.height)
-				$scope.state.height = args.height;
+				$scope.state.height = $scope.settings.views.scene_height = args.height;
 			$scope.resizeCanvas();
         });
 		// $scope.keyControls = function (e, component) {
