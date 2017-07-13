@@ -105,8 +105,7 @@ gulp.task('assets-libs', function() {
 		'bower_components/angular/angular.min.js.map',
 		'bower_components/d3/d3.min.js',
 		'bower_components/threejs/build/three.min.js',
-		'src/assets/js/igv-all.js'
-		//'src/assets/js/igv-1.0.7.js'
+		'src/assets/js/igv-1.0.9.js'
 		])
 		.pipe(gulp.dest('src/assets/js'))
 		.pipe(gulp.dest('tadkit/assets/js'));

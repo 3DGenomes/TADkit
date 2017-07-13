@@ -58,6 +58,7 @@
 								angular.forEach(scope.view.settings.chromatin.resolution_scales, function(value, key) {
 									  if(parseInt(key) <= resolution) resolution_scale = value;
 								});
+								scope.data.object.radius_scale = resolution_scale;
 							} else {
 								resolution_scale = parseInt(scope.data.object.radius_scale);
 							}

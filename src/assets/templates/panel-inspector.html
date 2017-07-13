@@ -17,8 +17,23 @@
 		<label for="chromatin">option2</label>
 	</div>
 	<div class="component-body">
-		<div width="{{width}}" height="{{height}}" style="width:{{width}}px; height:{{height}}px;padding:5px; border:1px solid lightgray">
+		<div width="{{width}}" height="{{height}}" style="width:{{width}}px; height:{{height}}px;padding:15px; border:1px solid lightgray; line-height: normal;">
 			<md-content>
+			<div class="component-caption" layout="column" layout-align="center center">
+				<table>
+					<tr><th colspan="2"><b>{{data.object.title}}</b></th></tr>
+					<tr><td><b>Species:</b></td><td> {{data.object.species}}</td></tr>
+					<tr><td><b>Region:</b></td><td> {{data.object.region}}</td></tr>
+					<tr><td><b>UUID:</b></td><td> {{data.object.uuid}}</td></tr>
+					<tr><td><b>Resolution:</b></td><td> {{data.object.resolution}}</td></tr>
+					<tr><td><b>Bins:</b></td><td> {{(data.data.length/3)}}</td></tr>
+					<tr><td><b>Chromatin radius:</b></td><td> 5 nm</td></tr>
+					<tr><td><b>Chromatin radius scale:</b></td><td> {{data.object.radius_scale}}x</td></tr>
+					
+				</table>
+				
+			</div>
+			<!-- 
 				<md-list>
 					<md-list-item class="md-3-line"  ng-repeat='feature in data | filter:atPosition' layout="row" layout-align="space-between center">
 						<span class="feature-title">{{featureTitle(feature)}}</span>
@@ -27,6 +42,7 @@
 							<md-tooltip md-direction="left" md-delay="0">{{ feature.description }} (more...)</md-tooltip>
 						</button>
 				</md-list-item>
+			-->
 			</md-content>
 		</div>
 	</div>

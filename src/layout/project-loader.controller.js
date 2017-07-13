@@ -38,21 +38,21 @@
 					$state.go('browser');
 			});			
 		};
+//		$scope.cleanDataset = function(event) {
+//			Datasets.clear();
+//			Hic_data.clear();
+//			var loadexample = Datasets.load('assets/defaults/tk-example-dataset.json');
+//			return $q.all([ loadexample ])
+//			.then(function(results){
+//				$scope.updateCurrent();
+//				// ADD FILENAME (SEE OVERLAY-IMPORT)
+//				console.log("Dataset example loaded.");			
+//				$state.go('browser', { conf: null });
+//			});
+//		};
 		$scope.cleanDataset = function(event) {
-			Datasets.clear();
-			Hic_data.clear();
-			var loadexample = Datasets.load('assets/defaults/tk-example-dataset.json');
-			return $q.all([ loadexample ])
-			.then(function(results){
-				$scope.updateCurrent();
-				// ADD FILENAME (SEE OVERLAY-IMPORT)
-				console.log("Dataset example loaded.");			
-				$state.go('browser', { conf: null });
-			});
+			$state.go('dataset', { conf: '.tadkit/conf.json' });
 		};
-		
-		
-		
 		
 		
 	}

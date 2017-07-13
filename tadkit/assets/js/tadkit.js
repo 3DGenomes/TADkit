@@ -24,8 +24,12 @@
 		$mdThemingProvider.definePalette('VreMap', VreMap);
 		// Material Design Themes
 		$mdThemingProvider.theme('default')
-			.primaryPalette('VreMap')
-			.accentPalette('blue')
+			.primaryPalette('green')
+			.accentPalette('lime', {
+				'default': '500'
+			})	
+			//.primaryPalette('VreMap')
+			//.accentPalette('blue')
    			.warnPalette('red')
 			.backgroundPalette('grey');
 		$mdThemingProvider.theme('darkKit')
@@ -1021,9 +1025,10 @@
 			if ( newValue !== oldValue ) {
 				// playback.autoRotate = !playback.autoRotate;
 				$scope.width = $scope.state.width = $window.innerWidth - newValue - 50 - 2*parseInt($scope.state.margin);
-		  		$scope.myIgv.genomicStateList.forEach(function (genomicState) {
-            		$scope.myIgv.updateWithLocusIndex( genomicState );
-        		});
+				$scope.myIgv.repaint();
+//		  		$scope.myIgv.genomicStateList.forEach(function (genomicState) {
+//            		$scope.myIgv.updateWithLocusIndex( genomicState );
+//        		});
 			}
 		});
 
@@ -1298,7 +1303,7 @@
 		 So we do it the hard way
 		 *  */
 		//$scope.myIgv.karyoPanel.$karyoPanelToggle.hide();
-		var karyo = angular.element(document.querySelector('#igvKaryoDiv'))[0];
+		var karyo = angular.element(document.querySelector('.igv-ideogram-content-div'))[0];
         karyo.remove();
         $scope.myIgv.karyoPanel = null;
         
@@ -1326,21 +1331,20 @@
         			start: the genomic position corresponding to the left border of the browser
         			bpPerPixel: corresponding base pairs per 1 pixel
         		*/
-        		$scope.myIgv.genomicStateList.forEach(function (genomicState) {
-            		var referenceFrame = genomicState.referenceFrame;
-	        		// Compute left position and width of the #tad-highlight-tadkit
-	        		if(typeof(referenceFrame) != 'undefined') {
-		            	//trackPane.style.backgroundColor = "rgba(0,0,0,0.05)";
-		            	var start_tad = $scope.data.tad_data.tads[$scope.settings.current.tad_selected][1];
-		            	var end_tad = $scope.data.tad_data.tads[$scope.settings.current.tad_selected][2];
-		            	
-		            	var leftpos = Math.round((start_tad-referenceFrame.start)/referenceFrame.bpPerPixel);
-		                d.css("left",Math.floor(leftpos+50) + "px");
-		                var rightpos = Math.round((end_tad-referenceFrame.start)/referenceFrame.bpPerPixel);
-		                d.css("width",Math.floor(rightpos-leftpos) + "px");
-		                d.css("display","block");
-	        		}
-        		});
+    			referenceFrame = $scope.myIgv.referenceFrame;
+        		// Compute left position and width of the #tad-highlight-tadkit
+        		if(typeof(referenceFrame) != 'undefined') {
+	            	//trackPane.style.backgroundColor = "rgba(0,0,0,0.05)";
+	            	var start_tad = $scope.data.tad_data.tads[$scope.settings.current.tad_selected][1];
+	            	var end_tad = $scope.data.tad_data.tads[$scope.settings.current.tad_selected][2];
+	            	
+	            	var leftpos = Math.round((start_tad-referenceFrame.start)/referenceFrame.bpPerPixel);
+	                d.css("left",Math.floor(leftpos+50) + "px");
+	                var rightpos = Math.round((end_tad-referenceFrame.start)/referenceFrame.bpPerPixel);
+	                d.css("width",Math.floor(rightpos-leftpos) + "px");
+	                d.css("display","block");
+        		}
+        		
                 
             } else {
             	//trackPane.style.backgroundColor = "";
@@ -1349,26 +1353,15 @@
             	
             }
         };
-        /*
-        We override the zoom handlers of igvjs to update tadkit on zoom, otherwise
-        2D panel does not get updated
-        */
-        $scope.updatePos = function() {
-        	$scope.myIgv.genomicStateList.forEach(function (genomicState) {
-        		$scope.myIgv.fireEvent('locuschange',[genomicState.referenceFrame,$scope.myIgv.config.locus]);
-		    });
 
-        };
         $scope.myIgv.zoomHandlers = {
                 in: {
                     click: function (e) {
-                    	$scope.updatePos();
                         $scope.myIgv.zoomIn();
                     }
                 },
                 out:{
                     click: function (e) {
-                    	$scope.updatePos();
                         $scope.myIgv.zoomOut();
                     }
                 }
@@ -1399,61 +1392,59 @@
         	dl.css("display","none");
         };
         $scope.updateTadkitMarkers = function(markerspos) {
-        	$scope.myIgv.genomicStateList.forEach(function (genomicState) {
-        		var referenceFrame = genomicState.referenceFrame;
-        		var leftpx = (markerspos[1]-referenceFrame.start)/referenceFrame.bpPerPixel; 
-	        	dl.css("display","block");
-	        	dl.css("left",Math.floor(leftpx+50) + "px");
-	        	dl.css("position","absolute");
-	        	
-	        	var rightpx = (markerspos[0]-referenceFrame.start)/referenceFrame.bpPerPixel; 
-	        	dr.css("display","block");
-	        	dr.css("left",Math.floor(rightpx+50) + "px");
-	        	dr.css("position","absolute");
-        	});
+        	var referenceFrame = $scope.myIgv.referenceFrame;
+    		var leftpx = (markerspos[1]-referenceFrame.start)/referenceFrame.bpPerPixel; 
+        	dl.css("display","block");
+        	dl.css("left",Math.floor(leftpx+50) + "px");
+        	dl.css("position","absolute");
+        	
+        	var rightpx = (markerspos[0]-referenceFrame.start)/referenceFrame.bpPerPixel; 
+        	dr.css("display","block");
+        	dr.css("left",Math.floor(rightpx+50) + "px");
+        	dr.css("position","absolute");
         };
         /*
         igvjs developers expose an event when the browser changes locus.
         We profit from it to update tadkit position in the 2D and 3D panels
         */
-        $scope.myIgv.on('locuschange', function (referenceFrame, label) {
-				
-			$scope.myIgv.genomicStateList.forEach(function (genomicState) {
-	        	var referenceFrame = genomicState.referenceFrame;
-	            var viewportWidth = Math.floor($scope.myIgv.viewportContainerWidth()/genomicState.locusCount);
+        $scope.myIgv.on('locuschange', function (refFrame, label) {
+        	
+        	var referenceFrame = $scope.myIgv.referenceFrame;
+            //var viewportWidth = Math.floor($scope.myIgv.viewportContainerWidth()/genomicState.locusCount);
+        	var viewportWidth = $scope.myIgv.trackViewportWidth();
 
-	            // window center (base-pair units)
-	            var centerBP = referenceFrame.start + referenceFrame.bpPerPixel * (viewportWidth/2);
-	            var ps = (centerBP-referenceFrame.start);
-	            /* 
-	            We limit the left border of the browser so the center guide cannot go further
-	            than the start of our chromatin model*/
-	            if($scope.settings.current.chromStart>centerBP) {
-					if($scope.settings.current.chromStart-ps<=0) {
-						//referenceFrame.start = 0;
-						referenceFrame.start = $scope.settings.current.chromStart-ps;
-					} else {
-						referenceFrame.start = $scope.settings.current.chromStart-ps;
-					}
+            // window center (base-pair units)
+            var centerBP = referenceFrame.start + referenceFrame.bpPerPixel * (viewportWidth/2);
+            var ps = (centerBP-referenceFrame.start);
+            /* 
+            We limit the left border of the browser so the center guide cannot go further
+            than the start of our chromatin model*/
+            if($scope.settings.current.chromStart>centerBP) {
+				if($scope.settings.current.chromStart-ps<=0) {
+					//referenceFrame.start = 0;
+					referenceFrame.start = $scope.settings.current.chromStart-ps;
+				} else {
+					referenceFrame.start = $scope.settings.current.chromStart-ps;
 				}
-				/* 
-				We limit the right border of the browser so the center guide cannot go further
-	            than the end of our chromatin model.
-				I haven't found other way than limiting artificially the length of the whole chromosome.
-	            */
-				var igv_chrom = $scope.myIgv.genome.getChromosome(referenceFrame.chrName);
-				igv_chrom.bpLength = ($scope.settings.current.chromEnd+($scope.settings.current.chromEnd-referenceFrame.start));
-				
-				/*
-				Finally inform tadkit about the center genomic position and the position in the screen
-				of the left and right border of our model, so we can synchronize the 2D panel
-				*/
-				var px_start = ($scope.settings.current.chromStart-referenceFrame.start)/referenceFrame.bpPerPixel;
-				var px_end = ($scope.settings.current.chromEnd-referenceFrame.start)/referenceFrame.bpPerPixel;
-				
-				$scope.updatePosition(centerBP, px_start+50 , px_end+50);
+			}
+			/* 
+			We limit the right border of the browser so the center guide cannot go further
+            than the end of our chromatin model.
+			I haven't found other way than limiting artificially the length of the whole chromosome.
+            */
+			var igv_chrom = $scope.myIgv.genome.getChromosome(referenceFrame.chr);
+			igv_chrom.bpLength = ($scope.settings.current.chromEnd+($scope.settings.current.chromEnd-referenceFrame.start));
+			
+			/*
+			Finally inform tadkit about the center genomic position and the position in the screen
+			of the left and right border of our model, so we can synchronize the 2D panel
+			*/
+			var px_start = ($scope.settings.current.chromStart-referenceFrame.start)/referenceFrame.bpPerPixel;
+			var px_end = ($scope.settings.current.chromEnd-referenceFrame.start)/referenceFrame.bpPerPixel;
+			
+			$scope.updatePosition(centerBP, px_start+50 , px_end+50);
 					
-			});
+			
 			
 		});
         
@@ -1466,156 +1457,175 @@
         It should be updated if it changes in new releases of igvjs.
         The injected code is properly marked. 
         */
-        igv.trackMenuItemList = function (popover, trackView) {
+        igv.trackMenuItems = function (popover, trackView) {
 
             var menuItems = [],
-                all;
+                trackItems;
 
-            menuItems.push(igv.trackMenuItem(popover, trackView, "Set track name", function () {
-                return "Track Name";
-            }, trackView.track.name, function () {
+            menuItems.push(igv.dialogMenuItem(
+                popover,
+                trackView,
+                "Set track name",
+                function () {
+                    return "Track Name";
+                },
+                trackView.track.name,
+                function () {
 
-                var alphanumeric = parseAlphanumeric(igv.dialog.$dialogInput.val());
+                    var alphanumeric = parseAlphanumeric(igv.dialog.$dialogInput.val());
 
-                if (undefined !== alphanumeric) {
-                    igv.setTrackLabel(trackView.track, alphanumeric);
-                    trackView.update();
-                }
-
-                function parseAlphanumeric(value) {
-
-                    var alphanumeric_re = /(?=.*[a-zA-Z].*)([a-zA-Z0-9 ]+)/,
-                        alphanumeric = alphanumeric_re.exec(value);
-
-                    return (null !== alphanumeric) ? alphanumeric[0] : "untitled";
-                }
-
-            }, undefined));
-
-            menuItems.push(igv.trackMenuItem(popover, trackView, "Set track height", function () {
-                return "Track Height";
-            }, trackView.trackDiv.clientHeight, function () {
-
-                var number = parseFloat(igv.dialog.$dialogInput.val(), 10);
-
-                if (undefined !== number) {
-                	// If explicitly setting the height adust min or max, if neccessary.
-                    if (trackView.track.minHeight !== undefined && trackView.track.minHeight > number) {
-                        trackView.track.minHeight = number;
+                    if (undefined !== alphanumeric) {
+                        igv.setTrackLabel(trackView.track, alphanumeric);
+                        trackView.update();
                     }
-                    if (trackView.track.maxHeight !== undefined && trackView.track.maxHeight < number) {
-                        trackView.track.minHeight = number;
+
+                    function parseAlphanumeric(value) {
+
+                        var alphanumeric_re = /(?=.*[a-zA-Z].*)([a-zA-Z0-9 ]+)/,
+                            alphanumeric = alphanumeric_re.exec(value);
+
+                        return (null !== alphanumeric) ? alphanumeric[0] : "untitled";
                     }
-                    trackView.setTrackHeight(number);
-                    trackView.track.autoHeight = false;   // Explicitly setting track height turns off autoHeight
 
-                }
+                }, undefined));
 
-            }, undefined));
-            
-            /*
-             Start of injected code
-             */
-            // Init tracksOverlaid to false
-            if (typeof $scope.tracksOverlaid[trackView.track.id] === "undefined") {
-            	$scope.tracksOverlaid[trackView.track.id] = false;
-            }
-            // Creation of the DOM element of the menu item
-            var apply3D, $e;
+            menuItems.push(igv.dialogMenuItem(
+                popover,
+                trackView,
+                "Set track height",
+                function () {
+                    return "Track Height";
+                },
+                trackView.trackDiv.clientHeight,
+                function () {
 
-            apply3D = '<div class="igv-track-menu-item igv-track-menu-border-top">';
-            if (false === $scope.tracksOverlaid[trackView.track.id]) {
-            	apply3D = apply3D + '<i class="fa fa-check fa-check-shim fa-check-hidden"></i>Apply to 3D</div>';
-            } else {
-            	apply3D = apply3D + '<i class="fa fa-check fa-check-shim"></i>Apply to 3D</div>';
-            }
-            
-            // Handler function when clicking the menu item
-            var clickHandler = function(){
-                if($scope.tracksOverlaid[trackView.track.id]) {
-                	$scope.removeOverlay(trackView.track.id);
-                	$scope.tracksOverlaid[trackView.track.id] = false;
-                } else {
-                	var referenceFrame = trackView.viewports[0].genomicState.referenceFrame;
-                	// get features and pass them for overlay
-                	trackView.track.getFeatures(referenceFrame.chrName, $scope.settings.current.chromStart, $scope.settings.current.chromEnd, referenceFrame.bpPerPixel).then(function (features) {
-                        if (features) {
-                        	$scope.applyOverlay(trackView.track.id,features);
+                    var number = parseFloat(igv.dialog.$dialogInput.val(), 10);
+
+                    if (undefined !== number) {
+                        // If explicitly setting the height adust min or max, if neccessary.
+                        if (trackView.track.minHeight !== undefined && trackView.track.minHeight > number) {
+                            trackView.track.minHeight = number;
                         }
-                	}).catch(function (error) {
-                        if (error instanceof igv.AbortLoad) {
-                            console.log("Aborted ---");
+                        if (trackView.track.maxHeight !== undefined && trackView.track.maxHeight < number) {
+                            trackView.track.minHeight = number;
+                        }
+                        trackView.setTrackHeight(number);
+                        trackView.track.autoHeight = false;   // Explicitly setting track height turns off autoHeight
+
+                    }
+
+                }, undefined));
+
+            if (trackView.track.popupMenuItems) {
+
+                trackItems = trackView.track.popupMenuItems(popover);
+
+                if (trackItems && trackItems.length > 0) {
+
+                    trackItems.forEach(function (trackItem, i) {
+
+                        var str;
+
+                        if (trackItem.name) {
+
+                            str = (0 === i) ? '<div class=\"igv-track-menu-item igv-track-menu-border-top\">' : '<div class=\"igv-track-menu-item\">';
+                            str = str + trackItem.name + '</div>';
+
+                            menuItems.push({object: $(str), click: trackItem.click, init: trackItem.init});
                         } else {
-                            igv.presentAlert(error);
+
+                            if (0 === i) {
+                                trackItem.object.addClass("igv-track-menu-border-top");
+                                menuItems.push(trackItem);
+                            }
+                            else {
+                                menuItems.push(trackItem);
+                            }
+
                         }
+
                     });
-                	$scope.tracksOverlaid[trackView.track.id] = true;
-            	}
-                // Hide menu
-                popover.hide();
-            };
-
-            $e = $(apply3D);
-            $e.click(clickHandler);
-
-            // Add the new menu item to the track menu
-            menuItems = menuItems.concat({ object: $e, init: undefined });
-            /*
-             End of injected code
-             */
-            
-            all = [];
-            if (trackView.track.menuItemList) {
-                all = menuItems.concat( trackMenuItemListHelper(trackView.track.menuItemList(popover)) );
+                }
             }
             
+            /*
+            Start of injected code
+            */
+           // Init tracksOverlaid to false
+           if (typeof $scope.tracksOverlaid[trackView.track.id] === "undefined") {
+           	$scope.tracksOverlaid[trackView.track.id] = false;
+           }
+           // Creation of the DOM element of the menu item
+           var apply3D, $e;
+
+           apply3D = '<div class="igv-track-menu-item igv-track-menu-border-top">';
+           if (false === $scope.tracksOverlaid[trackView.track.id]) {
+           	apply3D = apply3D + '<i class="fa fa-check fa-check-shim fa-check-hidden"></i>Apply to 3D</div>';
+           } else {
+           	apply3D = apply3D + '<i class="fa fa-check fa-check-shim"></i>Apply to 3D</div>';
+           }
+           
+           // Handler function when clicking the menu item
+           var clickHandler = function(){
+               if($scope.tracksOverlaid[trackView.track.id]) {
+               	$scope.removeOverlay(trackView.track.id);
+               	$scope.tracksOverlaid[trackView.track.id] = false;
+               } else {
+               	var referenceFrame = trackView.browser.referenceFrame;
+               	// get features and pass them for overlay
+               	trackView.track.getFeatures(referenceFrame.chr, $scope.settings.current.chromStart, $scope.settings.current.chromEnd, referenceFrame.bpPerPixel).then(function (features) {
+                       if (features) {
+                       	$scope.applyOverlay(trackView.track.id,features);
+                       }
+               	}).catch(function (error) {
+                       if (error instanceof igv.AbortLoad) {
+                           console.log("Aborted ---");
+                       } else {
+                           igv.presentAlert(error);
+                       }
+                   });
+               	$scope.tracksOverlaid[trackView.track.id] = true;
+           	}
+               // Hide menu
+               popover.hide();
+           };
+
+           $e = $(apply3D);
+           $e.click(clickHandler);
+
+           // Add the new menu item to the track menu
+           menuItems = menuItems.concat({ object: $e, init: undefined });
+           /*
+            End of injected code
+            */
+
             if (trackView.track.removable !== false) {
 
-                all.push(
-                    igv.trackMenuItem(popover, trackView, "Remove track", function () {
-                        var label = "Remove " + trackView.track.name;
-                        return '<div class="igv-dialog-label-centered">' + label + '</div>';
-                    }, undefined, function () {
-                        popover.hide();
-                        trackView.browser.removeTrack(trackView.track);
-                    }, true)
+                menuItems.push(
+                    igv.dialogMenuItem(
+                        popover,
+                        trackView,
+                        "Remove track",
+                        function () {
+                            var label = "Remove " + trackView.track.name;
+                            return '<div class="igv-dialog-label-centered">' + label + '</div>';
+                        },
+                        undefined,
+                        function () {
+                            popover.hide();
+                            trackView.browser.removeTrack(trackView.track);
+                        },
+                        true)
                 );
+
             }
 
-            return all;
+            return menuItems;
+
         };
         
-        function trackMenuItemListHelper(itemList) {
-
-	        var list = [];
-
-	        if (_.size(itemList) > 0) {
-
-	            list = _.map(itemList, function(item, i) {
-	                var $e;
-
-	                if (item.name) {
-	                    $e = $('<div "igv-track-menu-item">');
-	                    $e.text(item.name);
-	                } else {
-	                    $e = item.object;
-	                }
-
-	                if (0 === i) {
-	                    $e.addClass('igv-track-menu-border-top');
-	                }
-
-	                if (item.click) {
-	                    $e.click(item.click);
-	                }
-
-	                return { object: $e, init: (item.init || undefined) };
-	            });
-	        }
-
-	        return list;
-	    }
         
+                
 	}
 })();
 (function() {
@@ -2041,9 +2051,9 @@
 				tubed: true,
 				resolution_scales : {
 					"2000" : 1,
-					"10000" : 10,
-					"50000" : 20,
-					"100000" : 50
+					"10000" : 1,
+					"50000" : 5,
+					"100000" : 5
 				}
 			};		
 			settings = settings || {};
@@ -2996,6 +3006,7 @@
 								angular.forEach(scope.view.settings.chromatin.resolution_scales, function(value, key) {
 									  if(parseInt(key) <= resolution) resolution_scale = value;
 								});
+								scope.data.object.radius_scale = resolution_scale;
 							} else {
 								resolution_scale = parseInt(scope.data.object.radius_scale);
 							}
@@ -5701,21 +5712,21 @@
 					$state.go('browser');
 			});			
 		};
+//		$scope.cleanDataset = function(event) {
+//			Datasets.clear();
+//			Hic_data.clear();
+//			var loadexample = Datasets.load('assets/defaults/tk-example-dataset.json');
+//			return $q.all([ loadexample ])
+//			.then(function(results){
+//				$scope.updateCurrent();
+//				// ADD FILENAME (SEE OVERLAY-IMPORT)
+//				console.log("Dataset example loaded.");			
+//				$state.go('browser', { conf: null });
+//			});
+//		};
 		$scope.cleanDataset = function(event) {
-			Datasets.clear();
-			Hic_data.clear();
-			var loadexample = Datasets.load('assets/defaults/tk-example-dataset.json');
-			return $q.all([ loadexample ])
-			.then(function(results){
-				$scope.updateCurrent();
-				// ADD FILENAME (SEE OVERLAY-IMPORT)
-				console.log("Dataset example loaded.");			
-				$state.go('browser', { conf: null });
-			});
+			$state.go('dataset', { conf: '.tadkit/conf.json' });
 		};
-		
-		
-		
 		
 		
 	}
@@ -5890,9 +5901,15 @@
 					component.overlay.object.state.index = Overlays.getCurrentIndex();
 					
 				} else if (component.object.type == "track-genes" || component.object.type == "panel-inspector") {
-					overlay = Overlays.getOverlayById("genes");
-					component.data = overlay.data;
+					// overlay = Overlays.getOverlayById("genes");
+					// component.data = overlay.data;
 					// component.overlay required for toggle
+					all_data = {
+						tad_data: Hic_data.get(),
+						data: $scope.current.model.data,
+						object: $scope.current.dataset.object
+					};
+					component.data = all_data;
 					component.overlay = overlay;
 				} else if (component.object.type == "track-proximities") {
 					// ie only one... see note above for Calculating Proximities

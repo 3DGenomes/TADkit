@@ -59,9 +59,15 @@
 					component.overlay.object.state.index = Overlays.getCurrentIndex();
 					
 				} else if (component.object.type == "track-genes" || component.object.type == "panel-inspector") {
-					overlay = Overlays.getOverlayById("genes");
-					component.data = overlay.data;
+					// overlay = Overlays.getOverlayById("genes");
+					// component.data = overlay.data;
 					// component.overlay required for toggle
+					all_data = {
+						tad_data: Hic_data.get(),
+						data: $scope.current.model.data,
+						object: $scope.current.dataset.object
+					};
+					component.data = all_data;
 					component.overlay = overlay;
 				} else if (component.object.type == "track-proximities") {
 					// ie only one... see note above for Calculating Proximities

@@ -495,15 +495,16 @@ md-checkbox.md-checked .md-icon {
 .panel-inspector .component-body .accordion dd > .content {
 	padding: 0.6rem;
 }
-.panel-inspector .component-body table {
+.panel-inspector .component-body table, .panel-inspector .component-body table tr {
 	width: 100%;
 	border: none;
 }
 .panel-inspector .component-body table tr th,
 .panel-inspector .component-body table tr td {
-	font-size: 0.6rem;
-	line-height: 0.8rem;
+	font-size: 1.0rem;
+	line-height: 1.8rem;
 	padding: 0;
+	border: none;
 }
 md-list-item .md-secondary-container, md-list-item .md-secondary, md-list-item .md-list-item-inner .md-secondary-container, md-list-item .md-list-item-inner .md-secondary {
   margin-left: 16px;
