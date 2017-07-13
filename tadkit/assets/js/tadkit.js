@@ -1007,7 +1007,7 @@
 		.module('TADkit')
 		.controller('PanelIgvjsController', PanelIgvjsController);
 
-	function PanelIgvjsController($scope, $window, $timeout, Overlays,Storyboards, uuid4, Networks, d3Service, Users) {
+	function PanelIgvjsController($scope, $window, $timeout, Overlays,Storyboards, uuid4, Track_data, d3Service, Users) {
 
 		if(angular.isUndefined($scope.settings.current.speciesUrl)) return;
 
@@ -1045,6 +1045,7 @@
 		);
 		
 		var originalOverlay = Overlays.getCurrentIndex();
+		var track_data = Track_data.get();
 		
 		var igvjs_start = (($scope.settings.current.chromStart));
 		if(igvjs_start<0) igvjs_start = 0;
@@ -1062,7 +1063,7 @@
 		var igv_reference;
 		if($scope.view.settings.species_data[$scope.settings.current.speciesUrl].fastaURL) {
 			igv_reference = {
-				id: $scope.settings.current.speciesUrl,
+				id: $scope.view.settings.species_data[$scope.settings.current.speciesUrl].id,
 				fastaURL:$scope.view.settings.species_data[$scope.settings.current.speciesUrl].fastaURL,
 				cytobandURL:null
 			};
@@ -1289,7 +1290,7 @@
 		$scope.myIgv = igv.createBrowser($scope.igvDiv, $scope.igvOptions);
 		
 		// Disable search input
-		$scope.myIgv.$searchInput.off('change');
+		//$scope.myIgv.$searchInput.off('change');
         
 		// Hide search icon
 		//var search_icon = angular.element(document.querySelector('.igv-fa-search'))[0];
@@ -1403,12 +1404,51 @@
         	dr.css("left",Math.floor(rightpx+50) + "px");
         	dr.css("position","absolute");
         };
+
+        $scope.getFeatures = function(track_name, track_i) {
+        	$scope.myIgv.trackViews.forEach(function (tV) {
+		  		if(tV.track.name == track_name) {
+					var referenceFrame = tV.browser.referenceFrame;
+	               	// get features and add them in Track_data
+	               	tV.track.getFeatures(referenceFrame.chr, $scope.settings.current.chromStart, $scope.settings.current.chromEnd, referenceFrame.bpPerPixel).then(function (features) {
+	                	if (features) {
+	                       	track_data[track_i].feature = track_data[track_i].feature.concat(features);
+	                    }
+	               	}).catch(function (error) {
+	                    if (error instanceof igv.AbortLoad) {
+	                    	console.log("Aborted ---");
+	                    } else {
+	                        igv.presentAlert(error);
+	                    }
+	                });
+				}
+        	});
+        };
         /*
         igvjs developers expose an event when the browser changes locus.
         We profit from it to update tadkit position in the 2D and 3D panels
         */
         $scope.myIgv.on('locuschange', function (refFrame, label) {
         	
+
+        	$scope.myIgv.trackViews.forEach(function (tV) {
+        		if(tV.track.id != 'ruler' && tV.track.id != 'sequence') {
+        			var found = false;
+        			for(var i=0;i<track_data.length;i++) {
+        				if(track_data[i].track_name == tV.track.name) found=true;
+        			}
+        			if(!found) {
+        				var tdata = {
+							track_name: tV.track.name,
+							pos: [],
+							feature: []
+						};
+						track_data.push(tdata);
+        				$scope.getFeatures(tV.track.name,track_data.length-1);
+        			}
+        		}
+        	});
+
         	var referenceFrame = $scope.myIgv.referenceFrame;
             //var viewportWidth = Math.floor($scope.myIgv.viewportContainerWidth()/genomicState.locusCount);
         	var viewportWidth = $scope.myIgv.trackViewportWidth();
@@ -1624,6 +1664,7 @@
 
         };
         
+
         
                 
 	}
@@ -1720,20 +1761,12 @@
 		  		
 			}
 		});
-		$scope.optionsState = false;
-		$scope.toggleOptions = function() {
-			$scope.optionsState = !$scope.optionsState;
-		};
-
-		$scope.toggle = function(bool) {
-			bool = !bool;
-		};
-
+		
 		$scope.width = parseInt($scope.state.width); // strip PX units
 		$scope.height = parseInt($scope.state.height); // strip PX units
 
-		$scope.atPosition = function(gene) {
-			if ($scope.$parent.settings.current.segmentUpper >= gene.start && $scope.$parent.settings.current.segmentLower <= gene.end) return true;
+		$scope.atPosition = function(feature) {
+			if ($scope.$parent.settings.current.segmentUpper >= feature.start && $scope.$parent.settings.current.segmentLower <= feature.end) return true;
 			return false;
 		};
 
@@ -1746,13 +1779,45 @@
 		};
 		
 		$scope.featureTitle = function(feature) {
-			if (!feature.external_name) {
+			if (!feature.name) {
 				return feature.id;
 			} else {
-				return feature.external_name;
+				return feature.name;
 			}
 		};
 
+		$scope.dataset_info = '<div class="component-caption" layout="column" layout-align="left center">'+
+				'<h2>'+$scope.data.object.title+'</h2><table>'+
+					'<tr><td><b>Species:</b></td><td>'+$scope.data.object.species+'</td></tr>'+
+					'<tr><td><b>Region:</b></td><td>'+$scope.data.object.region+'</td></tr>'+
+					'<tr><td><b>UUID:</b></td><td>'+$scope.data.object.uuid+'</td></tr>'+
+					'<tr><td><b>Resolution:</b></td><td>'+$scope.data.object.resolution+'</td></tr>'+
+					'<tr><td><b>Bins:</b></td><td>'+($scope.data.data.length/3)+'</td></tr>'+
+					'<tr><td><b>Chromatin radius:</b></td><td> 5 nm</td></tr>'+
+					'<tr><td><b>Chromatin radius scale:</b></td><td>'+$scope.data.object.radius_scale+'x</td></tr>'+
+				'</table>'+
+			'</div>';
+		
+		$scope.showInfo = function(info) {
+			$mdDialog.show({
+			      parent: angular.element(document.body),
+			      template: '<md-dialog md-theme="default" aria-label="Information">' +
+			        '  <md-dialog-content class="md-default-theme">' + info +
+			        '<div class="md-actions"><md-button ng-click="closeDialog();" class="md-primary md-button md-default-theme"><span class="ng-binding ng-scope">Close</span></md-button></div>' +
+			        '  </md-dialog-content>' +
+			        '</md-dialog>',
+			      locals: {
+
+			      },
+			      controller: DialogController
+			    });
+		};
+
+		function DialogController($scope, $mdDialog) {
+			$scope.closeDialog = function() {
+			  $mdDialog.hide();
+			};
+		}
 
 		$scope.getDetails = function(item, event) {
 			$mdDialog.show(
@@ -2648,8 +2713,8 @@
 			var totalPairs = ((dataLength * dataLength) - dataLength) * 0.5;
 
 			var vertexPairs = getVertexPairs(data, totalPairs);
-			var vertexRGB = overlay.RGB;
-			var vertexAlpha = overlay.alpha;
+			var vertexRGB = new Float32Array(overlay.RGB);
+			var vertexAlpha = new Float32Array(overlay.alpha);
 
 			var geometry = new THREE.BufferGeometry();
 			geometry.addAttribute( 'position', new THREE.BufferAttribute( vertexPairs, 3 ) );
@@ -5725,7 +5790,7 @@
 //			});
 //		};
 		$scope.cleanDataset = function(event) {
-			$state.go('dataset', { conf: '.tadkit/conf.json' });
+			$state.go('dataset', { conf: 'assets/examples/conf.json' });
 		};
 		
 		
@@ -5846,7 +5911,7 @@
 		.module('TADkit')
 		.controller('StoryboardController', StoryboardController);
 
-	function StoryboardController($window, $scope, $state, $stateParams, Settings, Storyboards, Components, Overlays, Proximities, Restraints, Hic_data, Datasets) {
+	function StoryboardController($window, $scope, $state, $stateParams, Settings, Storyboards, Components, Overlays, Proximities, Restraints, Hic_data, Track_data, Datasets) {
 
 		// WATCH FOR WINDOW RESIZE
 		angular.element($window).on('resize', function(){ $scope.$apply(); });
@@ -5906,6 +5971,7 @@
 					// component.overlay required for toggle
 					all_data = {
 						tad_data: Hic_data.get(),
+						track_data: Track_data.get(),
 						data: $scope.current.model.data,
 						object: $scope.current.dataset.object
 					};
@@ -6870,6 +6936,7 @@
 			value: [],
 			tads: []
 		};
+		var interaction_freq = 0;
 		return {
 			set: function (datasetHic_data) {
 				var self = this;
@@ -6896,6 +6963,11 @@
 				hic_data = datasetHic_data;
 							
 				return hic_data;
+			},
+			setInteractionFreq: function (freq) {
+				interaction_freq = freq;
+							
+				return;
 			},
 			setTADS: function (datasetTADS) {
 				hic_data.tads = datasetTADS;
@@ -8803,6 +8875,36 @@
 			return {
 				three: function() { return d.promise; }
 			};
+	}
+})();
+(function() {
+	'use strict';
+	angular
+		.module('TADkit')
+		.factory('Track_data', Track_data);
+
+	function Track_data() {
+		var track_data = [];
+		return {
+			setDirect: function (datasetTrack_data) {
+				var self = this;
+				self.clear();
+				track_data = datasetTrack_data;
+							
+				return track_data;
+			},
+			add: function (datasetTrack_data) {
+				track_data.push(datasetTrack_data);
+							
+				return;
+			},
+			get: function() {
+				return track_data;
+			},
+			clear: function() {
+				track_data = [];
+			},
+		};
 	}
 })();
 (function() {

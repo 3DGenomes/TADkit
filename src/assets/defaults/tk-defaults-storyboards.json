@@ -237,9 +237,11 @@
 								"tracks": [
 									{
 										"name": "Genes",
+										"type": "annotation",
 					                    "url": "//igv.broadinstitute.org/annotations/hg19/genes/gencode.v18.collapsed.bed",
 					                    "index": "//igv.broadinstitute.org/annotations/hg19/genes/gencode.v18.collapsed.bed.idx",
-					                    "displayMode": "EXPANDED"
+					                    "displayMode": "EXPANDED",
+					                    "autoHeight": true
 				                	}
 				                ]
 							},

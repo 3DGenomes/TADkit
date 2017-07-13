@@ -51,7 +51,7 @@
 //			});
 //		};
 		$scope.cleanDataset = function(event) {
-			$state.go('dataset', { conf: '.tadkit/conf.json' });
+			$state.go('dataset', { conf: 'assets/examples/conf.json' });
 		};
 		
 		

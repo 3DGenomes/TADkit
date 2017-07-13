@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.controller('StoryboardController', StoryboardController);
 
-	function StoryboardController($window, $scope, $state, $stateParams, Settings, Storyboards, Components, Overlays, Proximities, Restraints, Hic_data, Datasets) {
+	function StoryboardController($window, $scope, $state, $stateParams, Settings, Storyboards, Components, Overlays, Proximities, Restraints, Hic_data, Track_data, Datasets) {
 
 		// WATCH FOR WINDOW RESIZE
 		angular.element($window).on('resize', function(){ $scope.$apply(); });
@@ -64,6 +64,7 @@
 					// component.overlay required for toggle
 					all_data = {
 						tad_data: Hic_data.get(),
+						track_data: Track_data.get(),
 						data: $scope.current.model.data,
 						object: $scope.current.dataset.object
 					};

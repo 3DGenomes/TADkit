@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.controller('PanelIgvjsController', PanelIgvjsController);
 
-	function PanelIgvjsController($scope, $window, $timeout, Overlays,Storyboards, uuid4, Networks, d3Service, Users) {
+	function PanelIgvjsController($scope, $window, $timeout, Overlays,Storyboards, uuid4, Track_data, d3Service, Users) {
 
 		if(angular.isUndefined($scope.settings.current.speciesUrl)) return;
 
@@ -42,6 +42,7 @@
 		);
 		
 		var originalOverlay = Overlays.getCurrentIndex();
+		var track_data = Track_data.get();
 		
 		var igvjs_start = (($scope.settings.current.chromStart));
 		if(igvjs_start<0) igvjs_start = 0;
@@ -59,7 +60,7 @@
 		var igv_reference;
 		if($scope.view.settings.species_data[$scope.settings.current.speciesUrl].fastaURL) {
 			igv_reference = {
-				id: $scope.settings.current.speciesUrl,
+				id: $scope.view.settings.species_data[$scope.settings.current.speciesUrl].id,
 				fastaURL:$scope.view.settings.species_data[$scope.settings.current.speciesUrl].fastaURL,
 				cytobandURL:null
 			};
@@ -286,7 +287,7 @@
 		$scope.myIgv = igv.createBrowser($scope.igvDiv, $scope.igvOptions);
 		
 		// Disable search input
-		$scope.myIgv.$searchInput.off('change');
+		//$scope.myIgv.$searchInput.off('change');
         
 		// Hide search icon
 		//var search_icon = angular.element(document.querySelector('.igv-fa-search'))[0];
@@ -400,12 +401,51 @@
         	dr.css("left",Math.floor(rightpx+50) + "px");
         	dr.css("position","absolute");
         };
+
+        $scope.getFeatures = function(track_name, track_i) {
+        	$scope.myIgv.trackViews.forEach(function (tV) {
+		  		if(tV.track.name == track_name) {
+					var referenceFrame = tV.browser.referenceFrame;
+	               	// get features and add them in Track_data
+	               	tV.track.getFeatures(referenceFrame.chr, $scope.settings.current.chromStart, $scope.settings.current.chromEnd, referenceFrame.bpPerPixel).then(function (features) {
+	                	if (features) {
+	                       	track_data[track_i].feature = track_data[track_i].feature.concat(features);
+	                    }
+	               	}).catch(function (error) {
+	                    if (error instanceof igv.AbortLoad) {
+	                    	console.log("Aborted ---");
+	                    } else {
+	                        igv.presentAlert(error);
+	                    }
+	                });
+				}
+        	});
+        };
         /*
         igvjs developers expose an event when the browser changes locus.
         We profit from it to update tadkit position in the 2D and 3D panels
         */
         $scope.myIgv.on('locuschange', function (refFrame, label) {
         	
+
+        	$scope.myIgv.trackViews.forEach(function (tV) {
+        		if(tV.track.id != 'ruler' && tV.track.id != 'sequence') {
+        			var found = false;
+        			for(var i=0;i<track_data.length;i++) {
+        				if(track_data[i].track_name == tV.track.name) found=true;
+        			}
+        			if(!found) {
+        				var tdata = {
+							track_name: tV.track.name,
+							pos: [],
+							feature: []
+						};
+						track_data.push(tdata);
+        				$scope.getFeatures(tV.track.name,track_data.length-1);
+        			}
+        		}
+        	});
+
         	var referenceFrame = $scope.myIgv.referenceFrame;
             //var viewportWidth = Math.floor($scope.myIgv.viewportContainerWidth()/genomicState.locusCount);
         	var viewportWidth = $scope.myIgv.trackViewportWidth();
@@ -621,6 +661,7 @@
 
         };
         
+
         
                 
 	}

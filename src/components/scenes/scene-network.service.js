@@ -51,8 +51,8 @@
 			var totalPairs = ((dataLength * dataLength) - dataLength) * 0.5;
 
 			var vertexPairs = getVertexPairs(data, totalPairs);
-			var vertexRGB = overlay.RGB;
-			var vertexAlpha = overlay.alpha;
+			var vertexRGB = new Float32Array(overlay.RGB);
+			var vertexAlpha = new Float32Array(overlay.alpha);
 
 			var geometry = new THREE.BufferGeometry();
 			geometry.addAttribute( 'position', new THREE.BufferAttribute( vertexPairs, 3 ) );

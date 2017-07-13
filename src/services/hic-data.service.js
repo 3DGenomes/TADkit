@@ -13,6 +13,7 @@
 			value: [],
 			tads: []
 		};
+		var interaction_freq = 0;
 		return {
 			set: function (datasetHic_data) {
 				var self = this;
@@ -39,6 +40,11 @@
 				hic_data = datasetHic_data;
 							
 				return hic_data;
+			},
+			setInteractionFreq: function (freq) {
+				interaction_freq = freq;
+							
+				return;
 			},
 			setTADS: function (datasetTADS) {
 				hic_data.tads = datasetTADS;
