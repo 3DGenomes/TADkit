@@ -488,10 +488,20 @@ md-checkbox.md-checked .md-icon {
  */
 .panel-inspector .component-body div {
 	overflow: overlay;
-	float: left;
 }
 .panel-inspector .component-body .feature-title {
 	font-weight: bold;
+}
+.panel-inspector .component-body .feature-column-header{
+    width: 100%;
+    font-size: 0.9rem;
+    padding-right: 5px;
+    text-align: center;
+}
+.panel-inspector .component-body .feature-column-body{
+    width: 100%;
+    display: block;
+    text-align: center;
 }
 .panel-inspector .component-body .accordion .accordion-navigation > a,
 .panel-inspector .component-body .accordion dd > a {

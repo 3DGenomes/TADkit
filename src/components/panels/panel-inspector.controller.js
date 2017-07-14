@@ -21,7 +21,18 @@
 			if ($scope.$parent.settings.current.segmentUpper >= feature.start && $scope.$parent.settings.current.segmentLower <= feature.end) return true;
 			return false;
 		};
-
+		$scope.atLeftPosition = function(feature) {
+			if(angular.isUndefined($scope.settings.current.markers_position)) return;
+			var segment_span = ($scope.$parent.settings.current.segmentUpper - $scope.$parent.settings.current.segmentLower)/2;
+			if ($scope.settings.current.markers_position[1]-segment_span <= feature.start && $scope.settings.current.markers_position[1]+segment_span >= feature.end) return true;
+			return false;
+		};
+		$scope.atRightPosition = function(feature) {
+			if(angular.isUndefined($scope.settings.current.markers_position)) return;
+			var segment_span = ($scope.$parent.settings.current.segmentUpper - $scope.$parent.settings.current.segmentLower)/2;
+			if ($scope.settings.current.markers_position[0]-segment_span <= feature.start && $scope.settings.current.markers_position[0]+segment_span >= feature.end) return true;
+			return false;
+		};
 		$scope.formatRegionName = function(regionName) {
 			if (regionName == "Chromosome") {
 				return regionName;
@@ -31,11 +42,9 @@
 		};
 		
 		$scope.featureTitle = function(feature) {
-			if (!feature.name) {
-				return feature.id;
-			} else {
-				return feature.name;
-			}
+			if(!angular.isUndefined(feature.name)) return feature.name;
+			if(!angular.isUndefined(feature.id)) return feature.id;
+			if(!angular.isUndefined(feature.value)) return feature.value;
 		};
 
 		$scope.dataset_info = '<div class="component-caption" layout="column" layout-align="left center">'+
@@ -72,14 +81,15 @@
 		}
 
 		$scope.getDetails = function(item, event) {
-			$mdDialog.show(
-				$mdDialog.alert()
-					.title('Details')
-					.content(item.description)
-					.ariaLabel('Item details')
-					.ok('Close')
-					.targetEvent(event)
-			);
+			var output = '<div class="component-caption" layout="column" layout-align="left center">'+
+			'<table>';
+			for (var property in item) {
+				if (['name','id','value','score','strand','start','end'].indexOf(property) >= 0) 
+					output += '<tr><td><b>'+property+':</b></td><td>'+item[property]+'</td></tr>';
+			}
+			output += '</table>'+
+				'</div>'; 
+			$scope.showInfo(output);
 		};
 	}
 

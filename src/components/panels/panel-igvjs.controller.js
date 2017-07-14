@@ -378,7 +378,7 @@
          */
         $scope.$watch('settings.current.markers_position', function( newValue, oldValue ) {
 			if ( newValue !== oldValue) {
-				if ( newValue[0] === -1 || newValue[1] === -1) {
+				if ( angular.isUndefined($scope.settings.current.markers_position) || newValue[0] === -1 || newValue[1] === -1) {
 					$scope.hideTadkitMarkers();
 	        	} else {
 	        		$scope.updateTadkitMarkers(newValue);
@@ -388,6 +388,7 @@
         $scope.hideTadkitMarkers = function() {
         	dr.css("display","none");
         	dl.css("display","none");
+        	$scope.settings.current.markers_position = undefined;
         };
         $scope.updateTadkitMarkers = function(markerspos) {
         	var referenceFrame = $scope.myIgv.referenceFrame;

@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.directive('tkComponentPanelHicdata', tkComponentPanelHicdata);
 
-	function tkComponentPanelHicdata(d3Service, $timeout, Overlays, uuid4, Networks) {
+	function tkComponentPanelHicdata(d3Service, $timeout, Overlays, uuid4, Networks, Hic_data) {
 		return {
 			restrict: 'EA',
 			scope: { 
@@ -306,10 +306,11 @@
 						            		.attr("transform", "rotate(45 "+mouseCoords[0]+" "+mouseCoords[1]+")")
 						            		.attr('display', 'block');
 						            	
-						            	var pos = Math.round(transformCoords[0])+ Math.round(transformCoords[1])*scope.data.n;
+						            	var pos = Math.floor(transformCoords[0])+ Math.floor(transformCoords[1])*scope.data.n;
 						            	var value_index = scope.data.pos.indexOf(pos);
 						            	var value_text = 0;
 						            	if(value_index >= 0) value_text = scope.data.value[value_index];
+						            	Hic_data.setInteractionFreq(value_text);
 						            	contact_marker_value
 						            		.attr("x", mouseCoords[0])
 						            		.attr("y", mouseCoords[1]-10)

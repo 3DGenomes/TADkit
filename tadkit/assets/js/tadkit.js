@@ -397,7 +397,7 @@
 		.module('TADkit')
 		.directive('tkComponentPanelHicdata', tkComponentPanelHicdata);
 
-	function tkComponentPanelHicdata(d3Service, $timeout, Overlays, uuid4, Networks) {
+	function tkComponentPanelHicdata(d3Service, $timeout, Overlays, uuid4, Networks, Hic_data) {
 		return {
 			restrict: 'EA',
 			scope: { 
@@ -699,10 +699,11 @@
 						            		.attr("transform", "rotate(45 "+mouseCoords[0]+" "+mouseCoords[1]+")")
 						            		.attr('display', 'block');
 						            	
-						            	var pos = Math.round(transformCoords[0])+ Math.round(transformCoords[1])*scope.data.n;
+						            	var pos = Math.floor(transformCoords[0])+ Math.floor(transformCoords[1])*scope.data.n;
 						            	var value_index = scope.data.pos.indexOf(pos);
 						            	var value_text = 0;
 						            	if(value_index >= 0) value_text = scope.data.value[value_index];
+						            	Hic_data.setInteractionFreq(value_text);
 						            	contact_marker_value
 						            		.attr("x", mouseCoords[0])
 						            		.attr("y", mouseCoords[1]-10)
@@ -1381,7 +1382,7 @@
          */
         $scope.$watch('settings.current.markers_position', function( newValue, oldValue ) {
 			if ( newValue !== oldValue) {
-				if ( newValue[0] === -1 || newValue[1] === -1) {
+				if ( angular.isUndefined($scope.settings.current.markers_position) || newValue[0] === -1 || newValue[1] === -1) {
 					$scope.hideTadkitMarkers();
 	        	} else {
 	        		$scope.updateTadkitMarkers(newValue);
@@ -1391,6 +1392,7 @@
         $scope.hideTadkitMarkers = function() {
         	dr.css("display","none");
         	dl.css("display","none");
+        	$scope.settings.current.markers_position = undefined;
         };
         $scope.updateTadkitMarkers = function(markerspos) {
         	var referenceFrame = $scope.myIgv.referenceFrame;
@@ -1769,7 +1771,18 @@
 			if ($scope.$parent.settings.current.segmentUpper >= feature.start && $scope.$parent.settings.current.segmentLower <= feature.end) return true;
 			return false;
 		};
-
+		$scope.atLeftPosition = function(feature) {
+			if(angular.isUndefined($scope.settings.current.markers_position)) return;
+			var segment_span = ($scope.$parent.settings.current.segmentUpper - $scope.$parent.settings.current.segmentLower)/2;
+			if ($scope.settings.current.markers_position[1]-segment_span <= feature.start && $scope.settings.current.markers_position[1]+segment_span >= feature.end) return true;
+			return false;
+		};
+		$scope.atRightPosition = function(feature) {
+			if(angular.isUndefined($scope.settings.current.markers_position)) return;
+			var segment_span = ($scope.$parent.settings.current.segmentUpper - $scope.$parent.settings.current.segmentLower)/2;
+			if ($scope.settings.current.markers_position[0]-segment_span <= feature.start && $scope.settings.current.markers_position[0]+segment_span >= feature.end) return true;
+			return false;
+		};
 		$scope.formatRegionName = function(regionName) {
 			if (regionName == "Chromosome") {
 				return regionName;
@@ -1779,11 +1792,9 @@
 		};
 		
 		$scope.featureTitle = function(feature) {
-			if (!feature.name) {
-				return feature.id;
-			} else {
-				return feature.name;
-			}
+			if(!angular.isUndefined(feature.name)) return feature.name;
+			if(!angular.isUndefined(feature.id)) return feature.id;
+			if(!angular.isUndefined(feature.value)) return feature.value;
 		};
 
 		$scope.dataset_info = '<div class="component-caption" layout="column" layout-align="left center">'+
@@ -1820,14 +1831,15 @@
 		}
 
 		$scope.getDetails = function(item, event) {
-			$mdDialog.show(
-				$mdDialog.alert()
-					.title('Details')
-					.content(item.description)
-					.ariaLabel('Item details')
-					.ok('Close')
-					.targetEvent(event)
-			);
+			var output = '<div class="component-caption" layout="column" layout-align="left center">'+
+			'<table>';
+			for (var property in item) {
+				if (['name','id','value','score','strand','start','end'].indexOf(property) >= 0) 
+					output += '<tr><td><b>'+property+':</b></td><td>'+item[property]+'</td></tr>';
+			}
+			output += '</table>'+
+				'</div>'; 
+			$scope.showInfo(output);
 		};
 	}
 
@@ -8892,11 +8904,6 @@
 				track_data = datasetTrack_data;
 							
 				return track_data;
-			},
-			add: function (datasetTrack_data) {
-				track_data.push(datasetTrack_data);
-							
-				return;
 			},
 			get: function() {
 				return track_data;
