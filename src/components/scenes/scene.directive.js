@@ -29,7 +29,7 @@
 					var camera, cameraPosition, cameraTarget, cameraTranslate;
 					var ambientLight, pointLight;
 					var playback, controls, renderer;
-					var particles, chromatin, network, spheres, ring;
+					var particles, chromatin, network, spheres, ring, leftring, rightring, linker, linker_label;
 					var particlesObj, chromatinObj, networkObj, sphereObj;
 					//var raycaster, mouse;
 					var width, height, contW, contH, windowHalfX, windowHalfY;
@@ -73,12 +73,34 @@
 								var radius = chromatin.children[0].geometry.parameters.radius+0.2*chromatin.children[0].geometry.parameters.radius;
 								var ringGeometry = new THREE.RingGeometry(radius, radius+1.0*radius, 50);
 								//ringGeometry.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI / 2 ) );
-								ring = new THREE.Mesh(ringGeometry, new THREE.MeshBasicMaterial({ color: 0x32cd32, side: THREE.DoubleSide}));
-								ring.position.x = particles.geometry.vertices[0].x;
-								ring.position.y = particles.geometry.vertices[0].y;
-								ring.position.z = particles.geometry.vertices[0].z;
-							
+								ring = new THREE.Mesh(ringGeometry, new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide}));
+								
 								scene.add(ring);
+
+								leftring = new THREE.Mesh(ringGeometry, new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide}));
+								leftring.visible = false;
+								scene.add(leftring);
+
+								rightring = new THREE.Mesh(ringGeometry, new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide}));
+								rightring.visible = false;
+								scene.add(rightring);
+
+								var link_def = new THREE.Geometry();
+
+								link_def.vertices.push(leftring.position);
+								link_def.vertices.push(rightring.position);
+								
+								
+								linker = new THREE.Line(link_def, new THREE.LineDashedMaterial( {
+									color: 0xff0000,
+									linewidth: 1,
+									scale: 1,
+									dashSize: 3,
+									gapSize: 2,
+								} ));
+								linker.visible = false;
+								scene.add(linker);
+
 
 								spheres = new THREE.Object3D();
 								var start_tad, end_tad, radius_cloud, centre_of_mass;
@@ -399,34 +421,37 @@
 								particlesObj.geometry.colorsNeedUpdate = true;
 							}
 						});
-
+						scope.updateRingPosition = function(ring,newSegment,oldSegment) {
+							if(chromatinObj.children[0].geometry.vertices.length > (newSegment+1)*8+8) {
+								var vec, i;
+								vec = chromatinObj.children[0].geometry.vertices[(newSegment+1)*8];
+								
+									for(i=1;i<8;i++){
+										vec.add(chromatinObj.children[0].geometry.vertices[(newSegment+1)*8+i]);
+									}
+									vec.divideScalar(8);
+								
+								
+								ring.position.x = vec.x;
+								ring.position.y = vec.y;
+								ring.position.z = vec.z;
+								
+								vec = chromatinObj.children[0].geometry.vertices[oldSegment*8];
+								for(i=1;i<8;i++){
+									vec.add(chromatinObj.children[0].geometry.vertices[oldSegment*8+i]);
+								}
+								vec.divideScalar(8);
+								ring.lookAt(vec);
+							}
+							return;
+						};
 						/* Watch for Browser-wide Position updates */
 						scope.$watch('settings.current.segment', function( newSegment, oldSegment ) {
-							if ( newSegment !== oldSegment ) {
+							if ( newSegment !== oldSegment || (ring.position.x === 0 && ring.position.y === 0 && ring.position.z === 0)) {
 								//if(scope.view.settings.chromatin.tubed) return;
 								if(scope.view.settings.chromatin.tubed) {
-									if(chromatinObj.children[0].geometry.vertices.length > (newSegment+1)*8+8) {
-										var vec, i;
-										vec = chromatinObj.children[0].geometry.vertices[(newSegment+1)*8];
-										
-											for(i=1;i<8;i++){
-												vec.add(chromatinObj.children[0].geometry.vertices[(newSegment+1)*8+i]);
-											}
-											vec.divideScalar(8);
-										
-										
-										ring.position.x = vec.x;
-										ring.position.y = vec.y;
-										ring.position.z = vec.z;
-										
-										vec = chromatinObj.children[0].geometry.vertices[oldSegment*8];
-										for(i=1;i<8;i++){
-											vec.add(chromatinObj.children[0].geometry.vertices[oldSegment*8+i]);
-										}
-										vec.divideScalar(8);
-										ring.lookAt(vec);
-									}
-									return;
+									scope.updateRingPosition(ring,newSegment,oldSegment);
+									
 								}
 								// SET CHROMATIN CURSOR COLOR
 
@@ -449,7 +474,37 @@
 						});
 
 					};
+					scope.$watch('settings.current.markers_position', function( newValue, oldValue ) {
+						if ( newValue !== oldValue) {
+							if(scope.view.settings.chromatin.tubed) {
+								if ( angular.isUndefined(scope.settings.current.markers_position) || newValue[0] === -1 || newValue[1] === -1) {	
+									leftring.visible = false;
+									rightring.visible = false;
+									linker.visible = false;
+									scene.remove(linker_label);
+									linker_label = undefined;
+					        	} else {
+					        		//var newLeftPos = Math.floor((scope.settings.current.markers_position[1] - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
+									//var newRightPos = Math.floor((scope.settings.current.markers_position[0] - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
+									var newLeftPos = Settings.getSegment(scope.settings.current.markers_position[1]);
+									var newRightPos = Settings.getSegment(scope.settings.current.markers_position[0]);
+									
+									var oldLeftPos = newLeftPos>0 ? newLeftPos-1 : 0;
+									var oldRightPos = newRightPos>0 ? newRightPos-1 : 0;
 
+					        		scope.updateRingPosition(leftring,newLeftPos, oldLeftPos);
+									scope.updateRingPosition(rightring,newRightPos, oldRightPos);
+									leftring.visible = true;
+									rightring.visible = true;
+									linker.visible = true;
+									linker.geometry.computeLineDistances();
+									linker.geometry.verticesNeedUpdate = true;
+
+									
+					        	}
+					        }
+						}
+					});
 					// -----------------------------------
 					// Event listeners
 					// -----------------------------------

@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.controller('PanelInspectorController', PanelInspectorController);
 
-	function PanelInspectorController($scope, $mdDialog) {
+	function PanelInspectorController($scope, $mdDialog, Settings) {
 
 		$scope.$watch('settings.views.scene_width', function( newValue, oldValue ) {
 			if ( newValue !== oldValue ) {
@@ -24,13 +24,15 @@
 		$scope.atLeftPosition = function(feature) {
 			if(angular.isUndefined($scope.settings.current.markers_position)) return;
 			var segment_span = ($scope.$parent.settings.current.segmentUpper - $scope.$parent.settings.current.segmentLower)/2;
-			if ($scope.settings.current.markers_position[1]-segment_span <= feature.start && $scope.settings.current.markers_position[1]+segment_span >= feature.end) return true;
+
+			if ($scope.settings.current.markers_position[1]+segment_span >= feature.start && $scope.settings.current.markers_position[1]-segment_span <= feature.end) return true;
 			return false;
 		};
 		$scope.atRightPosition = function(feature) {
 			if(angular.isUndefined($scope.settings.current.markers_position)) return;
 			var segment_span = ($scope.$parent.settings.current.segmentUpper - $scope.$parent.settings.current.segmentLower)/2;
-			if ($scope.settings.current.markers_position[0]-segment_span <= feature.start && $scope.settings.current.markers_position[0]+segment_span >= feature.end) return true;
+			
+			if ($scope.settings.current.markers_position[0]+segment_span >= feature.start && $scope.settings.current.markers_position[0]-segment_span <= feature.end) return true;
 			return false;
 		};
 		$scope.formatRegionName = function(regionName) {
@@ -46,7 +48,19 @@
 			if(!angular.isUndefined(feature.id)) return feature.id;
 			if(!angular.isUndefined(feature.value)) return feature.value;
 		};
+		$scope.interactionDistance = function() {
+			if ( !angular.isUndefined($scope.settings.current.markers_position)) {
+				var LeftPart = Settings.getParticle($scope.settings.current.markers_position[1]);
+				var RightPart = Settings.getParticle($scope.settings.current.markers_position[0]);
 
+				var xd = $scope.data.data[(LeftPart-1)*3] - $scope.data.data[(RightPart-1)*3];
+				var yd = $scope.data.data[(LeftPart-1)*3+1] - $scope.data.data[(RightPart-1)*3+1];
+				var zd = $scope.data.data[(LeftPart-1)*3+2] - $scope.data.data[(RightPart-1)*3+2];
+				
+				var dist = Math.round(Math.sqrt( xd*xd + yd*yd + zd*zd ));
+				return dist;
+			}
+		};
 		$scope.dataset_info = '<div class="component-caption" layout="column" layout-align="left center">'+
 				'<h2>'+$scope.data.object.title+'</h2><table>'+
 					'<tr><td><b>Species:</b></td><td>'+$scope.data.object.species+'</td></tr>'+

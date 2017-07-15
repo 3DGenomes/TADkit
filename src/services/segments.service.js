@@ -15,11 +15,19 @@
 				var hexStart = overlay.palette[0];
 				var hexEnd = overlay.palette[1];
 
+				//var hStart = new THREE.Color(hexStart);
+				//var hEnd = new THREE.Color(hexEnd);
+				
 				for (var i = count - 1; i >= 0; i--) {
 					var step = i / count; // This should be between 0 and 1
 					var hex = d3.interpolateHcl(hexStart, hexEnd)(step);
 					gradient.push(hex);
 				}
+				// for (var i = 0; i < count; i++) {
+				// 	var step = i / count; // This should be between 0 and 1
+				// 	var hex = '#'+hStart.lerp(hEnd,step).getHexString();
+				// 	gradient.push(hex);
+				// }
 				return gradient;
 			},
 			gradientComponentRGB: function(overlay, count) { // UNUSED

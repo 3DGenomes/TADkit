@@ -1008,7 +1008,7 @@
 		.module('TADkit')
 		.controller('PanelIgvjsController', PanelIgvjsController);
 
-	function PanelIgvjsController($scope, $window, $timeout, Overlays,Storyboards, uuid4, Track_data, d3Service, Users) {
+	function PanelIgvjsController($scope, $window, $timeout, Overlays,Storyboards, uuid4, Track_data, d3Service, Users, Settings) {
 
 		if(angular.isUndefined($scope.settings.current.speciesUrl)) return;
 
@@ -1395,6 +1395,9 @@
         	$scope.settings.current.markers_position = undefined;
         };
         $scope.updateTadkitMarkers = function(markerspos) {
+
+        	$scope.updateFeaturesList();
+
         	var referenceFrame = $scope.myIgv.referenceFrame;
     		var leftpx = (markerspos[1]-referenceFrame.start)/referenceFrame.bpPerPixel; 
         	dl.css("display","block");
@@ -1426,13 +1429,8 @@
 				}
         	});
         };
-        /*
-        igvjs developers expose an event when the browser changes locus.
-        We profit from it to update tadkit position in the 2D and 3D panels
-        */
-        $scope.myIgv.on('locuschange', function (refFrame, label) {
-        	
 
+        $scope.updateFeaturesList = function() {
         	$scope.myIgv.trackViews.forEach(function (tV) {
         		if(tV.track.id != 'ruler' && tV.track.id != 'sequence') {
         			var found = false;
@@ -1450,6 +1448,15 @@
         			}
         		}
         	});
+        };
+        /*
+        igvjs developers expose an event when the browser changes locus.
+        We profit from it to update tadkit position in the 2D and 3D panels
+        */
+        $scope.myIgv.on('locuschange', function (refFrame, label) {
+        	
+
+        	$scope.updateFeaturesList();
 
         	var referenceFrame = $scope.myIgv.referenceFrame;
             //var viewportWidth = Math.floor($scope.myIgv.viewportContainerWidth()/genomicState.locusCount);
@@ -1754,7 +1761,7 @@
 		.module('TADkit')
 		.controller('PanelInspectorController', PanelInspectorController);
 
-	function PanelInspectorController($scope, $mdDialog) {
+	function PanelInspectorController($scope, $mdDialog, Settings) {
 
 		$scope.$watch('settings.views.scene_width', function( newValue, oldValue ) {
 			if ( newValue !== oldValue ) {
@@ -1774,13 +1781,15 @@
 		$scope.atLeftPosition = function(feature) {
 			if(angular.isUndefined($scope.settings.current.markers_position)) return;
 			var segment_span = ($scope.$parent.settings.current.segmentUpper - $scope.$parent.settings.current.segmentLower)/2;
-			if ($scope.settings.current.markers_position[1]-segment_span <= feature.start && $scope.settings.current.markers_position[1]+segment_span >= feature.end) return true;
+
+			if ($scope.settings.current.markers_position[1]+segment_span >= feature.start && $scope.settings.current.markers_position[1]-segment_span <= feature.end) return true;
 			return false;
 		};
 		$scope.atRightPosition = function(feature) {
 			if(angular.isUndefined($scope.settings.current.markers_position)) return;
 			var segment_span = ($scope.$parent.settings.current.segmentUpper - $scope.$parent.settings.current.segmentLower)/2;
-			if ($scope.settings.current.markers_position[0]-segment_span <= feature.start && $scope.settings.current.markers_position[0]+segment_span >= feature.end) return true;
+			
+			if ($scope.settings.current.markers_position[0]+segment_span >= feature.start && $scope.settings.current.markers_position[0]-segment_span <= feature.end) return true;
 			return false;
 		};
 		$scope.formatRegionName = function(regionName) {
@@ -1796,7 +1805,19 @@
 			if(!angular.isUndefined(feature.id)) return feature.id;
 			if(!angular.isUndefined(feature.value)) return feature.value;
 		};
+		$scope.interactionDistance = function() {
+			if ( !angular.isUndefined($scope.settings.current.markers_position)) {
+				var LeftPart = Settings.getParticle($scope.settings.current.markers_position[1]);
+				var RightPart = Settings.getParticle($scope.settings.current.markers_position[0]);
 
+				var xd = $scope.data.data[(LeftPart-1)*3] - $scope.data.data[(RightPart-1)*3];
+				var yd = $scope.data.data[(LeftPart-1)*3+1] - $scope.data.data[(RightPart-1)*3+1];
+				var zd = $scope.data.data[(LeftPart-1)*3+2] - $scope.data.data[(RightPart-1)*3+2];
+				
+				var dist = Math.round(Math.sqrt( xd*xd + yd*yd + zd*zd ));
+				return dist;
+			}
+		};
 		$scope.dataset_info = '<div class="component-caption" layout="column" layout-align="left center">'+
 				'<h2>'+$scope.data.object.title+'</h2><table>'+
 					'<tr><td><b>Species:</b></td><td>'+$scope.data.object.species+'</td></tr>'+
@@ -3054,7 +3075,7 @@
 					var camera, cameraPosition, cameraTarget, cameraTranslate;
 					var ambientLight, pointLight;
 					var playback, controls, renderer;
-					var particles, chromatin, network, spheres, ring;
+					var particles, chromatin, network, spheres, ring, leftring, rightring, linker, linker_label;
 					var particlesObj, chromatinObj, networkObj, sphereObj;
 					//var raycaster, mouse;
 					var width, height, contW, contH, windowHalfX, windowHalfY;
@@ -3098,12 +3119,34 @@
 								var radius = chromatin.children[0].geometry.parameters.radius+0.2*chromatin.children[0].geometry.parameters.radius;
 								var ringGeometry = new THREE.RingGeometry(radius, radius+1.0*radius, 50);
 								//ringGeometry.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI / 2 ) );
-								ring = new THREE.Mesh(ringGeometry, new THREE.MeshBasicMaterial({ color: 0x32cd32, side: THREE.DoubleSide}));
-								ring.position.x = particles.geometry.vertices[0].x;
-								ring.position.y = particles.geometry.vertices[0].y;
-								ring.position.z = particles.geometry.vertices[0].z;
-							
+								ring = new THREE.Mesh(ringGeometry, new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide}));
+								
 								scene.add(ring);
+
+								leftring = new THREE.Mesh(ringGeometry, new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide}));
+								leftring.visible = false;
+								scene.add(leftring);
+
+								rightring = new THREE.Mesh(ringGeometry, new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide}));
+								rightring.visible = false;
+								scene.add(rightring);
+
+								var link_def = new THREE.Geometry();
+
+								link_def.vertices.push(leftring.position);
+								link_def.vertices.push(rightring.position);
+								
+								
+								linker = new THREE.Line(link_def, new THREE.LineDashedMaterial( {
+									color: 0xff0000,
+									linewidth: 1,
+									scale: 1,
+									dashSize: 3,
+									gapSize: 2,
+								} ));
+								linker.visible = false;
+								scene.add(linker);
+
 
 								spheres = new THREE.Object3D();
 								var start_tad, end_tad, radius_cloud, centre_of_mass;
@@ -3424,34 +3467,37 @@
 								particlesObj.geometry.colorsNeedUpdate = true;
 							}
 						});
-
+						scope.updateRingPosition = function(ring,newSegment,oldSegment) {
+							if(chromatinObj.children[0].geometry.vertices.length > (newSegment+1)*8+8) {
+								var vec, i;
+								vec = chromatinObj.children[0].geometry.vertices[(newSegment+1)*8];
+								
+									for(i=1;i<8;i++){
+										vec.add(chromatinObj.children[0].geometry.vertices[(newSegment+1)*8+i]);
+									}
+									vec.divideScalar(8);
+								
+								
+								ring.position.x = vec.x;
+								ring.position.y = vec.y;
+								ring.position.z = vec.z;
+								
+								vec = chromatinObj.children[0].geometry.vertices[oldSegment*8];
+								for(i=1;i<8;i++){
+									vec.add(chromatinObj.children[0].geometry.vertices[oldSegment*8+i]);
+								}
+								vec.divideScalar(8);
+								ring.lookAt(vec);
+							}
+							return;
+						};
 						/* Watch for Browser-wide Position updates */
 						scope.$watch('settings.current.segment', function( newSegment, oldSegment ) {
-							if ( newSegment !== oldSegment ) {
+							if ( newSegment !== oldSegment || (ring.position.x === 0 && ring.position.y === 0 && ring.position.z === 0)) {
 								//if(scope.view.settings.chromatin.tubed) return;
 								if(scope.view.settings.chromatin.tubed) {
-									if(chromatinObj.children[0].geometry.vertices.length > (newSegment+1)*8+8) {
-										var vec, i;
-										vec = chromatinObj.children[0].geometry.vertices[(newSegment+1)*8];
-										
-											for(i=1;i<8;i++){
-												vec.add(chromatinObj.children[0].geometry.vertices[(newSegment+1)*8+i]);
-											}
-											vec.divideScalar(8);
-										
-										
-										ring.position.x = vec.x;
-										ring.position.y = vec.y;
-										ring.position.z = vec.z;
-										
-										vec = chromatinObj.children[0].geometry.vertices[oldSegment*8];
-										for(i=1;i<8;i++){
-											vec.add(chromatinObj.children[0].geometry.vertices[oldSegment*8+i]);
-										}
-										vec.divideScalar(8);
-										ring.lookAt(vec);
-									}
-									return;
+									scope.updateRingPosition(ring,newSegment,oldSegment);
+									
 								}
 								// SET CHROMATIN CURSOR COLOR
 
@@ -3474,7 +3520,37 @@
 						});
 
 					};
+					scope.$watch('settings.current.markers_position', function( newValue, oldValue ) {
+						if ( newValue !== oldValue) {
+							if(scope.view.settings.chromatin.tubed) {
+								if ( angular.isUndefined(scope.settings.current.markers_position) || newValue[0] === -1 || newValue[1] === -1) {	
+									leftring.visible = false;
+									rightring.visible = false;
+									linker.visible = false;
+									scene.remove(linker_label);
+									linker_label = undefined;
+					        	} else {
+					        		//var newLeftPos = Math.floor((scope.settings.current.markers_position[1] - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
+									//var newRightPos = Math.floor((scope.settings.current.markers_position[0] - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
+									var newLeftPos = Settings.getSegment(scope.settings.current.markers_position[1]);
+									var newRightPos = Settings.getSegment(scope.settings.current.markers_position[0]);
+									
+									var oldLeftPos = newLeftPos>0 ? newLeftPos-1 : 0;
+									var oldRightPos = newRightPos>0 ? newRightPos-1 : 0;
 
+					        		scope.updateRingPosition(leftring,newLeftPos, oldLeftPos);
+									scope.updateRingPosition(rightring,newRightPos, oldRightPos);
+									leftring.visible = true;
+									rightring.visible = true;
+									linker.visible = true;
+									linker.geometry.computeLineDistances();
+									linker.geometry.verticesNeedUpdate = true;
+
+									
+					        	}
+					        }
+						}
+					});
 					// -----------------------------------
 					// Event listeners
 					// -----------------------------------
@@ -8336,11 +8412,19 @@
 				var hexStart = overlay.palette[0];
 				var hexEnd = overlay.palette[1];
 
+				//var hStart = new THREE.Color(hexStart);
+				//var hEnd = new THREE.Color(hexEnd);
+				
 				for (var i = count - 1; i >= 0; i--) {
 					var step = i / count; // This should be between 0 and 1
 					var hex = d3.interpolateHcl(hexStart, hexEnd)(step);
 					gradient.push(hex);
 				}
+				// for (var i = 0; i < count; i++) {
+				// 	var step = i / count; // This should be between 0 and 1
+				// 	var hex = '#'+hStart.lerp(hEnd,step).getHexString();
+				// 	gradient.push(hex);
+				// }
 				return gradient;
 			},
 			gradientComponentRGB: function(overlay, count) { // UNUSED

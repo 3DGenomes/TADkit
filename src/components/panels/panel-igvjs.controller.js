@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.controller('PanelIgvjsController', PanelIgvjsController);
 
-	function PanelIgvjsController($scope, $window, $timeout, Overlays,Storyboards, uuid4, Track_data, d3Service, Users) {
+	function PanelIgvjsController($scope, $window, $timeout, Overlays,Storyboards, uuid4, Track_data, d3Service, Users, Settings) {
 
 		if(angular.isUndefined($scope.settings.current.speciesUrl)) return;
 
@@ -391,6 +391,9 @@
         	$scope.settings.current.markers_position = undefined;
         };
         $scope.updateTadkitMarkers = function(markerspos) {
+
+        	$scope.updateFeaturesList();
+
         	var referenceFrame = $scope.myIgv.referenceFrame;
     		var leftpx = (markerspos[1]-referenceFrame.start)/referenceFrame.bpPerPixel; 
         	dl.css("display","block");
@@ -422,13 +425,8 @@
 				}
         	});
         };
-        /*
-        igvjs developers expose an event when the browser changes locus.
-        We profit from it to update tadkit position in the 2D and 3D panels
-        */
-        $scope.myIgv.on('locuschange', function (refFrame, label) {
-        	
 
+        $scope.updateFeaturesList = function() {
         	$scope.myIgv.trackViews.forEach(function (tV) {
         		if(tV.track.id != 'ruler' && tV.track.id != 'sequence') {
         			var found = false;
@@ -446,6 +444,15 @@
         			}
         		}
         	});
+        };
+        /*
+        igvjs developers expose an event when the browser changes locus.
+        We profit from it to update tadkit position in the 2D and 3D panels
+        */
+        $scope.myIgv.on('locuschange', function (refFrame, label) {
+        	
+
+        	$scope.updateFeaturesList();
 
         	var referenceFrame = $scope.myIgv.referenceFrame;
             //var viewportWidth = Math.floor($scope.myIgv.viewportContainerWidth()/genomicState.locusCount);

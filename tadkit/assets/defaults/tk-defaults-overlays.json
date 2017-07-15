@@ -20,7 +20,7 @@
 				"overlaid" : false
 			}
 		},
-		"palette" : ["#0000ff","#ff0000"],
+		"palette" : ["#0000ff","#00ffff"],
 		"data" : [],
 		"colors" : {
 			"particles" : [],
