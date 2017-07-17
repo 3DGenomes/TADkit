@@ -24,12 +24,12 @@
 		$mdThemingProvider.definePalette('VreMap', VreMap);
 		// Material Design Themes
 		$mdThemingProvider.theme('default')
-			.primaryPalette('green')
-			.accentPalette('lime', {
-				'default': '500'
-			})	
-			//.primaryPalette('VreMap')
-			//.accentPalette('blue')
+			//.primaryPalette('green')
+			//.accentPalette('lime', {
+			//	'default': '500'
+			//})	
+			.primaryPalette('VreMap')
+			.accentPalette('blue')
    			.warnPalette('red')
 			.backgroundPalette('grey');
 		$mdThemingProvider.theme('darkKit')
