@@ -439,7 +439,7 @@
 				scope.update_marks =  function() {
 					var x = (scope.settings.current.particle*Math.sqrt(2))*scope.scale+(scope.translatePos.x)+parseInt(scope.state.offsetx);
 					handle.attr("cx",x);
-					position.attr("x",x).text(scope.settings.current.particle);
+					position.attr("x",x).text(scope.settings.current.particle+1);
 					
 					contact_marker.attr('display', 'none');
 	            	contact_marker_value.attr('display', 'none');

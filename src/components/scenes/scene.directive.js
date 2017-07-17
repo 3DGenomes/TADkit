@@ -488,6 +488,9 @@
 									//var newRightPos = Math.floor((scope.settings.current.markers_position[0] - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
 									var newLeftPos = Settings.getSegment(scope.settings.current.markers_position[1]);
 									var newRightPos = Settings.getSegment(scope.settings.current.markers_position[0]);
+									//var newLeftPos = (Settings.getParticle(scope.settings.current.markers_position[1])-1)*scope.settings.current.particleSegments+Math.round(scope.settings.current.particleSegments/2);
+									//var newRightPos = (Settings.getParticle(scope.settings.current.markers_position[0])-1)*scope.settings.current.particleSegments+Math.round(scope.settings.current.particleSegments/2);
+									
 									
 									var oldLeftPos = newLeftPos>0 ? newLeftPos-1 : 0;
 									var oldRightPos = newRightPos>0 ? newRightPos-1 : 0;

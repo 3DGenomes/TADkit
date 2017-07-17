@@ -88,7 +88,7 @@
 				//var chromRange = self.getRange(settings.current.chromStart, settings.current.chromEnd);
 				var chromOffset = chromPosition-settings.current.chromStart;
 				var chromRange = settings.current.chromEnd-settings.current.chromStart;
-				var segment = Math.ceil((chromOffset * settings.current.segmentsCount) / chromRange);
+				var segment = Math.ceil((chromOffset * (settings.current.segmentsCount+1)) / chromRange);
 				return segment;
 			},
 			getParticle: function (chromPosition) {

@@ -832,7 +832,7 @@
 				scope.update_marks =  function() {
 					var x = (scope.settings.current.particle*Math.sqrt(2))*scope.scale+(scope.translatePos.x)+parseInt(scope.state.offsetx);
 					handle.attr("cx",x);
-					position.attr("x",x).text(scope.settings.current.particle);
+					position.attr("x",x).text(scope.settings.current.particle+1);
 					
 					contact_marker.attr('display', 'none');
 	            	contact_marker_value.attr('display', 'none');
@@ -3534,6 +3534,9 @@
 									//var newRightPos = Math.floor((scope.settings.current.markers_position[0] - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
 									var newLeftPos = Settings.getSegment(scope.settings.current.markers_position[1]);
 									var newRightPos = Settings.getSegment(scope.settings.current.markers_position[0]);
+									//var newLeftPos = (Settings.getParticle(scope.settings.current.markers_position[1])-1)*scope.settings.current.particleSegments+Math.round(scope.settings.current.particleSegments/2);
+									//var newRightPos = (Settings.getParticle(scope.settings.current.markers_position[0])-1)*scope.settings.current.particleSegments+Math.round(scope.settings.current.particleSegments/2);
+									
 									
 									var oldLeftPos = newLeftPos>0 ? newLeftPos-1 : 0;
 									var oldRightPos = newRightPos>0 ? newRightPos-1 : 0;
@@ -8681,7 +8684,7 @@
 				//var chromRange = self.getRange(settings.current.chromStart, settings.current.chromEnd);
 				var chromOffset = chromPosition-settings.current.chromStart;
 				var chromRange = settings.current.chromEnd-settings.current.chromStart;
-				var segment = Math.ceil((chromOffset * settings.current.segmentsCount) / chromRange);
+				var segment = Math.ceil((chromOffset * (settings.current.segmentsCount+1)) / chromRange);
 				return segment;
 			},
 			getParticle: function (chromPosition) {
