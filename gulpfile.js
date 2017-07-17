@@ -45,7 +45,7 @@ gulp.task('dist-scripts', function() {
 		'src/layout/*.js',
 		'src/services/*.js',
 		])
-		.pipe(concat('tadkit.js'))
+		.pipe(concat('tadkit-1707-01.js'))
 		// .pipe(gulp.dest('dist'))
 		.pipe(gulp.dest('tadkit/assets/js'))
 		.pipe(rename('tadkit.min.js'))
@@ -141,7 +141,7 @@ gulp.task('assets-css', function() {
 		'src/assets/css/tadkit.css',
 		'src/assets/css/ensembl-genes.css',
 		'src/assets/css/angular-awesome-slider.min.css',
-		'src/assets/css/igv.css',
+		'src/assets/css/igv-1.0.9.css',
 		'bower_components/jquery-ui/themes/cupertino/jquery-ui.css',
 		'bower_components/angular-resizable/angular-resizable.min.css'
 		])

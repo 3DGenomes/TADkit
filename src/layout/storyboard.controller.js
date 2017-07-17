@@ -65,9 +65,12 @@
 					all_data = {
 						tad_data: Hic_data.get(),
 						track_data: Track_data.get(),
-						data: $scope.current.model.data,
+						data: [],
 						object: $scope.current.dataset.object
 					};
+					if(!angular.isUndefined($scope.current.model)) {
+						all_data.data = $scope.current.model.data;
+					}
 					component.data = all_data;
 					component.overlay = overlay;
 				} else if (component.object.type == "track-proximities") {

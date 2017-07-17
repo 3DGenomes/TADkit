@@ -12,6 +12,13 @@
 		var scene_width = 0;
 		if(typeof scene_component !== 'undefined') {
 			scene_width = parseInt(scene_component.object.state.width);
+		} else {
+			var inspector_component = Storyboards.getComponentById('Inspector');
+			var inspector_width = 0;
+			if(typeof inspector_component !== 'undefined') {
+				inspector_width = parseInt(inspector_component.object.state.width);
+			}
+			scene_width = inspector_width;
 		}
 		$scope.width = $scope.state.width = $window.innerWidth - scene_width - 50 - 2*parseInt($scope.state.margin);
 		$scope.height = $scope.state.height =  parseInt($scope.state.height)-2*parseInt($scope.state.margin); // strip PX units

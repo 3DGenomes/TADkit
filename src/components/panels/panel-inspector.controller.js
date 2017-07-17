@@ -49,7 +49,7 @@
 			if(!angular.isUndefined(feature.value)) return feature.value;
 		};
 		$scope.interactionDistance = function() {
-			if ( !angular.isUndefined($scope.settings.current.markers_position)) {
+			if ( !angular.isUndefined($scope.settings.current.markers_position && $scope.data.length>0)) {
 				var LeftPart = Settings.getParticle($scope.settings.current.markers_position[1]);
 				var RightPart = Settings.getParticle($scope.settings.current.markers_position[0]);
 
@@ -59,6 +59,8 @@
 				
 				var dist = Math.round(Math.sqrt( xd*xd + yd*yd + zd*zd ));
 				return dist;
+			} else {
+				return -1;
 			}
 		};
 		$scope.dataset_info = '<div class="component-caption" layout="column" layout-align="left center">'+
