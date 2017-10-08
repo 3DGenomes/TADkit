@@ -17,6 +17,11 @@
 		$scope.width = parseInt($scope.state.width); // strip PX units
 		$scope.height = parseInt($scope.state.height); // strip PX units
 
+		var scale;
+		if(angular.isUndefined($scope.data.object.bp_per_nm)) 
+			scale = $scope.data.object.resolution * 0.01;
+		else
+			scale = $scope.data.object.resolution * $scope.data.object.bp_per_nm;
 		$scope.atPosition = function(feature) {
 			if ($scope.$parent.settings.current.segmentUpper >= feature.start && $scope.$parent.settings.current.segmentLower <= feature.end) return true;
 			return false;

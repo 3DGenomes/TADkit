@@ -45,7 +45,7 @@ gulp.task('dist-scripts', function() {
 		'src/layout/*.js',
 		'src/services/*.js',
 		])
-		.pipe(concat('tadkit-1707-01.js'))
+		.pipe(concat('tadkit-0810-01.js'))
 		// .pipe(gulp.dest('dist'))
 		.pipe(gulp.dest('tadkit/assets/js'))
 		.pipe(rename('tadkit.min.js'))

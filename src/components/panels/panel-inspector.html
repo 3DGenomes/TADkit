@@ -10,7 +10,7 @@
 					<md-tooltip md-direction="right" md-delay="0">dataset information</md-tooltip>
 				</button>
 				<md-content ng-show="settings.current.markers_position[1]>0 && interactionDistance()>0">
-					<span class="feature-title">Distance of interaction: </span><span class="">{{interactionDistance()}} model units</span>
+					<span class="feature-title">Distance of interaction: </span><span class="">{{interactionDistance()}} nm</span>
 				</md-content>
 			 	<md-content ng-repeat="tdata in data.track_data">
 			 		<p class="feature-title">{{tdata.track_name}}</p>
