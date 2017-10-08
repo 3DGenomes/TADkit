@@ -97,6 +97,15 @@
 								"100000" : 5
 							}
 						},
+						"cluster" : {
+							"color" : "0x000000",
+							"linewidth" : 1,
+							"transparent" : true,
+							"modelOpacity" : 0.1,
+							"centroidOpacity" : 0.8,
+							"fog" : true,
+							"visible" : true
+						},
 						"network" : {
 							"transparent": false,
 							"visible" : false
@@ -223,7 +232,7 @@
 									    {
 									      "name": "Fillion Colors",
 									      "type": "annotation",
-									      "format": "gff3",
+									      "format": "gff",
 									      "sourceType": "file",
 									      "url": "assets/data/fill.gff",
 									      "indexed": false

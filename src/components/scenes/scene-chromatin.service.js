@@ -107,6 +107,8 @@
 				
 				chromatinGeometry.dynamic = true;
 				chromatinGeometry.verticesNeedUpdate = true;
+				
+				chromatinGeometry.center();
 
 			    var tubeMesh = new THREE.Mesh(chromatinGeometry, new THREE.MeshLambertMaterial({
 			        color: 0xffffff,
@@ -162,6 +164,7 @@
 					});
 					var segment = segmentGeometry(cubicGeom.vertices[i], cubicGeom.vertices[i+1], this );
 					chromatinGeometry.merge(segment);
+					THREE.GeometryUtils.center( chromatinGeometry );
 
 					var chromatinSegment = new THREE.Mesh(segment, segmentMaterial);
 					chromatinSegment.name = "segment-" + (i + 1);

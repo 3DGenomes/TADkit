@@ -156,6 +156,9 @@
 				var cluster = datasets.loaded[datasets.current.index].clusters[ref - 1];
 				return cluster; // array of model refs
 			},
+			getClusterId: function() { 
+				return datasets.current.cluster;
+			},
 			getCentroid: function(ref) { // from cluster ref (NOT model ref)
 				ref = ref || datasets.current.cluster;
 				var centroid = datasets.loaded[datasets.current.index].centroids[ref - 1];

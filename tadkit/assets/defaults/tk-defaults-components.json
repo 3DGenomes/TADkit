@@ -70,6 +70,15 @@
 					"pathClosed" : false,
 					"visible" : true
 				},
+				"cluster" : {
+					"color" : "0x000000",
+					"linewidth" : 1,
+					"transparent" : true,
+					"modelOpacity" : 0.1,
+					"centroidOpacity" : 0.8,
+					"fog" : true,
+					"visible" : true
+				},
 				"occupancy" :  {
 					"visible" : false
 				},

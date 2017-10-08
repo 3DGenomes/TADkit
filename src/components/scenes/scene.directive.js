@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.directive('tkComponentScene', tkComponentScene);
 
-	function tkComponentScene(Particles, Chromatin, Network, Settings, Networks, ColorConvert) {
+	function tkComponentScene(Particles, Chromatin, Network, Cluster, Datasets, Segments, Settings, Networks, ColorConvert) {
 		return {
 			restrict: 'EA',
 			scope: { 
@@ -29,8 +29,8 @@
 					var camera, cameraPosition, cameraTarget, cameraTranslate;
 					var ambientLight, pointLight;
 					var playback, controls, renderer;
-					var particles, chromatin, network, spheres, ring, leftring, rightring, linker, linker_label;
-					var particlesObj, chromatinObj, networkObj, sphereObj;
+					var particles, chromatin, cluster, network, spheres, ring, leftring, rightring, linker, linker_label;
+					var particlesObj, chromatinObj, clusterObj, networkObj, sphereObj;
 					//var raycaster, mouse;
 					var width, height, contW, contH, windowHalfX, windowHalfY;
 
@@ -144,10 +144,29 @@
 								
 							}
 							// GEOMETRY: MESH
-							// network = new Network(scope.proximities.positions, scope.proximities.distances, scope.view.settings.network);
-							network = new Network(scope.data.data, scope.overlay.colors.network, scope.view.settings.network);
-							network.visible = scope.view.settings.network.visible;
-							scene.add(network);
+							// network = new Network(scope.data.data, scope.overlay.colors.network, scope.view.settings.network);
+							// network.visible = scope.view.settings.network.visible;
+							// scene.add(network);
+
+							//GEOMETRY: CLUSTER
+							var clusterLength = scope.data.data.length / scope.data.object.components;
+							var gradientColors = Segments.gradientHCL(scope.currentoverlay, clusterLength);
+							var models = Datasets.getCluster();
+							var cluster_data = [];
+							for (var k = 0; k < models.length; k++) {
+								var model = Datasets.getModel(models[k]);
+								var modelData = model.data;
+								if (modelData) {cluster_data.unshift(modelData);}
+									else {console.log("Listed model not found!");}
+							
+							}
+							
+							cluster = new Cluster( cluster_data, -1, gradientColors, scope.view.settings.cluster );
+							cluster.visible = scope.view.settings.cluster.visible;
+							cluster.name = "Cluster View";
+							scene.add(cluster);
+
+
 
 						};
 						// VIEWPORT
@@ -286,6 +305,11 @@
 								chromatin.visible = !chromatin.visible;
 							}
 						});
+						scope.$watch('view.settings.cluster.visible', function( newValue, oldValue ) {
+							if ( newValue !== oldValue ) {
+								cluster.visible = !cluster.visible;
+							}
+						});
 						scope.$watch('view.settings.network.visible', function( newValue, oldValue ) {
 							if ( newValue !== oldValue ) {
 								network.visible = !network.visible;
@@ -294,6 +318,7 @@
 
 						particlesObj = scene.getObjectByName( "Particles Cloud" );
 						chromatinObj = scene.getObjectByName( "Chromatin Fiber" );
+						clusterObj = scene.getObjectByName( "Cluster View" );
 						networkObj = scene.getObjectByName( "Network Graph" );
 						
 
@@ -352,6 +377,7 @@
 							
 							particlesObj = scene.getObjectByName( "Particles Cloud" );
 							chromatinObj = scene.getObjectByName( "Chromatin Fiber" );
+							clusterObj = scene.getObjectByName( "Cluster View" );
 							networkObj = scene.getObjectByName( "Network Graph" );
 						};
 						// /* Watch for selected TAD */
@@ -567,9 +593,11 @@
 
 						scene.remove(particles);
 				        scene.remove(chromatin);
+				        scene.remove(cluster);
 				        scene.remove(network);
 				        scene.remove(particlesObj);
 				        scene.remove(chromatinObj);
+				        scene.remove(clusterObj);
 				        scene.remove(networkObj);
 				        
 				        particles.geometry.dispose();
@@ -599,18 +627,27 @@
 					        spheres = undefined;
 					        sphereObj = undefined;
 					    }
-				        for(i=0;i<network.children.length;i++) {
-				        	network.children[i].geometry.dispose();
-				        	network.children[i].material.dispose();
-				        	networkObj.children[i].geometry.dispose();
-				        	networkObj.children[i].material.dispose();
+					    for(i=0;i<cluster.children.length;i++) {
+				        	cluster.children[i].geometry.dispose();
+				        	cluster.children[i].material.dispose();
+				        	clusterObj.children[i].geometry.dispose();
+				        	clusterObj.children[i].material.dispose();
 				        	
-				        }     
+				        }  
+				        // for(i=0;i<network.children.length;i++) {
+				        // 	network.children[i].geometry.dispose();
+				        // 	network.children[i].material.dispose();
+				        // 	networkObj.children[i].geometry.dispose();
+				        // 	networkObj.children[i].material.dispose();
+				        	
+				        // }     
 				        
 				        particles = undefined;
 				        particlesObj = undefined;
 				        chromatinObj = undefined;
 				        chromatin = undefined;
+				        cluster = undefined;
+				        clusterObj = undefined;
 				        network = undefined;
 				        networkObj = undefined;
 				        
