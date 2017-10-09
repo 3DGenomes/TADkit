@@ -51,16 +51,13 @@ md-toolbar {
 .md-toolbar-tools .md-button {
   font-size: 1em;
 }
-md-input-container {
-	width: 220px;
-}
 .md-button.md-default-theme.md-accent,
 md-toolbar md-icon {
 	color: #fff;
 }
 md-input-container.md-default-theme .md-input {
 	text-align: end;
-	color: #fff;
+	/*color: #fff;*/
 	border-color: rgba(255,255,255,0.37);
 	/*width: 180px;*/
 }
@@ -486,7 +483,8 @@ md-checkbox.md-checked .md-icon {
 /**
  * PANELS
  */
-.panel-inspector .component-body div {
+.panel-inspector .component-body .md-tab-content {
+	padding-top: 10px;
 	overflow: overlay;
 }
 .panel-inspector .component-body .feature-title {

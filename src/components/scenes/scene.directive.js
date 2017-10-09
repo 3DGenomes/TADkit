@@ -332,7 +332,14 @@
 								// }
 							}
 						});
-
+						
+						// /* Watch chromatin radius scale
+						scope.$watch('data.object.radius_scale', function( newValue, oldValue ) {
+							if ( newValue !== oldValue ) {
+								scope.toggleTubed(true);
+							}
+						});
+						
 						// /* Watch for Chromatin colors */
 						scope.$watch('currentoverlay.colors.chromatin', function( newColors, oldColors ) { // cant deep watch as change through set on service
 							if ( newColors !== oldColors ) {
@@ -591,6 +598,9 @@
 					scope.clean_scene = function () {
 						var i;
 
+						scene.remove(leftring);
+						scene.remove(rightring);
+						scene.remove(ring);
 						scene.remove(particles);
 				        scene.remove(chromatin);
 				        scene.remove(cluster);
@@ -641,7 +651,9 @@
 				        // 	networkObj.children[i].material.dispose();
 				        	
 				        // }     
-				        
+				        leftring = undefined;
+				        rightring = undefined;
+				        ring = undefined;
 				        particles = undefined;
 				        particlesObj = undefined;
 				        chromatinObj = undefined;

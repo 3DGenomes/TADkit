@@ -22,6 +22,12 @@
 			scale = $scope.data.object.resolution * 0.01;
 		else
 			scale = $scope.data.object.resolution * $scope.data.object.bp_per_nm;
+		
+		
+
+	      $scope.selectedIndex = 0;
+	      
+		
 		$scope.atPosition = function(feature) {
 			if ($scope.$parent.settings.current.segmentUpper >= feature.start && $scope.$parent.settings.current.segmentLower <= feature.end) return true;
 			return false;
@@ -68,6 +74,7 @@
 				return -1;
 			}
 		};
+		/*
 		$scope.dataset_info = '<div class="component-caption" layout="column" layout-align="left center">'+
 				'<h2>'+$scope.data.object.title+'</h2><table>'+
 					'<tr><td><b>Species:</b></td><td>'+$scope.data.object.species+'</td></tr>'+
@@ -79,7 +86,7 @@
 					'<tr><td><b>Chromatin radius scale:</b></td><td>'+$scope.data.object.radius_scale+'x</td></tr>'+
 				'</table>'+
 			'</div>';
-		
+		*/
 		$scope.showInfo = function(info) {
 			$mdDialog.show({
 			      parent: angular.element(document.body),
