@@ -96,12 +96,33 @@
 				datasets.loaded.splice(dataset, 1);
 				return datasets;
 			},
+			getSpecies: function(index) {
+				if(typeof datasets.loaded[index].object.species === 'undefined' && typeof datasets.loaded[index].object.taxon_id !== 'undefined') {
+					var dataUrl = "https://www.ebi.ac.uk/ena/data/taxonomy/v1/taxon/tax-id/"+ datasets.loaded[index].object.taxon_id;
+				    return $http({method:"GET", url:dataUrl}).then(function(result){
+				       console.log('Retrieved species ' + result.data.scientificName + ' from taxon_id '+datasets.loaded[index].object.taxon_id);
+				       return result.data.scientificName;
+				    });    
+				} else {
+					return datasets.loaded[index].object.species;
+				}
+			},
 			setSpeciesUrl: function(index) {
 				if (index === undefined || index === false) index = datasets.current.index;
-				var species = datasets.loaded[index].object.species;
-				var speciesUrl = species.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-				datasets.loaded[index].object.speciesUrl = speciesUrl;
-				return speciesUrl;
+				var species,speciesUrl;
+				var mygetSpecie = this.getSpecies(index);
+				if(typeof datasets.loaded[index].object.species !== 'undefined') {
+					speciesUrl = datasets.loaded[index].object.species.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+					datasets.loaded[index].object.speciesUrl = speciesUrl;
+					return speciesUrl;
+				} else {
+					mygetSpecie.then(function(scientificName) {  
+				    	datasets.loaded[index].object.species = scientificName;
+						speciesUrl = scientificName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+						datasets.loaded[index].object.speciesUrl = speciesUrl;
+						return speciesUrl;
+				     });
+				}
 			},
 			setRegion: function(index) {
 				if (index === undefined || index === false) index = datasets.current.index;

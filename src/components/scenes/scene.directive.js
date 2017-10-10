@@ -601,6 +601,7 @@
 						scene.remove(leftring);
 						scene.remove(rightring);
 						scene.remove(ring);
+						scene.remove(linker);
 						scene.remove(particles);
 				        scene.remove(chromatin);
 				        scene.remove(cluster);
@@ -654,6 +655,7 @@
 				        leftring = undefined;
 				        rightring = undefined;
 				        ring = undefined;
+				        linker = undefined;
 				        particles = undefined;
 				        particlesObj = undefined;
 				        chromatinObj = undefined;

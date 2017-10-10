@@ -92,9 +92,9 @@
 							"tubed" : true,
 							"resolution_scales" : {
 								"2000" : 1,
-								"10000" : 1,
-								"50000" : 5,
-								"100000" : 5
+								"10000" : 10,
+								"50000" : 20,
+								"100000" : 50
 							}
 						},
 						"cluster" : {
@@ -133,7 +133,7 @@
                         "width" : "800px",
                         "height" : "400px",
                         "margin" : "0px",
-                        "offsetx" : "520px",
+                        "offsetx" : "510px",
                         "position" : 1
                     }
                 },
@@ -226,14 +226,14 @@
 						"species_data" : {
 							"drosophila_melanogaster" : {
 								"r5.01" : {
-									"id" : "dmel",
-									"fastaURL" : "assets/data/dmel-all-chromosome-r6.13.fasta",
-									"cytobandURL" : "assets/data/dmel-cytoBand.txt",
+									"id" : "r5.01",
+									"fastaURL" : "refGenomes/r5.01/r5.01.fa",
+									"cytobandURL" : "refGenomes/r5.01/cytoBand.txt",
 									"tracks": [
 										    {
 										      "name": "Fillion Colors",
 										      "type": "annotation",
-										      "format": "gff",
+										      "format": "gff3",
 										      "sourceType": "file",
 										      "url": "assets/data/fill.gff",
 										      "indexed": false
@@ -242,41 +242,25 @@
 								}
 							},
 							"homo_sapiens" : {
-								"hg19" : {
-									"id" : "hg19",
-									"fastaURL" : "assets/data/hg19.fa",
-									"cytobandURL" : "assets/data/cytoBand.txt",
+								"hg38" : {
+									"id" : "hg38",
+									"fastaURL": "refGenomes/hg38/hg38.fa",
+									"cytobandURL": "refGenomes/hg38/hg38_cytoBand.txt",
 									"tracks": [
 										{
 											"name": "Genes",
-											"type": "annotation",
 						                    "url": "//igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz",
 						                    "index": "//igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz.tbi",
-						                    "displayMode": "EXPANDED",
-						                    "autoHeight": true
+						                    "displayMode": "EXPANDED"
 					                	}
 					                ]
-					            },
-				                "hg38" : {
-									"id" : "hg38",
-									"fastaURL" : "assets/data/hg38.fa",
-									"cytobandURL" : "assets/data/cytoBand.txt",
-									"tracks": [
-										{
-											"name": "Genes",
-											"type": "annotation",
-						                    "url": "//igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz",
-						                    "index": "//igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz.tbi",
-						                    "displayMode": "EXPANDED",
-						                    "autoHeight": true
-					                	}
-					                ]}
-					        },
-					        "saccharomyces_cerevisiae" : {
-					        	"R64-1-1" : {
+					            }
+							},
+							"saccharomyces_cerevisiae" : {
+								"R64-1-1" : {
 									"id" : "R64-1-1",
-									"fastaURL": "assets/data/R64-1-1.fa",
-									"cytobandURL": "assets/data/R64-1-1_cytoband.txt",
+									"fastaURL": "refGenomes/R64-1-1/R64-1-1.fa",
+									"cytobandURL": "refGenomes/R64-1-1/R64-1-1_cytoband.txt",
 									"tracks": [{
 	                                                                              "name": "Genomic sequence features",
 	                                                                              "type": "annotation",
@@ -286,7 +270,7 @@
 	                                                                              "indexed": false,
 										      "displayMode": "EXPANDED"
 	                                                                            }]
-	                            }
+								}
 							}
 						}
 					}

@@ -32,6 +32,9 @@
 				settings.current.chromEnd = dataset.object.chromEnd[chromosomeIndex];
 				settings.current.species = dataset.object.species;
 				settings.current.speciesUrl = dataset.object.speciesUrl;
+				if(typeof dataset.object.assembly !== 'undefined') 
+					settings.current.assemblyUrl = dataset.object.assembly;
+				
 				// NOTE: particle segements as lowest resolution of model
 				// instead of particleSegments as variable in TADkit
 				// i.e settings.current.particleSegments = storyboard.components[0].view.settings.chromatin.particleSegments;

@@ -4,9 +4,12 @@
 		.module('TADkit')
 		.controller('PanelIgvjsController', PanelIgvjsController);
 
-	function PanelIgvjsController($scope, $window, $timeout, Overlays,Storyboards, uuid4, Track_data, d3Service, Users, Settings) {
+	function PanelIgvjsController($scope, $window, $timeout, Overlays,Storyboards, uuid4, Track_data, d3Service, Datasets, Users, Settings) {
 
-		if(angular.isUndefined($scope.settings.current.speciesUrl)) return;
+		if(angular.isUndefined($scope.settings.current.speciesUrl)) {
+			$scope.settings.current.speciesUrl = Datasets.setSpeciesUrl();
+			if(angular.isUndefined($scope.settings.current.speciesUrl)) return;
+		}
 
 		var scene_component = Storyboards.getComponentById('Chromatin');
 		var scene_width = 0;
@@ -64,16 +67,20 @@
 		$scope.view.settings.showNav: true/false whether to show the navigation panel in igvjs 
 		$scope.view.settings.showCyto: true/false wheter to show cytoband panel in igvjs
 		*/
+		if(typeof $scope.settings.current.assemblyUrl === 'undefined' || typeof $scope.view.settings.species_data[$scope.settings.current.speciesUrl][$scope.settings.current.assemblyUrl] === 'undefined') {
+			$scope.settings.current.assemblyUrl = Object.keys($scope.view.settings.species_data[$scope.settings.current.speciesUrl])[0]; 
+		}
+			
 		var igv_reference;
-		if($scope.view.settings.species_data[$scope.settings.current.speciesUrl].fastaURL) {
+		if($scope.view.settings.species_data[$scope.settings.current.speciesUrl][$scope.settings.current.assemblyUrl].fastaURL) {
 			igv_reference = {
-				id: $scope.view.settings.species_data[$scope.settings.current.speciesUrl].id,
-				fastaURL:$scope.view.settings.species_data[$scope.settings.current.speciesUrl].fastaURL,
+				id: $scope.view.settings.species_data[$scope.settings.current.speciesUrl][$scope.settings.current.assemblyUrl].id,
+				fastaURL:$scope.view.settings.species_data[$scope.settings.current.speciesUrl][$scope.settings.current.assemblyUrl].fastaURL,
 				cytobandURL:null
 			};
 			$scope.view.settings.showNav = true;
-			if($scope.view.settings.species_data[$scope.settings.current.speciesUrl].cytobandURL) {
-				igv_reference.cytobandURL = $scope.view.settings.species_data[$scope.settings.current.speciesUrl].cytobandURL;
+			if($scope.view.settings.species_data[$scope.settings.current.speciesUrl][$scope.settings.current.assemblyUrl].cytobandURL) {
+				igv_reference.cytobandURL = $scope.view.settings.species_data[$scope.settings.current.speciesUrl][$scope.settings.current.assemblyUrl].cytobandURL;
 				$scope.view.settings.showCyto = false;
 			} else {
 				$scope.view.settings.showCyto = false;
@@ -85,8 +92,8 @@
 			$scope.view.settings.showNav = true;
 		}
 		$scope.tracks = Users.getTracks();
-		if($scope.view.settings.species_data[$scope.settings.current.speciesUrl].tracks) {
-			$scope.tracks = $scope.tracks.concat($scope.view.settings.species_data[$scope.settings.current.speciesUrl].tracks);
+		if($scope.view.settings.species_data[$scope.settings.current.speciesUrl][$scope.settings.current.assemblyUrl].tracks) {
+			$scope.tracks = $scope.tracks.concat($scope.view.settings.species_data[$scope.settings.current.speciesUrl][$scope.settings.current.assemblyUrl].tracks);
 		}
 		
 		
