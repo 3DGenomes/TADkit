@@ -310,16 +310,16 @@
 								cluster.visible = !cluster.visible;
 							}
 						});
-						scope.$watch('view.settings.network.visible', function( newValue, oldValue ) {
-							if ( newValue !== oldValue ) {
-								network.visible = !network.visible;
-							}
-						});
+//						scope.$watch('view.settings.network.visible', function( newValue, oldValue ) {
+//							if ( newValue !== oldValue ) {
+//								network.visible = !network.visible;
+//							}
+//						});
 
 						particlesObj = scene.getObjectByName( "Particles Cloud" );
 						chromatinObj = scene.getObjectByName( "Chromatin Fiber" );
 						clusterObj = scene.getObjectByName( "Cluster View" );
-						networkObj = scene.getObjectByName( "Network Graph" );
+						//networkObj = scene.getObjectByName( "Network Graph" );
 						
 
 						// /* Watch for Particles colors */
@@ -385,7 +385,7 @@
 							particlesObj = scene.getObjectByName( "Particles Cloud" );
 							chromatinObj = scene.getObjectByName( "Chromatin Fiber" );
 							clusterObj = scene.getObjectByName( "Cluster View" );
-							networkObj = scene.getObjectByName( "Network Graph" );
+							//networkObj = scene.getObjectByName( "Network Graph" );
 						};
 						// /* Watch for selected TAD */
 						scope.$watch('settings.current.tad_selected', function( newValue, oldValue ) {
@@ -437,12 +437,12 @@
 						});
 
 						// /* Watch for Network colors */
-						scope.$watch('currentoverlay.colors.network', function( newColors, oldColors ) { // cant deep watch as change through set on service
-							if ( newColors !== oldColors && networkObj.geometry) {
-								networkObj.geometry.addAttribute( 'color', new THREE.BufferAttribute( newColors.RGB, 3 ) );
-								networkObj.geometry.addAttribute( 'alpha', new THREE.BufferAttribute( newColors.alpha, 1 ) );
-							}
-						});
+//						scope.$watch('currentoverlay.colors.network', function( newColors, oldColors ) { // cant deep watch as change through set on service
+//							if ( newColors !== oldColors && networkObj.geometry) {
+//								networkObj.geometry.addAttribute( 'color', new THREE.BufferAttribute( newColors.RGB, 3 ) );
+//								networkObj.geometry.addAttribute( 'alpha', new THREE.BufferAttribute( newColors.alpha, 1 ) );
+//							}
+//						});
 
 						/* Watch for Browser-wide Position updates */
 						scope.$watch('settings.current.particle', function( newParticle, oldParticle ) {
@@ -605,11 +605,11 @@
 						scene.remove(particles);
 				        scene.remove(chromatin);
 				        scene.remove(cluster);
-				        scene.remove(network);
+				        //scene.remove(network);
 				        scene.remove(particlesObj);
 				        scene.remove(chromatinObj);
 				        scene.remove(clusterObj);
-				        scene.remove(networkObj);
+				        //scene.remove(networkObj);
 				        
 				        particles.geometry.dispose();
 				        particles.material.dispose();
@@ -662,8 +662,8 @@
 				        chromatin = undefined;
 				        cluster = undefined;
 				        clusterObj = undefined;
-				        network = undefined;
-				        networkObj = undefined;
+				        //network = undefined;
+				        //networkObj = undefined;
 				        
 					};
 				    scope.$on('$destroy', function() {
