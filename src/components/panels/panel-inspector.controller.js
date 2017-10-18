@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.controller('PanelInspectorController', PanelInspectorController);
 
-	function PanelInspectorController($scope, $mdDialog, Settings) {
+	function PanelInspectorController($scope, $mdDialog, Settings, Datasets, Hic_data) {
 
 		$scope.$watch('settings.views.scene_width', function( newValue, oldValue ) {
 			if ( newValue !== oldValue ) {
@@ -74,6 +74,31 @@
 				return -1;
 			}
 		};
+		$scope.toggleSelection = function toggleSelection(chrom) {
+			
+			var chromosomeIndex = $scope.settings.current.chromosomeIndexes;
+			var idx = chromosomeIndex.indexOf(chrom);
+		    // Is currently selected
+		    if (idx > -1) {
+		    	chromosomeIndex.splice(idx, 1);
+		    }
+
+		    // Is newly selected
+		    else {
+		    	chromosomeIndex.push(chrom);
+		    }
+		    var chromStart = [];
+			var chromEnd = [];
+			var resolution = $scope.data.object.resolution;
+			var chromIdx;
+			for (var l = 0 ; l < chromosomeIndex.length; l++) {
+				chromIdx = $scope.data.object.chrom.indexOf(chromosomeIndex[l]);
+				chromStart.push(Math.round($scope.data.object.chromStart[chromIdx]/resolution));
+				chromEnd.push(Math.round($scope.data.object.chromEnd[chromIdx]/resolution));
+			}
+			var dataset = Datasets.getDataset();
+		    Hic_data.set(dataset.hic_data,chromStart,chromEnd);
+		 };
 		/*
 		$scope.dataset_info = '<div class="component-caption" layout="column" layout-align="left center">'+
 				'<h2>'+$scope.data.object.title+'</h2><table>'+

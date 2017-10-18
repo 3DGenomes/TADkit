@@ -59,6 +59,16 @@
 					<div class="component-caption" layout="column" layout-align="left center">
 						<h3>{{data.object.title}}</h3><table>
 							<tr><td valign="top"><b>Species:</b></td><td>{{data.object.species}}</td></tr>
+							<tr><td valign="top"><b>Chromosomes:</b></td><td>
+							<span ng-repeat="chrom in data.object.chrom">
+							  <input
+							    type="checkbox"
+							    name="selectedChroms[]"
+							    value="{{chrom}}"
+							    ng-checked="settings.current.chromosomeIndexes.indexOf(chrom) > -1"
+							    ng-click="toggleSelection(chrom)"
+							  ><label ng-click="toggleSelection(chrom)">{{chrom}}</label>
+							</span></td></tr>
 							<tr><td valign="top"><b>Region:</b></td><td>{{data.object.region}}</td></tr>
 							<tr><td valign="top"><b>UUID:</b></td><td>{{data.object.uuid}}</td></tr>
 							<tr><td valign="top"><b>Resolution:</b></td><td>{{data.object.resolution}}</td></tr>

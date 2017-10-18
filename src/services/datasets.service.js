@@ -75,8 +75,17 @@
 					Restraints.set(currentModel.data, dataset.restraints);
 					Overlays.update(Proximities.get().distances, dataset.restraints);
 				}
-				if(!angular.isUndefined(dataset.hic_data)) Hic_data.set(dataset.hic_data);
-				else Hic_data.clear();
+				if(!angular.isUndefined(dataset.hic_data)) {
+					var chromosomeIndex = 0;
+					if (dataset.object.chromosomeIndex) {
+						chromosomeIndex = dataset.object.chromosomeIndex;	
+					}
+					var chromStart = dataset.object.chromStart[chromosomeIndex];
+					var chromEnd = dataset.object.chromEnd[chromosomeIndex];
+					var resolution = dataset.object.resolution;
+					Hic_data.set(dataset.hic_data,[Math.round(chromStart/resolution)],[Math.round(chromEnd/resolution)]);
+					
+				} else Hic_data.clear();
 				
 				// if (dataset.object.filename) {
 				//	var filetype = "tsv";
@@ -133,6 +142,7 @@
 				var chrom = datasets.loaded[index].object.chrom[chromosomeIndex];
 				var chromStart = datasets.loaded[index].object.chromStart[chromosomeIndex];
 				var chromEnd = datasets.loaded[index].object.chromEnd[chromosomeIndex];
+				
 				var region = chrom + ":" + chromStart + "-" + chromEnd;
 				datasets.loaded[index].object.region = region;
 				return region;

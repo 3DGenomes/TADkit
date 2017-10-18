@@ -15,21 +15,56 @@
 		};
 		var interaction_freq = 0;
 		return {
-			set: function (datasetHic_data) {
+			set: function (datasetHic_data, starts, ends) {
 				var self = this;
 				self.clear();
 				hic_data.n = parseInt(datasetHic_data.n);
-
+				
+				var x,y,j,k,pos,new_pos;
 				var i = 0;
-				for (var pos in datasetHic_data.data) {
-					//hic_data.x.push(Math.floor(parseInt(pos)%hic_data.n));
-					//hic_data.y.push(Math.floor(parseInt(pos)/hic_data.n));
-					hic_data.pos.push(parseInt(pos));
-					hic_data.value.push(datasetHic_data.data[pos]);
-					if(datasetHic_data.data[pos]<hic_data.min) hic_data.min = datasetHic_data.data[pos];
-					if(datasetHic_data.data[pos]>hic_data.max) hic_data.max = datasetHic_data.data[pos];
-					i++;	
+				var n = 0;
+				var tot_n = 0;
+				var offset = 0;
+				var inc = false;
+				for (j = 0; j < starts.length; j++) {
+					tot_n += ends[j]-starts[j]+1;
 				}
+				for (j = 0; j < starts.length; j++) {
+					n = ends[j]-starts[j]+1;
+					for (pos in datasetHic_data.data) {
+						//hic_data.x.push(Math.floor(parseInt(pos)%hic_data.n));
+						//hic_data.y.push(Math.floor(parseInt(pos)/hic_data.n));
+						x = Math.floor(parseInt(pos)%hic_data.n);
+						y = Math.floor(parseInt(pos)/hic_data.n);
+						inc=false;
+						if ((x >= (starts[j]-1) && x <= (ends[j]-1)) && (y >= (starts[j]-1) && y <= (ends[j]-1))) inc=true;
+						else {
+							for (k = 0; k < j; k++) {
+								if (
+									((x >= (starts[j]-1) && x <= (ends[j]-1)) && (y >= (starts[k]-1) && y <= (ends[k]-1))) ||  
+									((x >= (starts[k]-1) && x <= (ends[k]-1)) && (y >= (starts[j]-1) && y <= (ends[j]-1)))
+								) {
+									inc=true;
+									break;
+								}
+							}
+						}
+						if(inc) {
+							new_pos=(x-(starts[j]-1)+offset)+(y-(starts[j]-1)+offset)*tot_n;
+							hic_data.pos.push(parseInt(new_pos));
+							hic_data.value.push(datasetHic_data.data[pos]);
+							if(datasetHic_data.data[pos]<hic_data.min) hic_data.min = datasetHic_data.data[pos];
+							if(datasetHic_data.data[pos]>hic_data.max) hic_data.max = datasetHic_data.data[pos];
+							i++;	
+						}
+						if ((x > (ends[j]-1)) && (y > (ends[j]-1))) {
+							break;
+						}
+					}
+					offset += n;
+				}
+				hic_data.n = tot_n;
+				 
 				if(!angular.isUndefined(datasetHic_data.tads))	self.setTADS(datasetHic_data.tads);
 				
 				return hic_data;
