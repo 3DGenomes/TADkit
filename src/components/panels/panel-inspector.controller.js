@@ -76,7 +76,7 @@
 		};
 		$scope.toggleSelection = function toggleSelection(chrom) {
 			
-			var chromosomeIndex = $scope.settings.current.chromosomeIndexes;
+			var chromosomeIndex = $scope.settings.current.chromosomeIndexes.slice();
 			var idx = chromosomeIndex.indexOf(chrom);
 		    // Is currently selected
 		    if (idx > -1) {
@@ -91,13 +91,18 @@
 			var chromEnd = [];
 			var resolution = $scope.data.object.resolution;
 			var chromIdx;
-			for (var l = 0 ; l < chromosomeIndex.length; l++) {
-				chromIdx = $scope.data.object.chrom.indexOf(chromosomeIndex[l]);
-				chromStart.push(Math.round($scope.data.object.chromStart[chromIdx]/resolution));
-				chromEnd.push(Math.round($scope.data.object.chromEnd[chromIdx]/resolution));
+			var offset = 0;
+			for (var l = 0 ; l < $scope.data.object.chrom.length; l++) {
+				chromIdx = chromosomeIndex.indexOf($scope.data.object.chrom[l]);
+				if(chromIdx > -1) {
+					chromStart.push(Math.round($scope.data.object.chromStart[l]/resolution)+offset);
+					chromEnd.push(Math.round($scope.data.object.chromEnd[l]/resolution)+offset);
+				}
+				offset += Math.round($scope.data.object.chromEnd[l]/resolution)-Math.round($scope.data.object.chromStart[l]/resolution)+1;
 			}
 			var dataset = Datasets.getDataset();
-		    Hic_data.set(dataset.hic_data,chromStart,chromEnd);
+		    var hic_data = Hic_data.set(dataset.hic_data,chromStart,chromEnd);
+		    $scope.settings.current.chromosomeIndexes = chromosomeIndex;
 		 };
 		/*
 		$scope.dataset_info = '<div class="component-caption" layout="column" layout-align="left center">'+

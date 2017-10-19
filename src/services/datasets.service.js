@@ -80,8 +80,10 @@
 					if (dataset.object.chromosomeIndex) {
 						chromosomeIndex = dataset.object.chromosomeIndex;	
 					}
-					var chromStart = dataset.object.chromStart[chromosomeIndex];
-					var chromEnd = dataset.object.chromEnd[chromosomeIndex];
+					var offset=0;
+					for(var i=0;i<chromosomeIndex;i++) offset += dataset.object.chromEnd[chromosomeIndex] - dataset.object.chromStart[chromosomeIndex] + 1;
+					var chromStart = dataset.object.chromStart[chromosomeIndex] + offset;
+					var chromEnd = dataset.object.chromEnd[chromosomeIndex] + offset;
 					var resolution = dataset.object.resolution;
 					Hic_data.set(dataset.hic_data,[Math.round(chromStart/resolution)],[Math.round(chromEnd/resolution)]);
 					

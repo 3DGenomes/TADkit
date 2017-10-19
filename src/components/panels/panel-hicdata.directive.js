@@ -408,8 +408,9 @@
 		        		scope.render(scope.data.max-datamax,scope.data.max-datamin);
 		        	}
 				});
-		        scope.$watch('data.n', function(newvalue,oldvalue) {
+		        scope.$watch('settings.current.chromosomeIndexes', function(newvalue,oldvalue) {
 		        	if ( newvalue !== oldvalue && !angular.isUndefined(newvalue)) {
+		        		scope.data = Hic_data.get();
 		        		scope.rendered = false;
 						scope.update();
 						scope.update_marks();

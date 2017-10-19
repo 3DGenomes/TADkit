@@ -24,10 +24,10 @@
 				var i = 0;
 				var n = 0;
 				var tot_n = 0;
-				var offset = 0;
-				var inc = false;
+				var offset = [0];
 				for (j = 0; j < starts.length; j++) {
 					tot_n += ends[j]-starts[j]+1;
+					offset.push(tot_n);
 				}
 				for (j = 0; j < starts.length; j++) {
 					n = ends[j]-starts[j]+1;
@@ -36,21 +36,22 @@
 						//hic_data.y.push(Math.floor(parseInt(pos)/hic_data.n));
 						x = Math.floor(parseInt(pos)%hic_data.n);
 						y = Math.floor(parseInt(pos)/hic_data.n);
-						inc=false;
-						if ((x >= (starts[j]-1) && x <= (ends[j]-1)) && (y >= (starts[j]-1) && y <= (ends[j]-1))) inc=true;
-						else {
+						new_pos=-1;
+						if ((x >= (starts[j]-1) && x <= (ends[j]-1)) && (y >= (starts[j]-1) && y <= (ends[j]-1))) {
+							new_pos=(x-(starts[j]-1)+offset[j])+(y-(starts[j]-1)+offset[j])*tot_n;
+						} else {
 							for (k = 0; k < j; k++) {
-								if (
-									((x >= (starts[j]-1) && x <= (ends[j]-1)) && (y >= (starts[k]-1) && y <= (ends[k]-1))) ||  
-									((x >= (starts[k]-1) && x <= (ends[k]-1)) && (y >= (starts[j]-1) && y <= (ends[j]-1)))
-								) {
-									inc=true;
+								if (((x >= (starts[j]-1) && x <= (ends[j]-1)) && (y >= (starts[k]-1) && y <= (ends[k]-1)))) {
+									new_pos=(x-(starts[j]-1)+offset[j])+(y-(starts[k]-1)+offset[k])*tot_n;
+									break;
+								}   
+								if (((x >= (starts[k]-1) && x <= (ends[k]-1)) && (y >= (starts[j]-1) && y <= (ends[j]-1)))) {
+									new_pos=(x-(starts[k]-1)+offset[k])+(y-(starts[j]-1)+offset[j])*tot_n;
 									break;
 								}
 							}
 						}
-						if(inc) {
-							new_pos=(x-(starts[j]-1)+offset)+(y-(starts[j]-1)+offset)*tot_n;
+						if(new_pos > -1) {
 							hic_data.pos.push(parseInt(new_pos));
 							hic_data.value.push(datasetHic_data.data[pos]);
 							if(datasetHic_data.data[pos]<hic_data.min) hic_data.min = datasetHic_data.data[pos];
@@ -61,7 +62,6 @@
 							break;
 						}
 					}
-					offset += n;
 				}
 				hic_data.n = tot_n;
 				 
