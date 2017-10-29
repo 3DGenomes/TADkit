@@ -53,8 +53,8 @@
 		
 		var originalOverlay = Overlays.getCurrentIndex();
 		var track_data = Track_data.get();
-		
-		var igvjs_start = (($scope.settings.current.chromStart));
+		var resolution = $scope.settings.current.segmentLength*$scope.settings.current.particleSegments;
+		var igvjs_start = (($scope.settings.current.chromStart[$scope.settings.current.chromIdx])-1*resolution);
 		if(igvjs_start<0) igvjs_start = 0;
 		var chrom = ($scope.settings.current.chrom);
 		if(!$scope.view.settings.leading_chr) chrom = ($scope.settings.current.chrom).replace('chr','');
@@ -111,7 +111,7 @@
 		            showKaryo: $scope.view.settings.showCyto,
 		            flanking: 100000,
 		            reference: igv_reference,
-					locus: chrom+':'+igvjs_start+'-'+($scope.settings.current.chromEnd),
+					locus: chrom+':'+igvjs_start+'-'+($scope.settings.current.chromEnd[$scope.settings.current.chromIdx]),
 					tracks: $scope.tracks.slice()
 		        };
 		
@@ -119,14 +119,19 @@
 			
 		$scope.updatePosition =  function(position, leftborder, rightborder) {
 			//alert(position);
-			if(position >= $scope.settings.current.chromStart && position <= $scope.settings.current.chromEnd) {
+			var span_region = 0;
+			var resolution = $scope.settings.current.segmentLength*$scope.settings.current.particleSegments;
+			for(var i = 0; i<$scope.settings.current.chromosomeIndexes.length;i++) {
+				span_region += $scope.settings.current.chromEnd[i] - $scope.settings.current.chromStart[i] + resolution;			
+			}
+			if(position >= $scope.settings.current.chromStart[$scope.settings.current.chromIdx] && position <= span_region) {
 				$scope.settings.current.position = position;
 			}
-			if(position < $scope.settings.current.chromStart) {
-				$scope.settings.current.position = $scope.settings.current.chromStart;
+			if(position < $scope.settings.current.chromStart[$scope.settings.current.chromIdx]) {
+				$scope.settings.current.position = $scope.settings.current.chromStart[$scope.settings.current.chromIdx];
 			}  
-			if(position > $scope.settings.current.chromEnd) {
-				$scope.settings.current.position = $scope.settings.current.chromEnd;
+			if(position > span_region) {
+				$scope.settings.current.position = span_region;
 			}
 			if($scope.settings.current.leftborder != leftborder || $scope.settings.current.rightborder != rightborder) {
 				$scope.settings.current.leftborder = leftborder;
@@ -241,7 +246,7 @@
 						n++;
 					}
 					featureColor[l] = d3.interpolateHcl(hexStart, hexEnd)((motifcolor-min_val)/(max_val-min_val));
-					j = Math.round((first_start - $scope.settings.current.chromStart)/$scope.settings.current.segmentLength);
+					j = Math.round((first_start - $scope.settings.current.chromStart[$scope.settings.current.chromIdx])/$scope.settings.current.segmentLength);
 					for(k=j;k<(j+Math.round(totallength)) && k<$scope.settings.current.segmentsCount;k++) {
 						igvJsOverlay.colors.chromatin[k] = featureColor[l];
 					}
@@ -249,7 +254,7 @@
 				}
 			} else {
 				angular.forEach(features, function(feature) {
-					j = Math.round((feature.start - $scope.settings.current.chromStart)/$scope.settings.current.segmentLength);
+					j = Math.round((feature.start - $scope.settings.current.chromStart[$scope.settings.current.chromIdx])/$scope.settings.current.segmentLength);
 					totallength = Math.round((feature.end - feature.start)/$scope.settings.current.segmentLength);
 					for(k=j;k<(j+totallength) && k<$scope.settings.current.segmentsCount;k++) {
 						igvJsOverlay.colors.chromatin[k] = featureColor[l];
@@ -371,12 +376,105 @@
                 }
             };
         
+        $scope.synchronizeViewports = function(marks) {
+
+        	var genomicState,
+        		mainGenomicState,
+        		offset,
+	            viewportWidth,
+	            referenceFrame,
+	            resolution,
+	            start,
+	            end;
+	    	
+        	resolution = $scope.settings.current.segmentLength*$scope.settings.current.particleSegments;
+        	mainGenomicState = $scope.myIgv.genomicStateList[0];
+        	viewportWidth = igv.browser.viewportContainerWidth()/mainGenomicState.locusCount;
+        	offset = (mainGenomicState.referenceFrame.bpPerPixel * viewportWidth) + mainGenomicState.referenceFrame.start;
+        	offset -= ($scope.settings.current.chromEnd[0]-$scope.settings.current.chromStart[0]+resolution);
+        	
+        	genomicState = $scope.myIgv.genomicStateList[1];
+	    	referenceFrame = genomicState.referenceFrame;
+        
+    		referenceFrame.bpPerPixel = mainGenomicState.referenceFrame.bpPerPixel;
+    		start = ($scope.settings.current.chromStart[1]-1*resolution + offset);
+    		start = Math.max(0, start);
+    		referenceFrame.start = start;
+
+	    	for(var t=0;t<$scope.myIgv.trackViews.length;t++) {
+    			$scope.myIgv.trackViews[t].update();
+    		}
+	    	//$scope.myIgv.update();
+        };
+        
         $scope.$watch('settings.current.hic_position', function(newPos, oldPos) {
             if(!angular.equals(newPos, oldPos) && newPos != $scope.settings.current.position) {
             	$scope.myIgv.goto(($scope.settings.current.chrom),newPos);
+            	
             }    
         });            
-        
+        $scope.$watch('settings.current.chromosomeIndexes', function( newValue, oldValue ) {
+			if ( newValue !== oldValue ) {
+				
+				var igvjs_go = [];
+				var resolution = $scope.settings.current.segmentLength*$scope.settings.current.particleSegments;
+				var span_region = $scope.settings.current.particlesCount*resolution;
+				//var offset = 0;
+				igvjs_go.push($scope.settings.current.chromosomeIndexes[0]);
+				if(!$scope.view.settings.leading_chr) igvjs_go[0] = igvjs_go[0].replace('chr','');
+				
+				if($scope.settings.current.chromosomeIndexes.length!=2) { 
+					igvjs_go[0] += ':' + ($scope.settings.current.chromStart[0]-resolution) + '-' + ($scope.settings.current.chromStart[0]+span_region);
+					
+			    } else {
+			    	span_region = $scope.settings.current.chromEnd[0]-$scope.settings.current.chromStart[0];
+			    	igvjs_go[0] += ':' + ($scope.settings.current.chromStart[0]-resolution) + '-' + ($scope.settings.current.chromStart[0]+span_region);
+					
+					igvjs_go.push($scope.settings.current.chromosomeIndexes[1]);
+					if(!$scope.view.settings.leading_chr) igvjs_go[1] = igvjs_go[1].replace('chr','');
+					igvjs_go[1] += ':' + ($scope.settings.current.chromStart[1]-resolution) + '-' + ($scope.settings.current.chromStart[1]+span_region);
+					
+				}
+					
+				$scope.myIgv.parseSearchInput(igvjs_go.join(' '));
+		    	
+		    	var igvExtraDivs;
+		    	var d;
+		    	igvExtraDivs = document.getElementsByClassName('igv-viewport-content-ruler-div');
+		    	for(d = 0; d<igvExtraDivs.length;d++) {
+		    		//(igvExtraDivs[d]).style.display = "none";
+		    		$(igvExtraDivs[d]).off('click');
+		    	}
+		    	igvExtraDivs = document.getElementsByClassName('igv-viewport-fa-close');
+		    	for(d = 0; d<igvExtraDivs.length;d++) {
+		    		(igvExtraDivs[d]).style.display = "none";
+		    	}
+		    	//var genomicState = $scope.myIgv.genomicStateList[0];
+	    		//var referenceFrame = genomicState.referenceFrame;
+		    	//$scope.locuschange(referenceFrame, igvjs_go[0]);
+		    	//$scope.synchronizeViewports(newValue);
+		    	
+//		    	var viewportWidth = $scope.myIgv.viewportContainerWidth();
+//		    	var viewport;
+//		    	for(var l = 0; l<$scope.settings.current.chromosomeIndexes.length;l++) {
+//		    		viewport = igv.Viewport.viewportsWithLocusIndex(l);
+//		    		for(var v = 0; v<viewport.length;v++) {
+//			            viewport[v].setWidth(viewportWidth*parts[l]/tot_part);
+//			        }
+//		    	}
+//		    	var genomicState = _.first($scope.myIgv.genomicStateList);    
+//		        var referenceFrame = genomicState.referenceFrame;
+//		        var viewportWidth = Math.floor($scope.myIgv.viewportContainerWidth()/genomicState.locusCount);
+//		    	//referenceFrame.bpPerPixel = span_region/(viewportWidth*parts[0]/tot_part);
+//		    	var px_start = ($scope.settings.current.chromStart[$scope.settings.current.chromIdx]-referenceFrame.start)/referenceFrame.bpPerPixel;
+//				var px_end = ($scope.settings.current.chromEnd[$scope.settings.current.chromIdx]-referenceFrame.start)/referenceFrame.bpPerPixel;
+//				var centerBP = referenceFrame.start + referenceFrame.bpPerPixel * (viewportWidth/2);
+//
+//				
+//				$scope.updatePosition(centerBP, px_start+50 , px_end+50);
+
+            }    
+        });            
         /*
          markers_position gets updated when we click on the 2D panel with the genomic positions that are interacting in the
          clicked position.
@@ -387,7 +485,9 @@
 				if ( angular.isUndefined($scope.settings.current.markers_position) || newValue[0] === -1 || newValue[1] === -1) {
 					$scope.hideTadkitMarkers();
 	        	} else {
-	        		$scope.updateTadkitMarkers(newValue);
+	        		if($scope.settings.current.chromosomeIndexes.length>1) $scope.synchronizeViewports();
+	        		$scope.updateTadkitMarkers(newValue,$scope.settings.current.markers_chr);
+	        		
 	        	}
 			}
 		});
@@ -396,18 +496,26 @@
         	dl.css("display","none");
         	$scope.settings.current.markers_position = undefined;
         };
-        $scope.updateTadkitMarkers = function(markerspos) {
+        $scope.updateTadkitMarkers = function(markerspos,markerschrom) {
 
         	$scope.updateFeaturesList();
 
         	var genomicState = _.first($scope.myIgv.genomicStateList);
         	var referenceFrame = genomicState.referenceFrame;
-    		var leftpx = (markerspos[1]-referenceFrame.start)/referenceFrame.bpPerPixel; 
+        	var offset = 0;
+        	if(markerschrom[1] != $scope.settings.current.chromosomeIndexes[0]) {
+        		offset = referenceFrame.bpPerPixel*Math.floor($scope.myIgv.viewportContainerWidth()/genomicState.locusCount);
+        	}
+    		var leftpx = (markerspos[1]+offset-referenceFrame.start)/referenceFrame.bpPerPixel; 
         	dl.css("display","block");
         	dl.css("left",Math.floor(leftpx+50) + "px");
         	dl.css("position","absolute");
         	
-        	var rightpx = (markerspos[0]-referenceFrame.start)/referenceFrame.bpPerPixel; 
+        	offset = 0;
+        	if(markerschrom[0] != $scope.settings.current.chromosomeIndexes[0]) {
+        		offset = referenceFrame.bpPerPixel*Math.floor($scope.myIgv.viewportContainerWidth()/genomicState.locusCount);
+        	}
+        	var rightpx = (markerspos[0]+offset-referenceFrame.start)/referenceFrame.bpPerPixel; 
         	dr.css("display","block");
         	dr.css("left",Math.floor(rightpx+50) + "px");
         	dr.css("position","absolute");
@@ -416,20 +524,26 @@
         $scope.getFeatures = function(track_name, track_i) {
         	$scope.myIgv.trackViews.forEach(function (tV) {
 		  		if(tV.track.name == track_name) {
-		  			var genomicState = _.first(tV.browser.genomicStateList);
-		        	var referenceFrame = genomicState.referenceFrame;
-					// get features and add them in Track_data
-	               	tV.track.getFeatures(referenceFrame.chrName, $scope.settings.current.chromStart, $scope.settings.current.chromEnd, referenceFrame.bpPerPixel).then(function (features) {
-	                	if (features) {
-	                       	track_data[track_i].feature = track_data[track_i].feature.concat(features);
-	                    }
-	               	}).catch(function (error) {
-	                    if (error instanceof igv.AbortLoad) {
-	                    	console.log("Aborted ---");
-	                    } else {
-	                        igv.presentAlert(error);
-	                    }
-	                });
+		  			var i = 0;
+		  			tV.browser.genomicStateList.forEach(function (genomicState) {
+		  			//for(var i = 0; i<tV.browser.genomicStateList.length;i++) {
+			  			//var genomicState = _.first(tV.browser.genomicStateList);
+		  				//var genomicState = tV.browser.genomicStateList[i];
+			        	var referenceFrame = genomicState.referenceFrame;
+						// get features and add them in Track_data
+		               	tV.track.getFeatures(referenceFrame.chrName, $scope.settings.current.chromStart[i], $scope.settings.current.chromEnd[i], referenceFrame.bpPerPixel).then(function (features) {
+		                	if (features) {
+		                       	track_data[track_i].feature = track_data[track_i].feature.concat(features);
+		                    }
+		               	}).catch(function (error) {
+		                    if (error instanceof igv.AbortLoad) {
+		                    	console.log("Aborted ---");
+		                    } else {
+		                        igv.presentAlert(error);
+		                    }
+		                });
+		               	i++;
+		  			});
 				}
         	});
         };
@@ -457,7 +571,8 @@
         igvjs developers expose an event when the browser changes locus.
         We profit from it to update tadkit position in the 2D and 3D panels
         */
-        $scope.myIgv.on('locuschange', function (refFrame, label) {
+        //$scope.myIgv.on('locuschange', function (refFrame, label) {
+        $scope.locuschange = function(refFrame, label) {
         	
 
         	$scope.updateFeaturesList();
@@ -465,19 +580,38 @@
         	var genomicState = _.first($scope.myIgv.genomicStateList);
         	var referenceFrame = genomicState.referenceFrame;
         	var viewportWidth = Math.floor($scope.myIgv.viewportContainerWidth()/genomicState.locusCount);
+//        	var viewport = igv.Viewport.viewportsWithLocusIndex(0);
+//        	var viewportWidth = Math.floor($scope.myIgv.viewportContainerWidth());
+//        	if(viewport.length>0) {
+//        		var parts = [];
+//				var resolution = $scope.settings.current.segmentLength*$scope.settings.current.particleSegments;
+//				var tot_part = 0;
+//				for(var i = 0; i<$scope.settings.current.chromosomeIndexes.length;i++) {
+//					parts.push(Math.round($scope.settings.current.chromEnd[i]/resolution)-Math.round($scope.settings.current.chromStart[i]/resolution)+1);
+//					tot_part += parts[i];
+//				}
+//        		viewportWidth = viewportWidth*parts[0]/tot_part;
+//        	}
         	
             // window center (base-pair units)
             var centerBP = referenceFrame.start + referenceFrame.bpPerPixel * (viewportWidth/2);
             var ps = (centerBP-referenceFrame.start);
+            var resolution = $scope.settings.current.segmentLength*$scope.settings.current.particleSegments;
+            var span_region = 0;
+			for(var i = 0; i<$scope.settings.current.chromosomeIndexes.length;i++) {
+				span_region += $scope.settings.current.chromEnd[i] - $scope.settings.current.chromStart[i] + resolution;			
+			}
+			
+			
             /* 
             We limit the left border of the browser so the center guide cannot go further
             than the start of our chromatin model*/
-            if($scope.settings.current.chromStart>centerBP) {
-				if($scope.settings.current.chromStart-ps<=0) {
+            if($scope.settings.current.chromStart[$scope.settings.current.chromIdx]>centerBP) {
+				if($scope.settings.current.chromStart[$scope.settings.current.chromIdx]-ps<=0) {
 					//referenceFrame.start = 0;
-					referenceFrame.start = $scope.settings.current.chromStart-ps;
+					referenceFrame.start = $scope.settings.current.chromStart[$scope.settings.current.chromIdx]-ps;
 				} else {
-					referenceFrame.start = $scope.settings.current.chromStart-ps;
+					referenceFrame.start = $scope.settings.current.chromStart[$scope.settings.current.chromIdx]-ps;
 				}
 			}
 			/* 
@@ -486,20 +620,69 @@
 			I haven't found other way than limiting artificially the length of the whole chromosome.
             */
 			var igv_chrom = $scope.myIgv.genome.getChromosome(referenceFrame.chrName);
-			igv_chrom.bpLength = ($scope.settings.current.chromEnd+($scope.settings.current.chromEnd-referenceFrame.start));
-			
+			//igv_chrom.bpLength = ($scope.settings.current.chromEnd[$scope.settings.current.chromIdx]+($scope.settings.current.chromEnd[$scope.settings.current.chromIdx]-referenceFrame.start));
+			igv_chrom.bpLength = (span_region+(span_region-referenceFrame.start));
 			/*
 			Finally inform tadkit about the center genomic position and the position in the screen
 			of the left and right border of our model, so we can synchronize the 2D panel
 			*/
-			var px_start = ($scope.settings.current.chromStart-referenceFrame.start)/referenceFrame.bpPerPixel;
-			var px_end = ($scope.settings.current.chromEnd-referenceFrame.start)/referenceFrame.bpPerPixel;
+			var px_start = ($scope.settings.current.chromStart[$scope.settings.current.chromIdx]-resolution-referenceFrame.start)/referenceFrame.bpPerPixel;
+			//var px_end = ($scope.settings.current.chromEnd[$scope.settings.current.chromIdx]-referenceFrame.start)/referenceFrame.bpPerPixel;
+			var px_end = (span_region-referenceFrame.start)/referenceFrame.bpPerPixel;
 			
 			$scope.updatePosition(centerBP, px_start+50 , px_end+50);
 					
 			
 			
-		});
+		//});
+        };
+        
+        igv.Browser.prototype.updateLocusSearchWithGenomicState = function (genomicState) {
+
+            var self = this,
+                referenceFrame,
+                ss,
+                ee,
+                str,
+                end,
+                chromosome;
+
+            //if (0 === genomicState.locusIndex && 1 === genomicState.locusCount) {
+            if (0 === genomicState.locusIndex) {
+
+                if ('all' === genomicState.locusSearchString.toLowerCase()) {
+
+                    this.$searchInput.val(genomicState.locusSearchString);
+                } else {
+
+                    referenceFrame = genomicState.referenceFrame;
+
+                    if (this.$searchInput) {
+
+                        end = referenceFrame.start + referenceFrame.bpPerPixel * (self.viewportContainerWidth()/genomicState.locusCount);
+
+                        if (this.genome) {
+                            chromosome = this.genome.getChromosome( referenceFrame.chrName );
+                            if (chromosome) {
+                                end = Math.min(end, chromosome.bpLength);
+                            }
+                        }
+
+                        ss = igv.numberFormatter(Math.floor(referenceFrame.start + 1));
+                        ee = igv.numberFormatter(Math.floor(end));
+                        str = referenceFrame.chrName + ":" + ss + "-" + ee;
+                        this.$searchInput.val(str);
+                    }
+                    
+                    this.fireEvent('locuschange', [referenceFrame, str]);
+                    $scope.locuschange(referenceFrame, str);
+                }
+
+            } else {
+                this.$searchInput.val('');
+            }
+
+        };
         
         // List to store the status of the overlayed tracks
         $scope.tracksOverlaid = {};
@@ -583,7 +766,7 @@
             	var genomicState = _.first(trackView.browser.genomicStateList);
                	var referenceFrame = genomicState.referenceFrame;   
                	// get features and pass them for overlay
-               	trackView.track.getFeatures(referenceFrame.chrName, $scope.settings.current.chromStart, $scope.settings.current.chromEnd, referenceFrame.bpPerPixel).then(function (features) {
+               	trackView.track.getFeatures(referenceFrame.chrName, $scope.settings.current.chromStart[$scope.settings.current.chromIdx], $scope.settings.current.chromEnd[$scope.settings.current.chromIdx], referenceFrame.bpPerPixel).then(function (features) {
                        if (features) {
                        	$scope.applyOverlay(trackView.track.id,features);
                        }

@@ -68,7 +68,7 @@
 						},
 						"axis" : {
 							"size" : 100,
-							"visible" : true
+							"visible" : false
 							},
 						"particles" : {
 							"color" : "#ffffff",

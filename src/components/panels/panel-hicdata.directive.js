@@ -205,13 +205,13 @@
 								.style("fill", "#fff")
 								.style("stroke", "#ccc")
 								.style("stroke-widt", 2)
-								.attr("cx", (scope.settings.current.particle*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2)))
+								.attr("cx", ((scope.settings.current.particle+0.5)*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2)))
 								.attr("cy", container_height-2*parseInt(scope.state.margin))
 								.attr("r", 4);
 
 							position = hic_svg.append("text")
 								.attr("id", "circ_position")
-								.attr("x", (scope.settings.current.particle*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2))-2)
+								.attr("x", ((scope.settings.current.particle+0.5)*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2))-2)
 								.attr("y", container_height-2*parseInt(scope.state.margin)-5)
 								.style("text-anchor", "bottom")
 								.style("font-family", "sans-serif")
@@ -233,8 +233,8 @@
 			                	stroke_width = (scope.data.tads[i][3]-min_score_tad)/(max_score_tad-min_score_tad)+0.1;
 								// assuming tads given in absolute position
 			                	resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
-								start_tad = Math.round(((scope.data.tads[i][1])-scope.settings.current.chromStart)/resolution);
-			                	end_tad = Math.round((scope.data.tads[i][2]-scope.settings.current.chromStart)/resolution);
+								start_tad = Math.round(((scope.data.tads[i][1])-scope.settings.current.chromStart[scope.settings.current.chromIdx])/resolution);
+			                	end_tad = Math.round((scope.data.tads[i][2]-scope.settings.current.chromStart[scope.settings.current.chromIdx])/resolution);
 			                 	start_tad_scaled = Math.round((start_tad*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2)));
 			                	polygon_tad = hic_svg.append("rect")
 			                 		.attr("id",scope.data.tads[i][0])
@@ -318,7 +318,24 @@
 						            		.attr('display', 'block');
 						            	
 						            	var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
-						            	markers_position = [transformCoords[0]*resolution+scope.settings.current.chromStart,transformCoords[1]*resolution+scope.settings.current.chromStart];
+						            	var x_mark, y_mark;
+						            	x_mark = transformCoords[0]*resolution+(scope.settings.current.chromStart[scope.settings.current.chromIdx]-resolution);
+						            	y_mark = transformCoords[1]*resolution+(scope.settings.current.chromStart[scope.settings.current.chromIdx]-resolution);
+						            	scope.settings.current.markers_chr = [scope.settings.current.chromosomeIndexes[0],scope.settings.current.chromosomeIndexes[0]];
+						    			if(scope.settings.current.chromosomeIndexes.length>1) {
+						    				var first_chrom = (scope.settings.current.chromEnd[0]);
+						    	        	
+						    				if(x_mark > first_chrom) { 
+						    					x_mark -= first_chrom;
+						    					scope.settings.current.markers_chr[0] = scope.settings.current.chromosomeIndexes[1];
+						    				}
+						    				if(y_mark > first_chrom) {
+						    					y_mark -= first_chrom;
+						    					scope.settings.current.markers_chr[1] = scope.settings.current.chromosomeIndexes[1];
+					    					}
+						    		    	
+						    			}
+						    			markers_position = [x_mark,y_mark];
 						            	scope.settings.current.markers_position = markers_position;
 						            	scope.$apply(scope.settings.current.markers_position);
 						            }
@@ -348,9 +365,10 @@
 						            
 						            //scope.update();
 						            var part = (x_orig-parseInt(scope.state.offsetx)-scope.translatePos.x)/(scope.scale*Math.sqrt(2));
-						            var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments;	
-						            if(part != scope.settings.current.particle && part <= scope.data.value.length && part > 0) {
-							            scope.settings.current.hic_position += (part-scope.settings.current.particle)*resolution;
+						            var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments;
+						            var pos = scope.settings.current.hic_position + (part-scope.settings.current.particle)*resolution;
+						            if(pos >= scope.settings.current.chromStart[scope.settings.current.chromIdx] && pos <= scope.settings.current.chromEnd[scope.settings.current.chromIdx]) {
+							            scope.settings.current.hic_position = pos;
 							            scope.$apply(scope.settings.current.hic_position);
 							            //scope.update_marks();
 						            }
@@ -389,7 +407,11 @@
 					if ( newPos !== oldPos && scope.data.n > 0) {
 						var rect = hic_data_container.getBoundingClientRect();
 						scope.translatePos.x = scope.settings.current.leftborder-rect.left;
-						scope.scale = (scope.settings.current.rightborder-scope.settings.current.leftborder)/(Math.sqrt(2)*scope.data.n); 
+						var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments;
+						//var first_n = Math.round((scope.settings.current.chromEnd[0]-scope.settings.current.chromStart[0])/resolution)+1;
+						
+						scope.scale = (scope.settings.current.rightborder-scope.settings.current.leftborder)/(Math.sqrt(2)*scope.data.n);
+						
 						scope.settings.current.hic_position = scope.settings.current.position;
 						scope.update();
 						scope.update_marks();
@@ -411,9 +433,7 @@
 		        scope.$watch('settings.current.chromosomeIndexes', function(newvalue,oldvalue) {
 		        	if ( newvalue !== oldvalue && !angular.isUndefined(newvalue)) {
 		        		scope.data = Hic_data.get();
-		        		scope.rendered = false;
-						scope.update();
-						scope.update_marks();
+		        		scope.update_data(scope.data);
 		        	}
 		        });	
 		        // UPDATE
@@ -444,7 +464,7 @@
 				};
 
 				scope.update_marks =  function() {
-					var x = (scope.settings.current.particle*Math.sqrt(2))*scope.scale+(scope.translatePos.x)+parseInt(scope.state.offsetx);
+					var x = ((scope.settings.current.particle+0.5)*Math.sqrt(2))*scope.scale+(scope.translatePos.x)+parseInt(scope.state.offsetx);
 					handle.attr("cx",x);
 					position.attr("x",x).text(scope.settings.current.particle+1);
 					
@@ -458,7 +478,7 @@
 					if(scope.show_tads) {
 						for(var i=0;i<polygon_tads.length;i++) {
 							resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
-							start_tad = Math.round(((scope.data.tads[i][1])-scope.settings.current.chromStart)/resolution);
+							start_tad = Math.round(((scope.data.tads[i][1])-scope.settings.current.chromStart[scope.settings.current.chromIdx])/resolution);
 							start_tad_scaled = Math.round((start_tad*Math.sqrt(2))*scope.scale+(scope.translatePos.x)+parseInt(scope.state.offsetx));
 							
 							polygon_tads[i]
@@ -491,11 +511,11 @@
 		        		var start_tad_segment, end_tad_segment, i;
 		        		if(oldvalue>-1) {
 			        		polygon_tads[oldvalue].style("fill-opacity", 0.5);
-			        		start_tad_segment = Math.round((parseInt(polygon_tads[oldvalue].attr("start")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
-			        		end_tad_segment = Math.ceil((parseInt(polygon_tads[oldvalue].attr("end")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
+			        		start_tad_segment = Math.round((parseInt(polygon_tads[oldvalue].attr("start")) - scope.settings.current.chromStart[scope.settings.current.chromIdx])/scope.settings.current.segmentLength);
+			        		end_tad_segment = Math.ceil((parseInt(polygon_tads[oldvalue].attr("end")) - scope.settings.current.chromStart[scope.settings.current.chromIdx])/scope.settings.current.segmentLength);
 		        		}
-		        		start_tad_segment = Math.round((parseInt(polygon_tads[newvalue].attr("start")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
-		        		end_tad_segment = Math.ceil((parseInt(polygon_tads[newvalue].attr("end")) - scope.settings.current.chromStart)/scope.settings.current.segmentLength);
+		        		start_tad_segment = Math.round((parseInt(polygon_tads[newvalue].attr("start")) - scope.settings.current.chromStart[scope.settings.current.chromIdx])/scope.settings.current.segmentLength);
+		        		end_tad_segment = Math.ceil((parseInt(polygon_tads[newvalue].attr("end")) - scope.settings.current.chromStart[scope.settings.current.chromIdx])/scope.settings.current.segmentLength);
 		        		scope.settings.current.tad_selected = newvalue;
 		        	}
 				});
@@ -534,7 +554,9 @@
 			    };
 			    scope.update_data = function(data){
 			    	scope.data = data;
-			    	scope.scale = (scope.settings.current.rightborder-scope.settings.current.leftborder)/(Math.sqrt(2)*scope.data.n);
+			    	var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments;
+					//var first_n = Math.round((scope.settings.current.chromEnd[0]-scope.settings.current.chromStart[0])/resolution)+1;
+					scope.scale = (scope.settings.current.rightborder-scope.settings.current.leftborder)/(Math.sqrt(2)*scope.data.n);
 			    	if (typeof scope.settings.current.leftborder != 'undefined') {
 						var rect = hic_data_container.getBoundingClientRect();
 						scope.translatePos.x = scope.settings.current.leftborder-rect.left;

@@ -14,7 +14,7 @@
 
 		$scope.current.dataset = Datasets.getDataset();
 		if($scope.current.dataset.models.length>0) {
-			$scope.current.model = Datasets.getModel();
+			$scope.current.model = Datasets.getModel(Datasets.getCentroid(),$scope.current.dataset.object.chrom);
 			
 			// Get dataset scene icon component
 			$scope.clusterComponent = Components.getComponentById("datasets-scene-icon");

@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.controller('PanelInspectorController', PanelInspectorController);
 
-	function PanelInspectorController($scope, $mdDialog, Settings, Datasets, Hic_data) {
+	function PanelInspectorController($scope, $mdDialog, Settings, Proximities, Restraints, Overlays, Datasets, Hic_data) {
 
 		$scope.$watch('settings.views.scene_width', function( newValue, oldValue ) {
 			if ( newValue !== oldValue ) {
@@ -36,14 +36,18 @@
 			if(angular.isUndefined($scope.settings.current.markers_position)) return;
 			var segment_span = ($scope.$parent.settings.current.segmentUpper - $scope.$parent.settings.current.segmentLower)/2;
 
-			if ($scope.settings.current.markers_position[1]+segment_span >= feature.start && $scope.settings.current.markers_position[1]-segment_span <= feature.end) return true;
+			if ($scope.settings.current.markers_position[1]+segment_span >= feature.start && $scope.settings.current.markers_position[1]-segment_span <= feature.end && 
+					feature.chr.replace('chr','') == $scope.settings.current.markers_chr[1] 
+			) return true;
 			return false;
 		};
 		$scope.atRightPosition = function(feature) {
 			if(angular.isUndefined($scope.settings.current.markers_position)) return;
 			var segment_span = ($scope.$parent.settings.current.segmentUpper - $scope.$parent.settings.current.segmentLower)/2;
 			
-			if ($scope.settings.current.markers_position[0]+segment_span >= feature.start && $scope.settings.current.markers_position[0]-segment_span <= feature.end) return true;
+			if ($scope.settings.current.markers_position[0]+segment_span >= feature.start && $scope.settings.current.markers_position[0]-segment_span <= feature.end && 
+					feature.chr.replace('chr','') == $scope.settings.current.markers_chr[0]		
+			) return true;
 			return false;
 		};
 		$scope.formatRegionName = function(regionName) {
@@ -80,6 +84,7 @@
 			var idx = chromosomeIndex.indexOf(chrom);
 		    // Is currently selected
 		    if (idx > -1) {
+		    	if(chromosomeIndex.length<2) return;
 		    	chromosomeIndex.splice(idx, 1);
 		    }
 
@@ -89,12 +94,14 @@
 		    }
 		    var chromStart = [];
 			var chromEnd = [];
+			var sortedIndex = [];
 			var resolution = $scope.data.object.resolution;
 			var chromIdx;
 			var offset = 0;
 			for (var l = 0 ; l < $scope.data.object.chrom.length; l++) {
 				chromIdx = chromosomeIndex.indexOf($scope.data.object.chrom[l]);
 				if(chromIdx > -1) {
+					sortedIndex.push($scope.data.object.chrom[l]);
 					chromStart.push(Math.round($scope.data.object.chromStart[l]/resolution)+offset);
 					chromEnd.push(Math.round($scope.data.object.chromEnd[l]/resolution)+offset);
 				}
@@ -102,7 +109,22 @@
 			}
 			var dataset = Datasets.getDataset();
 		    var hic_data = Hic_data.set(dataset.hic_data,chromStart,chromEnd);
-		    $scope.settings.current.chromosomeIndexes = chromosomeIndex;
+		    var currentModel = Datasets.setModel(Datasets.getCentroid(),chromosomeIndex);
+		    if(chromosomeIndex.indexOf($scope.settings.current.chrom)<0) $scope.settings.current.chrom = chromosomeIndex[0];
+		    Settings.set(dataset,chromosomeIndex,$scope.settings.current.chrom);
+			//$scope.current.overlay = Overlays.getOverlay();
+			
+		    var igvDiv = angular.element(document.querySelector('#igvRootDiv'))[0];
+		    var span_width = parseInt(igvDiv.clientWidth)-100;
+		    $scope.settings.current.leftborder = 50;
+		    if(chromosomeIndex.length==2) {
+		    	var first_right_border = (50 + span_width)/chromosomeIndex.length;
+		    	$scope.settings.current.rightborder = first_right_border * ($scope.settings.current.particlesCount/(chromEnd[0]-chromStart[0]+1));
+		    } else $scope.settings.current.rightborder = (50 + span_width);
+			
+		    $scope.settings.current.chromosomeIndexes = sortedIndex;
+		    
+		    
 		 };
 		/*
 		$scope.dataset_info = '<div class="component-caption" layout="column" layout-align="left center">'+
@@ -142,7 +164,7 @@
 			var output = '<div class="component-caption" layout="column" layout-align="left center">'+
 			'<table>';
 			for (var property in item) {
-				if (['name','id','value','score','strand','start','end'].indexOf(property) >= 0) 
+				if (['name','id','chr','value','score','strand','start','end'].indexOf(property) >= 0) 
 					output += '<tr><td><b>'+property+':</b></td><td>'+item[property]+'</td></tr>';
 			}
 			output += '</table>'+

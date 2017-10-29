@@ -339,7 +339,14 @@
 						if (type == "gradient" && format == "hex") {
 							// palette must contain 2 hex values
 							overlay.colors.particles = Segments.gradientHCL(overlay, settings.current.particlesCount);
-							overlay.colors.chromatin = Segments.gradientHCL(overlay, settings.current.segmentsCount);
+							var counts = [];
+							var resolution = settings.current.segmentLength*settings.current.particleSegments;
+							var num_segments = 0;
+							for (var l = 0 ; l < settings.current.chromosomeIndexes.length; l++) {
+								num_segments = Math.round((settings.current.chromEnd[l]-settings.current.chromStart[l])/resolution)+1;
+								counts.push(num_segments*settings.current.particleSegments);
+							}
+							overlay.colors.chromatin = Segments.gradientHCL(overlay, settings.current.segmentsCount, counts);
 							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
 							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
 						} else if (type == "wiggle_0" && format == "fixed") {
@@ -407,6 +414,11 @@
 				if (index === undefined || index === false) index = overlays.current.index;
 				var overlay = overlays.loaded[index];
 				return overlay;
+			},
+			replaceOverlay: function(overlay, index) {
+				if (index === undefined || index === false) index = overlays.current.index;
+				overlays.loaded[index] = overlay;
+				return;
 			},
 			getOverlayById: function (id) {
 				var overlay, found;

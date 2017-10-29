@@ -13,6 +13,10 @@
 				centroid : 1
 			}
 		};
+		var model = {
+				"ref":-1, 
+				"data":[]
+		};
 		return {
 			load: function(dataUrl, clear) {
 				var self = this;
@@ -81,11 +85,12 @@
 						chromosomeIndex = dataset.object.chromosomeIndex;	
 					}
 					var offset=0;
-					for(var i=0;i<chromosomeIndex;i++) offset += dataset.object.chromEnd[chromosomeIndex] - dataset.object.chromStart[chromosomeIndex] + 1;
-					var chromStart = dataset.object.chromStart[chromosomeIndex] + offset;
-					var chromEnd = dataset.object.chromEnd[chromosomeIndex] + offset;
 					var resolution = dataset.object.resolution;
-					Hic_data.set(dataset.hic_data,[Math.round(chromStart/resolution)],[Math.round(chromEnd/resolution)]);
+					for(var i=0;i<chromosomeIndex;i++) offset += Math.round(dataset.object.chromEnd[l]/resolution)-Math.round(dataset.object.chromStart[l]/resolution)+1; 
+					
+					var posStart = (dataset.object.chromStart[chromosomeIndex]/resolution + offset)-dataset.object.chromStart[0]/resolution;
+					var posEnd = (dataset.object.chromEnd[chromosomeIndex]/resolution + offset)-(dataset.object.chromStart[0]/resolution);
+					Hic_data.set(dataset.hic_data,[Math.round(posStart+1)],[Math.round(posEnd+1)]);
 					
 				} else Hic_data.clear();
 				
@@ -169,9 +174,9 @@
 				var centroid = this.setModel(datasets.current.centroid);
 				return centroid; // array of vertices
 			},
-			setModel: function(ref) { // from model ref
+			setModel: function(ref,chromosomeIndex) { // from model ref
 				ref = ref || this.getCentroid();
-				var model = this.getModel(ref - 1);
+				var model = this.getModel(ref - 1,chromosomeIndex);
 				// Store as current model for dataset in datasets.loaded[datasets.current.index].data
 				datasets.loaded[datasets.current.index].data = model;
 				return model; // array of vertices
@@ -197,15 +202,40 @@
 				var centroid = datasets.loaded[datasets.current.index].centroids[ref - 1];
 				return centroid; // single model ref
 			},
-			getModel: function(ref) { // from model ref
+			getModel: function(ref, chromosomeIndex) { // from model ref
+				var self = this;
 				ref = ref || this.getCentroid();
-				var model;
+				var dataset = self.getDataset();
+				if (chromosomeIndex === undefined || chromosomeIndex === false) chromosomeIndex = [dataset.object.chrom[0]];
+				
+				var chromIdx;
+				var chromStart = [];
+				var chromEnd = [];
+				var resolution = dataset.object.resolution;
+				var offset = 0;
+				for (var l = 0 ; l < dataset.object.chrom.length; l++) {
+					chromIdx = chromosomeIndex.indexOf(dataset.object.chrom[l]);
+					if(chromIdx > -1) {
+						chromStart.push(Math.round((dataset.object.chromStart[l]-dataset.object.chromStart[0])/resolution)+offset);
+						chromEnd.push(Math.round((dataset.object.chromEnd[l]-dataset.object.chromStart[0])/resolution)+1+offset);
+					}
+					offset += Math.round(dataset.object.chromEnd[l]/resolution)-Math.round(dataset.object.chromStart[l]/resolution)+1;
+				}
+				
 				var models = datasets.loaded[datasets.current.index].models;
+				model.data = [];
 				// console.log(ref);
 				for (var i = models.length - 1; i >= 0; i--) {
-					if (models[i].ref == ref) model = models[i];
+					if (models[i].ref == ref) {
+						for (var k = 0 ; k < chromStart.length; k++) {
+							for (var j = dataset.object.components*(chromStart[k]) ; j < dataset.object.components*(chromEnd[k]); j += 3) {
+								model.data.push(models[i].data[j],models[i].data[j+1],models[i].data[j+2]);
+							}
+						}
+					}
 				}
 				// console.log(model);
+				model.ref = ref;
 				return model; // array of model vertices
 			},
 			loadHic: function() {

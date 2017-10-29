@@ -6,7 +6,7 @@
 
 	// constructor for chromatin model instances
 	function Chromatin(Paths, PathControls, ColorConvert) {
-		return function(data, colors, settings, resolution_scale) {
+		return function(data, colors, view_settings, resolution_scale, settings) {
 			// console.log(colors);
 
 			var defaults = {
@@ -27,9 +27,16 @@
 					"100000" : 5
 				}
 			};		
-			settings = settings || {};
-			angular.extend(this, angular.copy(defaults), settings);
+			view_settings = view_settings || {};
+			angular.extend(this, angular.copy(defaults), view_settings);
 
+			var chromBreaks = [];
+			var resolution = settings.segmentLength*settings.particleSegments;
+			var offset = 0;
+			for (var l = 0 ; l < settings.chromosomeIndexes.length; l++) {
+				offset += Math.round((settings.chromEnd[l]-settings.chromStart[l])/resolution)+1;
+				chromBreaks.push(offset);
+			}
 			// Convert Data to Vector triplets
 			var geometry = getGeometry(data);
 			for (var g = geometry.vertices.length - 1; g >= 0; g--) {
@@ -88,7 +95,7 @@
 			var i;
 			
 			var chromatinGeometry;
-			if(settings.tubed) {
+			if(view_settings.tubed) {
 				chromatinGeometry = new THREE.TubeGeometry(cubicPath, pathSegments, this.radius, 8, this.pathClosed);
 				
 				
@@ -109,8 +116,11 @@
 				chromatinGeometry.verticesNeedUpdate = true;
 				
 				chromatinGeometry.center();
-
-			    var tubeMesh = new THREE.Mesh(chromatinGeometry, new THREE.MeshLambertMaterial({
+				var transparentMaterial = new THREE.MeshLambertMaterial({
+					  transparent:true, 
+					  opacity:0.0
+					});
+				var solidMaterial = new THREE.MeshLambertMaterial({
 			        color: 0xffffff,
 			        //shading: THREE.FlatShading,
 			        //side: THREE.DoubleSide,
@@ -118,7 +128,9 @@
 			        transparent: false,
 			        vertexColors: THREE.FaceColors, // CHANGED
 			        overdraw: true
-			    }));
+			    });
+				
+			    var tubeMesh = new THREE.Mesh(chromatinGeometry, new THREE.MultiMaterial([solidMaterial, transparentMaterial]));
 
 			    //for(var k=0;k< chromatinGeometry.faces.length;k++) {
 			    	//if(k%12) chromatinGeometry.faces[k].color.setRGB(1,0,0);
@@ -127,14 +139,20 @@
 				//}
 			    var newChromatinColor;
 			    for (i = 0; i < colors.length; i++) {
-					if(ColorConvert.testIfHex(colors[i]) || colors[i].indexOf('#')===0) {
-						newChromatinColor =  new THREE.Color(colors[i]);	 
-					} else {
-						newChromatinColor =  new THREE.Color(ColorConvert.nameToHex(colors[i]));
-					} 
-					for (j = 0; j < 16; j++) {
-						tubeMesh.geometry.faces[i*16+j].color.set(newChromatinColor);
-					}
+			    	if(chromBreaks.indexOf(Math.floor(i/settings.particleSegments))>-1) {
+			    		for (j = 0; j < 16; j++) {
+							tubeMesh.geometry.faces[i*16+j].materialIndex = 1;
+						}
+			    	} else {
+						if(ColorConvert.testIfHex(colors[i]) || colors[i].indexOf('#')===0) {
+							newChromatinColor =  new THREE.Color(colors[i]);	 
+						} else {
+							newChromatinColor =  new THREE.Color(ColorConvert.nameToHex(colors[i]));
+						} 
+						for (j = 0; j < 16; j++) {
+							tubeMesh.geometry.faces[i*16+j].color.set(newChromatinColor);
+						}
+			    	}
 				}
 			 
 			    
