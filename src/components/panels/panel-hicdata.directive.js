@@ -319,8 +319,8 @@
 						            	
 						            	var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
 						            	var x_mark, y_mark;
-						            	x_mark = transformCoords[0]*resolution+(scope.settings.current.chromStart[scope.settings.current.chromIdx]-resolution);
-						            	y_mark = transformCoords[1]*resolution+(scope.settings.current.chromStart[scope.settings.current.chromIdx]-resolution);
+						            	x_mark = transformCoords[0]*resolution+(scope.settings.current.chromStart[scope.settings.current.chromIdx]);
+						            	y_mark = transformCoords[1]*resolution+(scope.settings.current.chromStart[scope.settings.current.chromIdx]);
 						            	scope.settings.current.markers_chr = [scope.settings.current.chromosomeIndexes[0],scope.settings.current.chromosomeIndexes[0]];
 						    			if(scope.settings.current.chromosomeIndexes.length>1) {
 						    				var first_chrom = (scope.settings.current.chromEnd[0]);
@@ -393,16 +393,16 @@
 		                scope.render(scope.data.max, scope.data.min);
 		        	}
 		        });
-		        scope.$watch('settings.current.particle', function(newParticle, oldParticle) {
-					if ( newParticle !== oldParticle) {
-						if (typeof scope.settings.current.leftborder != 'undefined') {
-							var rect = hic_data_container.getBoundingClientRect();
-							scope.translatePos.x = scope.settings.current.leftborder-rect.left;
-						}
-						scope.update();
-						scope.update_marks();
-					}
-				});
+//		        scope.$watch('settings.current.particle', function(newParticle, oldParticle) {
+//					if ( newParticle !== oldParticle) {
+//						if (typeof scope.settings.current.leftborder != 'undefined') {
+//							var rect = hic_data_container.getBoundingClientRect();
+//							scope.translatePos.x = scope.settings.current.leftborder-rect.left;
+//						}
+//						scope.update();
+//						scope.update_marks();
+//					}
+//				});
 		        scope.$watch('settings.current.leftborder', function(newPos, oldPos) {
 					if ( newPos !== oldPos && scope.data.n > 0) {
 						var rect = hic_data_container.getBoundingClientRect();
@@ -464,9 +464,9 @@
 				};
 
 				scope.update_marks =  function() {
-					var x = ((scope.settings.current.particle+0.5)*Math.sqrt(2))*scope.scale+(scope.translatePos.x)+parseInt(scope.state.offsetx);
+					var x = (((scope.settings.current.particle-1)+0.5)*Math.sqrt(2))*scope.scale+(scope.translatePos.x)+parseInt(scope.state.offsetx);
 					handle.attr("cx",x);
-					position.attr("x",x).text(scope.settings.current.particle+1);
+					position.attr("x",x).text(scope.settings.current.particle);
 					
 					contact_marker.attr('display', 'none');
 	            	contact_marker_value.attr('display', 'none');

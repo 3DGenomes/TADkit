@@ -4,11 +4,36 @@
 		.module('TADkit')
 		.controller('PanelIgvjsControllerBeta', PanelIgvjsControllerBeta);
 
-	function PanelIgvjsControllerBeta($scope, $window, $timeout, Overlays,Storyboards, uuid4, Track_data, d3Service, Datasets, Users, Settings) {
+	function PanelIgvjsControllerBeta($scope, $window, $timeout, $mdDialog, Overlays,Storyboards, uuid4, Track_data, d3Service, Datasets, Users, Settings) {
 
-		if(angular.isUndefined($scope.settings.current.speciesUrl)) {
+		$scope.showInfo = function(info) {
+			$mdDialog.show({
+			      parent: angular.element(document.body),
+			      template: '<md-dialog md-theme="default" aria-label="Information">' +
+			        '  <md-dialog-content class="md-default-theme">' + info +
+			        '<div class="md-actions"><md-button ng-click="closeDialog();" class="md-primary md-button md-default-theme"><span class="ng-binding ng-scope">Close</span></md-button></div>' +
+			        '  </md-dialog-content>' +
+			        '</md-dialog>',
+			      locals: {
+
+			      },
+			      controller: DialogController
+			    });
+		};
+
+		function DialogController($scope, $mdDialog) {
+			$scope.closeDialog = function() {
+			  $mdDialog.hide();
+			};
+		}
+		
+		if(angular.isUndefined($scope.settings.current.speciesUrl) || angular.isUndefined($scope.view.settings.species_data[$scope.settings.current.speciesUrl])) {
 			$scope.settings.current.speciesUrl = Datasets.setSpeciesUrl();
-			if(angular.isUndefined($scope.settings.current.speciesUrl)) return;
+			if(angular.isUndefined($scope.settings.current.speciesUrl) || angular.isUndefined($scope.view.settings.species_data[$scope.settings.current.speciesUrl])) {
+				var output = '<div class="component-caption" layout="column" layout-align="left center">No species specified in the dataset</div>'; 
+				$timeout(function() {$scope.showInfo(output);});
+				return;
+			}
 		}
 
 		var scene_component = Storyboards.getComponentById('Chromatin');
@@ -124,6 +149,7 @@
 			for(var i = 0; i<$scope.settings.current.chromosomeIndexes.length;i++) {
 				span_region += $scope.settings.current.chromEnd[i] - $scope.settings.current.chromStart[i] + resolution;			
 			}
+			span_region += $scope.settings.current.chromStart[0];
 			if(position >= $scope.settings.current.chromStart[$scope.settings.current.chromIdx] && position <= span_region) {
 				$scope.settings.current.position = position;
 			}
@@ -502,6 +528,8 @@
 
         	var genomicState = _.first($scope.myIgv.genomicStateList);
         	var referenceFrame = genomicState.referenceFrame;
+        	var viewportWidth = igv.browser.viewportContainerWidth()/genomicState.locusCount;
+        	var resolution = $scope.settings.current.segmentLength*$scope.settings.current.particleSegments;
         	var offset = 0;
         	if(markerschrom[1] != $scope.settings.current.chromosomeIndexes[0]) {
         		offset = referenceFrame.bpPerPixel*Math.floor($scope.myIgv.viewportContainerWidth()/genomicState.locusCount);
@@ -513,7 +541,13 @@
         	
         	offset = 0;
         	if(markerschrom[0] != $scope.settings.current.chromosomeIndexes[0]) {
-        		offset = referenceFrame.bpPerPixel*Math.floor($scope.myIgv.viewportContainerWidth()/genomicState.locusCount);
+        		var nextgenomicState = $scope.myIgv.genomicStateList[1];
+            	var nextreferenceFrame = nextgenomicState.referenceFrame;
+            	
+        		//offset = referenceFrame.bpPerPixel*Math.floor($scope.myIgv.viewportContainerWidth()/genomicState.locusCount);
+        		offset = (referenceFrame.bpPerPixel * viewportWidth) + referenceFrame.start;
+            	offset -= nextreferenceFrame.start -($scope.settings.current.chromStart[1]-1*resolution);
+            	offset = Math.max(0, offset);
         	}
         	var rightpx = (markerspos[0]+offset-referenceFrame.start)/referenceFrame.bpPerPixel; 
         	dr.css("display","block");
@@ -567,6 +601,7 @@
         		}
         	});
         };
+        
         /*
         igvjs developers expose an event when the browser changes locus.
         We profit from it to update tadkit position in the 2D and 3D panels
@@ -601,7 +636,7 @@
 			for(var i = 0; i<$scope.settings.current.chromosomeIndexes.length;i++) {
 				span_region += $scope.settings.current.chromEnd[i] - $scope.settings.current.chromStart[i] + resolution;			
 			}
-			
+			span_region += $scope.settings.current.chromStart[0];
 			
             /* 
             We limit the left border of the browser so the center guide cannot go further
@@ -626,7 +661,7 @@
 			Finally inform tadkit about the center genomic position and the position in the screen
 			of the left and right border of our model, so we can synchronize the 2D panel
 			*/
-			var px_start = ($scope.settings.current.chromStart[$scope.settings.current.chromIdx]-resolution-referenceFrame.start)/referenceFrame.bpPerPixel;
+			var px_start = ($scope.settings.current.chromStart[$scope.settings.current.chromIdx]-referenceFrame.start)/referenceFrame.bpPerPixel;
 			//var px_end = ($scope.settings.current.chromEnd[$scope.settings.current.chromIdx]-referenceFrame.start)/referenceFrame.bpPerPixel;
 			var px_end = (span_region-referenceFrame.start)/referenceFrame.bpPerPixel;
 			

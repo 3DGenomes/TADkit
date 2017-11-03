@@ -27,26 +27,52 @@
 
 	      $scope.selectedIndex = 0;
 	      
-		
+	      /*$scope.atPosition = function(feature) {
+				if ($scope.$parent.settings.current.segmentUpper >= feature.start && $scope.$parent.settings.current.segmentLower <= feature.end && feature.chr.replace('chr','')==$scope.settings.current.chrom.replace('chr','')) return true;
+				return false;
+			};
+			$scope.atLeftPosition = function(feature) {
+				if(angular.isUndefined($scope.settings.current.markers_position)) return;
+				var segment_span = ($scope.$parent.settings.current.segmentUpper - $scope.$parent.settings.current.segmentLower)/2;
+			
+				if ($scope.settings.current.markers_position[1]+segment_span >= feature.start && $scope.settings.current.markers_position[1]-segment_span <= feature.end && 
+						feature.chr.replace('chr','') == $scope.settings.current.markers_chr[1].replace('chr','') 
+				) return true;
+				return false;
+			};
+			$scope.atRightPosition = function(feature) {
+				if(angular.isUndefined($scope.settings.current.markers_position)) return;
+				var segment_span = ($scope.$parent.settings.current.segmentUpper - $scope.$parent.settings.current.segmentLower)/2;
+				
+				if ($scope.settings.current.markers_position[0]+segment_span >= feature.start && $scope.settings.current.markers_position[0]-segment_span <= feature.end && 
+						feature.chr.replace('chr','') == $scope.settings.current.markers_chr[0].replace('chr','')		
+				) return true;
+				return false;
+			};*/
+	      
 		$scope.atPosition = function(feature) {
-			if ($scope.$parent.settings.current.segmentUpper >= feature.start && $scope.$parent.settings.current.segmentLower <= feature.end) return true;
+			if ($scope.$parent.settings.current.segmentUpper >= feature.start && $scope.$parent.settings.current.segmentLower <= feature.end && feature.chr.replace('chr','')==$scope.settings.current.chrom.replace('chr','')) return true;
 			return false;
 		};
 		$scope.atLeftPosition = function(feature) {
 			if(angular.isUndefined($scope.settings.current.markers_position)) return;
-			var segment_span = ($scope.$parent.settings.current.segmentUpper - $scope.$parent.settings.current.segmentLower)/2;
-
-			if ($scope.settings.current.markers_position[1]+segment_span >= feature.start && $scope.settings.current.markers_position[1]-segment_span <= feature.end && 
-					feature.chr.replace('chr','') == $scope.settings.current.markers_chr[1] 
+			var particle = Settings.getParticle($scope.settings.current.markers_position[1]);
+			var resolution = $scope.data.object.resolution;
+			var segmentLower = (particle-1)*resolution+$scope.settings.current.chromStart[$scope.settings.current.chromIdx];
+			var segmentUpper = (particle)*resolution+$scope.settings.current.chromStart[$scope.settings.current.chromIdx];
+			if (segmentUpper >= feature.start && segmentLower <= feature.end && 
+					feature.chr.replace('chr','') == $scope.settings.current.markers_chr[1].replace('chr','') 
 			) return true;
 			return false;
 		};
 		$scope.atRightPosition = function(feature) {
 			if(angular.isUndefined($scope.settings.current.markers_position)) return;
-			var segment_span = ($scope.$parent.settings.current.segmentUpper - $scope.$parent.settings.current.segmentLower)/2;
-			
-			if ($scope.settings.current.markers_position[0]+segment_span >= feature.start && $scope.settings.current.markers_position[0]-segment_span <= feature.end && 
-					feature.chr.replace('chr','') == $scope.settings.current.markers_chr[0]		
+			var particle = Settings.getParticle($scope.settings.current.markers_position[0]);
+			var resolution = $scope.data.object.resolution;
+			var segmentLower = (particle-1)*resolution+$scope.settings.current.chromStart[$scope.settings.current.chromIdx];
+			var segmentUpper = (particle)*resolution+$scope.settings.current.chromStart[$scope.settings.current.chromIdx];
+			if (segmentUpper >= feature.start && segmentLower <= feature.end && 
+					feature.chr.replace('chr','') == $scope.settings.current.markers_chr[0].replace('chr','') 
 			) return true;
 			return false;
 		};
