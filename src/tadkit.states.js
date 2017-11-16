@@ -170,6 +170,16 @@
 				}
 			},
 		})
+		.state('data-import', {
+			parent: 'browser',
+			url: '/data/import',
+			views: {
+				'modal@main': {
+					templateUrl: 'assets/templates/data-import.html',
+					controller: 'DataImportController'
+				}
+			},
+		})
 		.state('404', {
 			url: '/404',
 			templateUrl: 'assets/templates/404.tpl.html',

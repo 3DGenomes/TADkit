@@ -510,6 +510,9 @@ md-checkbox.md-checked .md-icon {
 .panel-inspector .component-body .accordion dd > .content {
 	padding: 0.6rem;
 }
+.panel-inspector .md-button.md-default-theme.md-accent {
+	color: rgb(0,96,128);
+}
 .md-default-theme table, .md-default-theme table tr {
 	width: 100%;
 	border: none;

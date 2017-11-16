@@ -130,7 +130,7 @@
 			        overdraw: true
 			    });
 				
-			    var tubeMesh = new THREE.Mesh(chromatinGeometry, new THREE.MultiMaterial([solidMaterial, transparentMaterial]));
+			    var tubeMesh = new THREE.Mesh(chromatinGeometry, [solidMaterial, transparentMaterial]);
 
 			    //for(var k=0;k< chromatinGeometry.faces.length;k++) {
 			    	//if(k%12) chromatinGeometry.faces[k].color.setRGB(1,0,0);
