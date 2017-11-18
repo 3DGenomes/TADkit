@@ -242,7 +242,16 @@
 				var dataset = this.getDataset();
 				return Hic_data.loadExternal(dataset);
 			},
-			parse: function(indata) {
+			parse: function(data) {
+				Papa.DefaultDelimiter = " ";
+				var parsedData = Papa.parse(data,{
+					dynamicTyping: true,
+					skipEmptyLines: true,
+					fastMode: true
+				});
+				return parsedData;
+			}
+/*			parse: function(indata) {
 				// split content based on new line
 			    var allTextLines = indata.split(/\r\n|\n/);
 			    var headers = allTextLines[0].split(',');
@@ -260,7 +269,7 @@
 			        }
 			    }
 			    return lines;
-			},
+			},*/
 		};
 	}
 })();
