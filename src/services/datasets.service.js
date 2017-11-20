@@ -250,7 +250,57 @@
 					fastMode: true
 				});
 				return parsedData;
-			}
+			},
+			import: function(fileData, skipRows, selectedCols) {
+				var self = this;
+				// TODO: if not valid fileData return...
+				skipRows = skipRows || 0;
+				selectedCols = selectedCols || [];
+
+				var parsedData;
+				var dataType = Resources.whatIsIt(fileData);
+				if (dataType == "String") {
+					parsedData = self.parse(fileData).data;
+				} else {
+					parsedData = fileData; // already parsed to JSON object
+				}
+
+				var ref = this.getCentroid();
+				var models = datasets.loaded[datasets.current.index].models;
+				var settings = Settings.get();
+				var chromosomeIndex = settings.current.chromosomeIndexes;
+				var resoData = 100000;
+				var resolution = settings.current.segmentLength*settings.current.particleSegments;
+				model.data = [];
+				// console.log(ref);
+				for (var i = models.length - 1; i >= 0; i--) {
+					if (models[i].ref == ref) {
+						for (var j = 0; j < models[i].data.length; j++) {
+							models[i].data[j] = 0;
+						}
+						for (var k = skipRows; k < parsedData.length; k+=3) {
+							//var idx = Math.max(chromosomeIndex.indexOf(parsedData[k][0].toString()),chromosomeIndex.indexOf(parsedData[k][0].toString().replace('chr','')));
+						    var idx = Math.max("1".indexOf(parsedData[k][0].toString()),chromosomeIndex.indexOf(parsedData[k][0].toString().replace('chr','')));
+						    
+						    if (idx > -1) {
+						    	if(parsedData[k][1]*resoData<(settings.current.chromStart[idx]-resolution)) continue;
+						    	if(parsedData[k][1]*resoData>(settings.current.chromEnd[idx]-resolution)) break;
+						    	
+						    	j = Math.round(((parsedData[k][1]*resoData)-(settings.current.chromStart[idx]-resolution))/resolution);
+								models[i].data[j] = parsedData[k][2];
+								models[i].data[j+1] = parsedData[k][3];
+								models[i].data[j+2] = parsedData[k][4];	
+						    }
+							
+						}
+					}
+				}
+
+				
+				
+
+				return i;
+			},
 /*			parse: function(indata) {
 				// split content based on new line
 			    var allTextLines = indata.split(/\r\n|\n/);

@@ -18,10 +18,10 @@
   },
   "homepage": "https://github.com/3DGenomes/TADkit",
   "devDependencies": {
-    "gulp": "^3.8.7",
-    "gulp-concat": "^2.3.4",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
     "gulp-header": "^1.2.2",
-    "gulp-jshint": "^1.8.4",
+    "gulp-jshint": "^1.12.0",
     "gulp-rename": "^1.2.0",
     "gulp-sass": "^3.1.0",
     "gulp-uglify": "^0.3.1"
@@ -63,11 +63,14 @@
     "@bower_components/packery": "metafizzy/packery#~1.3.2",
     "@bower_components/papaparse": "mholt/PapaParse#~4.1.0",
     "@bower_components/threejs": "mrdoob/three.js#*",
+    "angular-material": "^1.1.5",
     "font-awesome": "^4.7.0",
     "graceful-fs": "^4.1.10",
     "gulp-plumber": "^1.1.0",
     "gulp-webserver": "^0.9.1",
-    "opn": "^5.1.0"
+    "minimatch": "^3.0.4",
+    "opn": "^5.1.0",
+    "papaparse": "^4.3.6"
   },
   "engines": {
     "yarn": ">= 1.0.0"

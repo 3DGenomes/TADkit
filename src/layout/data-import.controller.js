@@ -41,13 +41,9 @@
 
 		$scope.parseFile = function($fileContent) {
 			$scope.fileData = Datasets.parse($fileContent).data;
-			// Selected Rows in File Data
-			// Controlled by checkboxes in Data-import.html
-			$scope.selectedRows = [];
-			var rows = $scope.fileData.length;
-			while (--rows >= 0) {$scope.selectedRows[rows] = true;} // initially set all to selected
 			// Selected Columns in File Data
 			// Controlled by checkboxes in Data-import.html
+			$scope.skipRows = 0;
 			$scope.selectedCols = [];
 			var cols = $scope.fileData[0].length;
 			while (--cols >= 0) {$scope.selectedCols[cols] = true;} // initially set all to selected
@@ -55,9 +51,9 @@
 		};
 
 		$scope.importData = function(parsedData) {
-			$scope.importedDatas = Datasets.import(parsedData, $scope.selectedRows, $scope.selectedCols);
-			$mdDialog.hide($scope.importedDatas.length); // Datas count passed for dialog hide message...
-			$state.go('browser');
+			$scope.importedData= Datasets.import(parsedData, $scope.skipRows, $scope.selectedCols);
+			$mdDialog.hide($scope.importedData.length); // Datas count passed for dialog hide message...
+			$state.go('dataset');
 		};
 
 		$scope.hide = function() {

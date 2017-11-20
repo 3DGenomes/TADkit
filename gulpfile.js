@@ -79,8 +79,8 @@ gulp.task('dist-vendor', function() {
 		.pipe(gulp.dest('src/assets/libs'))
 		.pipe(concat('vendors.js'))
 		.pipe(uglify()) // TODO: test other options eg. ng-min
-		// .pipe(gulp.dest('dist'))
 		.pipe(gulp.dest('tadkit/assets/js'));
+		// .pipe(gulp.dest('dist'))
 });
 
 // Transfer Demo index.html

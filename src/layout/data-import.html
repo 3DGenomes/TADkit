@@ -8,13 +8,14 @@
 		<section>
 			<div data-ng-show="fileData">
 				<h3>File: {{fileTitle}}</h3>
-				Use the checkboxes to indicate which rows and columns are to be imported.
+				Use the checkboxes to indicate which columns are to be imported. Only the fist 10 rows are shown.
 				<section>
 					<h4>Notes:</h4>
 					<ul>
-						<li>First selected row will be used for track titles</li>
-						<li>First selected columm must be genomic start coords (chromStart)</li>
-						<li>Second selected columm must be genomic end cords (chromEnd)</li>
+						<li>The imported coordinates should be contained in the current dataset region</li>
+						<li>First selected columm must be the chromosome name</li>
+						<li>Second selected columm must be the genomic position</li>
+						<li>Third, fourth anf fifth selected columms correspond to x, y and z coordinates</li>
 					</ul>
 				</section>
 			</div>
@@ -24,16 +25,21 @@
 			</div>
 			<table class="filedata" data-ng-show="fileData">
 				<tbody>
+					<tr><td valign="top"><b>Skip top rows:</b></td>
+						<td>
+					      <md-input-container style="width: 20%">
+					        <input flex type="number" ng-model="skipRows" aria-label="blue" aria-controls="blue-slider-import">
+					      </md-input-container>
+					    </td>
+					</tr>
 					<tr>
 						<td></td>
 						<td ng-repeat="selectCol in selectedCols track by $index">
 							<md-checkbox ng-model="selectedCols[$index]" class="md-primary" aria-label="Data Column Selection Checkbox"></md-checkbox>
 						</td>
 					</tr>
-					<tr ng-repeat="row in fileData">
-						<td>
-							<md-checkbox ng-model="selectedRows[$index]" class="md-primary" aria-label="Data Row Selection Checkbox"></md-checkbox>
-						</td>
+					<tr ng-repeat="row in fileData|limitTo:10">
+						<td></td>
 						<td ng-repeat="col in row track by $index">{{col}}</td>
 					</tr>
 				</tbody>

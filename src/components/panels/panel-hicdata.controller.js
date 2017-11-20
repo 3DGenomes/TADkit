@@ -60,17 +60,19 @@
 		});
 		if($scope.data.n === 0) {
 			var promise = Datasets.loadHic();
-			promise.then(function(data) {
-			    if(data.n === 0) {
-					$scope.no_hic_data = true; 
-					$scope.slidevalue = "10;0.001";
-					$scope.slideoptions = {};
-					return;
-				} else  {
-					$scope.no_hic_data = false;
-				}
-			    $scope.update_data(data);
-			});
+			if(promise) {
+				promise.then(function(data) {
+				    if(data.n === 0) {
+						$scope.no_hic_data = true; 
+						$scope.slidevalue = "10;0.001";
+						$scope.slideoptions = {};
+						return;
+					} else  {
+						$scope.no_hic_data = false;
+					}
+				    $scope.update_data(data);
+				});
+			}
 		}
         
 		w.bind('resize', function(){

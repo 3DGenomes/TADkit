@@ -2,7 +2,7 @@
 <div ng-controller='PanelHicdataController' class="component-controller">
 	<div class="component-body">
 		<div id="hic_data_container" ng-style="{'margin':state.margin, 'width':width+'px', 'height':height+'px'}">
-			<div id="no_hic_data_label" ng-show="no_hic_data"><h3>No HiC data found in the dataset</h3></div>
+			<div id="no_hic_data_label" ng-show="no_hic_data" width="{{canvas_width}}" height="{{canvas_height}}"><h3>No HiC data found in the dataset</h3></div>
 			<div ng-hide="no_hic_data" layout="column" layout-align="start end">
 				<!--<div id="zoom-buttons" layout="row" layout-align="center center">
 					<div><md-checkbox id="show_tads" ng-model="show_tads" aria-label="Tads" ng-change="toggle(show_tads)" ng-disabled="(data.tads.length === 0)">Tads</md-checkbox></div>

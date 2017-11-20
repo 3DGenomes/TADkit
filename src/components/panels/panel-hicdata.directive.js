@@ -126,6 +126,7 @@
                 
 				scope.render = function(data_max, data_min) {
 		            //canvas = document.getElementById("hic_canvas");
+		            if(scope.data.n === 0) return;
 		            canvas = angular.element(document.querySelector('#hic_canvas'))[0];
 		            if (canvas.getContext) {
 		                console.log("Drawing hic matrix");
