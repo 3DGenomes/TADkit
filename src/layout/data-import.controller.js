@@ -22,7 +22,7 @@
 			}).then(function(importedDatasCount) {
 				$mdToast.show(
 					$mdToast.simple()
-					.content("Datas (" + importedDatasCount + ") added")
+					.content("Coordinates (" + importedDatasCount + ") added")
 				);
 			}, function() {
 				$mdToast.show(
@@ -51,9 +51,12 @@
 		};
 
 		$scope.importData = function(parsedData) {
-			$scope.importedData= Datasets.import(parsedData, $scope.skipRows, $scope.selectedCols);
-			$mdDialog.hide($scope.importedData.length); // Datas count passed for dialog hide message...
-			$state.go('dataset');
+			$scope.importedCoords = Datasets.import(parsedData, $scope.skipRows, $scope.selectedCols);
+			$mdDialog.hide($scope.importedCoords); // Datas count passed for dialog hide message...
+			var settings = Settings.get();
+			var chromosomeIndex = settings.current.chromosomeIndexes.slice();
+			settings.current.chromosomeIndexes = chromosomeIndex;
+			$state.go('browser');
 		};
 
 		$scope.hide = function() {

@@ -265,41 +265,86 @@
 					parsedData = fileData; // already parsed to JSON object
 				}
 
-				var ref = this.getCentroid();
-				var models = datasets.loaded[datasets.current.index].models;
+				var dataset = datasets.loaded[datasets.current.index];
 				var settings = Settings.get();
 				var chromosomeIndex = settings.current.chromosomeIndexes;
-				var resoData = 100000;
+				var resoData = 1;
+				var importedCoords = 0;
 				var resolution = settings.current.segmentLength*settings.current.particleSegments;
-				model.data = [];
-				// console.log(ref);
-				for (var i = models.length - 1; i >= 0; i--) {
-					if (models[i].ref == ref) {
-						for (var j = 0; j < models[i].data.length; j++) {
-							models[i].data[j] = 0;
-						}
-						for (var k = skipRows; k < parsedData.length; k+=3) {
-							//var idx = Math.max(chromosomeIndex.indexOf(parsedData[k][0].toString()),chromosomeIndex.indexOf(parsedData[k][0].toString().replace('chr','')));
-						    var idx = Math.max("1".indexOf(parsedData[k][0].toString()),chromosomeIndex.indexOf(parsedData[k][0].toString().replace('chr','')));
-						    
-						    if (idx > -1) {
-						    	if(parsedData[k][1]*resoData<(settings.current.chromStart[idx]-resolution)) continue;
-						    	if(parsedData[k][1]*resoData>(settings.current.chromEnd[idx]-resolution)) break;
-						    	
-						    	j = Math.round(((parsedData[k][1]*resoData)-(settings.current.chromStart[idx]-resolution))/resolution);
-								models[i].data[j] = parsedData[k][2];
-								models[i].data[j+1] = parsedData[k][3];
-								models[i].data[j+2] = parsedData[k][4];	
-						    }
-							
+				var cur_model,offset;
+				var i,j,k;
+				
+				if(dataset.models.length>0) {
+					var ref = this.getCentroid();
+					for (i = dataset.models.length - 1; i >= 0; i--) {
+						if (dataset.models[i].ref == ref) {
+							cur_model = dataset.models[i];
+							break;
 						}
 					}
+					for (j = 0; j < cur_model.data.length; j++) {
+						cur_model.data[j] = 0;
+					}
+				} else {
+					cur_model = {"ref": 0,"data": [] };
+					offset = 0;
+					for (i = 0 ; i < dataset.object.chrom.length; i++) {
+						offset += Math.round(dataset.object.chromEnd[i]/resolution)-Math.round(dataset.object.chromStart[i]/resolution)+1;
+					}
+					for (j = 0; j < offset; j++) {
+						cur_model.data.push(0,0,0);
+					}
+					dataset.models.push(cur_model);
+					dataset.centroids.push(0);
+					dataset.clusters.push(0);
+					datasets.current.centroid = 0;
+					datasets.current.cluster = 1;
 				}
-
+				var pos,x,y,z,nb,startb,endb,chr_bins;
+				offset = 0;
+				
+				for (i = 0 ; i < dataset.object.chrom.length; i++) {
+					chr_bins = Math.round(dataset.object.chromEnd[i]/resolution)-Math.round(dataset.object.chromStart[i]/resolution)+1;
+					for (j = 0; j < 3*chr_bins; j+=3) {
+						startb = (dataset.object.chromStart[i]-resolution)+(j/3)*resolution;
+						endb = startb + resolution;
+						k = skipRows;
+						while(true) {
+							if(k>=parsedData.length) break;
+							nb = 0;
+							x = y = z = 0;
+							while ( (dataset.object.chrom[i] == parsedData[k][0].toString() || dataset.object.chrom[i] == parsedData[k][0].toString().replace('chr','')) && 
+						    		(parsedData[k][1]*resoData>=startb) && 
+						    		(parsedData[k][1]*resoData<endb) 
+						    ) {
+								
+								x += parsedData[k][2];
+						    	y += parsedData[k][3];
+						    	z += parsedData[k][4];
+						    	nb++;
+						    	if(k>=parsedData.length-1) break;
+						    	k++;
+								
+						    }
+							if(nb>0) {
+								cur_model.data[j+3*offset] = x/nb;
+						    	cur_model.data[j+3*offset+1] = y/nb;
+						    	cur_model.data[j+3*offset+2] = z/nb;	
+								importedCoords++;
+								break;
+							}
+							k++;
+							
+						}
+						
+					}
+					offset += chr_bins;
+				}
 				
 				
+				
 
-				return i;
+				return importedCoords;
 			},
 /*			parse: function(indata) {
 				// split content based on new line

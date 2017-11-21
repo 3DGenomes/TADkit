@@ -236,51 +236,54 @@
 						ambientLight.name = "Scene Ambient Light";
 						scene.add(ambientLight);
 						
-						scope.complete_scene();
-
-						// UPDATE CAMERA TARGET
-						cameraPosition = chromatin.boundingSphere.center;
-						cameraTarget = chromatin.boundingSphere.center;
-						cameraTranslate = chromatin.boundingSphere.radius * scope.view.viewpoint.scale;
-						scope.lookAtTAD(cameraPosition, cameraTarget, cameraTranslate);
-
-						// Point
-						var pointColor = scope.view.settings.lighting.color;
-						var pointIntensity = scope.view.settings.lighting.intensity;
-						pointLight = new THREE.PointLight(pointColor, pointIntensity);
-						pointLight.name = "Scene Light";
-						camera.add(pointLight);
-						var lightOffset = cameraTranslate * 1.5; // Up and to the left
-						pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
-						//pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
-						// Point Light Helper
-						var sphereSize = 1000;
-						var pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
-						//scene.add(pointLightHelper);
+						if(typeof scope.currentmodel.data !== 'undefined' && scope.currentmodel.data.length>0) {
+							
+							scope.complete_scene();
 						
-						// FOG SCENE
-						var fogNear = cameraTranslate * scope.view.viewpoint.fogNear,
-							fogFar = cameraTranslate * scope.view.viewpoint.fogFar;
-						if (scope.view.viewpoint.fog) scene.fog = new THREE.Fog(background,fogNear,fogFar);
-
-						// EVENT LISTENERS / SCOPE WATCHERS
-						// window.addEventListener( 'resize', scope.onWindowResize, false );
-
-						/* Watch for changes */
-
-						// var componentOptions = [
-						// 	 'view.settings.particles.visible',
-						// 	 'view.settings.chromatin.visible',
-						// 	 'view.controls.autoRotate',
-						// 	 'view.settings.axis.visible'
-						// 	 ];
-						// scope.$watchGroup( componentOptions, function( newValues, oldValues ) {
-						// 	angular.forEach( newValues, function(value, index) {
-						// 		if ( newValues[index] !== oldValues[index] ) {
-						// 			console.log( value );
-						// 		}
-						// 	});
-						// });
+							// UPDATE CAMERA TARGET
+							cameraPosition = chromatin.boundingSphere.center;
+							cameraTarget = chromatin.boundingSphere.center;
+							cameraTranslate = chromatin.boundingSphere.radius * scope.view.viewpoint.scale;
+							scope.lookAtTAD(cameraPosition, cameraTarget, cameraTranslate);
+	
+							// Point
+							var pointColor = scope.view.settings.lighting.color;
+							var pointIntensity = scope.view.settings.lighting.intensity;
+							pointLight = new THREE.PointLight(pointColor, pointIntensity);
+							pointLight.name = "Scene Light";
+							camera.add(pointLight);
+							var lightOffset = cameraTranslate * 1.5; // Up and to the left
+							pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
+							//pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
+							// Point Light Helper
+							var sphereSize = 1000;
+							var pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
+							//scene.add(pointLightHelper);
+							
+							// FOG SCENE
+							var fogNear = cameraTranslate * scope.view.viewpoint.fogNear,
+								fogFar = cameraTranslate * scope.view.viewpoint.fogFar;
+							if (scope.view.viewpoint.fog) scene.fog = new THREE.Fog(background,fogNear,fogFar);
+	
+							// EVENT LISTENERS / SCOPE WATCHERS
+							// window.addEventListener( 'resize', scope.onWindowResize, false );
+	
+							/* Watch for changes */
+	
+							// var componentOptions = [
+							// 	 'view.settings.particles.visible',
+							// 	 'view.settings.chromatin.visible',
+							// 	 'view.controls.autoRotate',
+							// 	 'view.settings.axis.visible'
+							// 	 ];
+							// scope.$watchGroup( componentOptions, function( newValues, oldValues ) {
+							// 	angular.forEach( newValues, function(value, index) {
+							// 		if ( newValues[index] !== oldValues[index] ) {
+							// 			console.log( value );
+							// 		}
+							// 	});
+							// });
+						}
 						
 
 					// FIX: NOT REDRAWING SCENE IF THE ONLY VISBLE OBJECT IS TOGGLED OFF
@@ -342,7 +345,7 @@
 						
 						// /* Watch for Chromatin colors */
 						scope.$watch('currentoverlay.colors.chromatin', function( newColors, oldColors ) { // cant deep watch as change through set on service
-							if ( newColors !== oldColors ) {
+							if ( typeof chromatinObj !== 'undefined' && newColors !== oldColors ) {
 //								if(scope.view.settings.chromatin.tubed && scope.currentoverlay.object.state.overlaid) {
 //									scope.toggleTubed(false);
 //								} 
@@ -400,37 +403,41 @@
 							clusterObj = scene.getObjectByName( "Cluster View" );
 							//networkObj = scene.getObjectByName( "Network Graph" );
 						};
+						scope.redraw_scene = function() {
+							
+							scope.clean_scene();
+							var chrom_colors = scope.currentoverlay.colors.chromatin.slice();
+							scope.currentoverlay.colors.chromatin.chromatin = chrom_colors;
+						    Overlays.segment();
+							scope.complete_scene();
+							
+						    if(scope.view.settings.chromatin.tubed) {
+						        sphereObj = scene.getObjectByName( "TADs cloud" );
+							}
+							
+							particlesObj = scene.getObjectByName( "Particles Cloud" );
+							chromatinObj = scene.getObjectByName( "Chromatin Fiber" );
+							clusterObj = scene.getObjectByName( "Cluster View" );
+							//networkObj = scene.getObjectByName( "Network Graph" );
+							
+							cameraPosition = chromatin.boundingSphere.center;
+							cameraTarget = chromatin.boundingSphere.center;
+							cameraTranslate = chromatin.boundingSphere.radius * scope.view.viewpoint.scale;
+							scope.lookAtTAD(cameraPosition, cameraTarget, cameraTranslate);
+							
+							var lightOffset = cameraTranslate * 1.5; // Up and to the left
+							pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
+							// FOG SCENE
+							var fogNear = cameraTranslate * scope.view.viewpoint.fogNear,
+								fogFar = cameraTranslate * scope.view.viewpoint.fogFar;
+							scene.fog.near = fogNear;
+							scene.fog.far = fogFar;
+						
+						};
 						scope.$watch('settings.current.chromosomeIndexes', function( newValue, oldValue ) {
 							if ( newValue !== oldValue ) {
-								scope.clean_scene();
-								var chrom_colors = scope.currentoverlay.colors.chromatin.slice();
-								scope.currentoverlay.colors.chromatin.chromatin = chrom_colors;
-							    Overlays.segment();
-								scope.complete_scene();
-								
-							    if(scope.view.settings.chromatin.tubed) {
-							        sphereObj = scene.getObjectByName( "TADs cloud" );
-								}
-								
-								particlesObj = scene.getObjectByName( "Particles Cloud" );
-								chromatinObj = scene.getObjectByName( "Chromatin Fiber" );
-								clusterObj = scene.getObjectByName( "Cluster View" );
-								//networkObj = scene.getObjectByName( "Network Graph" );
-								
-								cameraPosition = chromatin.boundingSphere.center;
-								cameraTarget = chromatin.boundingSphere.center;
-								cameraTranslate = chromatin.boundingSphere.radius * scope.view.viewpoint.scale;
-								scope.lookAtTAD(cameraPosition, cameraTarget, cameraTranslate);
-								
-								var lightOffset = cameraTranslate * 1.5; // Up and to the left
-								pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
-								// FOG SCENE
-								var fogNear = cameraTranslate * scope.view.viewpoint.fogNear,
-									fogFar = cameraTranslate * scope.view.viewpoint.fogFar;
-								scene.fog.near = fogNear;
-								scene.fog.far = fogFar;
-								
-								
+								scope.currentmodel.data = Datasets.getModel().data;
+								scope.redraw_scene();
 							}
 						});
 						// /* Watch for selected TAD */
@@ -526,7 +533,7 @@
 						};
 						/* Watch for Browser-wide Position updates */
 						scope.$watch('settings.current.segment', function( newSegment, oldSegment ) {
-							if ( newSegment !== oldSegment || (ring.position.x === 0 && ring.position.y === 0 && ring.position.z === 0)) {
+							if ( typeof ring !== 'undefined' && (newSegment !== oldSegment || (ring.position.x === 0 && ring.position.y === 0 && ring.position.z === 0))) {
 								//if(scope.view.settings.chromatin.tubed) return;
 								if(scope.view.settings.chromatin.tubed) {
 									scope.updateRingPosition(ring,newSegment,oldSegment);
@@ -643,7 +650,9 @@
 
 					scope.clean_scene = function () {
 						var i;
-
+						
+						if(typeof chromatinObj === 'undefined') return;
+							
 						scene.remove(leftring);
 						scene.remove(rightring);
 						scene.remove(ring);

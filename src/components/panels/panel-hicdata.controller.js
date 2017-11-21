@@ -9,7 +9,6 @@
 		$scope.slideoptions = {};
 		$scope.slidevalue = "10;0.001";
 		if(angular.isUndefined($scope.data)) return;
-		//$scope.width = $scope.canvas_width = parseInt($scope.state.width)-2*parseInt($scope.state.margin); // strip PX units
 		var scene_component = Storyboards.getComponentById('Chromatin');
 		var scene_width = 0;
 		var scene_height = 0;
