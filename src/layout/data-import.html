@@ -27,11 +27,21 @@
 				<tbody>
 					<tr><td valign="top"><b>Skip top rows:</b></td>
 						<td>
-					      <md-input-container style="width: 20%">
+					      <md-input-container style="width: 100px;">
 					        <input flex type="number" ng-model="skipRows" aria-label="blue" aria-controls="blue-slider-import">
 					      </md-input-container>
 					    </td>
+					    <td valign="top"><b>Base-pair per nanometer:</b></td>
+						<td>
+					      <md-input-container style="width: 100px;">
+					        <input flex type="number" ng-model="bp_per_nm" aria-label="blue" aria-controls="blue-slider-import">
+					      </md-input-container>
+					    </td>
 					</tr>
+				</tbody>
+			</table>
+			<table class="filedata" data-ng-show="fileData">
+				<tbody>
 					<tr>
 						<td></td>
 						<td ng-repeat="selectCol in selectedCols track by $index">

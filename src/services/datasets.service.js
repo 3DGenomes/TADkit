@@ -251,7 +251,7 @@
 				});
 				return parsedData;
 			},
-			import: function(fileData, skipRows, selectedCols) {
+			import: function(fileData, skipRows, bp_per_nm, selectedCols) {
 				var self = this;
 				// TODO: if not valid fileData return...
 				skipRows = skipRows || 0;
@@ -300,6 +300,7 @@
 					datasets.current.centroid = 1;
 					datasets.current.cluster = 1;
 				}
+				var scale = bp_per_nm / 0.01;
 				var pos,x,y,z,nb,startb,endb,chr_bins;
 				offset = 0;
 				
@@ -313,7 +314,8 @@
 							if(k>=parsedData.length) break;
 							nb = 0;
 							x = y = z = 0;
-							while ( (dataset.object.chrom[i] == parsedData[k][0].toString() || dataset.object.chrom[i] == parsedData[k][0].toString().replace('chr','')) && 
+							//while ( (dataset.object.chrom[i] == parsedData[k][0].toString() || dataset.object.chrom[i] == parsedData[k][0].toString().replace('chr','')) && 
+							while ( (dataset.object.chrom[i].replace('I','1') == parsedData[k][0].toString() || dataset.object.chrom[i] == parsedData[k][0].toString().replace('chr','')) && 
 						    		(parsedData[k][1]*resoData>=startb) && 
 						    		(parsedData[k][1]*resoData<endb) 
 						    ) {
@@ -327,9 +329,9 @@
 								
 						    }
 							if(nb>0) {
-								cur_model.data[j+3*offset] = Math.round(x/nb);
-						    	cur_model.data[j+3*offset+1] = Math.round(y/nb);
-						    	cur_model.data[j+3*offset+2] = Math.round(z/nb);	
+								cur_model.data[j+3*offset] = scale * Math.round(x/nb);
+						    	cur_model.data[j+3*offset+1] = scale * Math.round(y/nb);
+						    	cur_model.data[j+3*offset+2] = scale * Math.round(z/nb);	
 								importedCoords++;
 								break;
 							}

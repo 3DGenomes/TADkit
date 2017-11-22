@@ -44,6 +44,7 @@
 			// Selected Columns in File Data
 			// Controlled by checkboxes in Data-import.html
 			$scope.skipRows = 0;
+			$scope.bp_per_nm = 0.01;
 			$scope.selectedCols = [];
 			var cols = $scope.fileData[0].length;
 			while (--cols >= 0) {$scope.selectedCols[cols] = true;} // initially set all to selected
@@ -51,7 +52,7 @@
 		};
 
 		$scope.importData = function(parsedData) {
-			$scope.importedCoords = Datasets.import(parsedData, $scope.skipRows, $scope.selectedCols);
+			$scope.importedCoords = Datasets.import(parsedData, $scope.skipRows, $scope.bp_per_nm, $scope.selectedCols);
 			$mdDialog.hide($scope.importedCoords); 
 			var settings = Settings.get();
 			var dataset = Datasets.getDataset();
