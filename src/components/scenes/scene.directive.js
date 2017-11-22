@@ -236,6 +236,25 @@
 						ambientLight.name = "Scene Ambient Light";
 						scene.add(ambientLight);
 						
+						// Point
+						var pointColor = scope.view.settings.lighting.color;
+						var pointIntensity = scope.view.settings.lighting.intensity;
+						pointLight = new THREE.PointLight(pointColor, pointIntensity);
+						pointLight.name = "Scene Light";
+						camera.add(pointLight);
+						var lightOffset = cameraTranslate * 1.5; // Up and to the left
+						pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
+						//pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
+						// Point Light Helper
+						var sphereSize = 1000;
+						var pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
+						//scene.add(pointLightHelper);
+						
+						// FOG SCENE
+						var fogNear = cameraTranslate * scope.view.viewpoint.fogNear,
+							fogFar = cameraTranslate * scope.view.viewpoint.fogFar;
+						if (scope.view.viewpoint.fog) scene.fog = new THREE.Fog(background,fogNear,fogFar);
+						
 						if(typeof scope.currentmodel.data !== 'undefined' && scope.currentmodel.data.length>0) {
 							
 							scope.complete_scene();
@@ -246,24 +265,7 @@
 							cameraTranslate = chromatin.boundingSphere.radius * scope.view.viewpoint.scale;
 							scope.lookAtTAD(cameraPosition, cameraTarget, cameraTranslate);
 	
-							// Point
-							var pointColor = scope.view.settings.lighting.color;
-							var pointIntensity = scope.view.settings.lighting.intensity;
-							pointLight = new THREE.PointLight(pointColor, pointIntensity);
-							pointLight.name = "Scene Light";
-							camera.add(pointLight);
-							var lightOffset = cameraTranslate * 1.5; // Up and to the left
-							pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
-							//pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
-							// Point Light Helper
-							var sphereSize = 1000;
-							var pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
-							//scene.add(pointLightHelper);
 							
-							// FOG SCENE
-							var fogNear = cameraTranslate * scope.view.viewpoint.fogNear,
-								fogFar = cameraTranslate * scope.view.viewpoint.fogFar;
-							if (scope.view.viewpoint.fog) scene.fog = new THREE.Fog(background,fogNear,fogFar);
 	
 							// EVENT LISTENERS / SCOPE WATCHERS
 							// window.addEventListener( 'resize', scope.onWindowResize, false );
@@ -373,7 +375,7 @@
 									for (i = 0; i < newColors.length; i++) {
 										if(chromBreaks.indexOf(Math.floor(i/scope.settings.current.particleSegments))>-1) {
 								    		for (j = 0; j < 16; j++) {
-								    			chromatinObj.children[0].geometry.faces[i*16+j].materialIndex = 1;
+								    			if(typeof chromatinObj.children[0].geometry.faces[i*16+j] !== 'undefined') chromatinObj.children[0].geometry.faces[i*16+j].materialIndex = 1;
 											}
 								    	} else {
 											if(ColorConvert.testIfHex(newColors[i]) || newColors[i].indexOf('#')===0) {
@@ -382,7 +384,7 @@
 												newChromatinColor =  new THREE.Color(ColorConvert.nameToHex(newColors[i]));
 											} 
 											for (j = 0; j < 16; j++) {
-												chromatinObj.children[0].geometry.faces[i*16+j].color.set(newChromatinColor);
+												if(typeof chromatinObj.children[0].geometry.faces[i*16+j] !== 'undefined') chromatinObj.children[0].geometry.faces[i*16+j].color.set(newChromatinColor);
 											}
 										}
 							    	}
@@ -407,7 +409,7 @@
 							
 							scope.clean_scene();
 							var chrom_colors = scope.currentoverlay.colors.chromatin.slice();
-							scope.currentoverlay.colors.chromatin.chromatin = chrom_colors;
+							scope.currentoverlay.colors.chromatin = chrom_colors;
 						    Overlays.segment();
 							scope.complete_scene();
 							
@@ -436,7 +438,7 @@
 						};
 						scope.$watch('settings.current.chromosomeIndexes', function( newValue, oldValue ) {
 							if ( newValue !== oldValue ) {
-								scope.currentmodel.data = Datasets.getModel().data;
+								//scope.currentmodel.data = Datasets.getModel().data;
 								scope.redraw_scene();
 							}
 						});

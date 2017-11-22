@@ -286,7 +286,7 @@
 						cur_model.data[j] = 0;
 					}
 				} else {
-					cur_model = {"ref": 0,"data": [] };
+					cur_model = {"ref": 1,"data": [] };
 					offset = 0;
 					for (i = 0 ; i < dataset.object.chrom.length; i++) {
 						offset += Math.round(dataset.object.chromEnd[i]/resolution)-Math.round(dataset.object.chromStart[i]/resolution)+1;
@@ -295,9 +295,9 @@
 						cur_model.data.push(0,0,0);
 					}
 					dataset.models.push(cur_model);
-					dataset.centroids.push(0);
-					dataset.clusters.push(0);
-					datasets.current.centroid = 0;
+					dataset.centroids.push(1);
+					dataset.clusters.push([1]);
+					datasets.current.centroid = 1;
 					datasets.current.cluster = 1;
 				}
 				var pos,x,y,z,nb,startb,endb,chr_bins;
@@ -327,9 +327,9 @@
 								
 						    }
 							if(nb>0) {
-								cur_model.data[j+3*offset] = x/nb;
-						    	cur_model.data[j+3*offset+1] = y/nb;
-						    	cur_model.data[j+3*offset+2] = z/nb;	
+								cur_model.data[j+3*offset] = Math.round(x/nb);
+						    	cur_model.data[j+3*offset+1] = Math.round(y/nb);
+						    	cur_model.data[j+3*offset+2] = Math.round(z/nb);	
 								importedCoords++;
 								break;
 							}

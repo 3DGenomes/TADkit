@@ -64,13 +64,10 @@
 
 			/*** TODO: Calculate PathSegments based on number of base pairs in the model ***/
 			var cubicPath = Paths.cubicBezier(pathControls.vertices, pathSegments, this.pathClosed);
-			var cubicGeom = cubicPath.createPointsGeometry(pathSegments);
-			//for (var j = cubicGeom.vertices.length - 1; j >= 0; j--) {
-			//	var cubicGeomColor = new THREE.Color(colors[j]);
-			//	cubicGeom.colors.unshift(cubicGeomColor);
-			//}
+			//var cubicGeom = cubicPath.createPointsGeometry(pathSegments);
+			var cubicGeom = new THREE.Geometry().setFromPoints( cubicPath.getPoints() );
 			var j;
-			cubicGeom.name = "cubicGeom";
+			//cubicGeom.name = "cubicGeom";
 
 			// ********************************************
 			// * MODEL SCALE = 1unit : 1nanometer         *
@@ -139,9 +136,10 @@
 				//}
 			    var newChromatinColor;
 			    for (i = 0; i < colors.length; i++) {
-			    	if(chromBreaks.indexOf(Math.floor(i/settings.particleSegments))>-1) {
+			    	//if(chromBreaks.indexOf(Math.floor(i/settings.particleSegments))>-1) {
+			    	if(chromBreaks.indexOf(Math.floor(i/this.particleSegments))>-1) {
 			    		for (j = 0; j < 16; j++) {
-							tubeMesh.geometry.faces[i*16+j].materialIndex = 1;
+			    			if(typeof tubeMesh.geometry.faces[i*16+j] !== 'undefined') tubeMesh.geometry.faces[i*16+j].materialIndex = 1;
 						}
 			    	} else {
 						if(ColorConvert.testIfHex(colors[i]) || colors[i].indexOf('#')===0) {
@@ -150,7 +148,7 @@
 							newChromatinColor =  new THREE.Color(ColorConvert.nameToHex(colors[i]));
 						} 
 						for (j = 0; j < 16; j++) {
-							tubeMesh.geometry.faces[i*16+j].color.set(newChromatinColor);
+							if(typeof tubeMesh.geometry.faces[i*16+j] !== 'undefined') tubeMesh.geometry.faces[i*16+j].color.set(newChromatinColor);
 						}
 			    	}
 				}
@@ -197,8 +195,8 @@
 			// var controlsOutline = new THREE.Line(controlsGeom, controlsMaterial);
 			// chromatinFiber.add(controlsOutline);
 
-			var cubicMaterial = new THREE.LineBasicMaterial({color: "#0000ff"});
-			var chromatinCubic = new THREE.Line(cubicGeom, cubicMaterial);
+			//var cubicMaterial = new THREE.LineBasicMaterial({color: "#0000ff"});
+			//var chromatinCubic = new THREE.Line(cubicGeom, cubicMaterial);
 			// chromatinFiber.add(chromatinCubic);
 
 			// Visualize Controls Nodes

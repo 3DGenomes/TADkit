@@ -71,6 +71,7 @@
 			vertex.z = components[ offset ++ ];
 			modelGeometry.vertices.push( vertex );
 		}
+		modelGeometry.center();
 		return modelGeometry;
 	}
 

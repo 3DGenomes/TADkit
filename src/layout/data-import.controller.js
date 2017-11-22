@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.controller('DataImportController', DataImportController);
 
-	function DataImportController ($state, $scope, $mdDialog, $mdToast, Settings, Datasets, Components, Storyboards, uuid4) {
+	function DataImportController ($state, $scope, $mdDialog, $mdToast, Settings, Datasets, Hic_data, Components, Storyboards, uuid4) {
 		$scope.fileTitle = "No file loaded";
 
 		$scope.$on('$viewContentLoaded', function() {
@@ -52,8 +52,13 @@
 
 		$scope.importData = function(parsedData) {
 			$scope.importedCoords = Datasets.import(parsedData, $scope.skipRows, $scope.selectedCols);
-			$mdDialog.hide($scope.importedCoords); // Datas count passed for dialog hide message...
+			$mdDialog.hide($scope.importedCoords); 
 			var settings = Settings.get();
+			var dataset = Datasets.getDataset();
+		    //var hic_data = Hic_data.set(dataset.hic_data,settings.current.chromStart,settings.current.chromEnd);
+		    var currentModel = Datasets.setModel(Datasets.getCentroid(),settings.current.chrom);
+		    //Settings.set(dataset,settings.current.chrom,settings.current.chrom);
+			
 			var chromosomeIndex = settings.current.chromosomeIndexes.slice();
 			settings.current.chromosomeIndexes = chromosomeIndex;
 			$state.go('browser');
