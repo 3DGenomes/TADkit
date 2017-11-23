@@ -83,7 +83,7 @@
 					particles = new Particles( scope.cluster.data[scope.cluster.centroidIndex], scope.view.settings.particles );
 					particles.geometry.center();
 					particles.visible = scope.view.settings.particles.visible;
-					scene.add(particles);
+					//scene.add(particles);
 
 					//GEOMETRY: CLUSTER
 					cluster = new Cluster( scope.cluster.data, scope.cluster.centroidIndex, scope.overlay, scope.view.settings.cluster );
