@@ -206,6 +206,7 @@
 				var self = this;
 				ref = ref || this.getCentroid();
 				var dataset = self.getDataset();
+				var settings = Settings.get();
 				if (chromosomeIndex === undefined || chromosomeIndex === false) chromosomeIndex = [dataset.object.chrom[0]];
 				
 				var chromIdx;
@@ -314,9 +315,8 @@
 							if(k>=parsedData.length) break;
 							nb = 0;
 							x = y = z = 0;
-							//while ( (dataset.object.chrom[i] == parsedData[k][0].toString() || dataset.object.chrom[i] == parsedData[k][0].toString().replace('chr','')) && 
-							while ( (dataset.object.chrom[i].replace('I','1') == parsedData[k][0].toString() || dataset.object.chrom[i] == parsedData[k][0].toString().replace('chr','')) && 
-						    		(parsedData[k][1]*resoData>=startb) && 
+							while ( (dataset.object.chrom[i] == parsedData[k][0].toString() || dataset.object.chrom[i] == parsedData[k][0].toString().replace('chr','')) && 
+									(parsedData[k][1]*resoData>=startb) && 
 						    		(parsedData[k][1]*resoData<endb) 
 						    ) {
 								

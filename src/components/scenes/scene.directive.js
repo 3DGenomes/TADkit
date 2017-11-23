@@ -154,7 +154,7 @@
 							var models = Datasets.getCluster();
 							var cluster_data = [];
 							for (var k = 0; k < models.length; k++) {
-								var model = Datasets.getModel(models[k]);
+								var model = Datasets.getModel(models[k],scope.settings.current.chromosomeIndexes);
 								var modelData = model.data;
 								if (modelData) {cluster_data.unshift(modelData);}
 									else {console.log("Listed model not found!");}
@@ -347,7 +347,7 @@
 						
 						// /* Watch for Chromatin colors */
 						scope.$watch('currentoverlay.colors.chromatin', function( newColors, oldColors ) { // cant deep watch as change through set on service
-							if ( typeof chromatinObj !== 'undefined' && newColors !== oldColors ) {
+							if ( typeof chromatinObj !== 'undefined' && newColors !== oldColors) {
 //								if(scope.view.settings.chromatin.tubed && scope.currentoverlay.object.state.overlaid) {
 //									scope.toggleTubed(false);
 //								} 
@@ -357,7 +357,6 @@
 								var i,j,newChromatinColor;
 								var chromatinCount = chromatinObj.children.length;
 								if(!scope.view.settings.chromatin.tubed) {
-									chromatinCount = chromatinObj.children.length;
 									for (i = 0; i < chromatinCount; i++) {
 										newChromatinColor =  new THREE.Color(newColors[i]);
 										chromatinObj.children[i].material.color = newChromatinColor;
@@ -365,30 +364,29 @@
 										chromatinObj.children[i].material.emissive = newChromatinColor;
 									}
 								} else {
-									var chromBreaks = [];
 									var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments;
-									var offset = 0;
+									//var offset = 0;
+									var colori = 0;
+									//var chr_bins;
+									var geom;
 									for (var l = 0 ; l < scope.settings.current.chromosomeIndexes.length; l++) {
-										offset += Math.round((scope.settings.current.chromEnd[l]-scope.settings.current.chromStart[l])/resolution)+1;
-										chromBreaks.push(offset);
-									}
-									for (i = 0; i < newColors.length; i++) {
-										if(chromBreaks.indexOf(Math.floor(i/scope.settings.current.particleSegments))>-1) {
-								    		for (j = 0; j < 16; j++) {
-								    			if(typeof chromatinObj.children[0].geometry.faces[i*16+j] !== 'undefined') chromatinObj.children[0].geometry.faces[i*16+j].materialIndex = 1;
-											}
-								    	} else {
-											if(ColorConvert.testIfHex(newColors[i]) || newColors[i].indexOf('#')===0) {
-												newChromatinColor =  new THREE.Color(newColors[i]);	 
+										//chr_bins = Math.round((scope.settings.current.chromEnd[l]-scope.settings.current.chromStart[l])/resolution)+1;
+										geom = chromatinObj.children[l].geometry;
+										for (i = 0; i < geom.faces.length; i++) {
+											if(ColorConvert.testIfHex(newColors[Math.floor(colori/16)]) || newColors[Math.floor(colori/16)].indexOf('#')===0) {
+												newChromatinColor =  new THREE.Color(newColors[Math.floor(colori/16)]);	 
 											} else {
-												newChromatinColor =  new THREE.Color(ColorConvert.nameToHex(newColors[i]));
+												newChromatinColor =  new THREE.Color(ColorConvert.nameToHex(newColors[Math.floor(colori/16)]));
 											} 
 											for (j = 0; j < 16; j++) {
-												if(typeof chromatinObj.children[0].geometry.faces[i*16+j] !== 'undefined') chromatinObj.children[0].geometry.faces[i*16+j].color.set(newChromatinColor);
+												if(typeof geom.faces[i+j] !== 'undefined') geom.faces[i+j].color.set(newChromatinColor);
 											}
+											colori++;
 										}
+										geom.colorsNeedUpdate = true;
+										//offset += chr_bins;
 							    	}
-									chromatinObj.children[0].geometry.colorsNeedUpdate = true;
+									
 								}
 							}
 						});
@@ -510,12 +508,25 @@
 							}
 						});
 						scope.updateRingPosition = function(ring,newSegment,oldSegment) {
-							if(chromatinObj.children[0].geometry.vertices.length > (newSegment+1)*8+8) {
-								var vec, i;
-								vec = chromatinObj.children[0].geometry.vertices[(newSegment+1)*8];
+							var newChrom=0;
+							var oldChrom=0;
+							var newSeg = newSegment;
+							var oldSeg = oldSegment;
+							var vec, i;
+							while(chromatinObj.children[newChrom].geometry.vertices.length < (newSeg+1)*8) {
+								newSeg -= Math.floor(chromatinObj.children[newChrom].geometry.vertices.length/8-1);
+								newChrom++;
+							}
+							while(chromatinObj.children[oldChrom].geometry.vertices.length < (oldSeg+1)*8) {
+								oldSeg -= Math.floor(chromatinObj.children[oldChrom].geometry.vertices.length/8-1);
+								oldChrom++;
+							}
+							if(chromatinObj.children[newChrom].geometry.vertices.length > (newSeg+1)*8+8) {
+								
+								vec = chromatinObj.children[newChrom].geometry.vertices[(newSeg+1)*8];
 								
 									for(i=1;i<8;i++){
-										vec.add(chromatinObj.children[0].geometry.vertices[(newSegment+1)*8+i]);
+										vec.add(chromatinObj.children[newChrom].geometry.vertices[(newSeg+1)*8+i]);
 									}
 									vec.divideScalar(8);
 								
@@ -524,9 +535,9 @@
 								ring.position.y = vec.y;
 								ring.position.z = vec.z;
 								
-								vec = chromatinObj.children[0].geometry.vertices[oldSegment*8];
+								vec = chromatinObj.children[oldChrom].geometry.vertices[oldSeg*8];
 								for(i=1;i<8;i++){
-									vec.add(chromatinObj.children[0].geometry.vertices[oldSegment*8+i]);
+									vec.add(chromatinObj.children[oldChrom].geometry.vertices[oldSeg*8+i]);
 								}
 								vec.divideScalar(8);
 								ring.lookAt(vec);

@@ -47,7 +47,8 @@
 				for (var j = cluster.list.length - 1; j >= 0; j--) {
 					var modelData;
 					for (var k = models.length - 1; k >= 0; k--) {
-						var model = models[k];
+						//var model = models[k];
+						var model = Datasets.getModel(models[k].ref,$scope.current.dataset.object.chrom);
 						if (parseInt(model.ref) == cluster.list[j]) {
 							modelData = model.data;
 							// console.log("Model " + model.ref + " in Cluster " + cluster.number);

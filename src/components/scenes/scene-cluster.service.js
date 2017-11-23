@@ -46,6 +46,7 @@
 				var model = new THREE.Line(modelGeometry, modelMaterial);
 				model.name = "model-"+ i;
 				model.geometry.computeBoundingSphere();
+				model.geometry.center();
 				if(model.geometry.boundingSphere.radius>max_radius) max_radius = model.geometry.boundingSphere.radius;
 				clusterEnsemble.add(model);
 			}
