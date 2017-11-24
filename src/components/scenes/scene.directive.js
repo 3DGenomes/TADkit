@@ -510,16 +510,25 @@
 						scope.updateRingPosition = function(ring,newSegment,oldSegment) {
 							var newChrom=0;
 							var oldChrom=0;
-							var newSeg = newSegment;
-							var oldSeg = oldSegment;
+							var newSeg;
+							var oldSeg;
 							var vec, i;
-							while(chromatinObj.children[newChrom].geometry.vertices.length < (newSeg+1)*8) {
-								newSeg -= Math.floor(chromatinObj.children[newChrom].geometry.vertices.length/8-1);
-								newChrom++;
-							}
-							while(chromatinObj.children[oldChrom].geometry.vertices.length < (oldSeg+1)*8) {
-								oldSeg -= Math.floor(chromatinObj.children[oldChrom].geometry.vertices.length/8-1);
-								oldChrom++;
+							if(newSegment.length>1) {
+								newSeg = newSegment[0];
+								oldSeg = oldSegment[0];
+								newChrom = newSegment[1];
+								oldChrom = oldSegment[1];
+							} else {
+								newSeg = newSegment;
+								oldSeg = oldSegment;
+								while(chromatinObj.children[newChrom].geometry.vertices.length < (newSeg+1)*8) {
+									newSeg -= Math.floor(chromatinObj.children[newChrom].geometry.vertices.length/8-1);
+									newChrom++;
+								}
+								while(chromatinObj.children[oldChrom].geometry.vertices.length < (oldSeg+1)*8) {
+									oldSeg -= Math.floor(chromatinObj.children[oldChrom].geometry.vertices.length/8-1);
+									oldChrom++;
+								}
 							}
 							if(chromatinObj.children[newChrom].geometry.vertices.length > (newSeg+1)*8+8) {
 								
@@ -590,12 +599,11 @@
 									//var newLeftPos = (Settings.getParticle(scope.settings.current.markers_position[1])-1)*scope.settings.current.particleSegments+Math.round(scope.settings.current.particleSegments/2);
 									//var newRightPos = (Settings.getParticle(scope.settings.current.markers_position[0])-1)*scope.settings.current.particleSegments+Math.round(scope.settings.current.particleSegments/2);
 									
-									
 									var oldLeftPos = newLeftPos>0 ? newLeftPos-1 : 0;
 									var oldRightPos = newRightPos>0 ? newRightPos-1 : 0;
 
-					        		scope.updateRingPosition(leftring,newLeftPos, oldLeftPos);
-									scope.updateRingPosition(rightring,newRightPos, oldRightPos);
+					        		scope.updateRingPosition(leftring,[newLeftPos,scope.settings.current.chromosomeIndexes.indexOf(scope.settings.current.markers_chr[1])], [oldLeftPos,scope.settings.current.chromosomeIndexes.indexOf(scope.settings.current.markers_chr[1])]);
+									scope.updateRingPosition(rightring,[newRightPos,scope.settings.current.chromosomeIndexes.indexOf(scope.settings.current.markers_chr[0])], [oldRightPos,scope.settings.current.chromosomeIndexes.indexOf(scope.settings.current.markers_chr[0])]);
 									leftring.visible = true;
 									rightring.visible = true;
 									linker.visible = true;

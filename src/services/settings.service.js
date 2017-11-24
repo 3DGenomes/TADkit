@@ -116,8 +116,8 @@
 				//var chromRange = settings.current.chromEnd[settings.current.chromIdx]-settings.current.chromStart[settings.current.chromIdx];
 				var chromRange=0;
 				var resolution = settings.current.segmentLength*settings.current.particleSegments; // base pairs
-				for(var l=0;l<settings.current.chromosomeIndexes.length;l++) chromRange += Math.round(settings.current.chromEnd[l])-Math.round(settings.current.chromStart[l])+resolution; 
-				
+				for(var l=0;l<settings.current.chromosomeIndexes.length;l++) chromRange += Math.round(settings.current.chromEnd[l])-Math.round(settings.current.chromStart[l])+resolution;
+				//settings.current.markers_chr = [settings.current.chromosomeIndexes[chrid]];
 				//var resolution = settings.current.segmentLength*settings.current.particleSegments; // base pairs
 				//var particlesCount = Math.round(settings.current.chromEnd[settings.current.chromIdx]/resolution) - Math.round(settings.current.chromStart[settings.current.chromIdx]/resolution) + 1;
 				var particlesCount = settings.current.particlesCount;
@@ -125,12 +125,13 @@
 				var segment = Math.ceil((chromOffset * (segmentsCount)) / chromRange);
 				return segment;
 			},
-			getParticle: function (chromPosition) {
+			getParticle: function (chromPosition,chrom) {
 				chromPosition = chromPosition || settings.current.position;
+				chrom = chrom || settings.current.chromIdx;
 				var self = this;
 				//var chromOffset = self.getRange(settings.current.chromStart, chromPosition);
 				//var chromRange = self.getRange(settings.current.chromStart, settings.current.chromEnd);
-				var chromOffset = chromPosition-settings.current.chromStart[settings.current.chromIdx];
+				var chromOffset = chromPosition-settings.current.chromStart[chrom];
 				//var chromRange = settings.current.chromEnd[settings.current.chromIdx]-settings.current.chromStart[settings.current.chromIdx];
 				var chromRange=0;
 				var resolution = settings.current.segmentLength*settings.current.particleSegments; // base pairs

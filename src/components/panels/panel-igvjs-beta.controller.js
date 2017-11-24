@@ -511,8 +511,8 @@
 				if ( angular.isUndefined($scope.settings.current.markers_position) || newValue[0] === -1 || newValue[1] === -1) {
 					$scope.hideTadkitMarkers();
 	        	} else {
-	        		if($scope.settings.current.chromosomeIndexes.length>1) $scope.synchronizeViewports();
-	        		$scope.updateTadkitMarkers(newValue,$scope.settings.current.markers_chr);
+	        		if($scope.settings.current.chromosomeIndexes.length===2) $scope.synchronizeViewports();
+	        		if($scope.settings.current.chromosomeIndexes.length<3) $scope.updateTadkitMarkers(newValue,$scope.settings.current.markers_chr);
 	        		
 	        	}
 			}

@@ -90,9 +90,9 @@
 			if(!angular.isUndefined(feature.value)) return feature.value;
 		};
 		$scope.interactionDistance = function() {
-			if ( !angular.isUndefined($scope.settings.current.markers_position && $scope.data.length>0)) {
-				var LeftPart = Settings.getParticle($scope.settings.current.markers_position[1]);
-				var RightPart = Settings.getParticle($scope.settings.current.markers_position[0]);
+			if ( !angular.isUndefined($scope.settings.current.markers_position && $scope.data.data.length>0)) {
+				var LeftPart = Settings.getParticle($scope.settings.current.markers_position[1],$scope.settings.current.markers_chr[1]);
+				var RightPart = Settings.getParticle($scope.settings.current.markers_position[0],$scope.settings.current.markers_chr[0]);
 
 				var xd = $scope.data.data[(LeftPart-1)*3] - $scope.data.data[(RightPart-1)*3];
 				var yd = $scope.data.data[(LeftPart-1)*3+1] - $scope.data.data[(RightPart-1)*3+1];
