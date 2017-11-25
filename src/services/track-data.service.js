@@ -18,7 +18,7 @@
 				return track_data;
 			},
 			clear: function() {
-				track_data = [];
+				track_data.length = 0;
 			},
 		};
 	}

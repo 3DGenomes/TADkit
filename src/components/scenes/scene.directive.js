@@ -405,6 +405,8 @@
 						};
 						scope.redraw_scene = function() {
 							
+							if(typeof scope.currentmodel.data === 'undefined' || scope.currentmodel.data.length === 0) return;
+						
 							scope.clean_scene();
 							var chrom_colors = scope.currentoverlay.colors.chromatin.slice();
 							scope.currentoverlay.colors.chromatin = chrom_colors;
@@ -435,7 +437,7 @@
 						
 						};
 						scope.$watch('settings.current.chromosomeIndexes', function( newValue, oldValue ) {
-							if ( newValue !== oldValue ) {
+							if ( newValue !== oldValue) {
 								//scope.currentmodel.data = Datasets.getModel().data;
 								scope.redraw_scene();
 							}
@@ -443,7 +445,7 @@
 						// /* Watch for selected TAD */
 						scope.$watch('settings.current.tad_selected', function( newValue, oldValue ) {
 							//if(scope.view.settings.chromatin.tubed) return;
-							if ( newValue !== oldValue ) {
+							if ( newValue !== oldValue && chromatinObj) {
 								var i;
 								if(scope.view.settings.chromatin.tubed) {
 									var tadCount = sphereObj.children.length;
@@ -583,7 +585,7 @@
 
 					};
 					scope.$watch('settings.current.markers_position', function( newValue, oldValue ) {
-						if ( newValue !== oldValue) {
+						if ( newValue !== oldValue && chromatinObj) {
 							if(scope.view.settings.chromatin.tubed) {
 								if ( angular.isUndefined(scope.settings.current.markers_position) || newValue[0] === -1 || newValue[1] === -1) {	
 									leftring.visible = false;

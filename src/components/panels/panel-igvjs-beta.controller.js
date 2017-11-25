@@ -466,15 +466,28 @@
 		    	
 		    	var igvExtraDivs;
 		    	var d;
+		    	var txts = [];
+		    	var parents = [];
 		    	igvExtraDivs = document.getElementsByClassName('igv-viewport-content-ruler-div');
+
 		    	for(d = 0; d<igvExtraDivs.length;d++) {
-		    		//(igvExtraDivs[d]).style.display = "none";
-		    		$(igvExtraDivs[d]).off('click');
+		    		txts.push(igvExtraDivs[d].innerHTML);
+		    		parents.push(angular.element(igvExtraDivs[d]).parent());
+		    		(igvExtraDivs[d]).style.display = "none";
+		    	
 		    	}
+		    	for(d = 0; d<txts.length;d++) {
+		    		angular.element(igvExtraDivs[d]).remove();
+		    		var newEle = angular.element("<div class='igv-viewport-content-ruler-div'>"+txts[d]+"</div>");
+				    angular.element(parents[d]).append(newEle);
+		    	}
+		    		
 		    	igvExtraDivs = document.getElementsByClassName('igv-viewport-fa-close');
 		    	for(d = 0; d<igvExtraDivs.length;d++) {
 		    		(igvExtraDivs[d]).style.display = "none";
 		    	}
+		    	Track_data.clear();
+		    	$scope.updateFeaturesList();
 		    	//var genomicState = $scope.myIgv.genomicStateList[0];
 	    		//var referenceFrame = genomicState.referenceFrame;
 		    	//$scope.locuschange(referenceFrame, igvjs_go[0]);
@@ -512,7 +525,8 @@
 					$scope.hideTadkitMarkers();
 	        	} else {
 	        		if($scope.settings.current.chromosomeIndexes.length===2) $scope.synchronizeViewports();
-	        		if($scope.settings.current.chromosomeIndexes.length<3) $scope.updateTadkitMarkers(newValue,$scope.settings.current.markers_chr);
+	        		//if($scope.settings.current.chromosomeIndexes.length<3) 
+	        		$scope.updateTadkitMarkers(newValue,$scope.settings.current.markers_chr);
 	        		
 	        	}
 			}
@@ -531,7 +545,7 @@
         	var viewportWidth = igv.browser.viewportContainerWidth()/genomicState.locusCount;
         	var resolution = $scope.settings.current.segmentLength*$scope.settings.current.particleSegments;
         	var offset = 0;
-        	if(markerschrom[1] != $scope.settings.current.chromosomeIndexes[0]) {
+        	if($scope.settings.current.chromosomeIndexes.length == 2 && markerschrom[1] != $scope.settings.current.chromosomeIndexes[0]) {
         		offset = referenceFrame.bpPerPixel*Math.floor($scope.myIgv.viewportContainerWidth()/genomicState.locusCount);
         	}
     		var leftpx = (markerspos[1]+offset-referenceFrame.start)/referenceFrame.bpPerPixel; 
@@ -540,7 +554,7 @@
         	dl.css("position","absolute");
         	
         	offset = 0;
-        	if(markerschrom[0] != $scope.settings.current.chromosomeIndexes[0]) {
+        	if($scope.settings.current.chromosomeIndexes.length == 2 && markerschrom[0] != $scope.settings.current.chromosomeIndexes[0]) {
         		var nextgenomicState = $scope.myIgv.genomicStateList[1];
             	var nextreferenceFrame = nextgenomicState.referenceFrame;
             	
@@ -567,7 +581,19 @@
 						// get features and add them in Track_data
 		               	tV.track.getFeatures(referenceFrame.chrName, $scope.settings.current.chromStart[i], $scope.settings.current.chromEnd[i], referenceFrame.bpPerPixel).then(function (features) {
 		                	if (features) {
-		                       	track_data[track_i].feature = track_data[track_i].feature.concat(features);
+		                		Array.prototype.unique = function() {
+								    var a = this.concat();
+								    for(var i=0; i<a.length; ++i) {
+								        for(var j=i+1; j<a.length; ++j) {
+								            if(a[i] === a[j])
+								                a.splice(j--, 1);
+								        }
+								    }
+
+								    return a;
+								};
+		                       	track_data[track_i].feature = track_data[track_i].feature.concat(features).unique();
+		                       	
 		                    }
 		               	}).catch(function (error) {
 		                    if (error instanceof igv.AbortLoad) {

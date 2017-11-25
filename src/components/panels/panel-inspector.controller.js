@@ -56,10 +56,12 @@
 		};
 		$scope.atLeftPosition = function(feature) {
 			if(angular.isUndefined($scope.settings.current.markers_position)) return;
-			var particle = Settings.getParticle($scope.settings.current.markers_position[1]);
 			var resolution = $scope.data.object.resolution;
-			var segmentLower = (particle-1)*resolution+$scope.settings.current.chromStart[$scope.settings.current.chromIdx];
-			var segmentUpper = (particle)*resolution+$scope.settings.current.chromStart[$scope.settings.current.chromIdx];
+			var pos =  $scope.settings.current.markers_position[1];
+			//for( var i = 0;  i < $scope.settings.current.chromosomeIndexes.indexOf($scope.settings.current.markers_chr[1]); i++ ) pos += ($scope.settings.current.chromEnd[i]-$scope.settings.current.chromStart[i]+resolution);
+			var particle = Settings.getParticle(pos);
+			var segmentLower = (particle-1)*resolution+$scope.settings.current.chromStart[$scope.settings.current.chromosomeIndexes.indexOf($scope.settings.current.markers_chr[1])];
+			var segmentUpper = (particle)*resolution+$scope.settings.current.chromStart[$scope.settings.current.chromosomeIndexes.indexOf($scope.settings.current.markers_chr[1])];
 			if (segmentUpper >= feature.start && segmentLower <= feature.end && 
 					feature.chr.replace('chr','') == $scope.settings.current.markers_chr[1].replace('chr','') 
 			) return true;
@@ -67,10 +69,12 @@
 		};
 		$scope.atRightPosition = function(feature) {
 			if(angular.isUndefined($scope.settings.current.markers_position)) return;
-			var particle = Settings.getParticle($scope.settings.current.markers_position[0]);
 			var resolution = $scope.data.object.resolution;
-			var segmentLower = (particle-1)*resolution+$scope.settings.current.chromStart[$scope.settings.current.chromIdx];
-			var segmentUpper = (particle)*resolution+$scope.settings.current.chromStart[$scope.settings.current.chromIdx];
+			var pos =  $scope.settings.current.markers_position[0];
+			//for( var i = 0;  i < $scope.settings.current.chromosomeIndexes.indexOf($scope.settings.current.markers_chr[0]); i++ ) pos += ($scope.settings.current.chromEnd[i]-$scope.settings.current.chromStart[i]+resolution);
+			var particle = Settings.getParticle(pos);
+			var segmentLower = (particle-1)*resolution+$scope.settings.current.chromStart[$scope.settings.current.chromosomeIndexes.indexOf($scope.settings.current.markers_chr[0])];
+			var segmentUpper = (particle)*resolution+$scope.settings.current.chromStart[$scope.settings.current.chromosomeIndexes.indexOf($scope.settings.current.markers_chr[0])];
 			if (segmentUpper >= feature.start && segmentLower <= feature.end && 
 					feature.chr.replace('chr','') == $scope.settings.current.markers_chr[0].replace('chr','') 
 			) return true;
@@ -91,8 +95,8 @@
 		};
 		$scope.interactionDistance = function() {
 			if ( !angular.isUndefined($scope.settings.current.markers_position && $scope.data.data.length>0)) {
-				var LeftPart = Settings.getParticle($scope.settings.current.markers_position[1],$scope.settings.current.markers_chr[1]);
-				var RightPart = Settings.getParticle($scope.settings.current.markers_position[0],$scope.settings.current.markers_chr[0]);
+				var LeftPart = Settings.getParticle($scope.settings.current.markers_position[1]);
+				var RightPart = Settings.getParticle($scope.settings.current.markers_position[0]);
 
 				var xd = $scope.data.data[(LeftPart-1)*3] - $scope.data.data[(RightPart-1)*3];
 				var yd = $scope.data.data[(LeftPart-1)*3+1] - $scope.data.data[(RightPart-1)*3+1];

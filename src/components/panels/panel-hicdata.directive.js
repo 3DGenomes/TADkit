@@ -318,27 +318,31 @@
 						            		.text(value_text)
 						            		.attr('display', 'block');
 						            	
-						            	var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
-						            	var x_mark, y_mark;
-						            	x_mark = transformCoords[0]*resolution+(scope.settings.current.chromStart[scope.settings.current.chromIdx]);
-						            	y_mark = transformCoords[1]*resolution+(scope.settings.current.chromStart[scope.settings.current.chromIdx]);
-						            	scope.settings.current.markers_chr = [scope.settings.current.chromosomeIndexes[0],scope.settings.current.chromosomeIndexes[0]];
-						    			if(scope.settings.current.chromosomeIndexes.length>1) {
-						    				var first_chrom = (scope.settings.current.chromEnd[0]);
-						    	        	
-						    				if(x_mark > first_chrom) { 
-						    					x_mark -= first_chrom;
-						    					scope.settings.current.markers_chr[0] = scope.settings.current.chromosomeIndexes[1];
-						    				}
-						    				if(y_mark > first_chrom) {
-						    					y_mark -= first_chrom;
-						    					scope.settings.current.markers_chr[1] = scope.settings.current.chromosomeIndexes[1];
-					    					}
-						    		    	
-						    			}
-						    			markers_position = [x_mark,y_mark];
-						            	scope.settings.current.markers_position = markers_position;
-						            	scope.$apply(scope.settings.current.markers_position);
+						            	if(scope.settings.current.chromosomeIndexes.length<=2) {
+							            	var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
+							            	var x_mark, y_mark;
+							            	scope.settings.current.markers_chr = [scope.settings.current.chromosomeIndexes[0],scope.settings.current.chromosomeIndexes[0]];
+							            	var chr_bins = 0;
+							            	var i = 0;
+							            	while(chr_bins<transformCoords[0]) {
+							            		x_mark = (transformCoords[0]-chr_bins)*resolution+(scope.settings.current.chromStart[i]);
+							            		chr_bins += Math.round(scope.settings.current.chromEnd[i]/resolution)-Math.round(scope.settings.current.chromStart[i]/resolution)+1; 
+							            		i++;
+							            	}
+							            	scope.settings.current.markers_chr[0] = scope.settings.current.chromosomeIndexes[i-1];
+							            	chr_bins = 0;
+							    			i = 0;
+							            	while(chr_bins<transformCoords[1]) {
+							            		y_mark = (transformCoords[1]-chr_bins)*resolution+(scope.settings.current.chromStart[i]);
+							            		chr_bins += Math.round(scope.settings.current.chromEnd[i]/resolution)-Math.round(scope.settings.current.chromStart[i]/resolution)+1; 
+							            		i++;
+							            	}
+							            	scope.settings.current.markers_chr[1] = scope.settings.current.chromosomeIndexes[i-1];
+					
+							    			markers_position = [x_mark,y_mark];
+							            	scope.settings.current.markers_position = markers_position;
+							            	scope.$apply(scope.settings.current.markers_position);
+							            }
 						            }
 						            
 						    	}

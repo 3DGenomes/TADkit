@@ -57,10 +57,11 @@
 			var settings = Settings.get();
 			var dataset = Datasets.getDataset();
 		    //var hic_data = Hic_data.set(dataset.hic_data,settings.current.chromStart,settings.current.chromEnd);
-		    var currentModel = Datasets.setModel(Datasets.getCentroid(),settings.current.chrom);
+		    var currentModel = Datasets.setModel(Datasets.getCentroid(),settings.current.chromosomeIndexes);
 		    //Settings.set(dataset,settings.current.chrom,settings.current.chrom);
 			
 			var chromosomeIndex = settings.current.chromosomeIndexes.slice();
+			//var chromosomeIndex = [dataset.object.chrom[0]];
 			settings.current.chromosomeIndexes = chromosomeIndex;
 			$state.go('browser');
 		};

@@ -125,13 +125,12 @@
 				var segment = Math.ceil((chromOffset * (segmentsCount)) / chromRange);
 				return segment;
 			},
-			getParticle: function (chromPosition,chrom) {
+			getParticle: function (chromPosition) {
 				chromPosition = chromPosition || settings.current.position;
-				chrom = chrom || settings.current.chromIdx;
 				var self = this;
 				//var chromOffset = self.getRange(settings.current.chromStart, chromPosition);
 				//var chromRange = self.getRange(settings.current.chromStart, settings.current.chromEnd);
-				var chromOffset = chromPosition-settings.current.chromStart[chrom];
+				var chromOffset = chromPosition-settings.current.chromStart[settings.current.chromIdx];
 				//var chromRange = settings.current.chromEnd[settings.current.chromIdx]-settings.current.chromStart[settings.current.chromIdx];
 				var chromRange=0;
 				var resolution = settings.current.segmentLength*settings.current.particleSegments; // base pairs
