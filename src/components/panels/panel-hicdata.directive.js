@@ -206,13 +206,13 @@
 								.style("fill", "#fff")
 								.style("stroke", "#ccc")
 								.style("stroke-widt", 2)
-								.attr("cx", ((scope.settings.current.particle+0.5)*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2)))
+								.attr("cx", ((scope.settings.current.particle-0.5)*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2)))
 								.attr("cy", container_height-2*parseInt(scope.state.margin))
 								.attr("r", 4);
 
 							position = hic_svg.append("text")
 								.attr("id", "circ_position")
-								.attr("x", ((scope.settings.current.particle+0.5)*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2))-2)
+								.attr("x", ((scope.settings.current.particle-0.5)*Math.sqrt(2))*scope.scale+(scope.translatePos.x*Math.sqrt(2))-2)
 								.attr("y", container_height-2*parseInt(scope.state.margin)-5)
 								.style("text-anchor", "bottom")
 								.style("font-family", "sans-serif")
@@ -326,7 +326,7 @@
 							            	var i = 0;
 							            	while(chr_bins<transformCoords[0]) {
 							            		x_mark = (transformCoords[0]-chr_bins)*resolution+(scope.settings.current.chromStart[i]);
-							            		chr_bins += Math.round(scope.settings.current.chromEnd[i]/resolution)-Math.round(scope.settings.current.chromStart[i]/resolution)+1; 
+							            		chr_bins += Math.round(scope.settings.current.chromEnd[i]/resolution)-Math.round(scope.settings.current.chromStart[i]/resolution); 
 							            		i++;
 							            	}
 							            	scope.settings.current.markers_chr[0] = scope.settings.current.chromosomeIndexes[i-1];
@@ -334,7 +334,7 @@
 							    			i = 0;
 							            	while(chr_bins<transformCoords[1]) {
 							            		y_mark = (transformCoords[1]-chr_bins)*resolution+(scope.settings.current.chromStart[i]);
-							            		chr_bins += Math.round(scope.settings.current.chromEnd[i]/resolution)-Math.round(scope.settings.current.chromStart[i]/resolution)+1; 
+							            		chr_bins += Math.round(scope.settings.current.chromEnd[i]/resolution)-Math.round(scope.settings.current.chromStart[i]/resolution); 
 							            		i++;
 							            	}
 							            	scope.settings.current.markers_chr[1] = scope.settings.current.chromosomeIndexes[i-1];

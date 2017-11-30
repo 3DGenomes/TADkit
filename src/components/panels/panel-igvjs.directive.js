@@ -34,9 +34,9 @@
 					scope.settings.current.segment = Settings.getSegment();
 					var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments;
 					//scope.settings.current.segmentLower = scope.settings.current.position - (scope.settings.current.segment * 5); // * 0.5???
-					scope.settings.current.segmentLower = (scope.settings.current.particle-1)*resolution+scope.settings.current.chromStart[scope.settings.current.chromIdx];
+					scope.settings.current.segmentLower = (scope.settings.current.particle)*resolution+scope.settings.current.chromStart[scope.settings.current.chromIdx];
 					//scope.settings.current.segmentUpper = scope.settings.current.position + (scope.settings.current.segment * 5); // * 0.5???
-					scope.settings.current.segmentUpper = (scope.settings.current.particle)*resolution+scope.settings.current.chromStart[scope.settings.current.chromIdx];
+					scope.settings.current.segmentUpper = (scope.settings.current.particle+1)*resolution+scope.settings.current.chromStart[scope.settings.current.chromIdx];
 					
 				};
 

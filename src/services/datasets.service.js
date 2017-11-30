@@ -90,7 +90,7 @@
 					
 					var posStart = (dataset.object.chromStart[chromosomeIndex]/resolution + offset)-dataset.object.chromStart[0]/resolution;
 					var posEnd = (dataset.object.chromEnd[chromosomeIndex]/resolution + offset)-(dataset.object.chromStart[0]/resolution);
-					Hic_data.set(dataset.hic_data,[Math.round(posStart+1)],[Math.round(posEnd+1)]);
+					Hic_data.set(dataset.hic_data,[Math.round(posStart+1)],[Math.round(posEnd)]);
 					
 				} else Hic_data.clear();
 				
@@ -176,7 +176,7 @@
 			},
 			setModel: function(ref,chromosomeIndex) { // from model ref
 				ref = ref || this.getCentroid();
-				var model = this.getModel(ref - 1,chromosomeIndex);
+				var model = this.getModel(ref,chromosomeIndex);
 				// Store as current model for dataset in datasets.loaded[datasets.current.index].data
 				datasets.loaded[datasets.current.index].data = model;
 				return model; // array of vertices
@@ -218,9 +218,9 @@
 					chromIdx = chromosomeIndex.indexOf(dataset.object.chrom[l]);
 					if(chromIdx > -1) {
 						chromStart.push(Math.round((dataset.object.chromStart[l]-dataset.object.chromStart[0])/resolution)+offset);
-						chromEnd.push(Math.round((dataset.object.chromEnd[l]-dataset.object.chromStart[0])/resolution)+1+offset);
+						chromEnd.push(Math.round((dataset.object.chromEnd[l]-dataset.object.chromStart[0])/resolution)+offset);
 					}
-					offset += Math.round(dataset.object.chromEnd[l]/resolution)-Math.round(dataset.object.chromStart[l]/resolution)+1;
+					offset += Math.round(dataset.object.chromEnd[l]/resolution)-Math.round(dataset.object.chromStart[l]/resolution);
 				}
 				
 				var models = datasets.loaded[datasets.current.index].models;
@@ -290,7 +290,7 @@
 					cur_model = {"ref": 1,"data": [] };
 					offset = 0;
 					for (i = 0 ; i < dataset.object.chrom.length; i++) {
-						offset += Math.round(dataset.object.chromEnd[i]/resolution)-Math.round(dataset.object.chromStart[i]/resolution)+1;
+						offset += Math.round(dataset.object.chromEnd[i]/resolution)-Math.round(dataset.object.chromStart[i]/resolution);
 					}
 					for (j = 0; j < offset; j++) {
 						cur_model.data.push(0,0,0);
@@ -306,9 +306,9 @@
 				offset = 0;
 				
 				for (i = 0 ; i < dataset.object.chrom.length; i++) {
-					chr_bins = Math.round(dataset.object.chromEnd[i]/resolution)-Math.round(dataset.object.chromStart[i]/resolution)+1;
+					chr_bins = Math.round(dataset.object.chromEnd[i]/resolution)-Math.round(dataset.object.chromStart[i]/resolution);
 					for (j = 0; j < 3*chr_bins; j+=3) {
-						startb = (dataset.object.chromStart[i]-resolution)+(j/3)*resolution;
+						startb = (dataset.object.chromStart[i])+(j/3)*resolution;
 						endb = startb + resolution;
 						k = skipRows;
 						while(true) {

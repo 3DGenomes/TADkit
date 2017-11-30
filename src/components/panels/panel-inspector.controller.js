@@ -94,13 +94,13 @@
 			if(!angular.isUndefined(feature.value)) return feature.value;
 		};
 		$scope.interactionDistance = function() {
-			if ( !angular.isUndefined($scope.settings.current.markers_position && $scope.data.data.length>0)) {
+			if ( !angular.isUndefined($scope.settings.current.markers_position && $scope.currentmodel.data.length>0)) {
 				var LeftPart = Settings.getParticle($scope.settings.current.markers_position[1]);
 				var RightPart = Settings.getParticle($scope.settings.current.markers_position[0]);
 
-				var xd = $scope.data.data[(LeftPart-1)*3] - $scope.data.data[(RightPart-1)*3];
-				var yd = $scope.data.data[(LeftPart-1)*3+1] - $scope.data.data[(RightPart-1)*3+1];
-				var zd = $scope.data.data[(LeftPart-1)*3+2] - $scope.data.data[(RightPart-1)*3+2];
+				var xd = $scope.currentmodel.data[(LeftPart-1)*3] - $scope.currentmodel.data[(RightPart-1)*3];
+				var yd = $scope.currentmodel.data[(LeftPart-1)*3+1] - $scope.currentmodel.data[(RightPart-1)*3+1];
+				var zd = $scope.currentmodel.data[(LeftPart-1)*3+2] - $scope.currentmodel.data[(RightPart-1)*3+2];
 				
 				var dist = Math.round(Math.sqrt( xd*xd + yd*yd + zd*zd ));
 				return dist;
@@ -135,7 +135,7 @@
 					chromStart.push(Math.round($scope.data.object.chromStart[l]/resolution)+offset);
 					chromEnd.push(Math.round($scope.data.object.chromEnd[l]/resolution)+offset);
 				}
-				offset += Math.round($scope.data.object.chromEnd[l]/resolution)-Math.round($scope.data.object.chromStart[l]/resolution)+1;
+				offset += Math.round($scope.data.object.chromEnd[l]/resolution)-Math.round($scope.data.object.chromStart[l]/resolution);
 			}
 			var dataset = Datasets.getDataset();
 		    var hic_data = Hic_data.set(dataset.hic_data,chromStart,chromEnd);
@@ -149,7 +149,7 @@
 		    $scope.settings.current.leftborder = 50;
 		    if(chromosomeIndex.length==2) {
 		    	var first_right_border = (50 + span_width)/chromosomeIndex.length;
-		    	$scope.settings.current.rightborder = first_right_border * ($scope.settings.current.particlesCount/(chromEnd[0]-chromStart[0]+1));
+		    	$scope.settings.current.rightborder = first_right_border * ($scope.settings.current.particlesCount/(chromEnd[0]-chromStart[0]));
 		    } else $scope.settings.current.rightborder = (50 + span_width);
 			
 		    $scope.settings.current.chromosomeIndexes = sortedIndex;

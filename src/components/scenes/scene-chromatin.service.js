@@ -79,12 +79,12 @@
 			var j;
 			var offset = 0;
 			for (var l = 0 ; l < settings.chromosomeIndexes.length; l++) {
-				chr_bins = Math.round((settings.chromEnd[l]-settings.chromStart[l])/resolution)+1;
+				chr_bins = Math.round((settings.chromEnd[l]-settings.chromStart[l])/resolution);
 				//chromBreaks.push(offset);
 			
 				// Derive path controls from geometry vectors
 				// var pathControls = getPathControls( geometry.vertices );
-				pathControls = PathControls.cubic(geometry.vertices.slice(offset,offset+chr_bins-1), this.pathClosed);
+				pathControls = PathControls.cubic(geometry.vertices.slice(offset,offset+chr_bins), this.pathClosed);
 
 				// Set number of Particles
 				if (this.particles === 0) this.particles += geometry.vertices.length; //pathControls.vertices.length - 1;

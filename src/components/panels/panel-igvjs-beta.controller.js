@@ -143,11 +143,11 @@
 		
 			
 		$scope.updatePosition =  function(position, leftborder, rightborder) {
-			//alert(position);
+			//console.log(position);
 			var span_region = 0;
 			var resolution = $scope.settings.current.segmentLength*$scope.settings.current.particleSegments;
 			for(var i = 0; i<$scope.settings.current.chromosomeIndexes.length;i++) {
-				span_region += $scope.settings.current.chromEnd[i] - $scope.settings.current.chromStart[i] + resolution;			
+				span_region += $scope.settings.current.chromEnd[i] - $scope.settings.current.chromStart[i];			
 			}
 			span_region += $scope.settings.current.chromStart[0];
 			if(position >= $scope.settings.current.chromStart[$scope.settings.current.chromIdx] && position <= span_region) {
@@ -417,7 +417,7 @@
         	mainGenomicState = $scope.myIgv.genomicStateList[0];
         	viewportWidth = igv.browser.viewportContainerWidth()/mainGenomicState.locusCount;
         	offset = (mainGenomicState.referenceFrame.bpPerPixel * viewportWidth) + mainGenomicState.referenceFrame.start;
-        	offset -= ($scope.settings.current.chromEnd[0]-$scope.settings.current.chromStart[0]+resolution);
+        	offset -= ($scope.settings.current.chromEnd[0]-$scope.settings.current.chromStart[0]);
         	
         	genomicState = $scope.myIgv.genomicStateList[1];
 	    	referenceFrame = genomicState.referenceFrame;
@@ -450,15 +450,15 @@
 				if(!$scope.view.settings.leading_chr) igvjs_go[0] = igvjs_go[0].replace('chr','');
 				
 				if($scope.settings.current.chromosomeIndexes.length!=2) { 
-					igvjs_go[0] += ':' + ($scope.settings.current.chromStart[0]-resolution) + '-' + ($scope.settings.current.chromStart[0]+span_region);
+					igvjs_go[0] += ':' + ($scope.settings.current.chromStart[0]) + '-' + ($scope.settings.current.chromStart[0]+span_region);
 					
 			    } else {
 			    	span_region = $scope.settings.current.chromEnd[0]-$scope.settings.current.chromStart[0];
-			    	igvjs_go[0] += ':' + ($scope.settings.current.chromStart[0]-resolution) + '-' + ($scope.settings.current.chromStart[0]+span_region);
+			    	igvjs_go[0] += ':' + ($scope.settings.current.chromStart[0]) + '-' + ($scope.settings.current.chromStart[0]+span_region);
 					
 					igvjs_go.push($scope.settings.current.chromosomeIndexes[1]);
 					if(!$scope.view.settings.leading_chr) igvjs_go[1] = igvjs_go[1].replace('chr','');
-					igvjs_go[1] += ':' + ($scope.settings.current.chromStart[1]-resolution) + '-' + ($scope.settings.current.chromStart[1]+span_region);
+					igvjs_go[1] += ':' + ($scope.settings.current.chromStart[1]) + '-' + ($scope.settings.current.chromStart[1]+span_region);
 					
 				}
 					
@@ -560,7 +560,7 @@
             	
         		//offset = referenceFrame.bpPerPixel*Math.floor($scope.myIgv.viewportContainerWidth()/genomicState.locusCount);
         		offset = (referenceFrame.bpPerPixel * viewportWidth) + referenceFrame.start;
-            	offset -= nextreferenceFrame.start -($scope.settings.current.chromStart[1]-1*resolution);
+            	offset -= nextreferenceFrame.start -($scope.settings.current.chromStart[1]);
             	offset = Math.max(0, offset);
         	}
         	var rightpx = (markerspos[0]+offset-referenceFrame.start)/referenceFrame.bpPerPixel; 
@@ -660,7 +660,7 @@
             var resolution = $scope.settings.current.segmentLength*$scope.settings.current.particleSegments;
             var span_region = 0;
 			for(var i = 0; i<$scope.settings.current.chromosomeIndexes.length;i++) {
-				span_region += $scope.settings.current.chromEnd[i] - $scope.settings.current.chromStart[i] + resolution;			
+				span_region += $scope.settings.current.chromEnd[i] - $scope.settings.current.chromStart[i];			
 			}
 			span_region += $scope.settings.current.chromStart[0];
 			
@@ -682,7 +682,7 @@
             */
 			var igv_chrom = $scope.myIgv.genome.getChromosome(referenceFrame.chrName);
 			//igv_chrom.bpLength = ($scope.settings.current.chromEnd[$scope.settings.current.chromIdx]+($scope.settings.current.chromEnd[$scope.settings.current.chromIdx]-referenceFrame.start));
-			igv_chrom.bpLength = (span_region+(span_region-referenceFrame.start));
+			igv_chrom.bpLength = (span_region+(span_region-referenceFrame.start)-resolution);
 			/*
 			Finally inform tadkit about the center genomic position and the position in the screen
 			of the left and right border of our model, so we can synchronize the 2D panel

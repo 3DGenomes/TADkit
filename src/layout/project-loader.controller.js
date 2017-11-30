@@ -7,8 +7,8 @@
 	function ProjectLoaderController($q, $http, $state, $scope, Datasets, Overlays, Components, Storyboards, Users, Hic_data) {
 
 		$scope.updateCurrent = function() {
-			$scope.current.dataset = Datasets.getDataset();
 			delete $scope.settings.current.tad_selected;
+			$scope.current.dataset = Datasets.getDataset();
 			$scope.current.model = Datasets.getModel();
 			var overlays = Overlays.get();
 			while (overlays.loaded.length > 1) { // remove all overlays
@@ -20,7 +20,7 @@
 			$scope.current.components = Components.load();
 			$scope.current.storyboards = Storyboards.load();
 			$scope.current.storyboard = Storyboards.getStoryboard();
-			console.log("Current dataset, model, overlay and storyboard updated.");			
+			console.log("Current dataset, model, overlay and storyboard updated.");		
 		};
 
 		// On dropzone (load external file)
@@ -50,7 +50,7 @@
 //				$state.go('browser', { conf: null });
 //			});
 //		};
-		$scope.cleanDataset = function(event) {
+		$scope.cleanDataset = function(event) {		
 			$state.go('dataset', { conf: 'assets/examples/conf.json' });
 		};
 		

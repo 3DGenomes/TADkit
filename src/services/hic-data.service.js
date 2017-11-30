@@ -26,27 +26,27 @@
 				var tot_n = 0;
 				var offset = [0];
 				for (j = 0; j < starts.length; j++) {
-					tot_n += ends[j]-starts[j]+1;
+					tot_n += ends[j]-starts[j];
 					offset.push(tot_n);
 				}
 				for (j = 0; j < starts.length; j++) {
-					n = ends[j]-starts[j]+1;
+					n = ends[j]-starts[j];
 					for (pos in datasetHic_data.data) {
 						//hic_data.x.push(Math.floor(parseInt(pos)%hic_data.n));
 						//hic_data.y.push(Math.floor(parseInt(pos)/hic_data.n));
 						x = Math.floor(parseInt(pos)%hic_data.n);
 						y = Math.floor(parseInt(pos)/hic_data.n);
 						new_pos=-1;
-						if ((x >= (starts[j]-1) && x <= (ends[j]-1)) && (y >= (starts[j]-1) && y <= (ends[j]-1))) {
-							new_pos=(x-(starts[j]-1)+offset[j])+(y-(starts[j]-1)+offset[j])*tot_n;
+						if ((x >= (starts[j]) && x <= (ends[j]-1)) && (y >= (starts[j]) && y <= (ends[j]-1))) {
+							new_pos=(x-(starts[j])+offset[j])+(y-(starts[j])+offset[j])*tot_n;
 						} else {
 							for (k = 0; k < j; k++) {
-								if (((x >= (starts[j]-1) && x <= (ends[j]-1)) && (y >= (starts[k]-1) && y <= (ends[k]-1)))) {
-									new_pos=(x-(starts[j]-1)+offset[j])+(y-(starts[k]-1)+offset[k])*tot_n;
+								if (((x >= (starts[j]) && x <= (ends[j]-1)) && (y >= (starts[k]) && y <= (ends[k]-1)))) {
+									new_pos=(x-(starts[j])+offset[j])+(y-(starts[k])+offset[k])*tot_n;
 									break;
 								}   
-								if (((x >= (starts[k]-1) && x <= (ends[k]-1)) && (y >= (starts[j]-1) && y <= (ends[j]-1)))) {
-									new_pos=(x-(starts[k]-1)+offset[k])+(y-(starts[j]-1)+offset[j])*tot_n;
+								if (((x >= (starts[k]) && x <= (ends[k]-1)) && (y >= (starts[j]) && y <= (ends[j]-1)))) {
+									new_pos=(x-(starts[k])+offset[k])+(y-(starts[j])+offset[j])*tot_n;
 									break;
 								}
 							}
@@ -66,6 +66,7 @@
 				hic_data.n = tot_n;
 				 
 				if(!angular.isUndefined(datasetHic_data.tads))	self.setTADS(datasetHic_data.tads);
+				else self.setTADS([]);
 				
 				return hic_data;
 			},

@@ -343,7 +343,7 @@
 							var resolution = settings.current.segmentLength*settings.current.particleSegments;
 							var num_segments = 0;
 							for (var l = 0 ; l < settings.current.chromosomeIndexes.length; l++) {
-								num_segments = Math.round((settings.current.chromEnd[l]-settings.current.chromStart[l])/resolution)+1;
+								num_segments = Math.round((settings.current.chromEnd[l]-settings.current.chromStart[l])/resolution);
 								counts.push(num_segments*settings.current.particleSegments);
 							}
 							overlay.colors.chromatin = Segments.gradientHCL(overlay, settings.current.segmentsCount, counts);

@@ -20587,8 +20587,6 @@
 		var device = null;
 		var frameData = null;
 
-		var poseTarget = null;
-
 		if ( typeof window !== 'undefined' && 'VRFrameData' in window ) {
 
 			frameData = new window.VRFrameData();
@@ -20660,12 +20658,6 @@
 
 		};
 
-		this.setPoseTarget = function ( object ) {
-
-			if ( object !== undefined ) poseTarget = object;
-
-		};
-
 		this.getCamera = function ( camera ) {
 
 			if ( device === null ) return camera;
@@ -20678,35 +20670,24 @@
 			//
 
 			var pose = frameData.pose;
-			var poseObject;
-
-			if ( poseTarget !== null ) {
-
-				poseObject = poseTarget;
-
-			} else {
-
-				poseObject = camera;
-
-			}
 
 			if ( pose.position !== null ) {
 
-				poseObject.position.fromArray( pose.position );
+				camera.position.fromArray( pose.position );
 
 			} else {
 
-				poseObject.position.set( 0, 0, 0 );
+				camera.position.set( 0, 0, 0 );
 
 			}
 
 			if ( pose.orientation !== null ) {
 
-				poseObject.quaternion.fromArray( pose.orientation );
+				camera.quaternion.fromArray( pose.orientation );
 
 			}
 
-			poseObject.updateMatrixWorld();
+			camera.updateMatrixWorld();
 
 			var stageParameters = device.stageParameters;
 
