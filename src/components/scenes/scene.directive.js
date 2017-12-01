@@ -242,18 +242,6 @@
 						pointLight = new THREE.PointLight(pointColor, pointIntensity);
 						pointLight.name = "Scene Light";
 						camera.add(pointLight);
-						var lightOffset = cameraTranslate * 1.5; // Up and to the left
-						pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
-						//pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
-						// Point Light Helper
-						var sphereSize = 1000;
-						var pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
-						//scene.add(pointLightHelper);
-						
-						// FOG SCENE
-						var fogNear = cameraTranslate * scope.view.viewpoint.fogNear,
-							fogFar = cameraTranslate * scope.view.viewpoint.fogFar;
-						if (scope.view.viewpoint.fog) scene.fog = new THREE.Fog(background,fogNear,fogFar);
 						
 						if(typeof scope.currentmodel.data !== 'undefined' && scope.currentmodel.data.length>0) {
 							
@@ -265,7 +253,7 @@
 							cameraTranslate = chromatin.boundingSphere.radius * scope.view.viewpoint.scale;
 							scope.lookAtTAD(cameraPosition, cameraTarget, cameraTranslate);
 	
-							
+													
 	
 							// EVENT LISTENERS / SCOPE WATCHERS
 							// window.addEventListener( 'resize', scope.onWindowResize, false );
@@ -286,6 +274,19 @@
 							// 	});
 							// });
 						}
+						
+						var lightOffset = cameraTranslate * 1.5; // Up and to the left
+						pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
+						//pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
+						// Point Light Helper
+						var sphereSize = 1000;
+						var pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
+						//scene.add(pointLightHelper);
+						
+						// FOG SCENE
+						var fogNear = cameraTranslate * scope.view.viewpoint.fogNear,
+							fogFar = cameraTranslate * scope.view.viewpoint.fogFar;
+						if (scope.view.viewpoint.fog) scene.fog = new THREE.Fog(background,fogNear,fogFar);
 						
 
 					// FIX: NOT REDRAWING SCENE IF THE ONLY VISBLE OBJECT IS TOGGLED OFF

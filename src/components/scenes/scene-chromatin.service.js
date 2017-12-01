@@ -63,7 +63,7 @@
 	//			  opacity:0.0
 	//			});
 			var solidMaterial = new THREE.MeshLambertMaterial({
-		        color: 0xffffff,
+			    color: 0xffffff,
 		        //shading: THREE.FlatShading,
 		        //side: THREE.DoubleSide,
 		        wireframe: false,
@@ -145,6 +145,8 @@
 						}
 						colori++;
 					}
+					tubeMesh.geometry.__dirtyColors = true;
+					tubeMesh.geometry.elementsNeedUpdate = true;
 				    tubeMesh.dynamic = true;
 				    tubeMesh.needsUpdate = true;
 				    
