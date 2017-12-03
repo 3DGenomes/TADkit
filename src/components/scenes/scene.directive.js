@@ -224,7 +224,7 @@
 						
 						// AXIS
 						// TODO: Make local axisHelper
-						var axisHelper = new THREE.AxisHelper( scope.view.settings.axis.size );
+						var axisHelper = new THREE.AxesHelper( scope.view.settings.axis.size );
 						axisHelper.visible = scope.view.settings.axis.visible;
 						axisHelper.name = "Axis";
 						scene.add( axisHelper );

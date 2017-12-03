@@ -180,6 +180,16 @@
 				}
 			},
 		})
+		.state('data-mining', {
+			parent: 'browser',
+			url: '/data/mining/:func',
+			views: {
+				'modal@main': {
+					templateUrl: 'assets/templates/data-mining.html',
+					controller: 'DataMiningController'
+				}
+			},
+		})
 		.state('404', {
 			url: '/404',
 			templateUrl: 'assets/templates/404.tpl.html',

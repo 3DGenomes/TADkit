@@ -139,8 +139,6 @@
 					locus: chrom+':'+igvjs_start+'-'+($scope.settings.current.chromEnd[$scope.settings.current.chromIdx]),
 					tracks: $scope.tracks.slice()
 		        };
-		
-		
 			
 		$scope.updatePosition =  function(position, leftborder, rightborder) {
 			//console.log(position);
@@ -531,6 +529,12 @@
 	        	}
 			}
 		});
+		$scope.$watch('myIgv.trackViews.length', function( newValue, oldValue ) {
+			if ( newValue !== oldValue) {
+				$scope.updateFeaturesList();  
+			}
+		});
+
         $scope.hideTadkitMarkers = function() {
         	dr.css("display","none");
         	dl.css("display","none");
@@ -874,10 +878,6 @@
 
            return all;
 
-        };
-        
-
-        
-                
+        };     
 	}
 })();

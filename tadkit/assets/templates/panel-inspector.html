@@ -5,7 +5,7 @@
 	<div class="component-body">
 		<div width="{{width}}" height="{{height}}" style="width:{{width}}px; height:{{height}}px;padding:15px; border:1px solid lightgray; line-height: normal;">
 			<md-content>
-			    <md-tabs md-selected="selectedIndex" layout-align="start start" md-border-bottom md-autoselect md-swipe-content>
+			    <md-tabs md-selected="selectedIndex" layout-align="start start" md-border-bottom md-autoselect md-swipe-content style="overflow-x: hidden;">
 			      <md-tab label="Interactions">
 			        <md-content ng-show="!(settings.current.markers_position[1]>0 && interactionDistance()>0)">
 						<span>Click on the interaction matrix to display details</span>
@@ -96,6 +96,17 @@
 							<md-button ui-sref="data-import" aria-label="Load 3D coordinates" class="md-icon-button md-accent">
 							<md-icon class="icon-add"></md-icon>
 							Import 3D coordinates
+						</md-button>
+
+				  		</div>
+				  	</md-content>
+				  </md-tab>
+				  <md-tab label="Data mining">
+			      	<md-content>
+						<div class="component-caption" layout="column" layout-align="left center">
+							<md-button ui-sref="data-mining({func: 'Features by bin'})" aria-label="Features by bin" class="md-icon-button md-accent">
+							<md-icon class="icon-add"></md-icon>
+							Features by bin table
 						</md-button>
 
 				  		</div>

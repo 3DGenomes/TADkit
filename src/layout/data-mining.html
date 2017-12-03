@@ -1,0 +1,51 @@
+<md-dialog aria-label="Data Mining" class="almostfullscreen-dialog">
+	<md-toolbar class="md-accent">
+		<div class="md-toolbar-tools">
+		<h2 class="md-flex">{{func}}</h2>
+		</div>
+	</md-toolbar>
+  	<md-content class="sticky-container">
+  		<section ng-show="func=='Features by bin'">
+  			<table class="filedata">
+				<tbody>
+					<tr><td valign="top" style="padding-left:30px;">
+							<md-select ng-model="selTrack" placeholder="Track">
+							    <md-option ng-value="track" ng-repeat="track in TrackList">{{ track }}</md-option>
+							  </md-select>
+					    </td>
+					    <td valign="top">
+					    	<md-button type=button ng-click="refresh(func)">Query</md-button>
+					    </td>
+					</tr>
+					
+				</tbody>
+			</table>
+			
+  		</section>
+  		<section ng-show="func=='Density of features per interaction'">
+  			<table class="filedata">
+				<tbody>
+					<tr><td valign="top" style="width: 220px;"><b>Intractions threshold (%):</b></td>
+						<td valign="top">
+					      <md-input-container style="width: 60px;">
+					        <input type="number" ng-model="intThreshold">
+					      </md-input-container>
+					    </td>
+					    <td valign="top">
+					    	<md-button type=button ng-click="refresh(func)">Query</md-button>
+					    </td>
+					</tr>
+					
+				</tbody>
+			</table>
+			
+  		</section>
+		<section>
+			<div ui-grid="gridOptions" ui-grid-exporter class="tadkitGrid"></div>
+		</section>
+	</md-content>
+	<div class="md-actions" layout="row">
+		<md-button type=button ng-click="export()">CSV Export</md-button>
+		<md-button type=button ng-click="cancel()">Close</md-button>
+	</div>
+</md-dialog>
