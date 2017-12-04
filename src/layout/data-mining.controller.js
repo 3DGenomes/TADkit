@@ -8,6 +8,8 @@
 
 		var track_data = Track_data.get();
 		var hic_data = Hic_data.get();
+		$scope.maxFreq = hic_data.max;
+		$scope.minFreq = hic_data.min;
 		var settings = $scope.$parent.settings.current;
 		var resolution = settings.segmentLength*settings.particleSegments;
 		$scope.resolution = resolution;
@@ -27,7 +29,7 @@
 		    }
 		};
 		
-		$scope.intThreshold = 10;
+		$scope.intThreshold = Math.round(($scope.maxFreq-$scope.minFreq)/2);
 		$scope.minDistance = resolution;
 		$scope.$on('$viewContentLoaded', function() {
 			var parentElement = angular.element(document.body);
@@ -85,65 +87,85 @@
 					}
 
 		        }
-		    } else if(func=='Interacting loci') {
+		        
+		    } else if(func=='Interacting features') {
 		    	var x_mark, y_mark;
             	var x , y = 0;
             	var chr1, chr2, chr_bins = 0;
 		    	var l = 0;
 		    	var feats1, feats2, obj;
-		    	var range = (hic_data.max - hic_data.min)/100;
+		    	
 		    	var feature_in_bin = function (el) { 
 		    		return ((this.locus_pos+resolution >= el.start && this.locus_pos<= el.end && el.chr.replace('chr','') == this.locus_chr.replace('chr','')));
 		    	};
+		    	var concat_vals = function(elem) {
+		    		if ('name' in elem) return elem.name;
+		    		else if ('id' in elem) return elem.id;
+		    		else if ('value' in elem) return elem.value;
+		    		else if ('color' in elem) return elem.color;
+		    	};
+		    	var track1,track2;
 		    	for(j=0;j<track_data.length;j++) {
 					if(track_data[j].track_name == $scope.selTrack) {
-		                for(i=0;i<hic_data.value.length;i++) {
-		                	if($scope.intThreshold*range > hic_data.value[i]) continue;
-		                	x = Math.floor(hic_data.pos[i]%hic_data.n);
-							y = Math.floor(hic_data.pos[i]/hic_data.n);
-							if(y>x) continue;
-							
-			            	chr_bins = 0;
-			            	l = 0;
-			            	while(chr_bins<=x) {
-			            		x_mark = (x-chr_bins)*resolution+(settings.chromStart[l]);
-			            		chr_bins += Math.round(settings.chromEnd[l]/resolution)-Math.round(settings.chromStart[l]/resolution); 
-			            		l++;
-			            	}
-			            	chr1 = settings.chromosomeIndexes[l-1];
-			            	chr_bins = 0;
-			    			l = 0;
-			    			while(chr_bins<=y) {
-			            		y_mark = (y-chr_bins)*resolution+(settings.chromStart[l]);
-			            		chr_bins += Math.round(settings.chromEnd[l]/resolution)-Math.round(settings.chromStart[l]/resolution); 
-			            		l++;
-			            	}
-			            	chr2 = settings.chromosomeIndexes[l-1];
-			            	
-			            	if(chr1 == chr2 && Math.abs(x_mark-y_mark) <= $scope.minDistance) continue;
-			            	
-			            	obj = { locus_pos: x_mark, locus_chr: chr1 };
-			            	feats1 = track_data[j].feature.filter(feature_in_bin, obj);
-			            	obj = { locus_pos: y_mark, locus_chr: chr2 };
-			            	feats2 = track_data[j].feature.filter(feature_in_bin, obj);
-			            	
-			            	if(feats1.length == 0 || feats2.length == 0) continue;
-			            	
-			            	$scope.gridOptions.data.push({
-						        "Chromosome 1": chr1,
-						        "Locus 1": x_mark,
-						        "Chromosome 2": chr2,
-						        "Locus 2": y_mark,
-						        "Interaction freq,": hic_data.value[i],
-						        "Features 1": feats1.map(function(elem){return elem.name;}).join(","),
-						        "Features 2": feats2.map(function(elem){return elem.name;}).join(",")
-						    });
-		                	
-		                	
-		                }
+						track1 = track_data[j];
 					}
-		    	}
+				}
+				for(j=0;j<track_data.length;j++) {
+					if(track_data[j].track_name == $scope.selTrack2) {
+						track2 = track_data[j];
+					}
+				}
+
+                for(i=0;i<hic_data.value.length;i++) {
+                	if($scope.intThreshold > hic_data.value[i]) continue;
+                	x = Math.floor(hic_data.pos[i]%hic_data.n);
+					y = Math.floor(hic_data.pos[i]/hic_data.n);
+					if(y>x) continue;
+					
+	            	chr_bins = 0;
+	            	l = 0;
+	            	while(chr_bins<=x) {
+	            		x_mark = (x-chr_bins)*resolution+(settings.chromStart[l]);
+	            		chr_bins += Math.round(settings.chromEnd[l]/resolution)-Math.round(settings.chromStart[l]/resolution); 
+	            		l++;
+	            	}
+	            	chr1 = settings.chromosomeIndexes[l-1];
+	            	chr_bins = 0;
+	    			l = 0;
+	    			while(chr_bins<=y) {
+	            		y_mark = (y-chr_bins)*resolution+(settings.chromStart[l]);
+	            		chr_bins += Math.round(settings.chromEnd[l]/resolution)-Math.round(settings.chromStart[l]/resolution); 
+	            		l++;
+	            	}
+	            	chr2 = settings.chromosomeIndexes[l-1];
+	            	
+	            	if(chr1 == chr2 && Math.abs(x_mark-y_mark) <= $scope.minDistance) continue;
+	            	
+	            	obj = { locus_pos: x_mark, locus_chr: chr1 };
+	            	feats1 = track1.feature.filter(feature_in_bin, obj);
+	            	obj = { locus_pos: y_mark, locus_chr: chr2 };
+	            	feats2 = track2.feature.filter(feature_in_bin, obj);
+	            	
+	            	if(feats1.length == 0 || feats2.length == 0) continue;
+	            	
+	            	$scope.gridOptions.data.push({
+				        "Chromosome 1": chr1,
+				        "Locus 1": x_mark,
+				        "Chromosome 2": chr2,
+				        "Locus 2": y_mark,
+				        "Interaction freq,": hic_data.value[i],
+				        "Features 1": feats1.map(concat_vals).join(","),
+				        "Features 2": feats2.map(concat_vals).join(",")
+				    });
+                	
+                	
+                }
+			
 		    }
+		    $mdToast.show(
+				$mdToast.simple()
+				.content($scope.gridOptions.data.length+' records retrieved')
+			);
 		};
 		$scope.export = function(func){
 			//$scope.gridApi.exporter.csvExport( 'all', 'all');

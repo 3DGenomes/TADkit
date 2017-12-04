@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Datasets', Datasets);
 
-	function Datasets($q, $http, uuid4, Settings, Resources, Proximities, Restraints, Overlays, Hic_data) {
+	function Datasets($q, $http, uuid4, Settings, Resources, Proximities, Restraints, Overlays, Hic_data, Track_data) {
 		var datasets = {
 			loaded : [],
 			current : {
@@ -93,7 +93,7 @@
 					Hic_data.set(dataset.hic_data,[Math.round(posStart+1)],[Math.round(posEnd)]);
 					
 				} else Hic_data.clear();
-				
+				Track_data.clear();
 				// if (dataset.object.filename) {
 				//	var filetype = "tsv";
 				//	var resetToDefaults = true;

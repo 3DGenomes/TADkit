@@ -5,22 +5,35 @@
 		</div>
 	</md-toolbar>
   	<md-content class="sticky-container">
-  		<section ng-show="func=='Features by bin' || func=='Interacting loci'">
+  		<section ng-show="func=='Features by bin' || func=='Interacting features'">
   			<table style="margin-bottom: 10px;width: inherit;">
 				<tbody>
 					<tr><td valign="top">
-							<md-select ng-model="selTrack" placeholder="Track">
+							<md-select ng-model="selTrack" placeholder="Track 1">
 							    <md-option ng-value="track" ng-repeat="track in TrackList">{{ track }}</md-option>
 							  </md-select>
 					    </td>
-					    <td valign="top" nowrap style="padding-left:30px;" ng-show="func=='Interacting loci'">Freq. threshold (%):</td>
-						<td valign="top" ng-show="func=='Interacting loci'">
-					      <md-input-container style="width: 45px; padding: 0;">
-					        <md-input type="number" ng-model="intThreshold">
-					      </md-input-container>
+					    <td valign="top" nowrap style="padding-left:30px;" ng-show="func=='Interacting features'">Frequency threshold:</td>
+						<td valign="top" ng-show="func=='Interacting features'" style="width: 230px;">
+							<md-slider-container layout="row" style="padding: 0;">
+						      <md-slider flex min="{{minFreq}}" max="{{maxFreq}}" ng-model="intThreshold" aria-label="blue" id="blue-slider">
+						      </md-slider>
+						      <md-input-container style="width: 30%">
+						        <input flex type="number" step="0.1" ng-model="intThreshold" aria-label="blue" aria-controls="blue-slider">
+						      </md-input-container>
+						    </md-slider-container>
 					    </td>
-					    <td valign="top" nowrap style="padding-left:30px;" ng-show="func=='Interacting loci'">Min genomic distance (bp):</td>
-						<td valign="top" ng-show="func=='Interacting loci'">
+					    <td>
+					    </td>
+					    
+					</tr>
+					<tr><td valign="top">
+							<md-select ng-model="selTrack2" placeholder="Track 2">
+							    <md-option ng-value="track" ng-repeat="track in TrackList">{{ track }}</md-option>
+							  </md-select>
+					    </td>
+					    <td valign="top" nowrap style="padding-left:30px;" ng-show="func=='Interacting features'">Min genomic distance (bp):</td>
+						<td valign="top" ng-show="func=='Interacting features'">
 					      <md-input-container style="width: 75px; padding: 0;">
 					        <md-input type="number" step="{{resolution}}" ng-model="minDistance">
 					      </md-input-container>
@@ -29,7 +42,6 @@
 					    	<md-button type=button style="padding:0;" ng-click="refresh(func)">Query</md-button>
 					    </td>
 					</tr>
-					
 				</tbody>
 			</table>
 			
