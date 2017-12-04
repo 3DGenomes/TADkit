@@ -5,34 +5,28 @@
 		</div>
 	</md-toolbar>
   	<md-content class="sticky-container">
-  		<section ng-show="func=='Features by bin'">
-  			<table class="filedata">
+  		<section ng-show="func=='Features by bin' || func=='Interacting loci'">
+  			<table style="margin-bottom: 10px;width: inherit;">
 				<tbody>
-					<tr><td valign="top" style="padding-left:30px;">
+					<tr><td valign="top">
 							<md-select ng-model="selTrack" placeholder="Track">
 							    <md-option ng-value="track" ng-repeat="track in TrackList">{{ track }}</md-option>
 							  </md-select>
 					    </td>
-					    <td valign="top">
-					    	<md-button type=button ng-click="refresh(func)">Query</md-button>
+					    <td valign="top" nowrap style="padding-left:30px;" ng-show="func=='Interacting loci'">Freq. threshold (%):</td>
+						<td valign="top" ng-show="func=='Interacting loci'">
+					      <md-input-container style="width: 45px; padding: 0;">
+					        <md-input type="number" ng-model="intThreshold">
+					      </md-input-container>
 					    </td>
-					</tr>
-					
-				</tbody>
-			</table>
-			
-  		</section>
-  		<section ng-show="func=='Density of features per interaction'">
-  			<table class="filedata">
-				<tbody>
-					<tr><td valign="top" style="width: 220px;"><b>Intractions threshold (%):</b></td>
-						<td valign="top">
-					      <md-input-container style="width: 60px;">
-					        <input type="number" ng-model="intThreshold">
+					    <td valign="top" nowrap style="padding-left:30px;" ng-show="func=='Interacting loci'">Min genomic distance (bp):</td>
+						<td valign="top" ng-show="func=='Interacting loci'">
+					      <md-input-container style="width: 75px; padding: 0;">
+					        <md-input type="number" step="{{resolution}}" ng-model="minDistance">
 					      </md-input-container>
 					    </td>
 					    <td valign="top">
-					    	<md-button type=button ng-click="refresh(func)">Query</md-button>
+					    	<md-button type=button style="padding:0;" ng-click="refresh(func)">Query</md-button>
 					    </td>
 					</tr>
 					
@@ -41,7 +35,7 @@
 			
   		</section>
 		<section>
-			<div ui-grid="gridOptions" ui-grid-exporter class="tadkitGrid"></div>
+			<div ui-grid="gridOptions" ui-grid-exporter ui-grid-resize-columns class="tadkitGrid"></div>
 		</section>
 	</md-content>
 	<div class="md-actions" layout="row">

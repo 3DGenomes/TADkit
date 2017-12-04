@@ -16,7 +16,7 @@
 				 		<p class="feature-title">{{tdata.track_name}}</p>
 				 		 <div layout="row" layout-align="left start">
 						  <div ng-show="settings.current.markers_position[1]>0" layout-align="center start" style="width:100%">
-						    <div class="feature-column-header">Left marker</div>
+						    <div class="feature-column-header">Left marker<br>{{settings.current.markers_chr[1]}}:{{(settings.current.markers_position[1]| number:0)}}</div>
 						    <div class="feature-column-body">
 								<div ng-repeat="feature in tdata.feature | filter:atLeftPosition" style="display:inline-block">
 								  <span class="">{{featureTitle(feature)}}</span>
@@ -27,7 +27,7 @@
 							</div>
 						  </div>
 						  <div layout-align="left start" style="width:100%">
-						    <div class="feature-column-header">Features at position</div>
+						    <div class="feature-column-header">Features at position<br>{{settings.current.chrom}}:{{(settings.current.position| number:0)}}</div>
 						    <div class="feature-column-body">
 								<div ng-repeat="feature in tdata.feature | filter:atPosition" style="display:inline-block">
 								  <span class="">{{featureTitle(feature)}}</span>
@@ -38,7 +38,7 @@
 							</div>
 						  </div>
 						  <div ng-show="settings.current.markers_position[0]>0" layout-align="left start" style="width:100%">
-						    <div class="feature-column-header">Right marker</div>
+						    <div class="feature-column-header">Right marker<br>{{settings.current.markers_chr[0]}}:{{(settings.current.markers_position[0]| number:0)}}</div>
 						    <div class="feature-column-body">
 								<div ng-repeat="feature in tdata.feature | filter:atRightPosition" style="display:inline-block">
 								  <span class="">{{featureTitle(feature)}}</span>
@@ -104,9 +104,13 @@
 			      	<md-content>
 						<div class="component-caption" layout="column" layout-align="left center">
 							<md-button ui-sref="data-mining({func: 'Features by bin'})" aria-label="Features by bin" class="md-icon-button md-accent">
-							<md-icon class="icon-add"></md-icon>
-							Features by bin table
-						</md-button>
+								<md-icon class="icon-add"></md-icon>
+								Features by bin
+							</md-button>
+							<md-button ui-sref="data-mining({func: 'Interacting loci'})" aria-label="Interacting loci" class="md-icon-button md-accent">
+								<md-icon class="icon-add"></md-icon>
+								Interacting features
+							</md-button>
 
 				  		</div>
 				  	</md-content>

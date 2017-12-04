@@ -190,7 +190,7 @@
 						// console.log(element[0].firstChild.children[2].clientWidth);
 
 						if (window.WebGLRenderingContext)
-							renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
+							renderer = new THREE.WebGLRenderer({alpha: true, antialias: false});
 						else
 							renderer = new THREE.CanvasRenderer({alpha: true});					
 						var background = scope.view.settings.background;

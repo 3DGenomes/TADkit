@@ -58,7 +58,7 @@ md-toolbar md-icon {
 md-input-container.md-default-theme .md-input {
 	text-align: end;
 	/*color: #fff;*/
-	border-color: rgb(248,248,248);
+	border-color: rgba(0,0,0,0.12);
 	/*width: 180px;*/
 }
 md-input-container.md-default-theme .md-input:focus {
