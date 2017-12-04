@@ -75,6 +75,8 @@ gulp.task('dist-vendor', function() {
 		'bower_components/jquery/dist/jquery.min.js',
 		'bower_components/jquery-ui/jquery-ui.min.js',
 		'node_modules/angular-ui-grid/ui-grid.min.js',
+		'node_modules/xlsx/dist/xlsx.full.min.js',
+		'node_modules/file-saver/FileSaver.min.js',
 		//'src/assets/js/igv-all.js',
 		])
 		.pipe(gulp.dest('src/assets/libs'))
@@ -165,7 +167,8 @@ gulp.task('assets-fonts', function() {
 gulp.task('assets-img', function() {
 	return gulp.src([
 		'src/assets/img/*.png',
-		'src/assets/img/*.svg'
+		'src/assets/img/*.svg',
+		'bower_components/angular-awesome-slider/dist/img/jslider.blue.vertical.png'
 		])
 		.pipe(gulp.dest('tadkit/assets/img'));
 });

@@ -65,12 +65,12 @@
 										$scope.gridOptions.data.push({
 									        "Chromosome": settings.chromosomeIndexes[j],
 									        "Locus": k,
-									        "Feature id": track_data[i].feature[f].id,
-									        "Feature name": track_data[i].feature[f].name,
-									        "Feature start": track_data[i].feature[f].start,
-									        "Feature end": track_data[i].feature[f].end,
-									        "Feature strand": track_data[i].feature[f].strand,
-									        "Feature value": track_data[i].feature[f].value
+									        "id": track_data[i].feature[f].id,
+									        "Name": track_data[i].feature[f].name,
+									        "Start": track_data[i].feature[f].start,
+									        "End": track_data[i].feature[f].end,
+									        "Strand": track_data[i].feature[f].strand,
+									        "Value": track_data[i].feature[f].value
 									    });
 									}
 								}
@@ -82,8 +82,15 @@
 		        }
 		    }
 		};
-		$scope.export = function(){
-			$scope.gridApi.exporter.csvExport( 'all', 'all');
+		$scope.export = function(func){
+			//$scope.gridApi.exporter.csvExport( 'all', 'all');
+			/* generate a worksheet */
+			var ws = XLSX.utils.json_to_sheet($scope.gridOptions.data);
+
+			var wbout = XLSX.utils.sheet_to_csv(ws, {FS:"\t"});
+			/* generate a download */
+
+			saveAs(new Blob([wbout],{type:"attachment/csv;charset=utf-8;"}), func+".tsv");
 		};
 		$scope.cancel = function() {
 			$mdDialog.hide();
