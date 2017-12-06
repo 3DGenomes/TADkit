@@ -469,6 +469,7 @@
 				};
 
 				scope.update_marks =  function() {
+					if (typeof handle == 'undefined') return;
 					var x = (((scope.settings.current.particle-1)+0.5)*Math.sqrt(2))*scope.scale+(scope.translatePos.x)+parseInt(scope.state.offsetx);
 					handle.attr("cx",x);
 					position.attr("x",x).text(scope.settings.current.particle);
