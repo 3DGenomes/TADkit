@@ -131,8 +131,8 @@
 		            if (canvas.getContext) {
 		                console.log("Drawing hic matrix");
 		                var ctx = canvas.getContext("2d");
-		                ctx.imageSmoothingEnabled = false;
-		                ctx.mozImageSmoothingEnabled = false;
+		                //ctx.imageSmoothingEnabled = false;
+		                //ctx.mozImageSmoothingEnabled = false;
 		                ctx.imageSmoothingEnabled = false;
 				  
 		                //clear the canvas
