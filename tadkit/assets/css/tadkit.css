@@ -842,6 +842,10 @@ md-icon {
 	content: "\e607";
 }
 
+.icon-view-headline:before {
+	content: "\e605";
+}
+
 .icon-fast-forward:before {
 	content: "\e60c";
 }
