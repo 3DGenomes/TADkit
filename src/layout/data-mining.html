@@ -1,10 +1,10 @@
-<md-dialog aria-label="Data Mining" class="almostfullscreen-dialog">
-	<md-toolbar class="md-accent">
+<md-dialog md-theme="default" aria-label="Data Mining" class="almostfullscreen-dialog">
+	<md-toolbar>
 		<div class="md-toolbar-tools">
 		<h2 class="md-flex">{{func}}</h2>
 		</div>
 	</md-toolbar>
-  	<md-content class="sticky-container">
+  	<md-dialog-content class="md-default-theme">
   		<section ng-show="func=='Features by bin' || func=='Interacting features'">
   			<table style="margin-bottom: 10px;width: inherit;">
 				<tbody>
@@ -35,7 +35,7 @@
 					    <td valign="top" nowrap style="padding-left:30px;" ng-show="func=='Interacting features'">Min genomic distance (bp):</td>
 						<td valign="top" ng-show="func=='Interacting features'">
 					      <md-input-container style="width: 90px; padding: 0;">
-					        <md-input type="number" step="{{resolution}}" ng-model="minDistance" style="width: 90px; padding: 0;">
+					        <input type="number" step="{{resolution}}" ng-model="minDistance" style="width: 90px; padding: 0;">
 					      </md-input-container>
 					    </td>
 					    <td valign="top">
@@ -49,9 +49,9 @@
 		<section>
 			<div ui-grid="gridOptions" ui-grid-exporter ui-grid-resize-columns class="tadkitGrid"></div>
 		</section>
-	</md-content>
-	<div class="md-actions" layout="row">
-		<md-button type=button ng-click="export(func)">TSV Export</md-button>
-		<md-button type=button ng-click="cancel()">Close</md-button>
-	</div>
+	</md-dialog-content>
+	<md-dialog-actions>
+		<md-button type=button ng-click="export(func)" class="md-raised md-primary">TSV Export</md-button>
+		<md-button type=button ng-click="cancel()"class="md-raised md-primary">Close</md-button>
+	</md-dialog-actions>
 </md-dialog>

@@ -18,9 +18,9 @@
 					deferral.resolve(components);
 				} else {
 					$http.get(dataUrl)
-					.success( function(data) {
-						components.loaded = data;
-						console.log("Components (" + data.length + ") loaded from " + dataUrl);
+					.then( function(data) {
+						components.loaded = data.data;
+						console.log("Components (" + data.data.length + ") loaded from " + dataUrl);
 						deferral.resolve(components);
 					});
 				}

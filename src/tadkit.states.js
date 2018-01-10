@@ -74,22 +74,22 @@
 			 			var deferral = $q.defer();
 			 			
 			 			$http.get($stateParams.conf)
-			 			.success( function(conf) {
+			 			.then( function(conf) {
 			 				var dataset;
 			 				var url_conf = $stateParams.conf;
-			 				if(typeof conf.dataset !== 'undefined') {
-			 					if(conf.tracks) {
-			 						Users.setTracks(conf.tracks);
+			 				if(typeof conf.data.dataset !== 'undefined') {
+			 					if(conf.data.tracks) {
+			 						Users.setTracks(conf.data.tracks);
 			 					}
-			 					dataset = conf.dataset;
-			 				} else if(typeof conf.models !== 'undefined') {
-			 					dataset = conf;
+			 					dataset = conf.data.dataset;
+			 				} else if(typeof conf.data.models !== 'undefined') {
+			 					dataset = conf.data;
 			 				}
 			 				var loading = Datasets.load(dataset);
 			 				return $q.all([ loading ])
 			 				.then(function(results){
-			 					console.log("Dataset loaded: " + conf.dataset);
-			 					deferral.resolve(conf.dataset);
+			 					console.log("Dataset loaded: " + conf.data.dataset);
+			 					deferral.resolve(conf.data.dataset);
 			 				});
 			 				
 			 			});

@@ -23,10 +23,10 @@
 				var deferral = $q.defer();
 				
 				$http.get(dataUrl)
-				.success( function(dataset) {
-					dataset.object.filename = dataUrl;
-					self.add(dataset);
-					deferral.resolve(datasets);
+				.then( function(dataset) {
+					dataset.data.object.filename = dataUrl;
+					self.add(dataset.data);
+					deferral.resolve(datasets.data);
 				});
 				return deferral.promise;
 			},

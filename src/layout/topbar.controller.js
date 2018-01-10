@@ -18,14 +18,7 @@
 		$scope.toggleRight = function() {
 			$mdSidenav('right').toggle();
 		};
-		$scope.sampleAction = function(name, ev) {
-	      $mdDialog.show($mdDialog.alert()
-	        .title(name)
-	        .textContent('You triggered the "' + name + '" action')
-	        .ok('Great')
-	        .targetEvent(ev)
-	      );
-	    };
+
 		//$scope.showDatasetCluster = $state.includes('browser');
 		//$scope.$watch('current.model', function(newModel, oldModel) { 
 		//	if(typeof(newModel) == 'undefined') $scope.showDatasetCluster = false;

@@ -14,8 +14,8 @@
 				var deferral = $q.defer();
 				var dataUrl = "http://rest.ensemblgenomes.org/info/ping?content-type=application/json";
 				$http.get(dataUrl)
-				.success(function(data){
-					ensembl.ping = data.ping;
+				.then(function(data){
+					ensembl.ping = data.data.ping;
 					console.log("Ensembl RESTful is contactable.");
 				});
 				return deferral.promise;
@@ -42,8 +42,8 @@
 					dataUrl = "assets/offline/" + speciesUrl + "-genes.json";
 				}
 				$http.get(dataUrl)
-				.success(function(data){
-					var genes = self.setBiotypeStyle(data);
+				.then(function(data){
+					var genes = self.setBiotypeStyle(data.data);
 					overlay.data = genes;
 					var region = chrom + ":" + chromStart + "-" + chromEnd;
 					var source = online ? "Ensembl" : "local storage";

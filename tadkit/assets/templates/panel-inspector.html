@@ -3,122 +3,52 @@
 	<div class="component-header">
 	</div>
 	<div class="component-body">
-		<div width="{{width}}" height="{{height}}" style="width:{{width}}px; height:{{height}}px;padding:15px; border:1px solid lightgray; line-height: normal;">
+		<div width="{{width}}" height="{{height}}" style="width:{{width}}px; height:{{height}}px;padding:0px; border:1px solid lightgray; line-height: normal;">
 			<md-content>
-			    <md-tabs md-selected="selectedIndex" layout-align="start start" md-border-bottom md-autoselect md-swipe-content style="overflow-x: hidden;">
-			      <md-tab label="Interactions">
-			        <md-content ng-show="!(settings.current.markers_position[1]>0 && interactionDistance()>0)">
-						<span>Click on the interaction matrix to display details</span>
-					</md-content>
-			    	<md-content ng-show="settings.current.markers_position[1]>0 && interactionDistance()>0">
-						<span class="feature-title">Distance of interaction: </span><span class="">{{interactionDistance()}} nm</span>
-					</md-content>
-				 	<md-content ng-repeat="tdata in data.track_data">
-				 		<p class="feature-title">{{tdata.track_name}}</p>
-				 		 <div layout="row" layout-align="left start">
-						  <div ng-show="settings.current.markers_position[1]>0" layout-align="center start" style="width:100%">
-						    <div class="feature-column-header">Left marker<br>{{settings.current.markers_chr[1]}}:{{(settings.current.markers_position[1]| number:0)}}</div>
-						    <div class="feature-column-body">
-								<div ng-repeat="feature in tdata.feature | filter:atLeftPosition" style="display:inline-block">
-								  <span class="">{{featureTitle(feature)}}</span>
-								  <button class="md-icon-button md-button md-default-theme" ng-click="getDetails(feature, $event)" tabindex="0">
-									<md-icon class="icon-info-outline md-hue-3" aria-label="Get Details"></md-icon>
-									</button>
-								</div>
+		        <md-content class="md-padding" ng-show="!(settings.current.markers_position[1]>0 && interactionDistance()>0)">
+					<span>Click on the interaction matrix to display details</span>
+				</md-content>
+		    	<md-content class="md-padding" ng-show="settings.current.markers_position[1]>0 && interactionDistance()>0">
+					<span class="feature-title">Distance of interaction: </span><span class="">{{interactionDistance()}} nm</span>
+				</md-content>
+			 	<md-content class="md-padding" ng-repeat="tdata in data.track_data">
+			 		<p class="feature-title">{{tdata.track_name}}</p>
+			 		 <div layout="row" layout-align="left start">
+					  <div ng-show="settings.current.markers_position[1]>0" layout-align="center start" style="width:100%">
+					    <div class="feature-column-header">Left marker<br>{{settings.current.markers_chr[1]}}:{{(settings.current.markers_position[1]| number:0)}}</div>
+					    <div class="feature-column-body">
+							<div ng-repeat="feature in tdata.feature | filter:atLeftPosition" style="display:inline-block">
+							  <span class="">{{featureTitle(feature)}}</span>
+							  <button class="md-icon-button md-button md-default-theme" ng-click="getDetails(feature, $event)" tabindex="0">
+								<md-icon class="icon-info-outline md-hue-3" aria-label="Get Details"></md-icon>
+								</button>
 							</div>
-						  </div>
-						  <div layout-align="left start" style="width:100%">
-						    <div class="feature-column-header">Features at position<br>{{settings.current.chrom}}:{{(settings.current.position| number:0)}}</div>
-						    <div class="feature-column-body">
-								<div ng-repeat="feature in tdata.feature | filter:atPosition" style="display:inline-block">
-								  <span class="">{{featureTitle(feature)}}</span>
-								  <button class="md-icon-button md-button md-default-theme" ng-click="getDetails(feature, $event)" tabindex="0">
-									<md-icon class="icon-info-outline md-hue-3" aria-label="Get Details"></md-icon>
-									</button>
-								</div>
+						</div>
+					  </div>
+					  <div layout-align="left start" style="width:100%">
+					    <div class="feature-column-header">Features at position<br>{{settings.current.chrom}}:{{(settings.current.position| number:0)}}</div>
+					    <div class="feature-column-body">
+							<div ng-repeat="feature in tdata.feature | filter:atPosition" style="display:inline-block">
+							  <span class="">{{featureTitle(feature)}}</span>
+							  <button class="md-icon-button md-button md-default-theme" ng-click="getDetails(feature, $event)" tabindex="0">
+								<md-icon class="icon-info-outline md-hue-3" aria-label="Get Details"></md-icon>
+								</button>
 							</div>
-						  </div>
-						  <div ng-show="settings.current.markers_position[0]>0" layout-align="left start" style="width:100%">
-						    <div class="feature-column-header">Right marker<br>{{settings.current.markers_chr[0]}}:{{(settings.current.markers_position[0]| number:0)}}</div>
-						    <div class="feature-column-body">
-								<div ng-repeat="feature in tdata.feature | filter:atRightPosition" style="display:inline-block">
-								  <span class="">{{featureTitle(feature)}}</span>
-								  <button class="md-icon-button md-button md-default-theme" ng-click="getDetails(feature, $event)" tabindex="0">
-									<md-icon class="icon-info-outline md-hue-3" aria-label="Get Details"></md-icon>
-									</button>
-								</div>
+						</div>
+					  </div>
+					  <div ng-show="settings.current.markers_position[0]>0" layout-align="left start" style="width:100%">
+					    <div class="feature-column-header">Right marker<br>{{settings.current.markers_chr[0]}}:{{(settings.current.markers_position[0]| number:0)}}</div>
+					    <div class="feature-column-body">
+							<div ng-repeat="feature in tdata.feature | filter:atRightPosition" style="display:inline-block">
+							  <span class="">{{featureTitle(feature)}}</span>
+							  <button class="md-icon-button md-button md-default-theme" ng-click="getDetails(feature, $event)" tabindex="0">
+								<md-icon class="icon-info-outline md-hue-3" aria-label="Get Details"></md-icon>
+								</button>
 							</div>
-						  </div>
-						</div> 
-				 		
-						
-					</md-content>
-				    	    
-			      </md-tab>
-			      <md-tab label="Dataset Settings">
-			      	<md-content>
-					<div class="component-caption" layout="column" layout-align="left center">
-						<h3>{{data.object.title}}</h3><table>
-							<tr><td valign="top"><b>Species:</b></td><td>{{data.object.species}}</td></tr>
-							<tr><td valign="top"><b>Chromosomes:</b></td><td>
-							<span ng-repeat="chrom in data.object.chrom">
-							  <input
-							    type="checkbox"
-							    name="selectedChroms[]"
-							    value="{{chrom}}"
-							    ng-checked="settings.current.chromosomeIndexes.indexOf(chrom) > -1"
-							    ng-click="toggleSelection(chrom)"
-							  ><label ng-click="toggleSelection(chrom)">{{chrom}}</label>
-							</span></td></tr>
-							<tr><td valign="top"><b>Region:</b></td><td>{{data.object.region}}</td></tr>
-							<tr><td valign="top"><b>UUID:</b></td><td>{{data.object.uuid}}</td></tr>
-							<tr><td valign="top"><b>Resolution:</b></td><td>{{data.object.resolution}}</td></tr>
-							<tr><td valign="top"><b>Bins:</b></td><td>{{(data.data.length/3)}}</td></tr>
-							<tr><td valign="top"><b>Chromatin radius:</b></td><td> 5 nm</td></tr>
-							<tr><td valign="top"><b>Chromatin radius scale:</b></td>
-								<td>
-								<md-slider-container layout="row">
-							      <md-slider flex min="1" max="100" ng-model="data.object.radius_scale" aria-label="blue" id="blue-slider">
-							      </md-slider>
-							      <md-input-container style="width: 20%">
-							        <input flex type="number" ng-model="data.object.radius_scale" aria-label="blue" aria-controls="blue-slider">
-							      </md-input-container>
-							    </md-slider-container>
-								</td>
-							</tr>
-						</table>
-					</div>
-					</md-content>
-			      </md-tab>
-			      <md-tab label="Load data">
-			      	<md-content>
-						<div class="component-caption" layout="column" layout-align="left center">
-							<md-button ui-sref="data-import" aria-label="Load 3D coordinates" class="md-icon-button md-accent">
-							<md-icon class="icon-add"></md-icon>
-							Import 3D coordinates
-						</md-button>
-
-				  		</div>
-				  	</md-content>
-				  </md-tab>
-				  <md-tab label="Data mining">
-			      	<md-content>
-						<div class="component-caption" layout="column" layout-align="left center">
-							<md-button ui-sref="data-mining({func: 'Features by bin'})" aria-label="Features by bin" class="md-icon-button md-accent">
-								<md-icon class="icon-add"></md-icon>
-								Features by bin
-							</md-button>
-							<md-button ui-sref="data-mining({func: 'Interacting features'})" aria-label="Interacting features" class="md-icon-button md-accent">
-								<md-icon class="icon-add"></md-icon>
-								Interacting features
-							</md-button>
-
-				  		</div>
-				  	</md-content>
-				  </md-tab>
-			    </md-tabs>
+						</div>
+					  </div>
+					</div> 
 			  </md-content>
-			
 		</div>
 	</div>
 </div>

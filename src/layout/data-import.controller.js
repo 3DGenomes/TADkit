@@ -6,7 +6,7 @@
 
 	function DataImportController ($state, $scope, $mdDialog, $mdToast, Settings, Datasets, Hic_data, Components, Storyboards, uuid4) {
 		$scope.fileTitle = "No file loaded";
-
+		
 		$scope.$on('$viewContentLoaded', function() {
 			var parentElement = angular.element(document.body);
 			var stateTemplate = "assets/templates/" + $state.current.name + ".html";
@@ -15,9 +15,6 @@
 				parent: parentElement,
 				templateUrl: stateTemplate,
 				controller: DataImportController,
-				locals: {
-					datasets: $scope.$parent.datasets,
-				},
 				onComplete: afterShowAnimation
 			}).then(function(importedDatasCount) {
 				$mdToast.show(
@@ -49,6 +46,7 @@
 			var cols = $scope.fileData[0].length;
 			while (--cols >= 0) {$scope.selectedCols[cols] = true;} // initially set all to selected
 			console.log("File Opened...");
+			//$scope.$apply();
 		};
 
 		$scope.importData = function(parsedData) {

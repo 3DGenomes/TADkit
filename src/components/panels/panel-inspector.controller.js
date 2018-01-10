@@ -108,67 +108,7 @@
 				return -1;
 			}
 		};
-		$scope.toggleSelection = function toggleSelection(chrom) {
-			
-			var chromosomeIndex = $scope.settings.current.chromosomeIndexes.slice();
-			var idx = chromosomeIndex.indexOf(chrom);
-		    // Is currently selected
-		    if (idx > -1) {
-		    	if(chromosomeIndex.length<2) return;
-		    	chromosomeIndex.splice(idx, 1);
-		    }
-
-		    // Is newly selected
-		    else {
-		    	chromosomeIndex.push(chrom);
-		    }
-		    var chromStart = [];
-			var chromEnd = [];
-			var sortedIndex = [];
-			var resolution = $scope.data.object.resolution;
-			var chromIdx;
-			var offset = 0;
-			for (var l = 0 ; l < $scope.data.object.chrom.length; l++) {
-				chromIdx = chromosomeIndex.indexOf($scope.data.object.chrom[l]);
-				if(chromIdx > -1) {
-					sortedIndex.push($scope.data.object.chrom[l]);
-					chromStart.push(Math.round($scope.data.object.chromStart[l]/resolution)+offset);
-					chromEnd.push(Math.round($scope.data.object.chromEnd[l]/resolution)+offset);
-				}
-				offset += Math.round($scope.data.object.chromEnd[l]/resolution)-Math.round($scope.data.object.chromStart[l]/resolution);
-			}
-			var dataset = Datasets.getDataset();
-		    var hic_data = Hic_data.set(dataset.hic_data,chromStart,chromEnd);
-		    var currentModel = Datasets.setModel(Datasets.getCentroid(),chromosomeIndex);
-		    if(chromosomeIndex.indexOf($scope.settings.current.chrom)<0) $scope.settings.current.chrom = chromosomeIndex[0];
-		    Settings.set(dataset,chromosomeIndex,$scope.settings.current.chrom);
-			//$scope.current.overlay = Overlays.getOverlay();
-			
-		    var igvDiv = angular.element(document.querySelector('#igvRootDiv'))[0];
-		    var span_width = parseInt(igvDiv.clientWidth)-100;
-		    $scope.settings.current.leftborder = 50;
-		    if(chromosomeIndex.length==2) {
-		    	var first_right_border = (50 + span_width)/chromosomeIndex.length;
-		    	$scope.settings.current.rightborder = first_right_border * ($scope.settings.current.particlesCount/(chromEnd[0]-chromStart[0]));
-		    } else $scope.settings.current.rightborder = (50 + span_width);
-			
-		    $scope.settings.current.chromosomeIndexes = sortedIndex;
-		    
-		    
-		 };
-		/*
-		$scope.dataset_info = '<div class="component-caption" layout="column" layout-align="left center">'+
-				'<h2>'+$scope.data.object.title+'</h2><table>'+
-					'<tr><td><b>Species:</b></td><td>'+$scope.data.object.species+'</td></tr>'+
-					'<tr><td><b>Region:</b></td><td>'+$scope.data.object.region+'</td></tr>'+
-					'<tr><td><b>UUID:</b></td><td>'+$scope.data.object.uuid+'</td></tr>'+
-					'<tr><td><b>Resolution:</b></td><td>'+$scope.data.object.resolution+'</td></tr>'+
-					'<tr><td><b>Bins:</b></td><td>'+($scope.data.data.length/3)+'</td></tr>'+
-					'<tr><td><b>Chromatin radius:</b></td><td> 5 nm</td></tr>'+
-					'<tr><td><b>Chromatin radius scale:</b></td><td>'+$scope.data.object.radius_scale+'x</td></tr>'+
-				'</table>'+
-			'</div>';
-		*/
+		
 		$scope.showInfo = function(info) {
 			$mdDialog.show({
 			      parent: angular.element(document.body),

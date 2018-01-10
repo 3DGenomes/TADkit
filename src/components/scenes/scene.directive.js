@@ -342,6 +342,7 @@
 						// /* Watch chromatin radius scale
 						scope.$watch('data.object.radius_scale', function( newValue, oldValue ) {
 							if ( newValue !== oldValue ) {
+								if(typeof scope.currentmodel.data === 'undefined' || scope.currentmodel.data.length === 0) return;
 								scope.toggleTubed(true);
 							}
 						});

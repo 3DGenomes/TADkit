@@ -18,9 +18,9 @@
 					deferral.resolve(projects);
 				} else {
 					$http.get(dataUrl)
-					.success( function(data) {
-						projects.loaded = data;
-						console.log("Projects (" + data.length + ") loaded from " + dataUrl);
+					.then( function(data) {
+						projects.loaded = data.data;
+						console.log("Projects (" + data.data.length + ") loaded from " + dataUrl);
 						deferral.resolve(projects);
 					});
 				}

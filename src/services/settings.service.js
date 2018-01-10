@@ -15,8 +15,8 @@
 					deferral.resolve(settings);
 				} else {
 					$http.get(dataUrl)
-					.success( function(data) {
-						settings = data;
+					.then( function(data) {
+						settings = data.data;
 						console.log("Settings loaded from " + dataUrl);
 						deferral.resolve(settings);
 					});

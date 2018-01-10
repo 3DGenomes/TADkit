@@ -141,10 +141,10 @@ gulp.task('assets-html', function() {
 // Transfer CSS Assets
 gulp.task('assets-css', function() {
 	return gulp.src([
-		'src/assets/css/angular-material.css',
+		'bower_components/angular-material/angular-material.css',
 		'src/assets/css/tadkit.css',
 		'src/assets/css/ensembl-genes.css',
-		'src/assets/css/angular-awesome-slider.min.css',
+		'bower_components/angular-awesome-slider/src/css/angular-awesome-slider.min.css',
 		//'src/assets/css/igv-1.0.9.css',
 		'src/assets/css/igv-all.css',
 		'bower_components/jquery-ui/themes/cupertino/jquery-ui.css',

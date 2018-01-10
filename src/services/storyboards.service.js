@@ -16,9 +16,9 @@
 				var dataUrl = "assets/defaults/tk-defaults-storyboards.json";
 				
 				$http.get(dataUrl)
-				.success( function(data) {
-					storyboards.loaded = data;
-					console.log("Storyboards (" + data.length + ") loaded from " + dataUrl);
+				.then( function(data) {
+					storyboards.loaded = data.data;
+					console.log("Storyboards (" + data.data.length + ") loaded from " + dataUrl);
 					deferral.resolve(storyboards);
 				});
 				

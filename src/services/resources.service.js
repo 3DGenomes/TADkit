@@ -54,8 +54,8 @@
 
 				}
 				$http.get(dataUrl)
-				.success(function(data){
-					var iniData = Color.colorsFromIni(data);
+				.then(function(data){
+					var iniData = Color.colorsFromIni(data.data);
 					resources.featureColors = iniData;
 					resources.biotypes = iniData.gene;
 					console.log("Ensembl webcode biotype colors retrieved Ensembl.");

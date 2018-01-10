@@ -18,10 +18,10 @@
 					deferral.resolve(overlays);
 				} else {
 					$http.get(dataUrl)
-					.success( function(data) {
-						overlays.loaded = data;
+					.then( function(data) {
+						overlays.loaded = data.data;
 						overlays.current.index = overlays.loaded.length - 1;
-						console.log("Overlays (" + data.length + ") loaded from " + dataUrl);
+						console.log("Overlays (" + data.data.length + ") loaded from " + dataUrl);
 						deferral.resolve(overlays);
 					});
 				}
@@ -43,7 +43,7 @@
 				if (filename != "tk-example-dataset") datapath = "examples";
 				var dataUrl = "assets/" + datapath + "/" + filename + "." + filetype;
 				$http.get(dataUrl)
-				.success( function(fileData) {
+				.then( function(fileData) {
 					var importedOverlays = self.import(fileData,[],[],defaults);
 					console.log("Overlays (" + importedOverlays.length + ") imported from " + dataUrl);
 					deferral.resolve(overlays);
