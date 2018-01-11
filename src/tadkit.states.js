@@ -172,7 +172,7 @@
 		})
 		.state('data-import', {
 			parent: 'browser',
-			url: '/data/import',
+			url: '/data/import/:func',
 			views: {
 				'modal@main': {
 					templateUrl: 'assets/templates/data-import.html',

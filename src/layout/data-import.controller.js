@@ -4,8 +4,12 @@
 		.module('TADkit')
 		.controller('DataImportController', DataImportController);
 
-	function DataImportController ($state, $scope, $mdDialog, $mdToast, Settings, Datasets, Hic_data, Components, Storyboards, uuid4) {
+	function DataImportController ($state, $scope, $stateParams, $mdDialog, $mdToast, Settings, Datasets, Hic_data, Components, Storyboards, uuid4) {
 		$scope.fileTitle = "No file loaded";
+		$scope.func =  $stateParams.func;
+		$scope.settings = Settings.get();
+		$scope.resolution =  $scope.settings.current.segmentLength*$scope.settings.current.particleSegments;
+		
 		
 		$scope.$on('$viewContentLoaded', function() {
 			var parentElement = angular.element(document.body);
@@ -42,17 +46,19 @@
 			// Controlled by checkboxes in Data-import.html
 			$scope.skipRows = 0;
 			$scope.bp_per_nm = 0.01;
+			$scope.first_bin = 0;
+			
 			$scope.selectedCols = [];
 			var cols = $scope.fileData[0].length;
 			while (--cols >= 0) {$scope.selectedCols[cols] = true;} // initially set all to selected
 			console.log("File Opened...");
-			//$scope.$apply();
 		};
-
+	
 		$scope.importData = function(parsedData) {
+			
 			$scope.importedCoords = Datasets.import(parsedData, $scope.skipRows, $scope.bp_per_nm, $scope.selectedCols);
 			$mdDialog.hide($scope.importedCoords); 
-			var settings = Settings.get();
+			//var settings = Settings.get();
 			var dataset = Datasets.getDataset();
 		    //var hic_data = Hic_data.set(dataset.hic_data,settings.current.chromStart,settings.current.chromEnd);
 		    var currentModel = Datasets.setModel(Datasets.getCentroid(),settings.current.chromosomeIndexes);
@@ -60,7 +66,7 @@
 			
 			var chromosomeIndex = settings.current.chromosomeIndexes.slice();
 			//var chromosomeIndex = [dataset.object.chrom[0]];
-			settings.current.chromosomeIndexes = chromosomeIndex;
+			$scope.settings.current.chromosomeIndexes = chromosomeIndex;
 			$state.go('browser');
 		};
 

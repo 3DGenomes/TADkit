@@ -1,12 +1,12 @@
 <md-dialog md-theme="default" aria-label="Import Data">
 	<md-toolbar>
 		<div class="md-toolbar-tools">
-		<h2 class="md-flex">Import Data</h2>
+		<h2 class="md-flex">Import {{func}}</h2>
 		</div>
 	</md-toolbar>
   	<md-dialog-content class="md-default-theme">
 		<section>
-			<div ng-show="fileData">
+			<div ng-show="fileData && func=='3D coordinates'">
 				<h3>File: {{fileTitle}}</h3>
 				Use the checkboxes to indicate which columns are to be imported. Only the fist 10 rows are shown.
 				<section>
@@ -16,6 +16,19 @@
 						<li>First selected columm must be the chromosome name</li>
 						<li>Second selected columm must be the genomic position</li>
 						<li>Third, fourth anf fifth selected columms correspond to x, y and z coordinates</li>
+					</ul>
+				</section>
+			</div>
+			<div ng-show="fileData && func=='Hic matrix'">
+				<h3>File: {{fileTitle}}</h3>
+				Use the checkboxes to indicate which columns are to be imported. Only the fist 10 rows are shown.
+				<section>
+					<h4>Notes:</h4>
+					<ul>
+						<li>The imported matrix should be contained in the current dataset region and match its resolution: {{resolution}}.</li>
+						<li>First selected columm must be the first interacting bin i</li>
+						<li>Second selected columm must be the second interacting bin j</li>
+						<li>Third selected columm correspond to the frequency of interaction</li>
 					</ul>
 				</section>
 			</div>
@@ -31,10 +44,16 @@
 					        <input flex type="number" ng-model="skipRows" aria-label="blue" aria-controls="blue-slider-import">
 					      </md-input-container>
 					    </td>
-					    <td valign="top"><b>Base-pair per nanometer:</b></td>
-						<td>
+					    <td valign="top" ng-show="fileData && func=='3D coordinates'"><b>Base-pair per nanometer:</b></td>
+						<td ng-show="fileData && func=='3D coordinates'">
 					      <md-input-container style="width: 100px;">
 					        <input flex type="number" step="0.01" ng-model="bp_per_nm" aria-label="blue" aria-controls="blue-slider-import">
+					      </md-input-container>
+					    </td>
+					    <td valign="top" ng-show="fileData && func=='Hic matrix'"><b>Genomic region of bin 0:</b></td>
+						<td ng-show="fileData && func=='Hic matrix'">
+					      <md-input-container style="width: 100px;">
+					        <input flex type="number" step="{{resolution}}" ng-model="first_bin" aria-label="blue" aria-controls="blue-slider-import">
 					      </md-input-container>
 					    </td>
 					</tr>
