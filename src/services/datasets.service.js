@@ -248,7 +248,15 @@
 				var parsedData = Papa.parse(data,{
 					dynamicTyping: true,
 					skipEmptyLines: true,
-					fastMode: true
+					fastMode: true,
+					beforeFirstChunk: function(chunk) {
+				      var rows = chunk.split( /\r\n|\r|\n/ );
+				      var cleaned_rows = [];
+				      for(var i=0;i<rows.length;i++) {
+				      	if(rows[i].indexOf('#')!==0) cleaned_rows.push(rows[i]);
+				      }
+				      return cleaned_rows.join('\r\n');
+				    }
 				});
 				return parsedData;
 			},

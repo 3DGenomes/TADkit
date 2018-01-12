@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.factory('Hic_data', Hic_data);
 
-	function Hic_data($q, $http, Storyboards) {
+	function Hic_data($q, $http, Resources, Storyboards) {
 		var hic_data = {
 			n: 0,
 			max: 0,
@@ -145,6 +145,44 @@
 						value: [],
 						tads: []
 				};
+			},
+			import: function(fileData, skipRows, offset_bin, selectedCols, n) {
+				var self = this;
+				// TODO: if not valid fileData return...
+				skipRows = skipRows || 0;
+				selectedCols = selectedCols || [];
+
+				self.clear();
+
+				var parsedData;
+				var dataType = Resources.whatIsIt(fileData);
+				if (dataType == "String") {
+					parsedData = self.parse(fileData).data;
+				} else {
+					parsedData = fileData; // already parsed to JSON object
+				}
+
+				var i;
+				var colnum = [];
+				for(i=0; i<selectedCols.length; i++) {
+					if(selectedCols[i]) colnum.push(i);
+				}
+				
+				hic_data.n = n;
+				for (i = skipRows ; i < parsedData.length; i++) {
+
+					var val = parsedData[i][colnum[2]];
+					var row = parsedData[i][colnum[0]]-offset_bin;
+					var col = parsedData[i][colnum[1]]-offset_bin;
+					if(row>hic_data.n || col>hic_data.n) break;
+					hic_data.pos.push(Math.round(row*hic_data.n+col));
+					hic_data.value.push(val.value);
+					if(val<hic_data.min) hic_data.min = val;
+					if(val>hic_data.max) hic_data.max = val;
+				
+				}
+				
+				return hic_data.n;
 			},
 		};
 	}

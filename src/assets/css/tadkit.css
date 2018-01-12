@@ -108,16 +108,14 @@ md-sidenav.md-locked-open {
   /*min-width: 244px;*/
   /*max-width: 244px;*/
 }
+md-sidenav .md-subheader {
+    padding: 10px 0px 0px 0px;
+}
 md-sidenav md-list-item {
   border-radius: 0;
   color: inherit;
   cursor: pointer;
   font-weight: 400;
-  line-height: 40px;
-  margin: 0;
-  /*max-height: 40px;*/
-  overflow: hidden;
-  padding: 0px 16px;
   text-align: left;
   text-decoration: none;
   white-space: normal;
@@ -568,6 +566,10 @@ md-dialog.md-default-theme {
 	/*opacity: 1;*/
 }
 md-dialog-content.md-default-theme {
+	padding: 10px;
+	overflow: scroll;
+}
+md-dialog-actions {
 	padding: 10px;
 }
 md-select {

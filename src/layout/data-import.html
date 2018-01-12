@@ -21,7 +21,7 @@
 			</div>
 			<div ng-show="fileData && func=='Hic matrix'">
 				<h3>File: {{fileTitle}}</h3>
-				Use the checkboxes to indicate which columns are to be imported. Only the fist 10 rows are shown.
+				Use the checkboxes to indicate which columns are to be imported. Only the fist 5 rows are shown.
 				<section>
 					<h4>Notes:</h4>
 					<ul>
@@ -67,7 +67,7 @@
 							<md-checkbox ng-model="selectedCols[$index]" class="md-primary" aria-label="Data Column Selection Checkbox"></md-checkbox>
 						</td>
 					</tr>
-					<tr ng-repeat="row in fileData|limitTo:10">
+					<tr ng-repeat="row in fileData|limitTo:5">
 						<td></td>
 						<td ng-repeat="col in row track by $index">{{col}}</td>
 					</tr>
