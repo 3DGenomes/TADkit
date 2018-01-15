@@ -438,6 +438,7 @@
 		        scope.$watch('settings.current.chromosomeIndexes', function(newvalue,oldvalue) {
 		        	if ( newvalue !== oldvalue && !angular.isUndefined(newvalue)) {
 		        		scope.data = Hic_data.get();
+		        		polygon_tads = [];
 		        		scope.update_data(scope.data);
 		        	}
 		        });	

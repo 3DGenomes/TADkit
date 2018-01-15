@@ -171,12 +171,12 @@
 				hic_data.n = n;
 				for (i = skipRows ; i < parsedData.length; i++) {
 
-					var val = parsedData[i][colnum[2]];
-					var row = parsedData[i][colnum[0]]-offset_bin;
-					var col = parsedData[i][colnum[1]]-offset_bin;
+					var val = parseFloat(parsedData[i][colnum[2]]);
+					var row = parseInt(parsedData[i][colnum[0]])-offset_bin;
+					var col = parseInt(parsedData[i][colnum[1]])-offset_bin;
 					if(row>hic_data.n || col>hic_data.n) break;
 					hic_data.pos.push(Math.round(row*hic_data.n+col));
-					hic_data.value.push(val.value);
+					hic_data.value.push(val);
 					if(val<hic_data.min) hic_data.min = val;
 					if(val>hic_data.max) hic_data.max = val;
 				

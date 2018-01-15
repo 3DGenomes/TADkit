@@ -72,11 +72,17 @@
 			}
 			$mdDialog.hide($scope.importedCoords); 
 			//var settings = Settings.get();
+			/*var offset=0;
+			for(var i=0;i<$scope.dataset.object.chromosomeIndex;i++) offset += Math.round($scope.dataset.object.chromEnd[l]/$scope.resolution)-Math.round($scope.dataset.object.chromStart[l]/$scope.resolution)+1; 
 			
-		    var hic_data = Hic_data.set($scope.dataset.hic_data,$scope.settings.current.chromStart,$scope.settings.current.chromEnd);
+			var posStart = ($scope.dataset.object.chromStart[$scope.dataset.object.chromosomeIndex]/$scope.resolution + offset)-$scope.dataset.object.chromStart[0]/$scope.resolution;
+			var posEnd = ($scope.dataset.object.chromEnd[$scope.dataset.object.chromosomeIndex]/$scope.resolution + offset)-($scope.dataset.object.chromStart[0]/$scope.resolution);
+			var hic_data = Hic_data.set($scope.dataset.hic_data,[Math.round(posStart+1)],[Math.round(posEnd)]);
+					
+		    //var hic_data = Hic_data.set($scope.dataset.hic_data,$scope.settings.current.chromStart,$scope.settings.current.chromEnd);
 		    var currentModel = Datasets.setModel(Datasets.getCentroid(),$scope.settings.current.chromosomeIndexes);
 		    //Settings.set(dataset,settings.current.chrom,settings.current.chrom);
-			
+			*/
 			var chromosomeIndex = $scope.settings.current.chromosomeIndexes.slice();
 			//var chromosomeIndex = [dataset.object.chrom[0]];
 			$scope.settings.current.chromosomeIndexes = chromosomeIndex;
