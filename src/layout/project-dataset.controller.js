@@ -4,6 +4,7 @@
 		.module('TADkit')
 		.filter('startFrom', function() {
 		    return function(input, start) {
+		    	if(typeof input === 'undefined') return;
 		        start = +start; //parse to int
 		        return input.slice(start);
 		    };})
@@ -12,8 +13,15 @@
 	function ProjectDatasetController ($state, $scope, $stateParams, Datasets, Overlays, Components, Segments){
 		// console.log($scope);
 
-		$scope.current.dataset = Datasets.getDataset();
-		if($scope.current.dataset.models.length>0) {
+		$scope.datasets = Datasets.get();
+		$scope.selDataset = $scope.datasets.current.index; 
+			
+		$scope.renderClusters = function() {
+			
+			$scope.current.dataset = Datasets.getDataset();
+			
+			if($scope.current.dataset.models.length == 0) return;
+			
 			$scope.current.model = Datasets.getModel(Datasets.getCentroid(),$scope.current.dataset.object.chrom);
 			
 			// Get dataset scene icon component
@@ -66,18 +74,32 @@
 		    $scope.numberOfPages=function(){
 		        return Math.ceil($scope.clusters.length/$scope.pageSize);                
 		    };
-	
-			// On click set selected cluster
-			$scope.selectCluster = function(index) {
-				$scope.clusterArray = Datasets.setCluster(index + 1);
-				$scope.centroidRef = Datasets.getCentroid();
-				$scope.current.model = Datasets.getModel();
-				console.log("Current Cluster: " + (index + 1) + "(Centroid Model: " + $scope.centroidRef + ")");
-				$state.go('browser');
-			};
-		} else {
+		};
+		// On click set selected cluster
+		$scope.selectCluster = function(index) {
+			$scope.clusterArray = Datasets.setCluster(index + 1);
+			$scope.centroidRef = Datasets.getCentroid();
+			$scope.current.model = Datasets.getModel();
+			console.log("Current Cluster: " + (index + 1) + "(Centroid Model: " + $scope.centroidRef + ")");
 			$state.go('browser');
-		}
+		};
+		
+		$scope.addDataset = function($fileContent) {
+			$state.go('dataset-import', { func: 'dataset' });
+		};
+		$scope.setDataset = function() {
+			Datasets.set($scope.selDataset);
+			$scope.renderClusters();
+		};
+		
+		$scope.$watch("settings.current.chromosomeIndexes", function(newValue, oldValue){
+		    if(newValue != oldValue){
+		    	$scope.selDataset = $scope.datasets.current.index; 
+				$scope.renderClusters();
+		    }
+		});
+		
+		$scope.renderClusters();
 
 	}
 })();

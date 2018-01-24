@@ -9,6 +9,7 @@
 		$scope.func =  $stateParams.func;
 		$scope.settings = Settings.get();
 		$scope.dataset = Datasets.getDataset();
+		if($scope.func=='Track') $scope.fileData = 'Path to file'; 
 		$scope.resolution =  $scope.settings.current.segmentLength*$scope.settings.current.particleSegments;
 		
 		
@@ -31,7 +32,8 @@
 					$mdToast.simple()
 					.content('cancelled')
 				);
-	 			$state.go('browser');	
+				if($scope.func=='dataset') $state.go('dataset'); 
+				else $state.go('browser');	
 			});
 			// When the 'enter' animation finishes...
 			function afterShowAnimation(scope, element, options) {
@@ -42,16 +44,33 @@
 		});
 
 		$scope.parseFile = function($fileContent) {
-			$scope.fileData = Datasets.parse($fileContent).data;
-			// Selected Columns in File Data
-			// Controlled by checkboxes in Data-import.html
-			$scope.skipRows = 0;
-			$scope.bp_per_nm = 0.01;
-			$scope.first_bin = $scope.dataset.object.chromStart[0];
-			
-			$scope.selectedCols = [];
-			var cols = $scope.fileData[0].length;
-			while (--cols >= 0) {$scope.selectedCols[cols] = true;} // initially set all to selected
+			if($scope.func=='dataset') {
+				$scope.fileData = Datasets.validate($fileContent);
+				if($scope.fileData.models.length > 0) $scope.bins = ($scope.fileData.models[0].data.length/3);
+				else $scope.bins = $scope.fileData.hic_data.n;
+				var chromosomeIndex = 0;
+				if ($scope.fileData.object.chromosomeIndex) {
+					chromosomeIndex = $scope.fileData.object.chromosomeIndex;	
+				}
+				var chrom = $scope.fileData.object.chrom[chromosomeIndex];
+				var chromStart = $scope.fileData.object.chromStart[chromosomeIndex];
+				var chromEnd = $scope.fileData.object.chromEnd[chromosomeIndex];
+				
+				$scope.fileData.object.region = chrom + ":" + chromStart + "-" + chromEnd;
+			} else if($scope.func=='Track') {
+				return;
+			} else {
+				$scope.fileData = Datasets.parse($fileContent).data;
+				// Selected Columns in File Data
+				// Controlled by checkboxes in Data-import.html
+				$scope.skipRows = 0;
+				$scope.bp_per_nm = 0.01;
+				$scope.first_bin = $scope.dataset.object.chromStart[0];
+				
+				$scope.selectedCols = [];
+				var cols = $scope.fileData[0].length;
+				while (--cols >= 0) {$scope.selectedCols[cols] = true;} // initially set all to selected
+			}
 			console.log("File Opened...");
 		};
 	
@@ -69,6 +88,13 @@
 				}
 				if(n>chr_bins) n = chr_bins;	
 				$scope.importedCoords = Hic_data.import(parsedData, $scope.skipRows, offset_bin, $scope.selectedCols, n);
+			} else if($scope.func=='dataset') {
+				Datasets.add(parsedData);
+				$scope.importedCoords = 1;
+			} else if($scope.func=='Track') {
+				var new_tracks = Users.getTracks().slice();
+				new_tracks.push(parsedData);
+				Users.setTracks(new_tracks);
 			}
 			$mdDialog.hide($scope.importedCoords); 
 			//var settings = Settings.get();
@@ -86,7 +112,8 @@
 			var chromosomeIndex = $scope.settings.current.chromosomeIndexes.slice();
 			//var chromosomeIndex = [dataset.object.chrom[0]];
 			$scope.settings.current.chromosomeIndexes = chromosomeIndex;
-			$state.go('browser');
+			if($scope.func=='dataset') $state.go('dataset'); 
+			else $state.go('browser');	
 		};
 
 		$scope.hide = function() {

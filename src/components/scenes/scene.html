@@ -2,7 +2,7 @@
 	<div class="component-header">
 		<h6>{{state.title}}</h6>
 	</div>
-	<div class="component-controls">
+	<div class="component-controls" theme="default">
 		<a ng-click='view.controls.autoRotate = !view.controls.autoRotate' class="options toggle-false">
 			<md-icon data-ng-hide="view.controls.autoRotate" class="icon-play-arrow"></md-icon>
 			<md-icon data-ng-show="view.controls.autoRotate" class="icon-pause"></md-icon>
@@ -11,8 +11,8 @@
 			<md-icon class="icon-settings"></md-icon>
 		</a>
 	</div>
-	<div class="component-options" data-ng-show='optionsState'>
-		<!-- TODO: ENABLE AUTO-GENERATION --> MODELS
+	<div class="component-options" data-ng-show='optionsState' theme="default" layout="column" layout-align="start start">
+		<!-- TODO: ENABLE AUTO-GENERATION --> <div style="margin-bottom:10px;">MODELS</div>
 		 <md-checkbox ng-model="view.settings.particles.visible">Particles</md-checkbox>
 		 <md-checkbox ng-model="view.settings.chromatin.visible">Chromatin</md-checkbox>
 		 <md-checkbox ng-model="view.settings.cluster.visible">Cluster</md-checkbox>

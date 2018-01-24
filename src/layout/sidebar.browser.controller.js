@@ -17,6 +17,7 @@
 		var dataset = Datasets.getDataset();
 		var current_model = Datasets.getModel();
 		
+		$scope.datasets = Datasets.get();
 		$scope.data = {
 			data: [],
 			object: dataset.object

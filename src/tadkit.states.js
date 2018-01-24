@@ -170,6 +170,16 @@
 				}
 			},
 		})
+		.state('dataset-import', {
+			parent: 'dataset',
+			url: '/dataset/import/:func',
+			views: {
+				'modal@main': {
+					templateUrl: 'assets/templates/dataset-import.html',
+					controller: 'DataImportController'
+				}
+			},
+		})
 		.state('data-import', {
 			parent: 'browser',
 			url: '/data/import/:func',

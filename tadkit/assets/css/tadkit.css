@@ -162,15 +162,16 @@ md-sidenav md-list-item {
 	padding: 80px 140px 20px;
 }
 #home .md-button {
-	/*min-width: 300px;*/
+	min-width: 300px;
 	/*margin-top: 16px;*/
 	/*margin-bottom: 16px;*/
 }
+/*
 .material-icons {
 	color: #fff;
-/*	margin-left: 0;
+	margin-left: 0;
 	margin-right: 16px;
-*/}
+}*/
 
 
 /*** PROJECTS ***/
@@ -181,15 +182,12 @@ md-sidenav md-list-item {
 	box-shadow: none;
 }
 .loader .md-button {
-	min-width: 300px;
 }
 .loader .md-button md-icon {
 /*	margin-left: 0;
 	margin-right: 16px;
 */}
-.loader div[tk-project-dropzone] {
-	background: rgb(76,175,80);
-	color: #fff;
+div[tk-project-dropzone] {
 	border: dashed 1px #fff;
 	min-width: 300px;
 	padding: 16px 6px;
@@ -199,7 +197,16 @@ md-sidenav md-list-item {
 	-webkit-box-shadow: inset 0 2px 5px rgba(0,0,0,0.26);
 	box-shadow: inset 0 2px 5px rgba(0,0,0,0.26);
 }
-.loader div[tk-project-dropzone]:hover {
+div[tk-project-dropzone] {
+	background: rgb(76,175,80);
+	color: #fff;
+}
+.loader div[tk-project-dropzone] {
+	background: rgb(76,175,80);
+	color: #fff;
+}
+
+div[tk-project-dropzone]:hover {
 	background: rgb(67,160,71);
 	-webkit-box-shadow: inset 0 4px 8px rgba(0,0,0,0.4);
 	box-shadow: inset 0 4px 8px rgba(0,0,0,0.4);
@@ -244,7 +251,7 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
 	color: rgba(76,175,80,1);
 }
 md-checkbox {
-	margin: 3px;
+	margin-bottom: 6px;
 }
 /*
 md-checkbox .md-ripple {
@@ -567,7 +574,6 @@ md-dialog.md-default-theme {
 }
 md-dialog-content.md-default-theme {
 	padding: 10px;
-	overflow: scroll;
 }
 md-dialog-actions {
 	padding: 10px;

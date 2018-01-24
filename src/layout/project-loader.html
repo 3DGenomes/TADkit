@@ -9,15 +9,21 @@
 	<div layout="column" layout-align="center center" md-theme="darkKit">
  		
  		<div tk-project-dropzone="addDataset">
-				<md-icon class="icon-file-upload"></md-icon>
-				Drop a TADbit JSON file here...
+				<md-button ng-click="openInput(); $event.stopPropagation();">
+					<label for="file-input">
+						<md-icon class="icon-file-upload"></md-icon>
+					
+				Drop a TADbit JSON file here<br>   or click to select...
+					</label>
+				</md-button>
 		</div>
-		<md-button class="md-raised md-primary" ng-click="openInput(); $event.stopPropagation();">
+		<!-- <md-button class="md-raised md-primary" ng-click="openInput(); $event.stopPropagation();">
 			<label for="file-input">
 				<md-icon class="icon-file-upload"></md-icon>
 				Select TADbit JSON file to import...
 			</label>
 		</md-button>
+		-->
 		<md-input-container>
 			<!-- <span style="color: white;">... or select TADbit JSON file</span>-->
 			<input aria-label="File input" class="ng-hide" id="file-input" type="file" accept=".json" tk-project-loader="addDataset($fileContent)" />

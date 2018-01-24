@@ -6,7 +6,7 @@
 	</md-toolbar>
   	<md-dialog-content class="md-default-theme">
 		<section>
-			<div ng-show="fileData && func=='3D coordinates'">
+			<div ng-if="fileData && func=='3D coordinates'">
 				<h3>File: {{fileTitle}}</h3>
 				Use the checkboxes to indicate which columns are to be imported. Only the fist 10 rows are shown.
 				<section>
@@ -19,7 +19,7 @@
 					</ul>
 				</section>
 			</div>
-			<div ng-show="fileData && func=='Hic matrix'">
+			<div ng-if="fileData && func=='Hic matrix'">
 				<h3>File: {{fileTitle}}</h3>
 				Use the checkboxes to indicate which columns are to be imported. Only the fist 5 rows are shown.
 				<section>
@@ -33,10 +33,16 @@
 				</section>
 			</div>
 			<div ng-hide="fileData">
-				Select a file with tabular data to load.<br/>
-				The raw file data will be shown here to review before importing.
+				<div ng-if="func=='Hic matrix' || func=='3D coordinates'">
+					Select a file with tabular data to load.<br/>
+					The raw file data will be shown here to review before importing.
+				</div>
+				<div ng-if="func=='Track'">
+					Select a file.<br/>
+					Supported formats: BED, BW, BAM, JSON, GFF, GFF3,  WIG, BEDGRAPH, VCF.
+				</div>
 			</div>
-			<table class="filedata" ng-show="fileData">
+			<table class="filedata" ng-if="fileData && (func=='Hic matrix' || func=='3D coordinates')">
 				<tbody>
 					<tr><td valign="top"><b>Skip top rows:</b></td>
 						<td>
@@ -59,7 +65,7 @@
 					</tr>
 				</tbody>
 			</table>
-			<table class="filedata" ng-show="fileData">
+			<table class="filedata" ng-if="fileData && (func=='Hic matrix' || func=='3D coordinates')">
 				<tbody>
 					<tr>
 						<td></td>
@@ -76,8 +82,9 @@
 		</section>
 	</md-dialog-content>
 	<md-dialog-actions>		
-		<md-input-container layout-padding ng-hide="fileData">
-			<input class="ng-show" id="file-input" aria-label="File input" type="file" tk-data-import="parseFile($fileContent)" filetitle="fileTitle" />
+		<md-input-container layout-padding>
+			<input ng-if="fileData && (func=='Hic matrix' || func=='3D coordinates')" class="ng-show" id="file-input" aria-label="File input" type="file" tk-data-import="parseFile($fileContent)" filetitle="fileTitle"/>
+			<input ng-if="(func=='Track')" flex id="file-input" ng-model="fileData aria-label="File input"/>
 		</md-input-container>
 		<span flex></span>
 		<!-- type=button is needed so form uses submit button -->
