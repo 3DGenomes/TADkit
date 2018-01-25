@@ -82,9 +82,8 @@
 		</section>
 	</md-dialog-content>
 	<md-dialog-actions>		
-		<md-input-container layout-padding>
-			<input ng-if="fileData && (func=='Hic matrix' || func=='3D coordinates')" class="ng-show" id="file-input" aria-label="File input" type="file" tk-data-import="parseFile($fileContent)" filetitle="fileTitle"/>
-			<input ng-if="(func=='Track')" flex id="file-input" ng-model="fileData aria-label="File input"/>
+		<md-input-container layout-padding ng-hide="fileData">
+			<input class="ng-show" id="file-input" aria-label="File input" type="file" tk-data-import="parseFile($fileContent)" filetitle="fileTitle"/>
 		</md-input-container>
 		<span flex></span>
 		<!-- type=button is needed so form uses submit button -->

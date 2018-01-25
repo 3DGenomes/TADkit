@@ -116,9 +116,9 @@
 			};
 			$scope.view.settings.showNav = true;
 		}
-		$scope.tracks = Users.getTracks();
+		$scope.settings.current.tracks = Users.getTracks();
 		if($scope.view.settings.species_data[$scope.settings.current.speciesUrl][$scope.settings.current.assemblyUrl].tracks) {
-			$scope.tracks = $scope.tracks.concat($scope.view.settings.species_data[$scope.settings.current.speciesUrl][$scope.settings.current.assemblyUrl].tracks);
+			$scope.settings.current.tracks = $scope.settings.current.tracks.concat($scope.view.settings.species_data[$scope.settings.current.speciesUrl][$scope.settings.current.assemblyUrl].tracks);
 		}
 		
 		
@@ -137,7 +137,7 @@
 		            flanking: 100000,
 		            reference: igv_reference,
 					locus: chrom+':'+igvjs_start+'-'+($scope.settings.current.chromEnd[$scope.settings.current.chromIdx]),
-					tracks: $scope.tracks.slice()
+					tracks: $scope.settings.current.tracks.slice()
 		        };
 			
 		$scope.updatePosition =  function(position, leftborder, rightborder) {
@@ -436,7 +436,14 @@
             	$scope.myIgv.goto(($scope.settings.current.chrom),newPos);
             	
             }    
-        });            
+        });    
+
+        $scope.$watch('settings.current.tracks', function(newTracks, oldTracks) {
+            if(newTracks != oldTracks) {
+            	$scope.myIgv.loadTrack(newTracks[newTracks.length-1]);
+            }    
+        });
+
         $scope.$watch('settings.current.chromosomeIndexes', function( newValue, oldValue ) {
 			if ( newValue !== oldValue ) {
 				

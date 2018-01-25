@@ -574,6 +574,7 @@ md-dialog.md-default-theme {
 }
 md-dialog-content.md-default-theme {
 	padding: 10px;
+	overflow-y: scroll;
 }
 md-dialog-actions {
 	padding: 10px;

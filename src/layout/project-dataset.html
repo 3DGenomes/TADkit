@@ -1,18 +1,19 @@
 <md-content>
-	<div layout="row" layout-align="start stretch" md-theme="default">
-		<md-input-container>
-			<label>Selected dataset</label>
+	<div layout="row" layout-align="start stretch" md-theme="default" style="padding: 5px;">
+		<md-input-container layout="row">
 			<md-select ng-model="selDataset" aria-label="Selected Dataset">
 				<md-option ng-value="$index" ng-repeat="ds in datasets.loaded">{{ ds.object.title }}</md-option>
 			</md-select>
 		</md-input-container>
-		<md-button class="md-raised md-primary" ng-click="setDataset();">
-			Set
-		</md-button>
-		<md-button class="md-raised md-primary" ng-click="addDataset();">
-			<md-icon class="icon-file-upload" style="color: white;"></md-icon>
-			Add dataset
-		</md-button>
+		<div>
+			<md-button class="md-raised md-primary" ng-click="setDataset();">
+				Set
+			</md-button>
+			<md-button class="md-raised md-primary" ng-click="addDataset();">
+				<md-icon class="icon-file-upload" style="color: white;"></md-icon>
+				Add dataset
+			</md-button>
+		</div>
 	</div>
 	
 	<div md-theme="default" ng-hide="current.dataset.models.length > 0">

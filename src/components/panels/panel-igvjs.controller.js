@@ -383,8 +383,8 @@
             if(!angular.equals(newPos, oldPos) && newPos != $scope.settings.current.position) {
             	$scope.myIgv.goto(($scope.settings.current.chrom),newPos);
             }    
-        });            
-        
+        });
+
         /*
          markers_position gets updated when we click on the 2D panel with the genomic positions that are interacting in the
          clicked position.

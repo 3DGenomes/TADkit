@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.controller('SidebarBrowserController', SidebarBrowserController);
 
-	function SidebarBrowserController ($scope, $mdDialog, $mdSidenav, Settings, Datasets, Hic_data){
+	function SidebarBrowserController ($scope, $mdDialog, $mdSidenav, Settings, Datasets, Users, Hic_data){
 
 		// Model Settings
 		$scope.toggleSetting = function(setting) {
@@ -39,6 +39,25 @@
 			'</div>';
 			$scope.showInfo($event,dataset_info);
 		};*/
+		$scope.showAddTrack = function(ev) {
+			
+			$mdDialog.show({
+		      controller: DialogController,
+		      templateUrl: 'dialog2.tmpl.html',
+		      locals: {
+		    	  data: $scope.data,
+		    	  settings: $scope.settings,
+		      },
+		      parent: angular.element(document.body),
+		      targetEvent: ev,
+		      hasBackdrop: true,
+		      //controller: ['$scope', 'data', function($scope, data) {
+		      //      $scope.data = data;
+		      //    }],
+		      clickOutsideToClose:true
+		    });
+		};
+
 		$scope.showDatasetSettings = function(ev) {
 			
 			$mdDialog.show({
@@ -80,11 +99,24 @@
 		function DialogController($scope, $mdDialog, data, settings) {
 			$scope.data = data;
 			$scope.settings = settings;
-			
+			$scope.filePath = ''; 
+
 			$scope.closeDialog = function() {
 			  $mdDialog.hide();
 			};
 			
+			$scope.addTrack = function() {
+				var tracks = $scope.settings.current.tracks.slice();
+				tracks.push({
+					"sourceType": "file",
+				    "url": $scope.filePath,
+				    "indexed": false
+				});
+				$scope.settings.current.tracks = tracks;
+				
+				$mdDialog.hide();
+			};
+
 			$scope.toggleSelection = function toggleSelection(chrom) {
 				
 				var chromosomeIndex = $scope.settings.current.chromosomeIndexes.slice();

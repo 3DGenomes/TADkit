@@ -9,7 +9,6 @@
 		$scope.func =  $stateParams.func;
 		$scope.settings = Settings.get();
 		$scope.dataset = Datasets.getDataset();
-		if($scope.func=='Track') $scope.fileData = 'Path to file'; 
 		$scope.resolution =  $scope.settings.current.segmentLength*$scope.settings.current.particleSegments;
 		
 		
@@ -57,8 +56,6 @@
 				var chromEnd = $scope.fileData.object.chromEnd[chromosomeIndex];
 				
 				$scope.fileData.object.region = chrom + ":" + chromStart + "-" + chromEnd;
-			} else if($scope.func=='Track') {
-				return;
 			} else {
 				$scope.fileData = Datasets.parse($fileContent).data;
 				// Selected Columns in File Data
@@ -73,7 +70,7 @@
 			}
 			console.log("File Opened...");
 		};
-	
+		
 		$scope.importData = function(parsedData) {
 			
 			
@@ -91,11 +88,7 @@
 			} else if($scope.func=='dataset') {
 				Datasets.add(parsedData);
 				$scope.importedCoords = 1;
-			} else if($scope.func=='Track') {
-				var new_tracks = Users.getTracks().slice();
-				new_tracks.push(parsedData);
-				Users.setTracks(new_tracks);
-			}
+			} 
 			$mdDialog.hide($scope.importedCoords); 
 			//var settings = Settings.get();
 			/*var offset=0;

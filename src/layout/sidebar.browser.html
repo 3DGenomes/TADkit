@@ -13,7 +13,7 @@
 		<md-list-item ui-sref="dataset-import({func: 'dataset'})">
             <h4>Dataset</h4>
         </md-list-item>
-        <md-list-item ui-sref="data-import({func: 'Track'})">
+        <md-list-item ng-click="showAddTrack($event)">
             <h4>Track</h4>
         </md-list-item>
         <md-list-item ui-sref="data-import({func: 'Hic matrix'})">
@@ -34,16 +34,16 @@
  
     
     <script type="text/ng-template" id="dialog1.tmpl.html">
-<md-dialog md-theme="default" aria-label="Dataset Settings">
-<md-toolbar>
-      <div class="md-toolbar-tools">
-        <h2>Dataset Settings</h2>
-        <span flex></span>
-        
-      </div>
-    </md-toolbar>
-	<md-dialog-content class="md-default-theme">
-<div class="component-caption" layout="column" layout-align="left center">
+		<md-dialog md-theme="default" aria-label="Dataset Settings">
+		<md-toolbar>
+		      <div class="md-toolbar-tools">
+		        <h2>Dataset Settings</h2>
+		        <span flex></span>
+		        
+		      </div>
+		    </md-toolbar>
+			<md-dialog-content class="md-default-theme">
+				<div class="component-caption" layout="column" layout-align="left center">
 						<h3>{{data.object.title}}</h3><table>
 							<tr><td valign="top"><b>Species:</b></td><td>{{data.object.species}}</td></tr>
 							<tr><td valign="top"><b>Chromosomes:</b></td><td>
@@ -74,9 +74,30 @@
 							</tr>
 						</table>
 					</div>
-</md-dialog-content>
-<md-dialog-actions><md-button ng-click="closeDialog();" class="md-raised md-primary">Close</md-button></md-dialog-actions>
-</md-dialog>
-</script>
+				</md-dialog-content>
+			<md-dialog-actions><md-button ng-click="closeDialog();" class="md-raised md-primary">Close</md-button></md-dialog-actions>
+		</md-dialog>
+	</script>
 
+	<script type="text/ng-template" id="dialog2.tmpl.html">
+		<md-dialog md-theme="default" aria-label="Add Track">
+		<md-toolbar>
+	      <div class="md-toolbar-tools">
+	        <h2>Add Track</h2>
+	        <span flex></span>     
+	      </div>
+		</md-toolbar>
+			<md-dialog-content class="md-default-theme">
+				<div class="component-caption" layout="column" layout-align="left center">
+					<md-input-container>
+						<input required type="text" flex ng-model="filePath" aria-label="File input"/>
+					</md-input-container>		
+				</div>
+			</md-dialog-content>
+			<md-dialog-actions>		
+				<md-button type=button ng-click="closeDialog()" class="md-raised md-primary">Cancel</md-button>
+				<md-button type=button class="md-raised md-primary" ng-click="addTrack()">Add Track</md-button>
+			</md-dialog-actions>
+		</md-dialog>
+	</script>
 </div>
