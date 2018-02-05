@@ -29,6 +29,11 @@
 //			$scope.no_hic_data = false;
 //		}
 		
+		$scope.optionsState = false;
+		$scope.toggleOptions = function() {
+			$scope.optionsState = !$scope.optionsState;
+		};
+		
 		var w = angular.element($window);
 		$scope.$watch(
 		  function () {
@@ -86,10 +91,38 @@
 		//}
 		//$scope.slidevalue = $scope.data.min+";"+$scope.data.max;
 		$scope.slidevalue = "10;0.001";
+		$scope.slideoptions = {
+			from: 10,
+		    to: 0.001,
+		    step: 0.01,
+		    round: 2,
+		    skin: 'blue',
+		    modelLabels: function(value) {
+		    	if(value==10) {
+		    		return '';
+		    	}
+		    	if(value<=0.001) {
+		    		return 'ln('+Math.round($scope.data.max*100)/100+')';
+		    	}
+		    	var b = Math.log(10000)/($scope.data.max-0.001);
+        		var a = 10/Math.exp(b*$scope.data.max);        	
+        		var val = $scope.data.max - Math.log(value/a)/b;
+        		//if(datamin!==0) datamin=Math.log(datamin/a)/b;
+        		//if(datamax!==0) datamax=Math.log(datamax/a)/b;
+		        return 'ln(' + Math.round(val*100)/100 + ')';
+		    },
+		    callback: function(value, released) {
+		    	if(released) {
+		    		$scope.settings.slidevalue = $scope.slidevalue;
+		    		$scope.$apply();
+		    	}
+		    }
+		};
+		/*
 		$scope.slideoptions = {       
 		    //from: Math.round($scope.data.min*100)/100,
 		    //to: Math.round($scope.data.max*100)/100,
-			vertical: true,
+			vertical: false,
 		    from: 10,
 		    to: 0.001,
 		    //step: ($scope.data.max-$scope.data.min)/255,
@@ -120,7 +153,7 @@
 		    		$scope.$apply();
 		    	}
 		    } 
-		  };
+		  };*/
 		
 	}
 

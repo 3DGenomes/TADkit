@@ -24,11 +24,11 @@
 					}
 				});
 				
-				scope.$watch('settings.current.tad_selected', function( newValue, oldValue ) {
+				/*scope.$watch('settings.current.tad_selected', function( newValue, oldValue ) {
 					if ( newValue === -1 || oldValue === -1) {
 						scope.updateTadkitTAD();
 		        	}
-				});			
+				});	*/		
 				scope.update = function(data) {
 					scope.settings.current.particle = Settings.getParticle();
 					scope.settings.current.segment = Settings.getSegment();

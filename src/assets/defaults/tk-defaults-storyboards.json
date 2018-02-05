@@ -287,6 +287,14 @@
 										      "displayMode": "EXPANDED"
 	                                                                            }]
 	                            }
+							},
+							"mus_musculus" : {
+					        	"mm9" : {
+									"id" : "mm9",
+									"fastaURL": "assets/data/mm9.fa",
+									"cytobandURL": "assets/data/mm9_cytoBand.txt",
+									"tracks": []
+	                            }
 							}
 						}
 					}

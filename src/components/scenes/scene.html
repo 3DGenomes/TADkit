@@ -2,7 +2,7 @@
 	<div class="component-header">
 		<h6>{{state.title}}</h6>
 	</div>
-	<div class="component-controls" theme="default">
+	<div class="component-controls" ng-show="currentmodel.data.length>0" theme="default">
 		<a ng-click='view.controls.autoRotate = !view.controls.autoRotate' class="options toggle-false">
 			<md-icon data-ng-hide="view.controls.autoRotate" class="icon-play-arrow"></md-icon>
 			<md-icon data-ng-show="view.controls.autoRotate" class="icon-pause"></md-icon>

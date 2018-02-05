@@ -9,7 +9,18 @@
 					<div><md-button id="minus" class="md-fab" aria-label="Zoom out" ng-click="reducezoom()">-</md-button>
 				    <md-button id="plus" class="md-fab" aria-label="Zoom in" ng-click="increasezoom()">+</md-button></div>
 				</div>-->
-				<div ng-hide="no_hic_data" id="slider-hic"><input type="text" options="slideoptions" slider id="mySlider1" ng-model="slidevalue"></div>
+				<div class="component-controls" theme="default">
+					<a ng-click='toggleOptions()' class="options toggle-{{optionsState}}">
+						<md-icon class="icon-settings"></md-icon>
+					</a>
+				</div>
+				<div class="component-options" data-ng-show='optionsState' theme="default" layout="column" layout-align="start start">
+					 <md-checkbox id="show_tads" ng-model="show_tads" aria-label="Tads" ng-change="toggle(show_tads)" ng-disabled="(data.tads.length === 0)">Tads</md-checkbox>
+					 <div ng-hide="no_hic_data" id="slider-hic" layout="row" layout-align="start start">
+					 	<div style="margin-right: 15px;">Filter:</div>
+					 	<input type="text" options="slideoptions" slider id="mySlider1" ng-model="slidevalue">
+					 </div>
+				</div>
 			</div>
 			<canvas width="{{canvas_width}}" height="{{canvas_height}}" id="hic_canvas" ng-hide="no_hic_data"></canvas>
 		</div>

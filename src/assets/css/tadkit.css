@@ -310,11 +310,11 @@ md-checkbox.md-checked .md-icon {
 	top: 28px; /* height of #component-title */
 	left: 0;
 	margin: 2.0rem;
-	padding: 0.3rem;
+	padding: 0.6rem;
 	background: rgba(255,255,255,0.8);
 	border: rgba(205,220,57,0.87) solid 2px;
 	border-radius: 0.6rem;
-	font-size: 0.6rem;
+	/*font-size: 0.6rem;*/
 	z-index: 9999;
 }
 .component-options.track {
@@ -336,7 +336,7 @@ md-checkbox.md-checked .md-icon {
 .component-body {
 	display: inline-block;
 /*	font-size: 0.4rem;
-*/	line-height: 0;
+	line-height: 0;*/
 	margin: 0;
 	padding: 0;
 }
@@ -411,12 +411,12 @@ md-dialog.almostfullscreen-dialog {
     padding-right: 6px;
 }
 .component #hic_data_container #slider-hic {
-	position: absolute;
-    /*left: 100px;*/
-    width: 20px;
-    top: 0;
-    float: right;
-    /*top: 10px;*/
+	/*position: absolute;
+    left: 100px;*/
+    width: 230px;
+    height: 20px;
+    /*top: 0;
+    float: right;*/
 }
 .component #hic_data_container table,
 .component #hic_data_container tr,
