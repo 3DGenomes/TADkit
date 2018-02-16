@@ -750,7 +750,17 @@
 				        scope.clean_scene();
 				    });
 
+				    scope.takeScreenshot = function() {
 
+				        var a = document.createElement('a');
+				        // Without 'preserveDrawingBuffer' set to true, we must render now
+				        renderer.render(scene, camera);
+				        a.href = renderer.domElement.toDataURL().replace("image/png", "image/octet-stream");
+				        a.download = 'model-screenshot.png';
+				        a.click();
+				    
+				        
+				    };
 					/*function onDocumentMouseDown( event ) {
 
 						event.preventDefault();

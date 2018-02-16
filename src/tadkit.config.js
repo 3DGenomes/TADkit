@@ -16,10 +16,12 @@
 		$mdThemingProvider.definePalette('VreMap', VreMap);
 		// Material Design Themes
 		$mdThemingProvider.theme('default')
+			//for tadkit
 			//.primaryPalette('green')
 			//.accentPalette('lime', {
 			//	'default': '500'
-			//})	
+			//})
+			//for vre
 			.primaryPalette('VreMap')
 			.accentPalette('blue')
    			.warnPalette('red')

@@ -8,6 +8,10 @@ svg {
 	font: 0.7rem sans-serif;
 	max-height: 100%; /* Webkit height error fix */
 }
+.draggable {
+	cursor: move;
+}
+
 .codecheck {
 	height: 6rem;
 	background: #111;
@@ -388,7 +392,7 @@ md-dialog.almostfullscreen-dialog {
 	width: 600px;
 	height: 600px;
 }
-.component-container #hic_canvas, .component-container img {
+.component #hic_data_container #hic_canvas, .component-container img {
 	cursor: move;
     image-rendering: optimizeSpeed;
     image-rendering: -moz-crisp-edges;

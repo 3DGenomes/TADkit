@@ -89,10 +89,16 @@
 	      </div>
 		</md-toolbar>
 			<md-dialog-content class="md-default-theme">
-				<div class="component-caption" layout="column" layout-align="left center">
-					<md-input-container>
-						<input required type="text" flex ng-model="filePath" aria-label="File input"/>
-					</md-input-container>		
+				<div>
+					1. Place the track file and optionally the index in assets/data.<br/>
+					&nbsp;&nbsp;Supported formats: BED, BW, BAM, JSON, GFF, GFF3,  WIG, BEDGRAPH, VCF.<br/>
+					2. Specify the track file name in the following text box.<br/>
+				</div>
+				<div class="component-caption" layout="column" layout-align="start start" style="padding-bottom:5px;">
+					<md-input-container style="width: 600px;">
+						<input required type="text" flex ng-model="filePath" aria-label="File input" style="text-align:left;"/>
+					</md-input-container>	
+					<md-checkbox id="fileIndexed" ng-model="fileIndexed" aria-label="File indexed">File indexed</md-checkbox>
 				</div>
 			</md-dialog-content>
 			<md-dialog-actions>		

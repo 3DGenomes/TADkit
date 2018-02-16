@@ -100,17 +100,32 @@
 			$scope.data = data;
 			$scope.settings = settings;
 			$scope.filePath = ''; 
-
+			$scope.fileIndexed = false;
 			$scope.closeDialog = function() {
 			  $mdDialog.hide();
 			};
 			
+			$scope.GetFilename = function(url) {
+			   if (url)
+			   {
+			      var m = url.toString().match(/.*\/(.+?)\./);
+			      if (m && m.length > 1)
+			      {
+			         return m[1];
+			      }
+			   }
+			   return "";
+			};
 			$scope.addTrack = function() {
 				var tracks = $scope.settings.current.tracks.slice();
+				var fileIndex = '';
+				if($scope.fileIndexed) fileIndex=$scope.filePath+'.tbi';
 				tracks.push({
+					"name": $scope.filePath,
 					"sourceType": "file",
-				    "url": $scope.filePath,
-				    "indexed": false
+				    "url": 'assets/data/'+$scope.filePath,
+				    "index": fileIndex,
+				    "indexed": 'assets/data/'+$scope.fileIndexed
 				});
 				$scope.settings.current.tracks = tracks;
 				

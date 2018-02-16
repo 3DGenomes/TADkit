@@ -90,7 +90,7 @@
 					
 					var posStart = (dataset.object.chromStart[chromosomeIndex]/resolution + offset)-dataset.object.chromStart[0]/resolution;
 					var posEnd = (dataset.object.chromEnd[chromosomeIndex]/resolution + offset)-(dataset.object.chromStart[0]/resolution);
-					Hic_data.set(dataset.hic_data,[Math.round(posStart+1)],[Math.round(posEnd)]);
+					Hic_data.set(dataset.hic_data,[Math.round(posStart)],[Math.round(posEnd)]); //+1
 					
 				} else Hic_data.clear();
 				Track_data.clear();

@@ -11,7 +11,14 @@
 		$scope.dataset = Datasets.getDataset();
 		$scope.resolution =  $scope.settings.current.segmentLength*$scope.settings.current.particleSegments;
 		
-		
+		var vm = this;
+        
+        $scope.params = {
+       		skipRows: 0,
+			bp_per_nm: 0.01,
+			first_bin: $scope.dataset.object.chromStart[0]
+        };
+        
 		$scope.$on('$viewContentLoaded', function() {
 			var parentElement = angular.element(document.body);
 			var stateTemplate = "assets/templates/" + $state.current.name + ".html";
@@ -58,12 +65,6 @@
 				$scope.fileData.object.region = chrom + ":" + chromStart + "-" + chromEnd;
 			} else {
 				$scope.fileData = Datasets.parse($fileContent).data;
-				// Selected Columns in File Data
-				// Controlled by checkboxes in Data-import.html
-				$scope.skipRows = 0;
-				$scope.bp_per_nm = 0.01;
-				$scope.first_bin = $scope.dataset.object.chromStart[0];
-				
 				$scope.selectedCols = [];
 				var cols = $scope.fileData[0].length;
 				while (--cols >= 0) {$scope.selectedCols[cols] = true;} // initially set all to selected
@@ -75,16 +76,16 @@
 			
 			
 			if($scope.func=='3D coordinates') {
-				$scope.importedCoords = Datasets.import(parsedData, $scope.skipRows, $scope.bp_per_nm, $scope.selectedCols);
+				$scope.importedCoords = Datasets.import(parsedData, $scope.params.skipRows, $scope.params.bp_per_nm, $scope.selectedCols);
 			} else if($scope.func=='Hic matrix') {
-				var offset_bin = Math.round(($scope.dataset.object.chromStart[0]-$scope.first_bin)/$scope.resolution);
-				var n = parsedData.length - $scope.skipRows;
+				var offset_bin = Math.round(($scope.dataset.object.chromStart[0]-$scope.params.first_bin)/$scope.resolution);
+				var n = parsedData.length - $scope.params.skipRows;
 				var chr_bins = 0;
 				for (var i = 0 ; i < $scope.dataset.object.chrom.length; i++) {
 					chr_bins += Math.round($scope.dataset.object.chromEnd[i]/$scope.resolution)-Math.round($scope.dataset.object.chromStart[i]/$scope.resolution);
 				}
 				if(n>chr_bins) n = chr_bins;	
-				$scope.importedCoords = Hic_data.import(parsedData, $scope.skipRows, offset_bin, $scope.selectedCols, n);
+				$scope.importedCoords = Hic_data.import(parsedData, $scope.params.skipRows, offset_bin, $scope.selectedCols, n);
 			} else if($scope.func=='dataset') {
 				Datasets.add(parsedData);
 				$scope.importedCoords = 1;

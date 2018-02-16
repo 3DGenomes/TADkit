@@ -4,6 +4,7 @@
 		<h2 class="md-flex">Import {{func}}</h2>
 		</div>
 	</md-toolbar>
+	<form name="form.dataimport" ng-submit="importData(fileData)" novalidate>
   	<md-dialog-content class="md-default-theme">
 		<section>
 			<div ng-if="fileData && func=='3D coordinates'">
@@ -37,29 +38,25 @@
 					Select a file with tabular data to load.<br/>
 					The raw file data will be shown here to review before importing.
 				</div>
-				<div ng-if="func=='Track'">
-					Select a file.<br/>
-					Supported formats: BED, BW, BAM, JSON, GFF, GFF3,  WIG, BEDGRAPH, VCF.
-				</div>
 			</div>
 			<table class="filedata" ng-if="fileData && (func=='Hic matrix' || func=='3D coordinates')">
 				<tbody>
 					<tr><td valign="top"><b>Skip top rows:</b></td>
 						<td>
 					      <md-input-container style="width: 100px;">
-					        <input flex type="number" ng-model="skipRows" aria-label="blue" aria-controls="blue-slider-import">
+					        <input flex type="number" ng-model="params.skipRows" aria-label="blue" aria-controls="blue-slider-import">
 					      </md-input-container>
 					    </td>
 					    <td valign="top" ng-show="fileData && func=='3D coordinates'"><b>Base-pair per nanometer:</b></td>
 						<td ng-show="fileData && func=='3D coordinates'">
 					      <md-input-container style="width: 100px;">
-					        <input flex type="number" step="0.01" ng-model="bp_per_nm" aria-label="blue" aria-controls="blue-slider-import">
+					        <input flex type="number" step="0.01" ng-model="params.bp_per_nm" aria-label="blue" aria-controls="blue-slider-import">
 					      </md-input-container>
 					    </td>
 					    <td valign="top" ng-show="fileData && func=='Hic matrix'"><b>Genomic region of bin 0:</b></td>
 						<td ng-show="fileData && func=='Hic matrix'">
 					      <md-input-container style="width: 100px;">
-					        <input flex type="number" step="{{resolution}}" ng-model="first_bin" aria-label="blue" aria-controls="blue-slider-import">
+					        <input flex type="number" step="{{resolution}}" ng-model="params.first_bin" aria-label="blue" aria-controls="blue-slider-import">
 					      </md-input-container>
 					    </td>
 					</tr>
@@ -88,6 +85,7 @@
 		<span flex></span>
 		<!-- type=button is needed so form uses submit button -->
 		<md-button type=button ng-click="cancel()" class="md-raised md-primary">Cancel</md-button>
-		<md-button ng-show="fileData" type="submit" ng-click="importData(fileData)" class="md-raised md-primary">Import Data</md-button>
+		<md-button ng-show="fileData" type=submit class="md-raised md-primary">Import Data</md-button>
 	</md-dialog-actions>
+	</form>
 </md-dialog>

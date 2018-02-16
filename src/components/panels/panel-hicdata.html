@@ -14,10 +14,30 @@
 					</a>
 				</div>
 				<div class="component-options" data-ng-show='optionsState' theme="default" layout="column" layout-align="start start">
-					 <md-checkbox id="show_tads" ng-model="show_tads" aria-label="Tads" ng-change="toggle(show_tads)" ng-disabled="(data.tads.length === 0)">Tads</md-checkbox>
-					 <div ng-hide="no_hic_data" id="slider-hic" layout="row" layout-align="start start">
-					 	<div style="margin-right: 15px;">Filter:</div>
-					 	<input type="text" options="slideoptions" slider id="mySlider1" ng-model="slidevalue">
+					 <div layout="column" layout-align="start start" style="padding-bottom:5px;">
+					 	<md-checkbox id="show_tads" ng-model="show_tads" aria-label="Tads" ng-change="toggle(show_tads)" ng-disabled="(data.tads.length === 0)">Tads</md-checkbox>
+					 </div>
+					 <div ng-hide="no_hic_data"layout="column" layout-align="start start" style="padding-bottom:5px;">
+					 	<md-checkbox id="filter_hic" ng-checked="on_filter" aria-label="Enable filter" ng-click="togglefilter('filter')">Filter</md-checkbox>
+					 	<div ng-show="on_filter" id="slider-hic" layout="column" layout-align="start stretch" md-theme="default" style="padding: 5px;">
+					 		<input type="text" options="slideoptions" slider id="mySlider1" ng-model="slidevalue">
+					 	</div>
+					 </div>
+					 <div ng-hide="settings.current.datasets.loaded.length<2" id="diff-hic-div" layout="column" layout-align="start start" style="padding-bottom:5px;">
+					 	<md-checkbox id="diff_hic" ng-checked="on_diff_hic" aria-label="Enable diff hic" ng-click="togglefilter('diff_hic')">Compare matrices</md-checkbox>
+					 	<div ng-show="on_diff_hic" layout="column" layout-align="start stretch" md-theme="default" style="padding: 5px;width:200px;">
+							<md-select ng-disabled="!on_diff_hic" ng-model="selDataset1" aria-label="Selected Dataset" ng-change="refreshDataset()">
+								<md-option ng-value="$index" ng-repeat="ds in settings.current.datasets.loaded">{{ ds.object.title }}</md-option>
+							</md-select>
+							<md-select ng-disabled="!on_diff_hic" ng-model="selDataset2" aria-label="Selected Dataset" ng-change="refreshDataset()">
+								<md-option ng-value="$index" ng-repeat="ds in settings.current.datasets.loaded">{{ ds.object.title }}</md-option>
+							</md-select>
+							<input type="text" options="diffslideoptions" slider id="mySlider2" ng-model="diffslidevalue">
+						</div>
+					 	
+					 </div>
+					 <div ng-hide="no_hic_data"layout="column" layout-align="start start" style="padding-bottom:5px;">
+					 	<md-button type=button class="md-raised md-primary" ng-click="exportCanvasAsPNG('hic-data.png')" style="margin: 2px 0 0 0;color: white;">PNG export</md-button>
 					 </div>
 				</div>
 			</div>

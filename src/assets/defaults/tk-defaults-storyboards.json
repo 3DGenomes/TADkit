@@ -293,7 +293,32 @@
 									"id" : "mm9",
 									"fastaURL": "assets/data/mm9.fa",
 									"cytobandURL": "assets/data/mm9_cytoBand.txt",
-									"tracks": []
+									"tracks": [{
+	                                                                              "name": "Genomic sequence features",
+	                                                                              "type": "annotation",
+	                                                                              "format": "gff3",
+	                                                                              "sourceType": "file",
+	                                                                              "url": "assets/data/Mus_musculus.GRCm38.91.sorted.gff3.gz",
+	                                                                              "index": "assets/data/Mus_musculus.GRCm38.91.sorted.gff3.gz.tbi",
+	                                                                              "indexed": true,
+										      "displayMode": "EXPANDED"
+	                                                                            }]
+	                            }
+							},
+							"schizosaccharomyces_pombe" : {
+					        	"spombe" : {
+									"id" : "spombe",
+									"fastaURL": "assets/data/spombe.fa",
+									"cytobandURL": "assets/data/spombe_cytoBand.txt",
+									"tracks": [{
+	                                                                              "name": "Genomic sequence features",
+	                                                                              "type": "annotation",
+	                                                                              "format": "gff3",
+	                                                                              "sourceType": "file",
+	                                                                              "url": "assets/data/Schizosaccharomyces_pombe.ASM294v2.38.gff3",
+	                                                                              "indexed": false,
+										      "displayMode": "EXPANDED"
+	                                                                            }]
 	                            }
 							}
 						}

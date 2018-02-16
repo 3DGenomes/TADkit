@@ -70,6 +70,75 @@
 				
 				return hic_data;
 			},
+			getDiff: function (data1, data2, ratio, starts, ends) {
+				
+				var dataf = {
+	    			n: 0,
+	    			max: 0,
+	    			min: 99999999999,
+	    			pos: [],
+	    			value: [],
+	    			tads: []
+	    		};
+				var self = this;
+				var x,y,j,k,pos,pos2,new_pos,val;
+				var i = 0;
+				var n = 0;
+				var tot_n = 0;
+				var offset = [0];
+				for (j = 0; j < starts.length; j++) {
+					tot_n += ends[j]-starts[j];
+					offset.push(tot_n);
+				}
+				for (j = 0; j < starts.length; j++) {
+					n = ends[j]+offset[j];
+					for (pos = 0; pos < data1.n*data1.n; pos++) {
+						x = Math.floor(parseInt(pos)%data1.n);
+						y = Math.floor(parseInt(pos)/data1.n);
+						new_pos=-1;
+						if ((x >= (starts[j]) && x <= (ends[j]-1)) && (y >= (starts[j]) && y <= (ends[j]-1))) {
+							new_pos=(x-(starts[j])+offset[j])+(y-(starts[j])+offset[j])*tot_n;
+						} else {
+							for (k = 0; k < j; k++) {
+								if (((x >= (starts[j]) && x <= (ends[j]-1)) && (y >= (starts[k]) && y <= (ends[k]-1)))) {
+									new_pos=(x-(starts[j])+offset[j])+(y-(starts[k])+offset[k])*tot_n;
+									break;
+								}   
+								if (((x >= (starts[k]) && x <= (ends[k]-1)) && (y >= (starts[j]) && y <= (ends[j]-1)))) {
+									new_pos=(x-(starts[k])+offset[k])+(y-(starts[j])+offset[j])*tot_n;
+									break;
+								}
+							}
+						}
+						if(new_pos > -1) {
+							val = -1;
+							if(pos in data1.data) val = (1-ratio)*data1.data[pos];
+							pos2 = x + y*data2.n;
+							if(val >= 0 && pos2 in data2.data) {
+								val -= ratio*data2.data[pos2];
+								dataf.pos.push(parseInt(new_pos));
+								dataf.value.push(val);
+								if(val<dataf.min) dataf.min = val;
+								if(val>dataf.max) dataf.max = val;
+							}
+							i++;	
+						}
+						if ((x > (ends[j]-1)) && (y > (ends[j]-1))) {
+							break;
+						}
+					}
+				}
+				dataf.n = tot_n;
+				/*if(dataf.min < 0) {
+					for(i=0;i<dataf.value.length;i++) {
+						dataf.value[i] += -dataf.min;
+					}
+					dataf.max += -dataf.min;
+					dataf.min = 0;
+				}*/
+				
+				return dataf;
+			},
 			setDirect: function (datasetHic_data) {
 				var self = this;
 				self.clear();

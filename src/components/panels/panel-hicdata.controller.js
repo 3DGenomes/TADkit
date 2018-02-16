@@ -29,6 +29,8 @@
 //			$scope.no_hic_data = false;
 //		}
 		
+		$scope.settings.current.datasets = Datasets.get();
+		
 		$scope.optionsState = false;
 		$scope.toggleOptions = function() {
 			$scope.optionsState = !$scope.optionsState;
@@ -118,6 +120,34 @@
 		    	}
 		    }
 		};
+		$scope.diffslidevalue = 0;
+		$scope.diffslideoptions = {
+			from: 0,
+		    to: 10,
+		    step: 0.01,
+		    skin: 'blue',
+		    modelLabels: function(value) {
+		    	return value/10;
+		    },
+		    callback: function(value, released) {
+		    	if(released) {
+		    		$scope.settings.slidevalue = $scope.diffslidevalue/10;
+		    		$scope.$apply();
+		    	}
+		    }
+		};
+		$scope.selDataset1 = 0;
+		$scope.selDataset2 = 1;
+		$scope.refreshDataset = function() {
+	    	if($scope.on_diff_hic) {
+	    		$scope.settings.current.selDataset1 = $scope.selDataset1;
+	    		$scope.settings.current.selDataset2 = $scope.selDataset2;
+	    		$scope.refreshDiff();
+	    		$scope.rendered = false;
+	    		$scope.update();
+	    		$scope.update_marks();
+	    	}
+	    };
 		/*
 		$scope.slideoptions = {       
 		    //from: Math.round($scope.data.min*100)/100,

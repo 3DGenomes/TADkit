@@ -333,9 +333,8 @@
 		//$scope.myIgv.$searchInput.off('change');
         
 		// Hide search icon
-		//var search_icon = angular.element(document.querySelector('.igv-fa-search'))[0];
-		var search_icon = angular.element(document.querySelector('.igv-search-container'))[0];
-		$(search_icon).hide();
+		//var search_icon = angular.element(document.querySelector('.igv-search-container'))[0];
+		//$(search_icon).hide();
 		// Show center guide by default. The centerguide will be tadkit position in the 2D and 3D
 		$scope.myIgv.centerGuide.$centerGuideToggle.click();
 		

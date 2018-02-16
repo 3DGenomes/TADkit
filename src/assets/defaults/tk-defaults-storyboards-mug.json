@@ -68,7 +68,7 @@
 						},
 						"axis" : {
 							"size" : 100,
-							"visible" : false
+							"visible" : true
 							},
 						"particles" : {
 							"color" : "#ffffff",
@@ -104,7 +104,7 @@
 							"modelOpacity" : 0.1,
 							"centroidOpacity" : 0.8,
 							"fog" : true,
-							"visible" : true
+							"visible" : false
 						},
 						"network" : {
 							"transparent": false,
@@ -249,8 +249,8 @@
 									"tracks": [
 										{
 											"name": "Genes",
-						                    "url": "//igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz",
-						                    "index": "//igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz.tbi",
+						                    "url": "assets/data/Homo_sapiens.GRCh38.80.sorted.gtf.gz",
+						                    "index": "assets/data/Homo_sapiens.GRCh38.80.sorted.gtf.gz.tbi",
 						                    "displayMode": "EXPANDED"
 					                	}
 					                ]
@@ -271,6 +271,39 @@
 										      "displayMode": "EXPANDED"
 	                                                                            }]
 								}
+							},
+							"mus_musculus" : {
+					        	"mm9" : {
+									"id" : "mm9",
+									"fastaURL": "refGenomes/mm9/mm9.fa",
+									"cytobandURL": "refGenomes/mm9/mm9_cytoBand.txt",
+									"tracks": [{
+	                                                                              "name": "Genomic sequence features",
+	                                                                              "type": "annotation",
+	                                                                              "format": "gff3",
+	                                                                              "sourceType": "file",
+	                                                                              "url": "assets/data/Mus_musculus.GRCm38.91.sorted.gff3.gz",
+	                                                                              "index": "assets/data/Mus_musculus.GRCm38.91.sorted.gff3.gz.tbi",
+	                                                                              "indexed": true,
+										      "displayMode": "EXPANDED"
+	                                                                            }]
+	                            }
+							},
+							"schizosaccharomyces_pombe" : {
+					        	"spombe" : {
+									"id" : "spombe",
+									"fastaURL": "refGenomes/spombe/spombe.fa",
+									"cytobandURL": "refGenomes/spombe/spombe_cytoBand.txt",
+									"tracks": [{
+	                                                                              "name": "Genomic sequence features",
+	                                                                              "type": "annotation",
+	                                                                              "format": "gff3",
+	                                                                              "sourceType": "file",
+	                                                                              "url": "assets/data/Schizosaccharomyces_pombe.ASM294v2.38.gff3",
+	                                                                              "indexed": false,
+										      "displayMode": "EXPANDED"
+	                                                                            }]
+	                            }
 							}
 						}
 					}

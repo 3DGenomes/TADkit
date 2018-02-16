@@ -24,18 +24,28 @@
 				scope.rendered = false;
 				scope.imageObject=new Image();
 				scope.show_tads = (scope.data.tads.length !== 0);
+				scope.on_diff_hic = false;
+				scope.on_filter = false;
 				
 				var scaleMultiplier = 0.8;
 			    var startDragOffset = {};
 			    var mouseDown = false;
 			    var mouseMove = false;
+			    var mini_startDragOffset = {};
+			    var mini_mouseDown = false;
+			    var mini_mouseMove = false;
+			    var mini_translatePos = {
+					x: 0,
+					y: 0
+				};
 				
 			    var slidevalue = scope.slidevalue;
 				var brush;
-				var svg, hic_svg, handle, position, contact_marker, contact_marker_value;
+				var mini_svg, svg, hic_svg, handle, position, contact_marker, contact_marker_value, mini_frame, mini_hic;
 				var polygon_tads = [];
 				scope.highlighted_tad = -1;
 				var canvas;
+				
 				
 				// Last updated November 2011
 				// By Simon Sarris
@@ -141,8 +151,17 @@
 		                var val, x , y = 0;
 		                var Logmin = 0;
 		                var Logmax = 0;
-		                if(scope.data.max !== 0) Logmax = Math.log(scope.data.max);
-		                if(scope.data.min !== 0) Logmin = Math.log(scope.data.min);
+		                if(scope.data.max > 0 && scope.data.min > 0) {
+		                	Logmax = Math.log(Math.abs(scope.data.max));
+		                	Logmin = Math.log(Math.abs(scope.data.min));
+		                } else if(scope.data.max < 0 && scope.data.min < 0) {
+		                	Logmax = Math.log(Math.abs(scope.data.min));
+		                	Logmin = Math.log(Math.abs(scope.data.max));
+		                } else if(Math.abs(scope.data.max) < Math.abs(scope.data.min)) {
+		                	Logmax = Math.log(Math.abs(scope.data.min));
+		                } else {
+		                	Logmax = Math.log(Math.abs(scope.data.max));
+		                }
 		                var container_width = parseInt(scope.state.width);
 		                var container_height = parseInt(scope.state.height);
 		                for(var i=0;i<scope.data.value.length;i++) {
@@ -158,13 +177,16 @@
 		                			//else 
 		                			//val = Math.floor((Math.log(scope.data.value[i])/Math.log(scope.data.max))*255);
 		                			if(scope.data.value[i] <= data_max && scope.data.value[i] >= data_min)
-		                				val = Math.floor( ((Math.log(scope.data.value[i])-Logmin)/(Logmax-Logmin))*255 );
+		                				val = Math.floor( ((Math.log(Math.abs(scope.data.value[i]))-Logmin)/(Logmax-Logmin))*255 );
 		                			else
 		                				val = 0;
 		                		} else {
 		                			val = 0;
 		                		}
-		                		ctx.fillStyle = "rgba(255,0,0,"+val/255+")";
+		                		if(val>=0) {
+		                			if(scope.data.value[i]>=0) ctx.fillStyle = "rgba(255,0,0,"+val/255+")";
+		                			else ctx.fillStyle = "rgba(0,0,255,"+val/255+")";
+		                		}
 		                		ctx.fillRect( x, y, 1 , 1 );
 		                	}
 		                }
@@ -280,7 +302,40 @@
 								.style("font-size", "10px")
 								.style("color", "#333")
 								.text("0");
-
+							
+							//mini hic
+							if(!mini_svg) {
+								mini_svg = d3.select(hic_data_container[0]).append('svg');
+							}
+							mini_svg.selectAll('*').remove();
+							mini_frame = mini_svg
+									.attr('width', (container_width-2*parseInt(scope.state.margin))/5)
+									.attr('height', (container_height-2*parseInt(scope.state.margin))/5)
+									.style("position", "absolute")
+									.style("top", '20px')
+									.style("left", '20px')
+									.style("border", '1px solid black')
+									.append("g")
+									.attr("id", "mini_svg");
+							
+							var mini_x = 0;
+			            	if (typeof scope.settings.current.leftborder != 'undefined') {
+			            		mini_x = scope.settings.current.leftborder/5;
+			            	}
+		                	mini_hic = mini_frame.append("rect")
+						    	.style("fill", "rgba(255, 0, 0, 0.3)")
+								.style("stroke", "red")
+								.attr('width', scope.scale*scope.data.n)
+								.attr('height', scope.scale*scope.data.n)
+								.attr('display', 'block')
+								.attr("x", 0)
+								.attr("y", 0)
+								.attr("posx", mini_x)
+								.attr("posy", container_height/5)
+								.attr("class","draggable")
+								.attr("transform", "translate(" + (mini_x) + "," + container_height/5 + ") scale("+scope.scale/5+") rotate(-45 0 0)");
+						        
+							
 			                svg.on("mousedown", function(){
 						        mouseDown = true;
 						        startDragOffset.x = d3.event.clientX - scope.translatePos.x;
@@ -358,8 +413,71 @@
 						    svg.on("mouseout", function(){
 						        mouseDown = false;
 						    });
+						    
+						    
+						    mini_hic.on("mousedown", function(){
+						        mini_mouseDown = true;
+						        mini_startDragOffset.x = d3.event.clientX;
+						        //startDragOffset.y = d3.event.clientY- scope.translatePos.y;
+						    });
 						 
-						    svg.on("mousemove", function(){
+						    mini_hic.on("mouseup", function(){
+						    	if(mini_mouseMove) {
+						    		//mini_translatePos.x = (d3.event.clientX - mini_startDragOffset.x)*5;
+						    		mini_translatePos.x = parseInt(mini_hic.attr("posx"));
+						            
+						    		var x_orig = parseFloat(handle.attr("cx"));
+						            
+						            //scope.update();
+						            var part = (x_orig-mini_translatePos.x*5)/(scope.scale*Math.sqrt(2));
+						            var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments;
+						            var pos = scope.settings.current.hic_position + (part-scope.settings.current.particle)*resolution;
+						            if(pos >= scope.settings.current.chromStart[scope.settings.current.chromIdx] && pos <= scope.settings.current.chromEnd[scope.settings.current.chromIdx]) {
+							            scope.settings.current.hic_position = pos;
+							            scope.$apply(scope.settings.current.hic_position);
+							            //scope.update_marks();
+						            } else {
+						            	//need to block
+						            	var mini_x;
+						            	if (typeof scope.settings.current.leftborder != 'undefined') {
+						            		mini_x = scope.settings.current.leftborder/5;
+						            		mini_hic.attr("transform", "translate(" + (mini_x) + "," + parseInt(scope.state.height)/5 + ") scale("+scope.scale/5+") rotate(-45 0 0)");
+						            		mini_hic.attr("posx",mini_x);
+						            		mini_hic.attr("posy",parseInt(scope.state.height)/5);
+						            	}
+						            }
+						    	}
+						    	mini_mouseMove = false;
+						        mini_mouseDown = false;
+						        
+						    });
+						 
+						    mini_hic.on("mouseover", function(){
+						        mini_mouseDown = false;
+						    });
+						 
+						    mini_hic.on("mouseout", function(){
+						        mini_mouseDown = false;
+						    });
+						    
+						    mini_hic.on("mousemove", function(){
+						    	if(mini_mouseDown) {
+						    		mini_translatePos.x = d3.event.clientX - mini_startDragOffset.x;
+						            //scope.translatePos.y = d3.event.clientY - startDragOffset.y;
+						            mini_mouseMove = true;
+						            
+						            var mini_x;
+					            	if (typeof scope.settings.current.leftborder != 'undefined') {
+					            		mini_x = scope.settings.current.leftborder/5 + mini_translatePos.x;
+					            		mini_hic.attr("transform", "translate(" + (mini_x) + "," + parseInt(scope.state.height)/5 + ") scale("+scope.scale/5+") rotate(-45 0 0)");
+					            		mini_hic.attr("posx",mini_x);
+					            		mini_hic.attr("posy",parseInt(scope.state.height)/5);
+					            	}
+						    		
+						    	}
+						    });
+						    
+						    /*svg.on("mousemove", function(){
 						        if (mouseDown) {
 						            scope.translatePos.x = d3.event.clientX - startDragOffset.x;
 						            //scope.translatePos.y = d3.event.clientY - startDragOffset.y;
@@ -381,7 +499,7 @@
 						            
 					            	
 						        }
-						    });
+						    });*/
 							
 						});
 
@@ -391,6 +509,7 @@
 		                	scope.update_marks();
 		                };
 		            }
+		            
 		        };
 		        scope.$watch('state.width', function(newWidth, oldWidth) {
 		        	if(newWidth !== oldWidth){
@@ -425,14 +544,20 @@
 		        
 		        scope.$watch('settings.slidevalue', function(newvalue,oldvalue) {
 		        	if ( newvalue !== oldvalue && !angular.isUndefined(newvalue)) {
-		        		var slide_value = newvalue.split(";");
-		        		var datamin = parseFloat(slide_value[0]);
-		        		var datamax = parseFloat(slide_value[1]);
-		        		var b = Math.log(10000)/(scope.data.max-0.001);
-		        		var a = 10/Math.exp(b*scope.data.max);
-		        		if(datamin!==0) datamin=Math.log(datamin/a)/b;
-		        		if(datamax!==0) datamax=Math.log(datamax/a)/b;
-		        		scope.render(scope.data.max-datamax,scope.data.max-datamin);
+		        		if(scope.on_filter) {
+			        		var slide_value = newvalue.split(";");
+			        		var datamin = parseFloat(slide_value[0]);
+			        		var datamax = parseFloat(slide_value[1]);
+			        		var b = Math.log(10000)/(scope.data.max-0.001);
+			        		var a = 10/Math.exp(b*scope.data.max);
+			        		if(datamin!==0) datamin=Math.log(datamin/a)/b;
+			        		if(datamax!==0) datamax=Math.log(datamax/a)/b;
+			        		scope.render(scope.data.max-datamax,scope.data.max-datamin);
+		        		} else if(scope.on_diff_hic) {
+		        			scope.refreshDiff();
+		        			scope.render(scope.data.max,scope.data.min);
+		        		}
+		        		
 		        	}
 				});
 		        scope.$watch('settings.current.chromosomeIndexes', function(newvalue,oldvalue) {
@@ -477,6 +602,13 @@
 					
 					contact_marker.attr('display', 'none');
 	            	contact_marker_value.attr('display', 'none');
+	            	
+	            	var mini_x;
+	            	if (typeof scope.settings.current.leftborder != 'undefined') {
+	            		mini_x = scope.settings.current.leftborder/5;
+	            		mini_hic.attr("transform", "translate(" + (mini_x) + "," + parseInt(scope.state.height)/5 + ") scale("+scope.scale/5+") rotate(-45 0 0)");
+	            	}
+				        
 	            	
 					var container_width = parseInt(scope.state.width);
 	                var container_height = parseInt(scope.state.height);
@@ -559,6 +691,68 @@
 			        }
 			        scope.update_marks();
 			    };
+			    scope.settings.current.selDataset1 = 0;
+				scope.settings.current.selDataset2 = 1;
+				scope.diffslidevalue = 0;
+			    scope.togglediff = function(newValue){
+					scope.on_diff_hic = newValue;
+					if(scope.on_diff_hic && scope.on_filter) {
+						scope.on_filter = false;
+					}
+			    };
+			    scope.togglefilter = function(item){
+			    	if(item == 'filter') {
+			    		scope.on_filter = !scope.on_filter;
+			    		if(scope.on_filter) {
+			    			if(scope.on_diff_hic) {
+			    				scope.on_diff_hic = false;
+			    				scope.diffslidevalue = scope.settings.slidevalue;
+			    			}
+			    			scope.settings.slidevalue = scope.slidevalue; 
+			    		}
+			    	}
+			    	else if(item == 'diff_hic') {
+			    		scope.on_diff_hic = !scope.on_diff_hic;
+			    		if(scope.on_diff_hic) {
+			    			if(scope.on_filter) {
+			    				scope.on_filter = false;
+			    				scope.slidevalue = scope.settings.slidevalue;
+			    			}
+			    			scope.settings.slidevalue = scope.diffslidevalue; 
+			    			scope.refreshDiff();
+			    		} else {
+			    			scope.data = Hic_data.get();
+			        		polygon_tads = [];
+			        		scope.update_data(scope.data);
+			    		}
+			    	}
+				
+			    };
+			    scope.refreshDiff = function() {
+			    	var val = parseFloat(scope.settings.slidevalue);
+			    
+			    	var chromStart = [];
+					var chromEnd = [];
+	            	var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments; // base pairs
+					var chromIdx;
+					var offset = 0;
+					for (var l = 0 ; l < scope.settings.current.datasets.loaded[scope.settings.current.selDataset1].object.chrom.length; l++) {
+						chromIdx = scope.settings.current.chromosomeIndexes.indexOf(scope.settings.current.datasets.loaded[scope.settings.current.selDataset1].object.chrom[l]);
+						if(chromIdx > -1) {
+							chromStart.push(Math.round((scope.settings.current.chromStart[l]-scope.settings.current.chromStart[0])/resolution)+offset);
+							chromEnd.push(Math.round((scope.settings.current.chromEnd[l]-scope.settings.current.chromStart[0])/resolution)+offset);
+						}
+						offset += Math.round(scope.settings.current.chromEnd[l]/resolution)-Math.round(scope.settings.current.chromStart[l]/resolution);
+					}
+			    	
+			    	//new_value[i] = (1-val)*scope.settings.current.datasets.loaded[scope.selDataset1].hic_data.data[pos]-val*scope.settings.current.datasets.loaded[scope.selDataset2].hic_data.data[pos];
+			    	var new_data = Hic_data.getDiff(scope.settings.current.datasets.loaded[scope.settings.current.selDataset1].hic_data,
+			    								scope.settings.current.datasets.loaded[scope.settings.current.selDataset2].hic_data,
+			    								val,
+			    								chromStart,
+			    								chromEnd);
+			    	scope.data = new_data;
+			    };
 			    scope.update_data = function(data){
 			    	scope.data = data;
 			    	var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments;
@@ -573,7 +767,18 @@
 	                scope.update();
 	                scope.update_marks();
 			    }; 
-			    
+			    scope.exportCanvasAsPNG = function(fileName) {
+			    	
+			    	var MIME_TYPE = "image/png";
+			        var dlLink = document.createElement('a');
+			        dlLink.download = fileName;
+			        dlLink.href = scope.imageObject.src;
+			        dlLink.dataset.downloadurl = [MIME_TYPE, dlLink.download, dlLink.href].join(':');
+
+			        document.body.appendChild(dlLink);
+			        dlLink.click();
+			        document.body.removeChild(dlLink);
+			    };
 			    /*// Better tubed by default. Maybe add button to toggle red
 			    var originalOverlay = Overlays.getCurrentIndex();
 				var overlays = Overlays.get();
