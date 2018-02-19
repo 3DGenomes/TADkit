@@ -515,8 +515,8 @@
 //						$scope.myIgv.updateLocusSearchWithGenomicState(genomicState);
 //
 //		                $scope.myIgv.repaintWithLocusIndex(1);
-						$scope.moveViewport(0,newPos);
-		            	$scope.moveViewport(1,newPos);
+						//$scope.moveViewport(0,newPos);
+		            	//$scope.moveViewport(1,newPos);
 						return;
 					}
 					igvjs_go[0] += ':' + mainGenomicState.referenceFrame.start + '-' + (mainGenomicState.referenceFrame.start+Math.round(span_region*2));
@@ -531,8 +531,8 @@
 						igvjs_go[1] += ':' + (mainGenomicState.referenceFrame.start+Math.round(span_region/2)) + '-' + (mainGenomicState.referenceFrame.start+Math.round(span_region));
 						$scope.myIgv.parseSearchInput(igvjs_go.join(' '));
 						$scope.hideIgvLabels(false);
-						$scope.moveViewport(0,newPos);
-		            	$scope.moveViewport(1,newPos);
+						//$scope.moveViewport(0,newPos);
+		            	//$scope.moveViewport(1,newPos);
 					}
 				} 
             	

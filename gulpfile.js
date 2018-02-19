@@ -144,7 +144,7 @@ gulp.task('assets-css', function() {
 		'bower_components/angular-material/angular-material.css',
 		'src/assets/css/tadkit.css',
 		'src/assets/css/ensembl-genes.css',
-		'bower_components/angular-awesome-slider/src/css/angular-awesome-slider.min.css',
+		'bower_components/angular-awesome-slider/dist/css/angular-awesome-slider.min.css',
 		//'src/assets/css/igv-1.0.9.css',
 		'src/assets/css/igv-all.css',
 		'bower_components/jquery-ui/themes/cupertino/jquery-ui.css',
@@ -190,7 +190,9 @@ gulp.task('assets-offline', function() {
 // Transfer Examples
 gulp.task('assets-examples', function() {
 	return gulp.src([
-		'src/assets/examples/readme.txt'
+		'src/assets/examples/readme.txt',
+		'src/assets/examples/conf.json',
+		'src/assets/examples/example-models.json'
 		])
 		.pipe(gulp.dest('tadkit/assets/examples'));
 });
