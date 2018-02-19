@@ -56,6 +56,7 @@
 		};
 		$scope.atLeftPosition = function(feature) {
 			if(angular.isUndefined($scope.settings.current.markers_position)) return;
+			if(angular.isUndefined($scope.settings.current.markers_chr)) return;
 			var resolution = $scope.data.object.resolution;
 			var pos =  $scope.settings.current.markers_position[1];
 			//for( var i = 0;  i < $scope.settings.current.chromosomeIndexes.indexOf($scope.settings.current.markers_chr[1]); i++ ) pos += ($scope.settings.current.chromEnd[i]-$scope.settings.current.chromStart[i]+resolution);
@@ -69,6 +70,7 @@
 		};
 		$scope.atRightPosition = function(feature) {
 			if(angular.isUndefined($scope.settings.current.markers_position)) return;
+			if(angular.isUndefined($scope.settings.current.markers_chr)) return;
 			var resolution = $scope.data.object.resolution;
 			var pos =  $scope.settings.current.markers_position[0];
 			//for( var i = 0;  i < $scope.settings.current.chromosomeIndexes.indexOf($scope.settings.current.markers_chr[0]); i++ ) pos += ($scope.settings.current.chromEnd[i]-$scope.settings.current.chromStart[i]+resolution);

@@ -38,6 +38,10 @@
 					x: 0,
 					y: 0
 				};
+			    scope.settings.current.igv_position = {
+					x: 0,
+					y: 0
+				};
 				
 			    var slidevalue = scope.slidevalue;
 				var brush;
@@ -415,64 +419,79 @@
 						    });
 						    
 						    
-						    mini_hic.on("mousedown", function(){
+						    mini_svg.on("mousedown", function(){
+						    	
 						        mini_mouseDown = true;
 						        mini_startDragOffset.x = d3.event.clientX;
-						        //startDragOffset.y = d3.event.clientY- scope.translatePos.y;
+						        mini_startDragOffset.y = d3.event.clientY;
 						    });
 						 
-						    mini_hic.on("mouseup", function(){
+						    mini_svg.on("mouseup", function(){
 						    	if(mini_mouseMove) {
-						    		//mini_translatePos.x = (d3.event.clientX - mini_startDragOffset.x)*5;
-						    		mini_translatePos.x = parseInt(mini_hic.attr("posx"));
+						    		mini_translatePos.x = d3.event.clientX - mini_startDragOffset.x;
+						            mini_translatePos.y = d3.event.clientY - mini_startDragOffset.y;
 						            
-						    		var x_orig = parseFloat(handle.attr("cx"));
-						            
+						            var posx = parseInt(mini_hic.attr("posx"))+mini_translatePos.x;
+						            var posy = parseInt(mini_hic.attr("posy"))+mini_translatePos.y;
+					            	 
+						            if(posy >= parseInt(scope.state.height)/5) {
+						            	scope.settings.current.igv_position.y = 5*(posy-parseInt(scope.state.height)/5);
+						            	mini_hic.attr("posy",posy);
+					            	} else {
+					            		scope.settings.current.igv_position.y = 0;
+					            		mini_hic.attr("posy",parseInt(scope.state.height)/5);
+					            	}
+						            mini_hic.attr("posx",posx);
 						            //scope.update();
-						            var part = (x_orig-mini_translatePos.x*5)/(scope.scale*Math.sqrt(2));
-						            var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments;
-						            var pos = scope.settings.current.hic_position + (part-scope.settings.current.particle)*resolution;
-						            if(pos >= scope.settings.current.chromStart[scope.settings.current.chromIdx] && pos <= scope.settings.current.chromEnd[scope.settings.current.chromIdx]) {
-							            scope.settings.current.hic_position = pos;
-							            scope.$apply(scope.settings.current.hic_position);
-							            //scope.update_marks();
-						            } else {
-						            	//need to block
-						            	var mini_x;
-						            	if (typeof scope.settings.current.leftborder != 'undefined') {
-						            		mini_x = scope.settings.current.leftborder/5;
-						            		mini_hic.attr("transform", "translate(" + (mini_x) + "," + parseInt(scope.state.height)/5 + ") scale("+scope.scale/5+") rotate(-45 0 0)");
-						            		mini_hic.attr("posx",mini_x);
-						            		mini_hic.attr("posy",parseInt(scope.state.height)/5);
-						            	}
-						            }
+						            //scope.update_marks();
+						            scope.settings.current.igv_position.x = mini_translatePos.x*5;
+						            scope.$apply(scope.settings.current.igv_position);
+						            						    		
 						    	}
 						    	mini_mouseMove = false;
 						        mini_mouseDown = false;
 						        
 						    });
 						 
-						    mini_hic.on("mouseover", function(){
+						    mini_svg.on("mouseover", function(){
 						        mini_mouseDown = false;
 						    });
 						 
-						    mini_hic.on("mouseout", function(){
+						    mini_svg.on("mouseout", function(){
 						        mini_mouseDown = false;
 						    });
 						    
-						    mini_hic.on("mousemove", function(){
+						    mini_svg.on("mousemove", function(){
 						    	if(mini_mouseDown) {
 						    		mini_translatePos.x = d3.event.clientX - mini_startDragOffset.x;
-						            //scope.translatePos.y = d3.event.clientY - startDragOffset.y;
+						            mini_translatePos.y = d3.event.clientY - mini_startDragOffset.y;
 						            mini_mouseMove = true;
 						            
-						            var mini_x;
+						            var posx = parseInt(mini_hic.attr("posx"))+mini_translatePos.x;
+						            var posy = parseInt(mini_hic.attr("posy"))+mini_translatePos.y;
+					            	
+						            if(posy >= parseInt(scope.state.height)/5) {
+						            	mini_hic.attr("transform", "translate(" + (posx) + "," + (posy) + ") scale("+scope.scale/5+") rotate(-45 0 0)");
+						            	
+						            } else {
+						            	mini_hic.attr("transform", "translate(" + (posx) + "," + (parseInt(scope.state.height)/5) + ") scale("+scope.scale/5+") rotate(-45 0 0)");
+						            	
+					            	}
+						            
+						            
+						            /*var mini_x, mid_point;
 					            	if (typeof scope.settings.current.leftborder != 'undefined') {
 					            		mini_x = scope.settings.current.leftborder/5 + mini_translatePos.x;
-					            		mini_hic.attr("transform", "translate(" + (mini_x) + "," + parseInt(scope.state.height)/5 + ") scale("+scope.scale/5+") rotate(-45 0 0)");
-					            		mini_hic.attr("posx",mini_x);
-					            		mini_hic.attr("posy",parseInt(scope.state.height)/5);
-					            	}
+					            		mid_point = ((parseInt(scope.state.width)-2*parseInt(scope.state.margin))/10);
+					            		if(mini_x < mid_point && mini_x > -mid_point) {
+						            		mini_hic.attr("transform", "translate(" + (mini_x) + "," + parseInt(scope.state.height)/5 + ") scale("+scope.scale/5+") rotate(-45 0 0)");
+						            		mini_hic.attr("posx",mini_x);
+						            		mini_hic.attr("posy",parseInt(scope.state.height)/5);
+						            		
+						            		scope.settings.current.igv_position = mini_translatePos.x*5;
+									        scope.$apply(scope.settings.current.igv_position);
+					            		}
+					            	}*/
 						    		
 						    	}
 						    });
@@ -530,13 +549,12 @@
 		        scope.$watch('settings.current.leftborder', function(newPos, oldPos) {
 					if ( newPos !== oldPos && scope.data.n > 0) {
 						var rect = hic_data_container.getBoundingClientRect();
-						scope.translatePos.x = scope.settings.current.leftborder-rect.left;
+						scope.translatePos.x = scope.settings.current.leftborder-rect.left+scope.settings.current.igv_position.y/Math.sqrt(2);
 						var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments;
 						//var first_n = Math.round((scope.settings.current.chromEnd[0]-scope.settings.current.chromStart[0])/resolution)+1;
-						
 						scope.scale = (scope.settings.current.rightborder-scope.settings.current.leftborder)/(Math.sqrt(2)*scope.data.n);
 						
-						scope.settings.current.hic_position = scope.settings.current.position;
+						//scope.settings.current.hic_position = scope.settings.current.position;
 						scope.update();
 						scope.update_marks();
 					}
@@ -582,7 +600,7 @@
 		                //ctx.rotate(-Math.PI/4);
 		                //ctx.scale(scope.scale, scope.scale);
 		                t.reset();
-		                t.translate(scope.translatePos.x+parseInt(scope.state.offsetx), container_height);
+		                t.translate(scope.translatePos.x+parseInt(scope.state.offsetx), container_height+scope.settings.current.igv_position.y);
 		                t.rotate(-Math.PI/4);
 		                t.scale(scope.scale, scope.scale);
 		                ti.m  = t.m.slice();
@@ -603,10 +621,12 @@
 					contact_marker.attr('display', 'none');
 	            	contact_marker_value.attr('display', 'none');
 	            	
-	            	var mini_x;
+	            	var mini_x, mini_y;
 	            	if (typeof scope.settings.current.leftborder != 'undefined') {
 	            		mini_x = scope.settings.current.leftborder/5;
-	            		mini_hic.attr("transform", "translate(" + (mini_x) + "," + parseInt(scope.state.height)/5 + ") scale("+scope.scale/5+") rotate(-45 0 0)");
+	            		mini_y = parseInt(mini_hic.attr("posy"));
+	            		mini_hic.attr("transform", "translate(" + (mini_x) + "," + (mini_y) + ") scale("+scope.scale/5+") rotate(-45 0 0)");
+	            		mini_hic.attr("posx",mini_x);
 	            	}
 				        
 	            	
@@ -621,7 +641,7 @@
 							start_tad_scaled = Math.round((start_tad*Math.sqrt(2))*scope.scale+(scope.translatePos.x)+parseInt(scope.state.offsetx));
 							
 							polygon_tads[i]
-								.attr("transform", "translate(" + (start_tad_scaled) + ","+(container_height-2*parseInt(scope.state.margin))+") scale("+scope.scale+") rotate(-45 0 0)");
+								.attr("transform", "translate(" + (start_tad_scaled) + ","+(container_height-2*parseInt(scope.state.margin)+scope.settings.current.igv_position.y)+") scale("+scope.scale+") rotate(-45 0 0)");
 							if(i != scope.highlighted_tad) polygon_tads[i].style("fill-opacity", 0.5);
 							if(scope.settings.current.position>=parseInt(polygon_tads[i].attr("start")) && scope.settings.current.position<=parseInt(polygon_tads[i].attr("end"))){
 								scope.highlighted_tad = i; 
@@ -630,9 +650,9 @@
 					}
 				};
 				
-				scope.update_width =  function() {
-					scope.settings.current.hic_position += 1;
-				};
+//				scope.update_width =  function() {
+//					scope.settings.current.hic_position += 1;
+//				};
 
 				scope.update_height =  function() {
 					scope.rendered = false;
