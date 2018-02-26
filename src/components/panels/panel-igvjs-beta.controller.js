@@ -434,18 +434,18 @@
 	    	//$scope.myIgv.update();
         };
         
-        $scope.$watch('settings.current.igv_position.x', function(newPos, oldPos) {
-            if(!angular.equals(newPos, oldPos)) {
-            	//$scope.myIgv.goto(($scope.settings.current.chrom),newPos);
-            	if ($scope.myIgv.loadInProgress()) {
-                    return;
-                }
-            	$scope.moveViewport(0,-newPos);
-            	if($scope.myIgv.genomicStateList.locusCount>1) $scope.moveViewport(1,-newPos);
-            }
-        });
+//        $scope.$watch('settings.current.igv_position.x', function(newPos, oldPos) {
+//            if(!angular.equals(newPos, oldPos)) {
+//            	//$scope.myIgv.goto(($scope.settings.current.chrom),newPos);
+//            	if ($scope.myIgv.loadInProgress()) {
+//                    return;
+//                }
+//            	$scope.moveViewport(0,$scope.settings.current.leftborder-newPos);
+//            	if($scope.myIgv.genomicStateList[0].locusCount>1) $scope.moveViewport(1,$scope.settings.current.leftborder-newPos);
+//            }
+//        });
         
-        $scope.moveViewport = function(locusIndex,offset) {
+        $scope.moveViewport = function(locusIndex,pos) {
         	
         	var genomicState = $scope.myIgv.genomicStateList[locusIndex];
         	var referenceFrame = genomicState.referenceFrame;
@@ -462,7 +462,9 @@
                 referenceFrame.start = maxStart;
             }
             
-        	referenceFrame.shiftPixels(offset);
+            var offset = (pos-referenceFrame.start)/referenceFrame.bpPerPixel;
+            
+            referenceFrame.shiftPixels(offset);
 
         	$scope.myIgv.updateLocusSearchWithGenomicState($scope.myIgv.genomicStateList[locusIndex]);
 
@@ -475,68 +477,71 @@
         
         $scope.settings.current.igvloading = $scope.myIgv.loadInProgress();
         
-        $scope.$watch('settings.current.igv_position.y', function(newPos, oldPos) {
-            if(!angular.equals(newPos, oldPos)) {
-            	//$scope.myIgv.goto(($scope.settings.current.chrom),newPos);
-            	if ($scope.myIgv.loadInProgress()) {
-                    return;
-                }
-            	if($scope.settings.current.chromosomeIndexes.length>1) {
-            		return;
-            	}
-            	
-            	var genomicState,
-	        		mainGenomicState,
-	        		offset,
-		            viewportWidth,
-		            referenceFrame,
-		            resolution,
-		            start,
-		            end,
-		            span_region;
-		    	
-            	var igvjs_go = [];
-				resolution = $scope.settings.current.segmentLength*$scope.settings.current.particleSegments;
-				mainGenomicState = $scope.myIgv.genomicStateList[0];
-				viewportWidth = igv.browser.viewportContainerWidth()/mainGenomicState.locusCount;
-	        	span_region = (mainGenomicState.referenceFrame.bpPerPixel * viewportWidth);
-	        	
-	        	igvjs_go.push($scope.settings.current.chromosomeIndexes[0]);
-	        	if(!$scope.view.settings.leading_chr) igvjs_go[0] = igvjs_go[0].replace('chr','');
-	        	
-	        	if(mainGenomicState.locusCount>1) {
-					if(newPos > 0) {
-//						genomicState = $scope.myIgv.genomicStateList[1];
-//				    	referenceFrame = genomicState.referenceFrame;
-//			    		referenceFrame.bpPerPixel = mainGenomicState.referenceFrame.bpPerPixel;
-//			    		mainGenomicState.referenceFrame.shiftPixels(-newPos/Math.sqrt(2));
-//						referenceFrame.shiftPixels(newPos/Math.sqrt(2));
-//						
-//						$scope.myIgv.updateLocusSearchWithGenomicState(genomicState);
-//
-//		                $scope.myIgv.repaintWithLocusIndex(1);
-						//$scope.moveViewport(0,newPos);
-		            	//$scope.moveViewport(1,newPos);
-						return;
-					}
+        $scope.setIgvTracks = function(x,y,x2) {
+        	//$scope.myIgv.goto(($scope.settings.current.chrom),newPos);
+        	
+        	if ($scope.myIgv.loadInProgress()) {
+                return;
+            }
+        	if($scope.settings.current.chromosomeIndexes.length>1) {
+        		return;
+        	}
+        	
+        	var genomicState,
+        		mainGenomicState,
+        		offset,
+	            viewportWidth,
+	            referenceFrame,
+	            resolution,
+	            start,
+	            end,
+	            span_region;
+	    	
+        	var igvjs_go = [];
+			resolution = $scope.settings.current.segmentLength*$scope.settings.current.particleSegments;
+			mainGenomicState = $scope.myIgv.genomicStateList[0];
+			viewportWidth = igv.browser.viewportContainerWidth()/mainGenomicState.locusCount;
+        	span_region = (mainGenomicState.referenceFrame.bpPerPixel * viewportWidth);
+        	
+        	igvjs_go.push($scope.settings.current.chromosomeIndexes[0]);
+        	if(!$scope.view.settings.leading_chr) igvjs_go[0] = igvjs_go[0].replace('chr','');
+        	
+        	if(mainGenomicState.locusCount>1) {
+				if(y <= 0) {
 					igvjs_go[0] += ':' + mainGenomicState.referenceFrame.start + '-' + (mainGenomicState.referenceFrame.start+Math.round(span_region*2));
 					$scope.myIgv.parseSearchInput(igvjs_go.join(' '));
-				} else {
-				
-					if(newPos > 0)  {
-						igvjs_go[0] += ':' + mainGenomicState.referenceFrame.start + '-' + (mainGenomicState.referenceFrame.start+Math.round(span_region/2));
-						
-						igvjs_go.push($scope.settings.current.chromosomeIndexes[0]);
-						if(!$scope.view.settings.leading_chr) igvjs_go[1] = igvjs_go[1].replace('chr','');
-						igvjs_go[1] += ':' + (mainGenomicState.referenceFrame.start+Math.round(span_region/2)) + '-' + (mainGenomicState.referenceFrame.start+Math.round(span_region));
-						$scope.myIgv.parseSearchInput(igvjs_go.join(' '));
-						$scope.hideIgvLabels(false);
-						//$scope.moveViewport(0,newPos);
-		            	//$scope.moveViewport(1,newPos);
-					}
-				} 
-            	
-				
+					angular.element($scope.myIgv.trackContainerDiv).css("pointer-events","initial");
+					return;
+				}
+				//$scope.moveViewport(0,x);
+				//$scope.moveViewport(1,-x);
+			} else {
+			
+				if(y > 0)  {
+					//igvjs_go[0] += ':' + (mainGenomicState.referenceFrame.start-Math.round(mainGenomicState.referenceFrame.bpPerPixel*newPos)) + '-' + (mainGenomicState.referenceFrame.start-Math.round(mainGenomicState.referenceFrame.bpPerPixel*newPos)+Math.round(span_region/2));
+					igvjs_go[0] += ':' + x + '-' + (x+Math.round(span_region/2));
+					
+					igvjs_go.push($scope.settings.current.chromosomeIndexes[0]);
+					if(!$scope.view.settings.leading_chr) igvjs_go[1] = igvjs_go[1].replace('chr','');
+					//igvjs_go[1] += ':' + (mainGenomicState.referenceFrame.start+Math.round(mainGenomicState.referenceFrame.bpPerPixel*newPos)) + '-' + (mainGenomicState.referenceFrame.start+Math.round(mainGenomicState.referenceFrame.bpPerPixel*newPos)+Math.round(span_region));
+					igvjs_go[1] += ':' + (mainGenomicState.referenceFrame.start) + '-' + (mainGenomicState.referenceFrame.start+Math.round(span_region/2));
+					$scope.myIgv.parseSearchInput(igvjs_go.join(' '));
+					$scope.hideIgvLabels(false);
+					//angular.element($scope.myIgv.trackContainerDiv).css("pointer-events","none");
+					//$scope.moveViewport(1,-x);
+				}
+				//$scope.moveViewport(0,x);
+	        	
+			}
+        	
+        	
+        };
+        
+        $scope.$watch('settings.current.igv_position.flag', function(newPos, oldPos) {
+            if(!angular.equals(newPos, oldPos)) {
+            	$scope.setIgvTracks(Math.round($scope.settings.current.igv_position.x),
+            			Math.round($scope.settings.current.igv_position.y),
+            			Math.round($scope.settings.current.igv_position.x2));
             }    
         });
         

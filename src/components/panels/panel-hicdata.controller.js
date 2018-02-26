@@ -54,7 +54,7 @@
 				$scope.width = $scope.state.width = $window.innerWidth - newValue - 50 - 2*parseInt($scope.state.margin);
 		  		$scope.canvas_width = 2*$scope.width;
 		  		$scope.state.offsetx = parseInt($scope.state.offsetx) - (oldValue-newValue);
-		  		$scope.update_width();
+		  		//$scope.update_width();
 			}
 		});
 		$scope.$watch('settings.views.scene_height', function( newValue, oldValue ) {

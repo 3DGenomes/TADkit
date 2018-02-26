@@ -11,7 +11,6 @@ svg {
 .draggable {
 	cursor: move;
 }
-
 .codecheck {
 	height: 6rem;
 	background: #111;
@@ -464,6 +463,10 @@ md-dialog.almostfullscreen-dialog {
 }
 .component-controller .igv-logo {
 	background: rgba(0, 0, 0, 0) url("../img/igv-logo.svg") no-repeat scroll 0 0 / 34px 16px;
+}
+
+#igvDiv .igv-viewport-div-border-right {
+    border-right-color: red;
 }
 
 #tad-highlight-tadkit {
