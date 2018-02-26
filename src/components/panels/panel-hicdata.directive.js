@@ -556,7 +556,6 @@
 		        scope.getRangefromRect = function(posx,posy){
 		        	var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments;
 					var mini_height = (scope.state.height-2*parseInt(scope.state.margin))/5;
-					var mini_width = (scope.state.width-2*parseInt(scope.state.margin))/5;
 					var posgy, posgx, posgx2;
 					
 	            	if(posy < mini_height-scope.rect.h-5) {
@@ -569,7 +568,7 @@
 	            	}
 	            	posgx = ((posx-58/5)/(scope.mini_scale))*resolution+scope.settings.current.chromStart[scope.settings.current.chromIdx];
 		            scope.settings.current.igv_position.x = posgx;
-		            posgx2 = ((posx-58/5+mini_width)/(scope.mini_scale))*resolution+scope.settings.current.chromStart[scope.settings.current.chromIdx];
+		            posgx2 = ((posx-58/5+scope.rect.w)/(scope.mini_scale))*resolution+scope.settings.current.chromStart[scope.settings.current.chromIdx];
 		            scope.settings.current.igv_position.x2 = posgx2;
 		            return;
 	                

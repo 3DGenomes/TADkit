@@ -515,26 +515,21 @@
 				}
 				//$scope.moveViewport(0,x);
 				//$scope.moveViewport(1,-x);
-			} else {
-			
-				if(y > 0)  {
-					//igvjs_go[0] += ':' + (mainGenomicState.referenceFrame.start-Math.round(mainGenomicState.referenceFrame.bpPerPixel*newPos)) + '-' + (mainGenomicState.referenceFrame.start-Math.round(mainGenomicState.referenceFrame.bpPerPixel*newPos)+Math.round(span_region/2));
-					igvjs_go[0] += ':' + x + '-' + (x+Math.round(span_region/2));
-					
-					igvjs_go.push($scope.settings.current.chromosomeIndexes[0]);
-					if(!$scope.view.settings.leading_chr) igvjs_go[1] = igvjs_go[1].replace('chr','');
-					//igvjs_go[1] += ':' + (mainGenomicState.referenceFrame.start+Math.round(mainGenomicState.referenceFrame.bpPerPixel*newPos)) + '-' + (mainGenomicState.referenceFrame.start+Math.round(mainGenomicState.referenceFrame.bpPerPixel*newPos)+Math.round(span_region));
-					igvjs_go[1] += ':' + (mainGenomicState.referenceFrame.start) + '-' + (mainGenomicState.referenceFrame.start+Math.round(span_region/2));
-					$scope.myIgv.parseSearchInput(igvjs_go.join(' '));
-					$scope.hideIgvLabels(false);
-					//angular.element($scope.myIgv.trackContainerDiv).css("pointer-events","none");
-					//$scope.moveViewport(1,-x);
-				}
-				//$scope.moveViewport(0,x);
-	        	
 			}
-        	
-        	
+			if(y > 0)  {
+				//igvjs_go[0] += ':' + (mainGenomicState.referenceFrame.start-Math.round(mainGenomicState.referenceFrame.bpPerPixel*newPos)) + '-' + (mainGenomicState.referenceFrame.start-Math.round(mainGenomicState.referenceFrame.bpPerPixel*newPos)+Math.round(span_region/2));
+				igvjs_go[0] += ':' + (Math.round((x-y+mainGenomicState.referenceFrame.start))) + '-' + (Math.round(x-y+mainGenomicState.referenceFrame.start+span_region/2));
+				
+				igvjs_go.push($scope.settings.current.chromosomeIndexes[0]);
+				if(!$scope.view.settings.leading_chr) igvjs_go[1] = igvjs_go[1].replace('chr','');
+				//igvjs_go[1] += ':' + (mainGenomicState.referenceFrame.start+Math.round(mainGenomicState.referenceFrame.bpPerPixel*newPos)) + '-' + (mainGenomicState.referenceFrame.start+Math.round(mainGenomicState.referenceFrame.bpPerPixel*newPos)+Math.round(span_region));
+				igvjs_go[1] += ':' + (Math.round((x2+y-mainGenomicState.referenceFrame.start-span_region/2))) + '-' + (Math.round(x2+y-mainGenomicState.referenceFrame.start));
+				$scope.myIgv.parseSearchInput(igvjs_go.join(' '));
+				$scope.hideIgvLabels(false);
+				//angular.element($scope.myIgv.trackContainerDiv).css("pointer-events","none");
+				//$scope.moveViewport(1,-x);
+			}
+			//$scope.moveViewport(0,x);
         };
         
         $scope.$watch('settings.current.igv_position.flag', function(newPos, oldPos) {
