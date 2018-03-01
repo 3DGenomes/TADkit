@@ -44,19 +44,19 @@
 					<tr><td valign="top"><b>Skip top rows:</b></td>
 						<td>
 					      <md-input-container style="width: 100px;">
-					        <input flex type="number" ng-model="params.skipRows" aria-label="blue" aria-controls="blue-slider-import">
+					        <input flex type="number" ng-model="params.skipRows" aria-label="blue" aria-controls="blue-slider-import" style="width: 100px;">
 					      </md-input-container>
 					    </td>
 					    <td valign="top" ng-show="fileData && func=='3D coordinates'"><b>Base-pair per nanometer:</b></td>
 						<td ng-show="fileData && func=='3D coordinates'">
 					      <md-input-container style="width: 100px;">
-					        <input flex type="number" step="0.01" ng-model="params.bp_per_nm" aria-label="blue" aria-controls="blue-slider-import">
+					        <input flex type="number" step="0.01" ng-model="params.bp_per_nm" aria-label="blue" aria-controls="blue-slider-import" style="width: 100px;">
 					      </md-input-container>
 					    </td>
 					    <td valign="top" ng-show="fileData && func=='Hic matrix'"><b>Genomic region of bin 0:</b></td>
 						<td ng-show="fileData && func=='Hic matrix'">
 					      <md-input-container style="width: 100px;">
-					        <input flex type="number" step="{{resolution}}" ng-model="params.first_bin" aria-label="blue" aria-controls="blue-slider-import">
+					        <input flex type="number" step="{{resolution}}" ng-model="params.first_bin" aria-label="blue" aria-controls="blue-slider-import" style="width: 100px;">
 					      </md-input-container>
 					    </td>
 					</tr>

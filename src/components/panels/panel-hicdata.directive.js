@@ -46,8 +46,9 @@
 					y: 0
 				};
 			    scope.settings.current.igv_position = {
-					x: 0,
-					x2: 0,
+					start0: 0,
+					start1: 0,
+					end2: 0,
 					y: 0,
 					flag: 1
 				};
@@ -369,7 +370,8 @@
 						    		var markers_position = [-1,-1];
 						    		
 						    		var mouseCoords = d3.mouse(this);   
-						    		var transformCoords = ti.transformPoint(mouseCoords[0],mouseCoords[1]);
+						    		var otransformCoords = ti.transformPoint(mouseCoords[0],mouseCoords[1]);
+						    		var transformCoords = otransformCoords; 
 						            if(transformCoords[0]<0 || transformCoords[1]<0 || transformCoords[0]>scope.data.n || transformCoords[0]>scope.data.n) {
 						            	contact_marker.attr('display', 'none');
 						            	contact_marker_value.attr('display', 'none');
@@ -436,8 +438,9 @@
 						            var posx = parseInt(mini_sel.attr("posx"))+mini_translatePos.x;
 						            var posy = parseInt(mini_sel.attr("posy"))+mini_translatePos.y;
 						            
-						            scope.getRangefromRect(posx,posy);
+						            scope.getRangefromRect(posx,posy,parseInt(mini_sel.attr("posx")));
 						            
+						            mini_sel.attr("posx",posx);
 						            scope.settings.current.igv_position.flag = !scope.settings.current.igv_position.flag;
 						            scope.$apply(scope.settings.current.igv_position);
 						            scope.update();
@@ -542,34 +545,59 @@
 		        scope.getRectfromRange = function(container, dest_y, dest_margin){
 		        	var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments;
 					var mini_height = (scope.state.height-2*parseInt(scope.state.margin))/5;
-					var offsety = scope.getHeightfromPos();
-					scope.rect.x = -((scope.settings.current.leftborder-50-offsety)/(scope.scale*Math.sqrt(2)))*scope.mini_scale+dest_margin;
+					//var offsety = scope.getHeightfromPos();
+					
 					scope.rect.w = (container.width/(scope.scale*Math.sqrt(2)))*scope.mini_scale;
 					scope.rect.h = (container.height/(scope.scale*Math.sqrt(2)))*scope.mini_scale;
-	                if(scope.settings.current.igv_position.y == 0) scope.rect.y = mini_height - (scope.rect.h);
-	                else scope.rect.y = dest_y;
-					
+	                if(scope.settings.current.igv_position.y == 0) {
+	                	scope.rect.y = mini_height - (scope.rect.h);
+	                } else if (parseInt(scope.rect.h) != parseInt(mini_sel.attr("height"))){
+	                	scope.rect.y = dest_y + parseInt(mini_sel.attr("height")) - scope.rect.h;
+	                } else {
+	                	scope.rect.y = dest_y;
+	                }
+	                
+	                var offsety = 0;
+	                if(scope.settings.current.igv_position.y>0) {
+	                	offsety = (scope.settings.current.igv_position.y-scope.settings.current.chromStart[scope.settings.current.chromIdx])/resolution;
+	                	offsety = (offsety)*scope.mini_scale/2;
+	                	
+	                	scope.rect.x = parseInt(mini_sel.attr("posx"))+parseInt(mini_sel.attr("width"))/2-parseInt(scope.rect.w)/2;
+	                	//scope.rect.x = -((scope.settings.current.leftborder+32)/(scope.scale*Math.sqrt(2)))*scope.mini_scale+dest_margin+offsety;
+	                } else {
+	                	scope.rect.x = -((scope.settings.current.leftborder+32)/(scope.scale*Math.sqrt(2)))*scope.mini_scale+dest_margin+offsety;
+						
+	                }
 					return;
 	                
 		        };
 		        
-		        scope.getRangefromRect = function(posx,posy){
+		        scope.getRangefromRect = function(posx,posy,posx0){
 		        	var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments;
 					var mini_height = (scope.state.height-2*parseInt(scope.state.margin))/5;
 					var posgy, posgx, posgx2;
-					
-	            	if(posy < mini_height-scope.rect.h-5) {
+					var start, end;
+	            	if(posy < mini_height-scope.rect.h-5 && scope.settings.current.chromosomeIndexes.length < 2) {
 	            		posgy = ((mini_height-(posy+scope.rect.h))*2)/(scope.mini_scale);
 		            	scope.settings.current.igv_position.y = posgy*resolution+scope.settings.current.chromStart[scope.settings.current.chromIdx];
+		            	
+		            	start = posx-58/5-(mini_height-(posy+scope.rect.h));
+		            	scope.settings.current.igv_position.start1 = (start/(scope.mini_scale))*resolution+scope.settings.current.chromStart[scope.settings.current.chromIdx];
+		            	end = (posx-58/5+scope.rect.w)+(mini_height-(posy+scope.rect.h));
+		            	scope.settings.current.igv_position.end2 = (end/(scope.mini_scale))*resolution+scope.settings.current.chromStart[scope.settings.current.chromIdx];
+		            	
 		            	mini_sel.attr("posy",posy);
 		            } else {
 		            	scope.settings.current.igv_position.y = 0;
 		            	mini_sel.attr("posy",mini_height-scope.rect.h);
+		            	scope.settings.current.igv_position.start1 = ((posx-58/5)/(scope.mini_scale))*resolution+scope.settings.current.chromStart[scope.settings.current.chromIdx];
+		            	
 	            	}
-	            	posgx = ((posx-58/5)/(scope.mini_scale))*resolution+scope.settings.current.chromStart[scope.settings.current.chromIdx];
-		            scope.settings.current.igv_position.x = posgx;
-		            posgx2 = ((posx-58/5+scope.rect.w)/(scope.mini_scale))*resolution+scope.settings.current.chromStart[scope.settings.current.chromIdx];
-		            scope.settings.current.igv_position.x2 = posgx2;
+	            	scope.settings.current.igv_position.start0 = ((posx0-58/5+2)/(scope.mini_scale))*resolution+scope.settings.current.chromStart[scope.settings.current.chromIdx];
+	            	//posgx = ((posx-58/5)/(scope.mini_scale))*resolution+scope.settings.current.chromStart[scope.settings.current.chromIdx];
+		            //scope.settings.current.igv_position.x = posgx;
+		            //posgx2 = ((posx-58/5+scope.rect.w)/(scope.mini_scale))*resolution+scope.settings.current.chromStart[scope.settings.current.chromIdx];
+		            //scope.settings.current.igv_position.x2 = posgx2;
 		            return;
 	                
 		        };

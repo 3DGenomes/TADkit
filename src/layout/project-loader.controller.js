@@ -5,7 +5,7 @@
 		.controller('ProjectLoaderController', ProjectLoaderController);
 
 	function ProjectLoaderController($q, $http, $state, $scope, Datasets, Overlays, Components, Storyboards, Users, Hic_data) {
-
+		
 		$scope.updateCurrent = function() {
 			delete $scope.settings.current.tad_selected;
 			$scope.current.dataset = Datasets.getDataset();
