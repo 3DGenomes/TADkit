@@ -565,6 +565,7 @@
         $scope.$watch('settings.current.tracks', function(newTracks, oldTracks) {
             if(newTracks != oldTracks) {
             	$scope.myIgv.loadTrack(newTracks[newTracks.length-1]);
+            	$scope.updateFeaturesList();
             }    
         });
 
@@ -698,6 +699,52 @@
         	dr.css("position","absolute");
         };
 
+        $scope.getSummaryFeatures = function(i) {
+        	
+        	var feat, chrStart, feat_nbr, j, k;
+    		var chrId = 0;
+    		j = 0;
+			chrStart = $scope.settings.current.chromStart[chrId];
+			feat_nbr = 1;
+			while(j < track_data[i].feature.length) {
+				var tdata = [];
+				feat = track_data[i].feature[j];
+				if(feat.start >= chrStart &&  feat.end < chrStart+resolution && feat.chr == $scope.settings.current.chromosomeIndexes[chrId]) {
+					while(feat.start >= chrStart &&  feat.end < chrStart+resolution && feat.chr == $scope.settings.current.chromosomeIndexes[chrId]) {
+						tdata.push(feat);
+						feat = track_data[i].feature[j];
+						feat_nbr++;	
+						j++;
+						if(j >= track_data[i].feature.length) break;
+					}
+					
+					if(tdata.length > 5 && typeof tdata[0].value != 'undefined') {
+						var feat_max = { chr:feat.chr, start:chrStart, end:chrStart+resolution-1, value:0, count: 0};
+						var feat_avg = { chr:feat.chr, start:chrStart, end:chrStart+resolution-1, value:0, count: 0};
+						for(k = 0; k < tdata.length; k++) {
+							if(typeof tdata[k].value != 'undefined') {
+								feat_avg.value += tdata[k].value;
+								if(feat_max.value < tdata[k].value) feat_max.value = tdata[k].value; 
+							}
+						}
+						feat_avg.count = tdata.length;
+						feat_max.count = tdata.length;
+						feat_avg.value = feat_avg.value/tdata.length;
+						track_data[i].max_feature.push(feat_max);
+						track_data[i].avg_feature.push(feat_avg);
+					} 
+					chrStart += resolution;
+					if(feat.chr.replace('chr','') != $scope.settings.current.chromosomeIndexes[chrId].replace('chr',''))
+						chrId++;
+				} else {
+					j++;
+				}
+				
+			}
+			
+    		
+        };
+        
         $scope.getFeatures = function(track_name, track_i) {
         	$scope.myIgv.trackViews.forEach(function (tV) {
 		  		if(tV.track.name == track_name) {
@@ -722,6 +769,7 @@
 								    return a;
 								};
 		                       	track_data[track_i].feature = track_data[track_i].feature.concat(features).unique();
+		                       	$scope.getSummaryFeatures(track_i);
 		                       	
 		                    }
 		               	}).catch(function (error) {
@@ -747,8 +795,9 @@
         			if(!found) {
         				var tdata = {
 							track_name: tV.track.name,
-							pos: [],
-							feature: []
+							feature: [],
+							avg_feature: [],
+							max_feature: []
 						};
 						track_data.push(tdata);
         				$scope.getFeatures(tV.track.name,track_data.length-1);
@@ -972,7 +1021,9 @@
                            igv.presentAlert(error);
                        }
                    });
-               	$scope.tracksOverlaid[trackView.track.id] = true;
+               	$scope.myIgv.trackViews.forEach(function (tV) {
+               		$scope.tracksOverlaid[tV.track.id] = (trackView.track.id == tV.track.id);
+               	});
            	}
                // Hide menu
                popover.hide();

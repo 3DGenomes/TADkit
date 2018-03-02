@@ -4,7 +4,7 @@
 		.module('TADkit')
 		.directive('tkComponentPanelHicdata', tkComponentPanelHicdata);
 
-	function tkComponentPanelHicdata(d3Service, $timeout, Overlays, uuid4, Networks, Hic_data) {
+	function tkComponentPanelHicdata(d3Service, $timeout, Overlays, ColorConvert, uuid4, Networks, Hic_data) {
 		return {
 			restrict: 'EA',
 			scope: { 
@@ -52,7 +52,11 @@
 					y: 0,
 					flag: 1
 				};
-				
+			    var originalOverlayIndex = Overlays.getCurrentIndex();
+			    var currentOverlay = {
+		    		color: []
+			    };
+			    
 			    var slidevalue = scope.slidevalue;
 				var brush;
 				var mini_svg, svg, hic_svg, handle, position, contact_marker, 
@@ -199,8 +203,12 @@
 		                			val = 0;
 		                		}
 		                		if(val>=0) {
-		                			if(scope.data.value[i]>=0) ctx.fillStyle = "rgba(255,0,0,"+val/255+")";
-		                			else ctx.fillStyle = "rgba(0,0,255,"+val/255+")";
+		                			if(currentOverlay.color.length>0) {
+		                				ctx.fillStyle = "rgba("+Math.round(255*currentOverlay.color[i].r)+","+Math.round(255*currentOverlay.color[i].g)+","+Math.round(255*currentOverlay.color[i].b)+","+val/255+")";
+		                			} else {
+			                			if(scope.data.value[i]>=0) ctx.fillStyle = "rgba(255,0,0,"+val/255+")";
+			                			else ctx.fillStyle = "rgba(0,0,255,"+val/255+")";
+		                			}
 		                		}
 		                		ctx.fillRect( x, y, 1 , 1 );
 		                	}
@@ -903,67 +911,66 @@
 			        dlLink.click();
 			        document.body.removeChild(dlLink);
 			    };
-			    /*// Better tubed by default. Maybe add button to toggle red
-			    var originalOverlay = Overlays.getCurrentIndex();
-				var overlays = Overlays.get();
-				var hicDataOverlay =
-				{
-					"metadata": {
-						"version" : 1.0,
-						"type" : "overlay",
-						"generator" : "TADkit"
-					},
-					"object" : {
-						"uuid" : uuid4.generate(),
-						"id" : overlays.loaded.length,
-						"title" : "HiC Data Overlay",
-						"source" : "HiC panel",
-						"url" : "local",
-						"description" : "HiC Data overlay", 
-						"type" : "HiC",
-						"format" : "variable",
-						"components" : 1,
-						"name" : "HiC Data Overlay",
-						"state" : {
-							"index" : 0, // make real index???
-							"overlaid" : false
+			    scope.$watch('currentoverlay.colors.chromatin', function( newColors, oldColors ) {
+					if ( newColors !== oldColors) {
+						currentOverlay = {
+					    		color: []
+							};
+						var currentOverlayIndex = Overlays.getCurrentIndex();
+						if(currentOverlayIndex != originalOverlayIndex) {
+							var col = { r:0, g:0, b:0};
+							var coln = { r:0, g:0, b:0};
+							var colori, colorj, i, x, y, k, luma, newChromatinColor, newChromatinColori, newChromatinColorj;
+							for(i = 0;i < scope.data.value.length;i++) {
+			                	x = Math.floor(scope.data.pos[i]%scope.data.n);
+								y = Math.floor(scope.data.pos[i]/scope.data.n);
+								colori = x * scope.settings.current.particleSegments;
+								colorj = y * scope.settings.current.particleSegments;
+								col = { r:1, g:1, b:1};
+								newChromatinColor =  new THREE.Color();
+								for (k = 0; k < scope.settings.current.particleSegments; k++) {
+									coln = { r:1, g:1, b:1};
+									if(newColors[colori+k] == 'gray' || newColors[colorj+k] == 'gray') {
+										newChromatinColori =  new THREE.Color('white');
+										newChromatinColorj =  new THREE.Color('white');
+									} else {
+										if(ColorConvert.testIfHex(newColors[colori+k]) || newColors[colori+k].indexOf('#')===0) {
+											newChromatinColori =  new THREE.Color(newColors[colori+k]);	 
+										} else {
+											newChromatinColori =  new THREE.Color(ColorConvert.nameToHex(newColors[colori+k]));
+										}
+										if(ColorConvert.testIfHex(newColors[colorj+k]) || newColors[colorj+k].indexOf('#')===0) {
+											newChromatinColorj =  new THREE.Color(newColors[colorj+k]);
+										} else {
+											newChromatinColorj =  new THREE.Color(ColorConvert.nameToHex(newColors[colorj+k]));
+										}
+									}
+									
+									coln.r = (newChromatinColori.r + newChromatinColorj.r)/2; 
+									coln.g = (newChromatinColori.g + newChromatinColorj.g)/2;
+									coln.b = (newChromatinColori.b + newChromatinColorj.b)/2;
+									luma = 0.2126 * coln.r + 0.7152 * coln.g + 0.0722 * coln.b; // per ITU-R BT.709
+									if(luma < 0.2126 * col.r + 0.7152 * col.g + 0.0722 * col.b) {
+										col.r = coln.r;
+										col.g = coln.g;
+										col.b = coln.b;
+									}
+									
+								}
+									
+								//newChromatinColor =  new THREE.Color(col.r/scope.settings.current.particleSegments,col.g/scope.settings.current.particleSegments,col.b/scope.settings.current.particleSegments);
+								newChromatinColor =  new THREE.Color(col.r,col.g,col.b);
+								currentOverlay.color.push(newChromatinColor);
+								
+							}
+							
 						}
-					},
-					"palette" : [],
-					"data" : [],
-					"colors" : {
-						"particles" : [],
-						"chromatin" : [],
-						"network" : {
-							"RGB" : [],
-							"alpha" : []
-						}
+						
+						scope.render(scope.data.max,scope.data.min);
+						
 					}
-				};
-				for(var i=0;i<scope.settings.current.segmentsCount;i++) {
-					hicDataOverlay.colors.chromatin[i] = "red";
-				}
-				
-				var newOverlay = Overlays.addDirect(hicDataOverlay);
-				var overlay = overlays.loaded[newOverlay];
-					
-				overlay.colors.particles = [];
-				overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, scope.settings.current.edgesCount);
-				overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, scope.settings.current.edgesCount);
-				
-				scope.toggleOverlay = function(index) {
-					scope.overlaid = Overlays.getOverlay(index).object.state.overlaid;
-					if (!scope.overlaid) {
-						Overlays.setOverlaid(index);
-						Overlays.set(index);
-						scope.currentoverlay = Overlays.getOverlay();
-					} else {
-						Overlays.setOverlaid(originalOverlay);
-						Overlays.set(originalOverlay);
-						scope.currentoverlay = Overlays.getOverlay();
-					}
-					
-				};*/
+				});
+			    
 			    
 			    
 			    $timeout(function () {

@@ -85,8 +85,11 @@
 			 				} else if(typeof conf.data.models !== 'undefined') {
 			 					dataset = conf.data;
 			 				}
-			 				var loading = Datasets.load(dataset);
-			 				return $q.all([ loading ])
+			 				var loading = [];
+			 				if(dataset instanceof Array) {
+		 						for(var i = 0; i < dataset.length; i++) loading.push(Datasets.load(dataset[i]));
+		 					} else loading.push(Datasets.load(dataset));
+			 				return $q.all(loading)
 			 				.then(function(results){
 			 					console.log("Dataset loaded: " + conf.data.dataset);
 			 					deferral.resolve(conf.data.dataset);

@@ -23,35 +23,10 @@
 		else
 			scale = $scope.data.object.resolution * $scope.data.object.bp_per_nm;
 		
-		
-
-	      $scope.selectedIndex = 0;
-	      
-	      /*$scope.atPosition = function(feature) {
-				if ($scope.$parent.settings.current.segmentUpper >= feature.start && $scope.$parent.settings.current.segmentLower <= feature.end && feature.chr.replace('chr','')==$scope.settings.current.chrom.replace('chr','')) return true;
-				return false;
-			};
-			$scope.atLeftPosition = function(feature) {
-				if(angular.isUndefined($scope.settings.current.markers_position)) return;
-				var segment_span = ($scope.$parent.settings.current.segmentUpper - $scope.$parent.settings.current.segmentLower)/2;
-			
-				if ($scope.settings.current.markers_position[1]+segment_span >= feature.start && $scope.settings.current.markers_position[1]-segment_span <= feature.end && 
-						feature.chr.replace('chr','') == $scope.settings.current.markers_chr[1].replace('chr','') 
-				) return true;
-				return false;
-			};
-			$scope.atRightPosition = function(feature) {
-				if(angular.isUndefined($scope.settings.current.markers_position)) return;
-				var segment_span = ($scope.$parent.settings.current.segmentUpper - $scope.$parent.settings.current.segmentLower)/2;
-				
-				if ($scope.settings.current.markers_position[0]+segment_span >= feature.start && $scope.settings.current.markers_position[0]-segment_span <= feature.end && 
-						feature.chr.replace('chr','') == $scope.settings.current.markers_chr[0].replace('chr','')		
-				) return true;
-				return false;
-			};*/
+		$scope.selectedIndex = 0;
 	      
 		$scope.atPosition = function(feature) {
-			if ($scope.$parent.settings.current.segmentUpper >= feature.start && $scope.$parent.settings.current.segmentLower <= feature.end && feature.chr.replace('chr','')==$scope.settings.current.chrom.replace('chr','')) return true;
+			if ($scope.$parent.settings.current.segmentUpper > feature.start && $scope.$parent.settings.current.segmentLower <= feature.end && feature.chr.replace('chr','')==$scope.settings.current.chrom.replace('chr','')) return true;
 			return false;
 		};
 		$scope.atLeftPosition = function(feature) {
