@@ -109,12 +109,12 @@
 			                		end_tad = Math.round((scope.data.tad_data.tads[i][2]-scope.settings.current.chromStart[scope.settings.current.chromIdx])/resolution);
 			                 		
 			                 		centre_of_mass = new THREE.Vector3();
-									for (var j = start_tad; j <= end_tad; j++) {
+									for (var j = start_tad; j < end_tad; j++) {
 										centre_of_mass.add(particles.geometry.vertices[j]);
 									}
 									centre_of_mass.divideScalar(end_tad - start_tad + 1);
 									radius_cloud = 0;
-									for (j = start_tad; j <= end_tad; j++) {
+									for (j = start_tad; j < end_tad; j++) {
 										if(centre_of_mass.distanceTo(particles.geometry.vertices[j])>radius_cloud) 
 											radius_cloud = centre_of_mass.distanceTo(particles.geometry.vertices[j]);
 									}
@@ -481,7 +481,7 @@
 				                		end_tad = (Math.round((scope.data.tad_data.tads[newValue][2]-scope.settings.current.chromStart[scope.settings.current.chromIdx])/resolution))*scope.settings.current.particleSegments;
 				                 	}
 									for (i = 0; i < chromatinCount; i++) {
-										if(i>=start_tad && i<=end_tad) {
+										if(i>=start_tad && i<end_tad) {
 											chromatinObj.children[i].material.opacity = 1;
 										} else {
 											if(newValue == -1) chromatinObj.children[i].material.opacity = 1;
