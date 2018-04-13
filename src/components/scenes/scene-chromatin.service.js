@@ -5,7 +5,7 @@
 		.factory('Chromatin', Chromatin);
 
 	// constructor for chromatin model instances
-	function Chromatin(Paths, PathControls, ColorConvert) {
+	function Chromatin(Paths, PathControls, ColorConvert, Proximities) {
 		return function(data, colors, view_settings, resolution_scale, settings) {
 			// console.log(colors);
 
@@ -78,13 +78,18 @@
 			var chr_bins,pathControls,pathSegments,cubicPath,cubicGeom, chromatinGeometry, tubeMesh, newChromatinColor;
 			var j;
 			var offset = 0;
+			var fpart = 0;
+			var proximities = Proximities.get();
+			settings.facesParticle = [];
 			for (var l = 0 ; l < settings.chromosomeIndexes.length; l++) {
 				chr_bins = Math.round((settings.chromEnd[l]-settings.chromStart[l])/resolution);
 				//chromBreaks.push(offset);
 			
 				// Derive path controls from geometry vectors
 				// var pathControls = getPathControls( geometry.vertices );
-				pathControls = PathControls.cubic(geometry.vertices.slice(offset,offset+chr_bins), this.pathClosed);
+				var model_points = geometry.vertices.slice(offset,offset+chr_bins);
+				pathControls = PathControls.cubic(model_points, this.pathClosed);
+				//pathControls = PathControls.simple(geometry.vertices.slice(offset,offset+chr_bins));
 
 				// Set number of Particles
 				if (this.particles === 0) this.particles += geometry.vertices.length; //pathControls.vertices.length - 1;
@@ -101,8 +106,33 @@
 				
 				if(view_settings.tubed) {
 					chromatinGeometry = new THREE.TubeGeometry(cubicPath, pathSegments, this.radius, 8, this.pathClosed);
-										
+					
 				    tubeMesh = new THREE.Mesh(chromatinGeometry, solidMaterial);
+					
+				    //var faces = chromatinGeometry.vertices.length;
+				    var faces = chromatinGeometry.faces.length;
+					var segment_lengths = [];
+					for (i = 0; i < model_points.length-1; i++) segment_lengths.push(distance(model_points[i+1],model_points[i]));
+					var total_length = 0;
+					for (i = 0; i < segment_lengths.length; i++) total_length += segment_lengths[i];
+					var facesParticle = [];
+					for (i = 0; i < chr_bins; i++) facesParticle.push([0,0]);
+					for (i = chr_bins-1; i >= 0; i--) {
+						// we add right part of curve if not  last particle
+						if(i < chr_bins - 1 ) fpart = Math.round(((chromatinGeometry.faces.length)/16)*((segment_lengths[i]/2)/total_length));
+						//if(i < chr_bins - 1 ) fpart = Math.round(((chromatinGeometry.vertices.length-8)/8)*((segment_lengths[i]/2)/total_length));
+						// we add left part of curve if not first particle
+						if(i > 0 ) fpart += Math.round(((chromatinGeometry.faces.length)/16)*((segment_lengths[i-1]/2)/total_length));
+						//if(i > 0 ) fpart += Math.round(((chromatinGeometry.vertices.length-8)/8)*((segment_lengths[i-1]/2)/total_length)); 
+						faces--;
+						if(faces > 1) facesParticle[i][1]=faces;
+						else facesParticle[i][1]=1;
+						faces -= Math.ceil(fpart*16); // segments have 8 faces
+						if(faces > 0) facesParticle[i][0]=faces;
+						else facesParticle[i][0]=0;
+						
+					}
+					settings.facesParticle.push(facesParticle);
 					
 					chromatinGeometry.dynamic = true;
 					chromatinGeometry.verticesNeedUpdate = true;
@@ -198,6 +228,13 @@
 		};
 	}
 
+	function distance(p1,p2) {
+		var dx = p2.x - p1.x;
+		var dy = p2.y - p1.y;
+		var dz = p2.z - p1.z;
+		var dist = Math.sqrt( dx * dx + dy * dy + dz * dz );
+		return dist;
+	}
 	
 	function getGeometry(data) {
 		var offset = 0, vertex,

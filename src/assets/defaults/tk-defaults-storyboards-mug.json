@@ -249,8 +249,9 @@
 									"tracks": [
 										{
 											"name": "Genes",
-						                    "url": "assets/data/Homo_sapiens.GRCh38.80.sorted.gtf.gz",
-						                    "index": "assets/data/Homo_sapiens.GRCh38.80.sorted.gtf.gz.tbi",
+						                    "url": "assets/data/refGene.hg19.bed.gz",
+						                    "index": "assets/data/refGene.hg19.bed.gz.tbi",
+                                                                    "height": 1000,
 						                    "displayMode": "EXPANDED"
 					                	}
 					                ]

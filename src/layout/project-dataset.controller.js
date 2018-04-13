@@ -12,7 +12,10 @@
 
 	function ProjectDatasetController ($state, $scope, $stateParams, Datasets, Overlays, Components, Segments){
 		// console.log($scope);
-
+		var el = angular.element(document.querySelector('#spinnerdiv'))[0];
+    	if(!angular.isUndefined(el))
+    		el.style.display = "block";
+    	
 		$scope.datasets = Datasets.get();
 		$scope.selDataset = $scope.datasets.current.index; 
 			
@@ -100,6 +103,8 @@
 		});
 		
 		$scope.renderClusters();
+		if(!angular.isUndefined(el))
+    		el.style.display = "none";
 
 	}
 })();

@@ -25,8 +25,8 @@
 	</div>
 	<div ng-show="current.dataset.models.length > 0">
 		<md-grid-list md-cols="5" md-gutter="0.2em" md-row-height="4:5">
-			<md-grid-tile ng-repeat='cluster in clusters | startFrom:currentPage*pageSize | limitTo:pageSize' ng-click="selectCluster($index)">
-				<tk-component-scene-cluster id="{{clusterComponent.object.id}}-{{$index+1}}" cluster="cluster" type="clusterComponent.object.type" state="clusterComponent.object.state" view="clusterComponent.view" overlay="clusterComponent.overlay" ng-class="{selected: $index+1 == datasets.current.cluster}" class="tile-content"></tk-component-scene-cluster>
+			<md-grid-tile ng-repeat='cluster in clusters | startFrom:currentPage*pageSize | limitTo:pageSize' ng-click="selectCluster($index+currentPage*pageSize)">
+				<tk-component-scene-cluster id="{{clusterComponent.object.id}}-{{$index+currentPage*pageSize+1}}" cluster="cluster" type="clusterComponent.object.type" state="clusterComponent.object.state" view="clusterComponent.view" overlay="clusterComponent.overlay" ng-class="{selected: $index+1 == datasets.current.cluster}" class="tile-content"></tk-component-scene-cluster>
 			</md-grid-tile>
 		</md-grid-list>
 		<div style="margin-left:50px;">

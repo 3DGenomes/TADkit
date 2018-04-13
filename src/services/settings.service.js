@@ -108,38 +108,30 @@
 				return online;
 			},
 			getSegment: function (chromPosition) {
-				chromPosition = chromPosition || settings.current.position;
 				var self = this;
+				//var particle = self.getParticle(chromPosition);
+				chromPosition = chromPosition || settings.current.position;
 				var resolution = settings.current.segmentLength*settings.current.particleSegments; // base pairs
-				//var chromOffset = self.getRange(settings.current.chromStart, chromPosition);
-				//var chromRange = self.getRange(settings.current.chromStart, settings.current.chromEnd);
 				var chromOffset = chromPosition-settings.current.chromStart[settings.current.chromIdx];
-				//var chromRange = settings.current.chromEnd[settings.current.chromIdx]-settings.current.chromStart[settings.current.chromIdx];
 				var chromRange=0;
 				for(var l=0;l<settings.current.chromosomeIndexes.length;l++) chromRange += Math.round(settings.current.chromEnd[l])-Math.round(settings.current.chromStart[l]);
-				//settings.current.markers_chr = [settings.current.chromosomeIndexes[chrid]];
-				//var resolution = settings.current.segmentLength*settings.current.particleSegments; // base pairs
-				//var particlesCount = Math.round(settings.current.chromEnd[settings.current.chromIdx]/resolution) - Math.round(settings.current.chromStart[settings.current.chromIdx]/resolution) + 1;
 				var particlesCount = settings.current.particlesCount;
 				var segmentsCount = particlesCount * settings.current.particleSegments;				
 				var segment = Math.round((chromOffset * (segmentsCount)) / chromRange);
+				//var segment = Math.round((particle-1)*settings.current.particleSegments+settings.current.particleSegments/2);
 				return segment;
 			},
 			getParticle: function (chromPosition) {
 				chromPosition = chromPosition || settings.current.position;
 				var self = this;
 				var resolution = settings.current.segmentLength*settings.current.particleSegments; // base pairs
-				//var chromOffset = self.getRange(settings.current.chromStart, chromPosition);
-				//var chromRange = self.getRange(settings.current.chromStart, settings.current.chromEnd);
 				var chromOffset = chromPosition-settings.current.chromStart[settings.current.chromIdx];
-				//var chromRange = settings.current.chromEnd[settings.current.chromIdx]-settings.current.chromStart[settings.current.chromIdx];
 				var chromRange=0;
 				for(var l=0;l<settings.current.chromosomeIndexes.length;l++) chromRange += Math.round(settings.current.chromEnd[l])-Math.round(settings.current.chromStart[l]); 
 				
-				//var particlesCount = Math.round(settings.current.chromEnd[settings.current.chromIdx]/resolution) - Math.round(settings.current.chromStart[settings.current.chromIdx]/resolution) + 1;
 				var particlesCount = settings.current.particlesCount;
 				var particle = Math.round((chromOffset * particlesCount) / chromRange)+1;
-				return particle;
+				return Math.min(particle,settings.current.particlesCount);
 			},
 			getRange: function (start, end) {
 				var range = 0;

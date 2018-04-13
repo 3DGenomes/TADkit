@@ -4,9 +4,9 @@
 		.module('TADkit')
 		.config(config);
 
-	function config($stateProvider, $urlRouterProvider) {
+	function config($stateProvider, $urlRouterProvider, $httpProvider) {
 		$urlRouterProvider.otherwise("/project/loader");
-		
+		$httpProvider.interceptors.push('myHttpInterceptor');
 		$stateProvider
 		// .state('home', {
 		// 	url: '/',

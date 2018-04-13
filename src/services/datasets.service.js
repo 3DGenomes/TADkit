@@ -179,6 +179,7 @@
 				var model = this.getModel(ref,chromosomeIndex);
 				// Store as current model for dataset in datasets.loaded[datasets.current.index].data
 				datasets.loaded[datasets.current.index].data = model;
+				Proximities.set(model.data);
 				return model; // array of vertices
 			},
 			get: function() {

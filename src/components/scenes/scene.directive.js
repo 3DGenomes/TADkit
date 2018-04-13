@@ -356,7 +356,7 @@
 //								if(!scope.view.settings.chromatin.tubed && !scope.currentoverlay.object.state.overlaid) {
 //									scope.toggleTubed(true);
 //								}
-								var i,j,newChromatinColor;
+								var i,j,k,newChromatinColor;
 								var chromatinCount = chromatinObj.children.length;
 								if(!scope.view.settings.chromatin.tubed) {
 									for (i = 0; i < chromatinCount; i++) {
@@ -371,10 +371,11 @@
 									var colori = 0;
 									//var chr_bins;
 									var geom;
+									var partFaces, segFaces;
 									for (var l = 0 ; l < scope.settings.current.chromosomeIndexes.length; l++) {
 										//chr_bins = Math.round((scope.settings.current.chromEnd[l]-scope.settings.current.chromStart[l])/resolution)+1;
 										geom = chromatinObj.children[l].geometry;
-										for (i = 0; i < geom.faces.length; i++) {
+										/*for (i = 0; i < geom.faces.length; i++) {
 											if(ColorConvert.testIfHex(newColors[Math.floor(colori/16)]) || newColors[Math.floor(colori/16)].indexOf('#')===0) {
 												newChromatinColor =  new THREE.Color(newColors[Math.floor(colori/16)]);	 
 											} else {
@@ -384,7 +385,22 @@
 												if(typeof geom.faces[i+j] !== 'undefined') geom.faces[i+j].color.set(newChromatinColor);
 											}
 											colori++;
+										}*/
+										partFaces = scope.settings.current.facesParticle[l];
+										for (i = 0; i < partFaces.length; i++) {
+											for (j = 0; j < scope.settings.current.particleSegments; j++) {
+												colori = i*scope.settings.current.particleSegments+j;
+												if(ColorConvert.testIfHex(newColors[colori]) || newColors[colori].indexOf('#')===0) {
+													newChromatinColor =  new THREE.Color(newColors[colori]);	 
+												} else {
+													newChromatinColor =  new THREE.Color(ColorConvert.nameToHex(newColors[colori]));
+												}
+												for (k = partFaces[i][0]; k <= partFaces[i][1]; k++) {	 
+													if(typeof geom.faces[k] !== 'undefined') geom.faces[k].color.set(newChromatinColor);
+												}
+											}
 										}
+										
 										geom.colorsNeedUpdate = true;
 										//offset += chr_bins;
 							    	}
@@ -503,12 +519,14 @@
 
 						/* Watch for Browser-wide Position updates */
 						scope.$watch('settings.current.particle', function( newParticle, oldParticle ) {
-							if ( newParticle !== oldParticle && particlesObj) {
-								// SET PARTICLE CURSOR COLOR
-								if (particleOriginalColor) particlesObj.geometry.colors[(oldParticle - 1)] = particleOriginalColor;
-								particleOriginalColor = particlesObj.geometry.colors[(newParticle - 1)];
-								particlesObj.geometry.colors[(newParticle - 1)] = highlightColor;
-								particlesObj.geometry.colorsNeedUpdate = true;
+							if ( newParticle !== oldParticle) {
+								if(particlesObj) {
+									// SET PARTICLE CURSOR COLOR
+									if (particleOriginalColor) particlesObj.geometry.colors[(oldParticle - 1)] = particleOriginalColor;
+									particleOriginalColor = particlesObj.geometry.colors[(newParticle - 1)];
+									particlesObj.geometry.colors[(newParticle - 1)] = highlightColor;
+									particlesObj.geometry.colorsNeedUpdate = true;
+								}
 							}
 						});
 						scope.updateRingPosition = function(ring,newSegment,oldSegment) {
@@ -517,24 +535,37 @@
 							var newSeg;
 							var oldSeg;
 							var vec, i;
+							var chr_bins;
+							var resolution = scope.settings.current.segmentLength*scope.settings.current.particleSegments;
+							var newPart, oldPart;
 							if(newSegment.length>1) {
 								newSeg = newSegment[0];
 								oldSeg = oldSegment[0];
 								newChrom = newSegment[1];
 								oldChrom = oldSegment[1];
+								newPart = Math.floor(newSeg/scope.settings.current.particleSegments);
+								oldPart = Math.floor(oldSeg/scope.settings.current.particleSegments);
 							} else {
 								newSeg = newSegment;
 								oldSeg = oldSegment;
-								while(chromatinObj.children[newChrom].geometry.vertices.length < (newSeg+1)*8) {
-									newSeg -= Math.floor(chromatinObj.children[newChrom].geometry.vertices.length/8-1);
-									newChrom++;
-								}
-								while(chromatinObj.children[oldChrom].geometry.vertices.length < (oldSeg+1)*8) {
-									oldSeg -= Math.floor(chromatinObj.children[oldChrom].geometry.vertices.length/8-1);
-									oldChrom++;
-								}
+								newPart = Math.floor(newSeg/scope.settings.current.particleSegments);
+								oldPart = Math.floor(oldSeg/scope.settings.current.particleSegments);
+								chr_bins = Math.round(scope.settings.current.chromEnd[newChrom]/resolution)-Math.round(scope.settings.current.chromStart[newChrom]/resolution);
+				            	while(chr_bins-1<newPart) {
+				            		newPart -= chr_bins;
+				            		newSeg -= chr_bins*scope.settings.current.particleSegments;
+				            		newChrom++;
+				            		chr_bins = Math.round(scope.settings.current.chromEnd[newChrom]/resolution)-Math.round(scope.settings.current.chromStart[newChrom]/resolution);
+				            	}
+				            	chr_bins = Math.round(scope.settings.current.chromEnd[oldChrom]/resolution)-Math.round(scope.settings.current.chromStart[oldChrom]/resolution);
+				            	while(chr_bins-1<oldPart) {
+				            		oldPart -= chr_bins;
+				            		oldSeg -= chr_bins*scope.settings.current.particleSegments;
+				            		oldChrom++;
+				            		chr_bins = Math.round(scope.settings.current.chromEnd[oldChrom]/resolution)-Math.round(scope.settings.current.chromStart[oldChrom]/resolution);
+				            	}
 							}
-							if(chromatinObj.children[newChrom].geometry.vertices.length > (newSeg+1)*8+8) {
+							/*if(chromatinObj.children[newChrom].geometry.vertices.length > (newSeg+1)*8+8) {
 								
 								vec = chromatinObj.children[newChrom].geometry.vertices[(newSeg+1)*8];
 								
@@ -554,38 +585,70 @@
 								}
 								vec.divideScalar(8);
 								ring.lookAt(vec);
+							}*/
+							vec = new THREE.Vector3(0,0,0);
+							if(scope.settings.current.facesParticle.length <= newChrom) return;
+							var partFaces = scope.settings.current.facesParticle[newChrom][newPart];
+							var segPos = ((newSeg-newPart*scope.settings.current.particleSegments))/scope.settings.current.particleSegments;
+							var vertice = Math.round(((partFaces[1]-partFaces[0])*segPos+partFaces[0])/2);
+							if(vertice < 1) return;
+							for(i=0;i<8;i++){
+								if(chromatinObj.children[newChrom].geometry.vertices.length > vertice+i) vec.add(chromatinObj.children[newChrom].geometry.vertices[vertice+i]);
 							}
+							vec.divideScalar(8);
+							
+							ring.position.x = vec.x;
+							ring.position.y = vec.y;
+							ring.position.z = vec.z;
+							
+							vec = new THREE.Vector3(0,0,0);
+							if(scope.settings.current.facesParticle.length <= oldChrom) return;
+							partFaces = scope.settings.current.facesParticle[oldChrom][oldPart];
+							segPos = ((oldSeg-oldPart*scope.settings.current.particleSegments))/scope.settings.current.particleSegments;
+							vertice = Math.round(((partFaces[1]-partFaces[0])*segPos+partFaces[0])/2);
+							
+							/*if(middleSegment+8 < chromatinObj.children[newChrom].geometry.vertices.length) {
+								middleSegment += 8;
+							} else {
+								middleSegment -= 8;
+							}*/
+							for(i=0;i<8;i++){
+								if(chromatinObj.children[oldChrom].geometry.vertices.length > vertice+i) vec.add(chromatinObj.children[oldChrom].geometry.vertices[vertice+i]);
+							}
+							vec.divideScalar(8);
+							
+							ring.lookAt(vec);
+							
 							return;
 						};
-						/* Watch for Browser-wide Position updates */
-						scope.$watch('settings.current.segment', function( newSegment, oldSegment ) {
-							if ( typeof ring !== 'undefined' && (newSegment !== oldSegment || (ring.position.x === 0 && ring.position.y === 0 && ring.position.z === 0))) {
-								//if(scope.view.settings.chromatin.tubed) return;
-								if(scope.view.settings.chromatin.tubed) {
-									scope.updateRingPosition(ring,newSegment,oldSegment);
-									
-								}
-								// SET CHROMATIN CURSOR COLOR
-
-								var segmentPrevious = chromatinObj.getObjectByName( "segment-" + oldSegment );
-								if (positionOriginalColor && segmentPrevious) {
-									segmentPrevious.material.color = positionOriginalColor;
-									segmentPrevious.material.ambient = positionOriginalColor;
-									segmentPrevious.material.emissive = positionOriginalColor;
-								}
-
-								var segmentCurrent = chromatinObj.getObjectByName( "segment-" + newSegment );
-								if(segmentCurrent) {
-									positionOriginalColor = segmentCurrent.material.color;
-
-									segmentCurrent.material.color = highlightColor;
-									segmentCurrent.material.ambient = highlightColor;
-									segmentCurrent.material.emissive = highlightColor;
-								}
-							}
-						});
-
 					};
+					/* Watch for Browser-wide Position updates */
+					scope.$watch('settings.current.segment', function( newSegment, oldSegment ) {
+						if ( typeof ring !== 'undefined' && (newSegment !== oldSegment || (ring.position.x === 0 && ring.position.y === 0 && ring.position.z === 0))) {
+							//if(scope.view.settings.chromatin.tubed) return;
+							if(scope.view.settings.chromatin.tubed) {
+								scope.updateRingPosition(ring,newSegment,oldSegment);
+								
+							}
+							// SET CHROMATIN CURSOR COLOR
+
+							var segmentPrevious = chromatinObj.getObjectByName( "segment-" + oldSegment );
+							if (positionOriginalColor && segmentPrevious) {
+								segmentPrevious.material.color = positionOriginalColor;
+								segmentPrevious.material.ambient = positionOriginalColor;
+								segmentPrevious.material.emissive = positionOriginalColor;
+							}
+
+							var segmentCurrent = chromatinObj.getObjectByName( "segment-" + newSegment );
+							if(segmentCurrent) {
+								positionOriginalColor = segmentCurrent.material.color;
+
+								segmentCurrent.material.color = highlightColor;
+								segmentCurrent.material.ambient = highlightColor;
+								segmentCurrent.material.emissive = highlightColor;
+							}
+						}
+					});
 					scope.$watch('settings.current.markers_position', function( newValue, oldValue ) {
 						if ( newValue !== oldValue && chromatinObj) {
 							if(scope.view.settings.chromatin.tubed) {
@@ -596,12 +659,8 @@
 									scene.remove(linker_label);
 									linker_label = undefined;
 					        	} else {
-					        		//var newLeftPos = Math.floor((scope.settings.current.markers_position[1] - scope.settings.current.chromStart[scope.settings.current.chromIdx])/scope.settings.current.segmentLength);
-									//var newRightPos = Math.floor((scope.settings.current.markers_position[0] - scope.settings.current.chromStart[scope.settings.current.chromIdx])/scope.settings.current.segmentLength);
-									var newLeftPos = Settings.getSegment(scope.settings.current.markers_position[1]);
+					        		var newLeftPos = Settings.getSegment(scope.settings.current.markers_position[1]);
 									var newRightPos = Settings.getSegment(scope.settings.current.markers_position[0]);
-									//var newLeftPos = (Settings.getParticle(scope.settings.current.markers_position[1])-1)*scope.settings.current.particleSegments+Math.round(scope.settings.current.particleSegments/2);
-									//var newRightPos = (Settings.getParticle(scope.settings.current.markers_position[0])-1)*scope.settings.current.particleSegments+Math.round(scope.settings.current.particleSegments/2);
 									
 									var oldLeftPos = newLeftPos>0 ? newLeftPos-1 : 0;
 									var oldRightPos = newRightPos>0 ? newRightPos-1 : 0;
