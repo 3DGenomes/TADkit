@@ -637,7 +637,7 @@
 					$scope.hideTadkitMarkers();
 	        	} else {
 	        		if($scope.settings.current.chromosomeIndexes.length===2) $scope.synchronizeViewports();
-	        		//if($scope.settings.current.chromosomeIndexes.length<3) 
+	        		if($scope.settings.current.chromosomeIndexes.length > 2) return; 
 	        		$scope.updateTadkitMarkers(newValue,$scope.settings.current.markers_chr);
 	        		
 	        	}

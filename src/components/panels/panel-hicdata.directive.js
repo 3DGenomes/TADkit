@@ -405,11 +405,11 @@
 						            		.text(value_text)
 						            		.attr('display', 'block');
 						            	
-						            	if(scope.settings.current.chromosomeIndexes.length<=2) {
+						            	//if(scope.settings.current.chromosomeIndexes.length<=2) {
 						            		markers_position = scope.transformCoords(transformCoords);
 							            	scope.settings.current.markers_position = markers_position;
 							            	scope.$apply(scope.settings.current.markers_position);
-							            }
+							            //}
 						            }
 						            
 						    	}

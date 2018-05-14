@@ -370,26 +370,17 @@
 									//var offset = 0;
 									var colori = 0;
 									//var chr_bins;
+									var simple_chrom_colors = ['#FF0000','#00FF00','#0000FF','#FFFF00','#00FFFF','#FF00FF','#C0C0C0','#808080','#800000','#808000','#008000','#800080','#008080','#000080','#A52A2A','#E9967A','#B8860B','#FFFF00','#006400','#98FB98','#2F4F4F','#40E0D0','#4682B4','#87CEFA','#DC143C','#FFD700','#F0E68C','#7CFC00','#00FF00','#00FF7F','#3CB371','#00FFFF','#AFEEEE','#6495ED','#87CEEB'];
 									var geom;
 									var partFaces, segFaces;
 									for (var l = 0 ; l < scope.settings.current.chromosomeIndexes.length; l++) {
 										//chr_bins = Math.round((scope.settings.current.chromEnd[l]-scope.settings.current.chromStart[l])/resolution)+1;
 										geom = chromatinObj.children[l].geometry;
-										/*for (i = 0; i < geom.faces.length; i++) {
-											if(ColorConvert.testIfHex(newColors[Math.floor(colori/16)]) || newColors[Math.floor(colori/16)].indexOf('#')===0) {
-												newChromatinColor =  new THREE.Color(newColors[Math.floor(colori/16)]);	 
-											} else {
-												newChromatinColor =  new THREE.Color(ColorConvert.nameToHex(newColors[Math.floor(colori/16)]));
-											} 
-											for (j = 0; j < 16; j++) {
-												if(typeof geom.faces[i+j] !== 'undefined') geom.faces[i+j].color.set(newChromatinColor);
-											}
-											colori++;
-										}*/
 										partFaces = scope.settings.current.facesParticle[l];
 										for (i = 0; i < partFaces.length; i++) {
 											for (j = 0; j < scope.settings.current.particleSegments; j++) {
 												colori = i*scope.settings.current.particleSegments+j;
+												if(scope.settings.current.chromosomeIndexes.length > 1) newColors[colori] = simple_chrom_colors[l];
 												if(ColorConvert.testIfHex(newColors[colori]) || newColors[colori].indexOf('#')===0) {
 													newChromatinColor =  new THREE.Color(newColors[colori]);	 
 												} else {
@@ -587,7 +578,8 @@
 								ring.lookAt(vec);
 							}*/
 							vec = new THREE.Vector3(0,0,0);
-							if(scope.settings.current.facesParticle.length <= newChrom) return;
+							if(scope.settings.current.facesParticle.length <= newChrom ||
+									scope.settings.current.facesParticle[newChrom].length <= newPart) return;
 							var partFaces = scope.settings.current.facesParticle[newChrom][newPart];
 							var segPos = ((newSeg-newPart*scope.settings.current.particleSegments))/scope.settings.current.particleSegments;
 							var vertice = Math.round(((partFaces[1]-partFaces[0])*segPos+partFaces[0])/2);

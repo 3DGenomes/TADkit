@@ -72,6 +72,7 @@
 		        overdraw: true
 		    });
 
+			var simple_chrom_colors = ['#FF0000','#00FF00','#0000FF','#FFFF00','#00FFFF','#FF00FF','#C0C0C0','#808080','#800000','#808000','#008000','#800080','#008080','#000080','#A52A2A','#E9967A','#B8860B','#FFFF00','#006400','#98FB98','#2F4F4F','#40E0D0','#4682B4','#87CEFA','#DC143C','#FFD700','#F0E68C','#7CFC00','#00FF00','#00FF7F','#3CB371','#00FFFF','#AFEEEE','#6495ED','#87CEEB'];
 			var chromatinFiber = new THREE.Object3D(); // unmerged network
 			var i;
 			var colori = 0;
@@ -163,8 +164,8 @@
 							}
 				    	}
 					}*/
-					
 					for (i = 0; i < chromatinGeometry.faces.length; i++) {
+						if(settings.chromosomeIndexes.length > 1) colors[Math.floor(colori/16)] = simple_chrom_colors[l];
 						if(ColorConvert.testIfHex(colors[Math.floor(colori/16)]) || colors[Math.floor(colori/16)].indexOf('#')===0) {
 							newChromatinColor =  new THREE.Color(colors[Math.floor(colori/16)]);	 
 						} else {
