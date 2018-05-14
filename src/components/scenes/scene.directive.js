@@ -169,6 +169,15 @@
 
 
 						};
+						scope.centerScene = function() {
+
+							cameraPosition = chromatin.boundingSphere.center;
+							cameraTarget = chromatin.boundingSphere.center;
+							cameraTranslate = chromatin.boundingSphere.radius * scope.view.viewpoint.scale;
+							scope.lookAtTAD(cameraPosition, cameraTarget, cameraTranslate);
+							
+						};
+
 						// VIEWPORT
 						/* component-controller == children[0]
 						 * - component-header == children[0]
@@ -248,11 +257,7 @@
 							scope.complete_scene();
 						
 							// UPDATE CAMERA TARGET
-							cameraPosition = chromatin.boundingSphere.center;
-							cameraTarget = chromatin.boundingSphere.center;
-							cameraTranslate = chromatin.boundingSphere.radius * scope.view.viewpoint.scale;
-							scope.lookAtTAD(cameraPosition, cameraTarget, cameraTranslate);
-	
+							scope.centerScene();
 													
 	
 							// EVENT LISTENERS / SCOPE WATCHERS
@@ -430,11 +435,8 @@
 							chromatinObj = scene.getObjectByName( "Chromatin Fiber" );
 							clusterObj = scene.getObjectByName( "Cluster View" );
 							//networkObj = scene.getObjectByName( "Network Graph" );
-							
-							cameraPosition = chromatin.boundingSphere.center;
-							cameraTarget = chromatin.boundingSphere.center;
-							cameraTranslate = chromatin.boundingSphere.radius * scope.view.viewpoint.scale;
-							scope.lookAtTAD(cameraPosition, cameraTarget, cameraTranslate);
+
+							scope.centerScene();
 							
 							var lightOffset = cameraTranslate * 1.5; // Up and to the left
 							pointLight.position.set(lightOffset,lightOffset,(lightOffset * -1.0));
