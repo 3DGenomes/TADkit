@@ -1,0 +1,25 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@angular-decorators/*": ["angular-decorators/*"],
+      "@projects/*": ["app/projects/*"],
+      "@workspace/*": ["app/workspace/*"]
+    },
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "es5",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es2017",
+      "dom"
+    ]
+  }
+}

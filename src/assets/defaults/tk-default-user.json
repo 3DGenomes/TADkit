@@ -1,0 +1,28 @@
+[
+	{
+		"metadata" : {
+			"version" : 1.0,
+			"type" : "user",
+			"generator" : "TADkit"
+		},
+		"uuid" : "645647dc-c7f5-11e4-8731-1681e6b88ec1",
+		"ref" : "default",
+		"title" : "Default",
+		"email" : "username@server.domain",
+		"organization" : "Research Group",
+		"permissions" : "edit",
+		"projects" : [
+			{
+				"uuid" : "20000000-0000-0000-0000-000000000001",
+				"ref" : "default",
+				"title" : "Project 1",
+				"description" : "An example project.",
+				"group" : "Default Group",
+				"state" : true,
+				"species": "human",
+				"cellType": "stem",
+				"assembly": "h95"
+			}
+		]
+	}
+]

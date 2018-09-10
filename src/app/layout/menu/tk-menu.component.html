@@ -1,0 +1,8 @@
+<nav>
+    <ul>
+        <li *ngFor="let item of menulist">
+            <ng-container *ngIf="item.link"><a href="{{item.link}}">{{item.title}}</a></ng-container>
+            <ng-container *ngIf="item.route"><a routerLink="{{item.route}}">{{item.title}}</a></ng-container>
+        </li>
+    </ul>
+</nav>

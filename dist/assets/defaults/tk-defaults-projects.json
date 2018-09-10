@@ -1,0 +1,24 @@
+[
+	{
+		"uuid" : "20000000-0000-0000-0000-000000000001",
+		"ref" : "default",
+		"title" : "Project 1",
+		"description" : "An example project.",
+		"group" : "Default Group",
+		"state" : true,
+		"species": "human",
+		"cellType": "stem",
+		"assembly": "h95"
+	},
+	{
+		"uuid" : "20000000-0000-0000-0000-000000000002",
+		"ref" : "another",
+		"title" : "Project 2",
+		"description" : "Another example project.",
+		"group" : "Another Group",
+		"state" : false,
+		"species": "fly",
+		"cellType": "stem",
+		"assembly": "fly"
+	}
+]

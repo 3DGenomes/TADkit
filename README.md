@@ -1,30 +1,27 @@
-![TADkit Logo](./docs/images/tadkit-logo-title.png?raw=true "TADkit Logo" =240x)
+# TADkitA2
 
-TADkit is a HTML5 and JavaScript-based 3D genome browser. It makes use of D3.js for rendering the 1D and 2D tracks and WebGl by Three.js for rendering the 3D track.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.6.4.
 
-##Description
-TADkit creates interactive 3D representations of chromatin conformations modeled from 3C-based interaction matrices. 
-The user can overlay 1D and 2D tracks of genomic data to these 3D views to directly evaluate the relationship 
-between the 3D structure of the genome and its biological function.
+## Development server
 
-##Documentation
-###Instalation
-To install TADkit in your server or locally, you need to download the repository and move the "tadkit" folder 
-in your desired directoy. Next, point your browser to the index.html file in that directory. If you want to install it
-locally you'll need to use Chrome with the flag "--allow-file-access-from-files" to run JavaScript locally (additional information for other Internet browsers [here](https://github.com/mrdoob/three.js/wiki/How-to-run-things-locally).
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-###How to use it
-Visualization of 3D models and overlaying of data for analysis in TADkit is achieved in three simple steps. (1) The user may import a [TADbit](http://3Dgenomes.org/tadbit/) JSON file by using the drop-in area or the file menu in the TADkit main page. (2) The user is presented with an overview of the data. Each 3D model cluster is shown as an ensemble of grey strands, with its centroid model highlighted. After selecting a cluster, the browser view opens (see figure below) with a 3D scene of the centroid of the selected cluster, along with “classic” genomic tracks. (3) Finally, the user may add additional genomic tracks to the browser by inputting them using BigWig or BedGraph formats.
+## Code scaffolding
 
-![Browser View](./docs/images/tadkit_scene.png?raw=true "Browser View" =800x)
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
-The browser view is composed by: 
-* a. Top toolbar with the model title, internal navigation links, data input link and the current genomic position.
-* b. 3D rendering of chromatin as contiguous spheres or a chromatin “fiber”. 
-* c. Gene information located in the viewpoint of the 3D model.
-* d. Stacked “classical” tracks showing: 
-  * The genes found in the region covered by the current model (automatically fetched using the Ensembl REST API).
-  * A linear depiction of the 3D proximity from the selected viewpoint to the rest of the model.
-  * A graph of the restraints imposed during modeling (blue for repulsive and red for attacting restraints). 
-* e. Additional user-imported tracks.
+## Build
 
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+
+## Running unit tests
+
+Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+
+## Running end-to-end tests
+
+Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+
+## Further help
+
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).

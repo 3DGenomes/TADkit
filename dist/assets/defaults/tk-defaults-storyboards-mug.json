@@ -1,0 +1,281 @@
+[
+	{
+		"metadata" : {
+			"version" : 1.0,
+			"type" : "storyboard",
+			"generator" : "TADkit"
+		},
+		"object" : {
+			"uuid" : "645644ee-c7f5-11e4-8731-1681e6b88ec1",
+			"id" : "default",
+			"title" : "Default Storyboard"
+		},
+		"settings" : [
+			{
+				"background" : "#ffffff",
+				"margin" : "4px",
+				"padding" : "20px"
+			}
+		],
+		"components" : [
+			{
+				"metadata" : {
+					"version" : 1.0,
+					"type" : "component",
+					"generator" : "TADkit"
+				},
+				"object" : {
+					"uuid" : "00000000-0000-0000-0000-000000000000",
+					"id" : "default-scene",
+					"title" : "Chromatin",
+					"type" : "scene",
+					"dataset" : "default",
+					"state" : {
+						"width" : "500px",
+						"height" : 	"400px",
+						"margin" : "4px",
+						"position" : 0
+					}
+				},
+				"view" : {
+					"viewpoint" : {
+						"chromStart" : 1,
+						"chromEnd" : 999999,
+						"scale" : 1,
+						"camera" : [ 5000, 5000, 5000 ],
+						"target" : [ 0, 0, 0 ],
+						"fov" : 28,
+						"near" : 1,
+						"far" : 1000000,
+						"translate" : 30000,
+						"fog" : true,
+						"fogNear" : 0.75,
+						"fogFar" : 1.5		
+					},
+					"controls" : {
+						"autoRotate" : false,
+						"autoRotateSpeed" : 4
+					},
+					"viewtype" : "cylinderSegments",
+					"settings" : {
+						"background" : "#ffffff",
+						"margin" : "4px",
+						"padding" : {"top": "20px", "right": "40px", "bottom": "20px", "left": "40px"},
+						"lighting": {
+							"ambient" : "#b3b3b3",
+							"color" : "#ffffff",
+							"intensity" : 0.7
+						},
+						"axis" : {
+							"size" : 100,
+							"visible" : false
+							},
+						"particles" : {
+							"color" : "#ffffff",
+							"size" : 500,
+							"opacity" : 0.8,
+							"map" : "assets/img/sphere-glossy.png",
+							"depthTest": true,
+							"alphaTest": 0.5,
+							"transparent": true,
+							"visible" : false
+						},
+						"chromatin" : {
+							"color" : "#cccccc",
+							"particleSegments" : 40,
+							"curveSegments" : 1,
+							"radius" : 200,
+							"radiusSegments" : 16,
+							"endcap" : false,
+							"pathClosed" : false,
+							"visible" : true,
+							"tubed" : true,
+							"resolution_scales" : {
+								"2000" : 1,
+								"10000" : 10,
+								"50000" : 20,
+								"100000" : 50
+							}
+						},
+						"cluster" : {
+							"color" : "0x000000",
+							"linewidth" : 1,
+							"transparent" : true,
+							"modelOpacity" : 0.1,
+							"centroidOpacity" : 0.8,
+							"fog" : true,
+							"visible" : true
+						},
+						"network" : {
+							"transparent": false,
+							"visible" : false
+						},
+						"occupancy" :  {
+							"visible" : false
+						},
+						"segments" : 10
+					}
+				}
+			},
+			{
+                "metadata" : {
+                    "version" : 1.0,
+                    "type" : "component",
+                    "generator" : "TADkit"
+                },
+                "object" : {
+                    "uuid" : "00000000-0000-0000-0000-000000000001",
+                    "id" : "e-default-hic-data-panel",
+                    "title" : "Hic Data",
+                    "type" : "panel-hicdata",
+                    "dataset" : "default",
+                    "state" : {
+                        "width" : "800px",
+                        "height" : "400px",
+                        "margin" : "0px",
+                        "offsetx" : "510px",
+                        "position" : 1
+                    }
+                },
+                "view" : {
+                    "viewpoint" : {
+                        "chromStart" : 1,
+                        "chromEnd" : 10,
+                        "scale" : 1
+                    },
+                    "viewtype" : "list",
+                    "settings" : {
+                        "background" : "#ffffff",
+                        "margin" : "4px",
+                        "padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
+                        "species_data" : {
+							"drosophila_melanogaster" : {
+								"id" : "dmel",
+								"url" : "http://wwwdev.ebi.ac.uk/mug/api/adjacency/getInteractions?user_id=test&file_id=test&no_links=1"
+							}
+						},
+                        "example" : 1
+                    }
+                }
+            },
+            {
+				"metadata" : {
+					"version" : 1.0,
+					"type" : "component",
+					"generator" : "TADkit"
+				},
+				"object" : {
+					"uuid" : "00000000-0000-0000-0000-000000000002",
+					"id" : "e-default-panel",
+					"title" : "Inspector",
+					"type" : "panel-inspector",
+					"dataset" : "genes",
+					"state" : {
+						"width" : "500px",
+						"height" : "500px",
+						"margin" : "4px",
+						"position" : 1
+					}
+				},
+				"view" : {
+					"viewpoint" : {
+						"chromStart" : 1,
+						"chromEnd" : 10,
+						"scale" : 1
+					},
+					"viewtype" : "list",
+					"settings" : {
+						"background" : "#ffffff",
+						"margin" : "4px",
+						"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
+						"example" : 1
+					}
+				}
+			},
+            {
+				"metadata" : {
+					"version" : 1.0,
+					"type" : "component",
+					"generator" : "TADkit"
+				},
+				"object" : {
+					"uuid" : "00000000-0000-0000-0000-000000000007",
+					"id" : "slider-external",
+					"title" : "Navigation",
+					"type" : "panel-igvjs",
+					"dataset" : "default",
+					"state" : {
+						"width" : "800px",
+						"height" : "500px",
+						"margin" : "0px",
+						"position" : 1
+					}
+				},
+				"view" : {
+					"viewpoint" : {
+						"chromStart" : 1,
+						"chromEnd" : 999999,
+						"scale" : 1
+					},
+					"viewtype" : "linear",
+					"settings" : {
+						"background" : "#ffffff",
+						"margin" : "4px",
+						"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
+						"leading_chr" : true,
+						"species_data" : {
+							"drosophila_melanogaster" : {
+								"r5.01" : {
+									"id" : "r5.01",
+									"fastaURL" : "refGenomes/r5.01/r5.01.fa",
+									"cytobandURL" : "refGenomes/r5.01/cytoBand.txt",
+									"tracks": [
+										    {
+										      "name": "Fillion Colors",
+										      "type": "annotation",
+										      "format": "gff3",
+										      "sourceType": "file",
+										      "url": "assets/data/fill.gff",
+										      "indexed": false
+										    }
+									]
+								}
+							},
+							"homo_sapiens" : {
+								"hg38" : {
+									"id" : "hg38",
+									"fastaURL": "refGenomes/hg38/hg38.fa",
+									"cytobandURL": "refGenomes/hg38/hg38_cytoBand.txt",
+									"tracks": [
+										{
+											"name": "Genes",
+						                    "url": "//igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz",
+						                    "index": "//igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz.tbi",
+						                    "displayMode": "EXPANDED"
+					                	}
+					                ]
+					            }
+							},
+							"saccharomyces_cerevisiae" : {
+								"R64-1-1" : {
+									"id" : "R64-1-1",
+									"fastaURL": "refGenomes/R64-1-1/R64-1-1.fa",
+									"cytobandURL": "refGenomes/R64-1-1/R64-1-1_cytoband.txt",
+									"tracks": [{
+	                                                                              "name": "Genomic sequence features",
+	                                                                              "type": "annotation",
+	                                                                              "format": "gff3",
+	                                                                              "sourceType": "file",
+	                                                                              "url": "assets/data/saccharomyces_cerevisiae.gff",
+	                                                                              "indexed": false,
+										      "displayMode": "EXPANDED"
+	                                                                            }]
+								}
+							}
+						}
+					}
+				}
+			}
+		]
+	}
+]

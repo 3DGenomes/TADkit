@@ -1,0 +1,34 @@
+[
+	{
+		"title" : "Project 1",
+		"description" : "An example project.",
+		"ref" : "default",
+		"uuid" : "20000000-0000-0000-0000-000000000001",
+		"group" : "Default Group",
+		"state" : true,
+		"species": "human",
+		"cellType": "stem",
+		"assembly": "h95",
+		"metadata" : {
+			"version" : 2.0,
+			"type" : "project",
+			"generator" : "TADkit"
+		}
+	},
+	{
+		"title" : "Project 2",
+		"description" : "Another example project.",
+		"ref" : "another",
+		"uuid" : "20000000-0000-0000-0000-000000000002",
+		"group" : "Another Group",
+		"state" : false,
+		"species": "fly",
+		"cellType": "stem",
+		"assembly": "fly",
+		"metadata" : {
+			"version" : 2.0,
+			"type" : "project",
+			"generator" : "TADkit"
+		}		
+	}
+]

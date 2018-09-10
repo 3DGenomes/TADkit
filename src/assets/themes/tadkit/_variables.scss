@@ -1,0 +1,69 @@
+/*
+* TADkit Theme
+*/
+
+@import 'palette';
+
+$fontFamily:  "Roboto", "Trebuchet MS", Arial, Helvetica, sans-serif;
+$fontSize: 1em;
+$defaultBackground: #ffffff;
+$textColorDark: #333333;
+$textColorLight: #ffffff;
+$borderWidth: 2px;
+$borderRadius: 6px;
+$disabledOpacity: 0.35;
+$overlayOpacity: 0.7;
+
+// Header
+$headerBgColor: $color-primary-0;
+$headerBorderWidth: $borderWidth;
+$headerBorderColor: $color-primary-3;
+$headerTextColor: $textColorLight;
+$headerIconTextColor: $textColorLight;
+$headerFontWeight: normal;
+
+// Content
+$contentBgColor: $defaultBackground;
+$contentBorderWidth: $borderWidth;
+$contentBorderColor: $color-primary-3;
+$contentTextColor: $textColorDark;
+$contentIconTextColor: red;
+
+// Clickable: Default State
+$stateDefaultBgColor: $defaultBackground;
+$stateDefaultBorderWidth: $borderWidth;
+$stateDefaultBorderColor: $color-primary-0;
+$stateDefaultTextColor: $color-primary-0;
+$stateDefaultIconTextColor: $color-primary-0;
+
+// Clickable: Hover State
+$stateHoverBgColor: $color-primary-2;
+$stateHoverBorderColor: $color-primary-0;
+$stateHoverTextColor: $textColorLight;
+$stateDefaultIconTextColor: $textColorLight;
+
+// Clickable: Active State
+$stateActiveBgColor: $color-primary-3;
+$stateActiveBorderColor: $color-primary-0;
+$stateActiveTextColor: $textColorLight;
+
+// Clickable/Highlight State
+$stateHighlightBorderColor: $color-secondary-1-0;
+$stateHighlightBgColor: $color-secondary-1-2;
+$stateHighlightTextColor: $textColorLight;
+
+// Clickable: Focus State
+$stateFocusBgColor: $color-secondary-2-0;
+$stateFocusBorderColor: $color-secondary-2-3;
+$stateFocusTextColor: $textColorDark;
+
+// Error
+$stateErrorBgColor: $color-complement-0;
+$stateErrorBorderColor: $color-complement-3;
+$stateErrorTextColor: $textColorLight;
+
+//Forms
+$inputBgColor: #ffffff;
+$inputTextColor: $textColorDark;
+$invalidInputBorderColor: $color-complement-4;
+$inputGroupTextColor: $textColorLight;

@@ -1,0 +1,798 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>tadkit-a2 documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	      <link rel="stylesheet" href="../styles/style.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">tadkit-a2 documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search">
+</div>
+            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li>Components</li>
+  <li>TkProjectsListComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li >
+            <a href="#templateData" role="tab" id="templateData-tab" data-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li >
+            <a href="#tree" role="tab" id="tree-tab" data-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/projects/components/projects-list/tk-projects-list.component.ts</code>
+</p>
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                <code><a href="https://angular.io/api/core/OnInit" target="_blank" >OnInit</a></code>
+    </p>
+
+
+<section>
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover">
+        <tbody>
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">providers</td>
+                <td class="col-md-9">
+                            <code>ConfirmationService</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>tk-projects-list</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>tk-projects-list.component.css</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./tk-projects-list.component.html</code></td>
+            </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#currentProject">currentProject</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#projects">projects</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#deleteProject">deleteProject</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#editProject">editProject</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getProjects">getProjects</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#ngOnInit">ngOnInit</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#setProject">setProject</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(tkProjectsService: <a href="../injectables/TkProjectsService.html">TkProjectsService</a>, confirmationService: ConfirmationService)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/app/projects/components/projects-list/tk-projects-list.component.ts:16</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>tkProjectsService</td>
+                                                  
+                                                        <td>
+                                                                    <code><a href="../injectables/TkProjectsService.html" target="_self" >TkProjectsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>confirmationService</td>
+                                                  
+                                                        <td>
+                                                                    <code>ConfirmationService</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+    <section>
+    
+        <h3 id="methods">
+            Methods
+        </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="deleteProject"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            deleteProject
+                            </b>
+                            <a href="#deleteProject"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                            <span class="modifier-icon icon ion-ios-reset"></span>
+                        <code>deleteProject(project: )</code>
+                    </td>
+                </tr>
+
+
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">src/app/projects/components/projects-list/tk-projects-list.component.ts:43</a></div>
+                            </td>
+                        </tr>
+
+
+                <tr>
+                    <td class="col-md-4">
+
+                            <div class="io-description">
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>project</td>
+                                                    
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                            <div>
+                            </div>
+                            <div class="io-description">
+                                <b>Returns : </b>    <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                            </div>
+                                <div class="io-description">
+                                    
+                                </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="editProject"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            editProject
+                            </b>
+                            <a href="#editProject"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                            <span class="modifier-icon icon ion-ios-reset"></span>
+                        <code>editProject(project: )</code>
+                    </td>
+                </tr>
+
+
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">src/app/projects/components/projects-list/tk-projects-list.component.ts:39</a></div>
+                            </td>
+                        </tr>
+
+
+                <tr>
+                    <td class="col-md-4">
+
+                            <div class="io-description">
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>project</td>
+                                                    
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                            <div>
+                            </div>
+                            <div class="io-description">
+                                <b>Returns : </b>    <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                            </div>
+                                <div class="io-description">
+                                    
+                                </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="getProjects"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Private</span>
+                            getProjects
+                            </b>
+                            <a href="#getProjects"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                            <span class="modifier-icon icon ion-ios-reset"></span>
+                        <code>getProjects()</code>
+                    </td>
+                </tr>
+
+
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">src/app/projects/components/projects-list/tk-projects-list.component.ts:28</a></div>
+                            </td>
+                        </tr>
+
+
+                <tr>
+                    <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Returns : </b>    <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="ngOnInit"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            ngOnInit
+                            </b>
+                            <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                            <span class="modifier-icon icon ion-ios-reset"></span>
+                        <code>ngOnInit()</code>
+                    </td>
+                </tr>
+
+
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/projects/components/projects-list/tk-projects-list.component.ts:24</a></div>
+                            </td>
+                        </tr>
+
+
+                <tr>
+                    <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Returns : </b>    <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="setProject"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            setProject
+                            </b>
+                            <a href="#setProject"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                            <span class="modifier-icon icon ion-ios-reset"></span>
+                        <code>setProject(project: )</code>
+                    </td>
+                </tr>
+
+
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/app/projects/components/projects-list/tk-projects-list.component.ts:35</a></div>
+                            </td>
+                        </tr>
+
+
+                <tr>
+                    <td class="col-md-4">
+
+                            <div class="io-description">
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>project</td>
+                                                    
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                            <div>
+                            </div>
+                            <div class="io-description">
+                                <b>Returns : </b>    <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                            </div>
+                                <div class="io-description">
+                                    
+                                </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+    <section>
+    
+        <h3 id="inputs">
+            Properties
+        </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="currentProject"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            currentProject
+                            </b>
+                            <a href="#currentProject"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span><code>currentProject:     <code><a href="../classes/Project.html" target="_self" >Project</a></code>
+</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code><a href="../classes/Project.html" target="_self" >Project</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/app/projects/components/projects-list/tk-projects-list.component.ts:16</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="projects"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Public</span>
+                            projects
+                            </b>
+                            <a href="#projects"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span><code>projects:     <code><a href="../classes/Projects.html" target="_self" >Projects</a></code>
+</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code><a href="../classes/Projects.html" target="_self" >Projects</a></code>
+
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/app/projects/components/projects-list/tk-projects-list.component.ts:15</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, OnInit } from &#x27;@angular/core&#x27;;
+import { TkProjectsService } from &#x27;@projects/tk-projects.service&#x27;;
+import { Project, Projects } from &#x27;@projects/models/tk-project.model&#x27;;
+
+import { ConfirmationService } from &#x27;primeng/api&#x27;;
+
+@Component({
+  selector: &#x27;tk-projects-list&#x27;,
+  templateUrl: &#x27;./tk-projects-list.component.html&#x27;,
+  styleUrls: [&#x27;./tk-projects-list.component.css&#x27;],
+  providers: [ConfirmationService]
+})
+export class TkProjectsListComponent implements OnInit {
+
+  public projects: Projects;
+  public currentProject: Project;
+  // public currentCheck: string;
+
+  constructor(
+    private tkProjectsService: TkProjectsService,
+    private confirmationService: ConfirmationService
+  ) {}
+
+  public ngOnInit(): void {
+    this.getProjects();
+  }
+
+  private getProjects(): void {
+    this.tkProjectsService.projects.subscribe(prjs &#x3D;&gt; this.projects &#x3D; prjs);
+    this.tkProjectsService.currentProject.subscribe(prj &#x3D;&gt; {
+      this.currentProject &#x3D; prj;
+    });
+  }
+
+  public  setProject(project): void {
+    this.tkProjectsService.setProject(project);
+  }
+
+  public  editProject(project): void {
+    // Open dialog with Create form
+  }
+
+  public  deleteProject(project): void {
+    this.confirmationService.confirm({
+      message: &#x27;Are you sure that you want to delete this project&#x27;,
+      accept: () &#x3D;&gt; {
+        this.tkProjectsService.deleteProject(project);
+      }
+    });
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;section class&#x3D;&quot;tk-list&quot;&gt;
+  &lt;h3&gt;Projects List&lt;/h3&gt;
+  &lt;div *ngIf&#x3D;&quot;projects else loading&quot;&gt;
+      &lt;!-- &lt;ng-container *ngIf&#x3D;&quot;projects.length; else noItems&quot;&gt; --&gt;
+      &lt;table&gt;
+        &lt;tr&gt;
+          &lt;th&gt;Title&lt;/th&gt;
+          &lt;th&gt;Description&lt;/th&gt;
+          &lt;th&gt;Date&lt;/th&gt;
+          &lt;th&gt;Select&lt;/th&gt;
+          &lt;th&gt;Edit&lt;/th&gt;
+          &lt;th&gt;Delete&lt;/th&gt;
+        &lt;/tr&gt;
+        &lt;tr *ngFor&#x3D;&quot;let project of projects&quot;&gt;
+          &lt;td&gt;{{project.title}}&lt;/td&gt;
+          &lt;td&gt;{{project.description}}&lt;/td&gt;
+          &lt;td&gt;{{project.date}}&lt;/td&gt;
+          &lt;!-- &lt;td&gt;&lt;p-radioButton (click)&#x3D;&quot;setProject(project)&quot; name&#x3D;&quot;selectProject&quot; value&#x3D;&quot;{{project.title}}&quot; [(ngModel)]&#x3D;&quot;currentCheck&quot;&gt;&lt;/p-radioButton&gt;&lt;/td&gt; --&gt;
+          &lt;td&gt;&lt;button (click)&#x3D;&quot;setProject(project.title)&quot; pButton type&#x3D;&quot;button&quot; icon&#x3D;&quot;pi pi-check&quot; iconPos&#x3D;&quot;left&quot; [ngClass]&#x3D;&quot;{&#x27;ui-state-active&#x27;: project.title &#x3D;&#x3D;&#x3D; (currentProject | async).title }&quot;&gt;&lt;/button&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;button pButton type&#x3D;&quot;button&quot; icon&#x3D;&quot;pi pi-pencil&quot; iconPos&#x3D;&quot;left&quot;&gt;&lt;/button&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;button (click)&#x3D;&quot;deleteProject(project.title)&quot; pButton type&#x3D;&quot;button&quot; icon&#x3D;&quot;pi pi-trash&quot; iconPos&#x3D;&quot;left&quot;&gt;&lt;/button&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      &lt;/table&gt;
+      &lt;!-- &lt;/ng-container&gt;     --&gt;
+      &lt;ng-template #noItems&gt;No Items!&lt;/ng-template&gt;
+    &lt;/div&gt;
+    &lt;ng-template #loading&gt;
+      &lt;p-progressSpinner&gt;&lt;/p-progressSpinner&gt;
+    &lt;/ng-template&gt; 
+&lt;/section&gt;
+&lt;p-confirmDialog header&#x3D;&quot;Confirmation&quot; icon&#x3D;&quot;pi pi-exclamation-triangle&quot; width&#x3D;&quot;425&quot;&gt;&lt;/p-confirmDialog&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><section class="tk-list">  <h3>Projects List</h3>  <div *ngIf="projects else loading">      <!-- <ng-container *ngIf="projects.length; else noItems"> -->      <table>        <tr>          <th>Title</th>          <th>Description</th>          <th>Date</th>          <th>Select</th>          <th>Edit</th>          <th>Delete</th>        </tr>        <tr *ngFor="let project of projects">          <td>{{project.title}}</td>          <td>{{project.description}}</td>          <td>{{project.date}}</td>          <!-- <td><p-radioButton (click)="setProject(project)" name="selectProject" value="{{project.title}}" [(ngModel)]="currentCheck"></p-radioButton></td> -->          <td><button (click)="setProject(project.title)" pButton type="button" icon="pi pi-check" iconPos="left" [ngClass]="{\'ui-state-active\': project.title === (currentProject | async).title }"></button></td>          <td><button pButton type="button" icon="pi pi-pencil" iconPos="left"></button></td>          <td><button (click)="deleteProject(project.title)" pButton type="button" icon="pi pi-trash" iconPos="left"></button></td>        </tr>      </table>      <!-- </ng-container>     -->      <ng-template #noItems>No Items!</ng-template>    </div>    <ng-template #loading>      <p-progressSpinner></p-progressSpinner>    </ng-template> </section><p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle" width="425"></p-confirmDialog></div>'
+    var COMPONENTS = [{'name': 'AppTadkitComponent', 'selector': 'tk-app-tadkit'},{'name': 'TkFooterComponent', 'selector': 'tk-footer'},{'name': 'TkGenomicsInfoComponent', 'selector': 'tk-genomics-info'},{'name': 'TkGenomicsMatrixComponent', 'selector': 'tk-genomics-matrix'},{'name': 'TkGenomicsSpatialComponent', 'selector': 'tk-genomics-spatial'},{'name': 'TkGenomicsTracksComponent', 'selector': 'tk-genomics-tracks'},{'name': 'TkHeaderComponent', 'selector': 'tk-header'},{'name': 'TkMenuComponent', 'selector': 'tk-menu'},{'name': 'TkProjectBriefComponent', 'selector': 'tk-project-brief'},{'name': 'TkProjectCreateComponent', 'selector': 'tk-project-create'},{'name': 'TkProjectDetailsComponent', 'selector': 'tk-project-details'},{'name': 'TkProjectsComponent', 'selector': 'tk-projects'},{'name': 'TkProjectsListComponent', 'selector': 'tk-projects-list'},{'name': 'TkSidebarComponent', 'selector': 'tk-sidebar'},{'name': 'TkWorkspaceComponent', 'selector': 'tk-workspace'},{'name': 'WorkspaceWidgetSpawnerComponent', 'selector': 'tk-workspace-widget-spawner'}];
+    var DIRECTIVES = [];
+    var ACTUAL_COMPONENT = {'name': 'TkProjectsListComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'TkProjectsListComponent.html';
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+       <script src="../js/menu-wc.js"></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

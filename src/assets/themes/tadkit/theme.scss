@@ -1,0 +1,25 @@
+@import 'variables';
+@import "primeng/resources/themes/_theme.scss";
+/* @import url('https://fonts.googleapis.com/css?family=Roboto:100'); */
+
+body {
+	margin: 0px;
+	font-family: 'Roboto', 'Open Sans', sans-serif;
+	font-weight: 100;
+	background-color: $defaultBackground;
+	color: $textColorDark;
+}
+
+.ui-confirmdialog .ui-dialog-content .ui-confirmdialog-icon {
+    color: $contentIconTextColor;
+}
+
+.ui-widget-overlay {
+    background-color: $defaultBackground;
+    opacity: $overlayOpacity;
+    filter:Alpha(Opacity=$overlayOpacity*100);
+}
+
+.ui-datepicker-mask, .ui-dialog-mask, .ui-sidebar-mask, .ui-tree-loading-mask {
+	top: 50px;
+}
