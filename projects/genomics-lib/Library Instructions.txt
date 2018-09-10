@@ -1,0 +1,6 @@
+
+// Generate new component in library
+ng generate component genomics-spatial --prefix tk --project genomics-lib --export
+
+// Build library
+ng build --prod genomics-lib

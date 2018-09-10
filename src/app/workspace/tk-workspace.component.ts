@@ -38,6 +38,6 @@ export class TkWorkspaceComponent implements OnInit {
   }
 
   public addWidget(widgetName): void {
-    this.tkWorkspaceService.addWidget(widgetName, this.data);
+    this.tkWorkspaceService.addWidgets(widgetName);
   }
 }

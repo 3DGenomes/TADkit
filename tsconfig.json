@@ -5,9 +5,21 @@
     "sourceMap": true,
     "baseUrl": "./src",
     "paths": {
-      "@angular-decorators/*": ["angular-decorators/*"],
-      "@projects/*": ["app/projects/*"],
-      "@workspace/*": ["app/workspace/*"]
+      "@angular-decorators/*": [
+        "angular-decorators/*"
+      ],
+      "@projects/*": [
+        "app/projects/*"
+      ],
+      "@workspace/*": [
+        "app/workspace/*"
+      ],
+      "genomics-lib": [
+        "../dist/genomics-lib"
+      ],
+      "genomics-lib/*": [
+        "../dist/genomics-lib/*"
+      ]
     },
     "declaration": false,
     "moduleResolution": "node",

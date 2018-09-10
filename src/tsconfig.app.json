@@ -6,7 +6,9 @@
     "paths": {
       "@angular-decorators/*": ["angular-decorators/*"],
       "@projects/*": ["app/projects/*"],
-      "@workspace/*": ["app/workspace/*"]
+      "@workspace/*": ["app/workspace/*"],
+      "genomics-lib": ["../dist/genomics-lib"],
+      "genomics-lib/*": ["../dist/genomics-lib/*"]
     },
     "module": "es2015",
     "types": []

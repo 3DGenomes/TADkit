@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "tadkit-a2": {
+    "tadkit-a5": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -30,7 +30,11 @@
                 "../../../../node_modules"
               ]
             },
-            "scripts": []
+            "scripts": [
+              {
+                "input": "node_modules/document-register-element/build/document-register-element.js"
+              }
+            ]
           },
           "configurations": {
             "production": {
@@ -55,18 +59,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "tadkit-a2:build"
+            "browserTarget": "tadkit-a5:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "tadkit-a2:build:production"
+              "browserTarget": "tadkit-a5:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "tadkit-a2:build"
+            "browserTarget": "tadkit-a5:build"
           }
         },
         "test": {
@@ -102,7 +106,7 @@
         }
       }
     },
-    "tadkit-a2-e2e": {
+    "tadkit-a5-e2e": {
       "root": "",
       "sourceRoot": "e2e",
       "projectType": "application",
@@ -111,7 +115,7 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "./protractor.conf.js",
-            "devServerTarget": "tadkit-a2:serve"
+            "devServerTarget": "tadkit-a5:serve"
           }
         },
         "lint": {
@@ -126,9 +130,49 @@
           }
         }
       }
+    },
+    "genomics-lib": {
+      "root": "projects/genomics-lib",
+      "sourceRoot": "projects/genomics-lib/src",
+      "projectType": "library",
+      "prefix": "tk",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/genomics-lib/tsconfig.lib.json",
+            "project": "projects/genomics-lib/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "project": "projects/genomics-lib/ng-package.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/genomics-lib/src/test.ts",
+            "tsConfig": "projects/genomics-lib/tsconfig.spec.json",
+            "karmaConfig": "projects/genomics-lib/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/genomics-lib/tsconfig.lib.json",
+              "projects/genomics-lib/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
-  "defaultProject": "tadkit-a2",
+  "defaultProject": "tadkit-a5",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",

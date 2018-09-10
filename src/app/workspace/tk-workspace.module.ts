@@ -11,35 +11,24 @@ import { TkWidgetSpawnerComponent } from '@workspace/widget-spawner/tk-widget-sp
 import { TkWidgetRegionComponent } from './widget-resizable/tk-widget-resizable.component';
 import { TkWidgetDragDirective } from '@workspace/widget-resizable/tk-widget-drag.directive';
 
-import { TkGenomicsInfoComponent } from '@workspace/components/genomics-info/tk-genomics-info.component';
-import { TkGenomicsMatrixComponent } from '@workspace/components/genomics-matrix/tk-genomics-matrix.component';
-import { TkGenomicsSpatialComponent } from '@workspace/components/genomics-spatial/tk-genomics-spatial.component';
-import { TkGenomicsTracksComponent } from '@workspace/components/genomics-tracks/tk-genomics-tracks.component';
+import { GenomicsLibModule } from 'genomics-lib';
 
 @NgModule({
   imports: [
     CommonModule,
     ProgressSpinnerModule,
     ButtonModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    GenomicsLibModule
   ],
   declarations: [
     TkWorkspaceComponent,
     TkWidgetSpawnerComponent,
     TkWidgetRegionComponent,
     TkWidgetDragDirective,
-    TkGenomicsInfoComponent,
-    TkGenomicsMatrixComponent,
-    TkGenomicsSpatialComponent,
-    TkGenomicsTracksComponent
   ],
   exports: [],
   providers: [],
-  entryComponents: [
-    TkGenomicsInfoComponent,
-    TkGenomicsMatrixComponent,
-    TkGenomicsSpatialComponent,
-    TkGenomicsTracksComponent
-  ]
+  entryComponents: []
 })
 export class TkWorkspaceModule {}

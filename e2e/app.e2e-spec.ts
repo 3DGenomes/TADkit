@@ -1,6 +1,6 @@
 import { AppPage } from './app.po';
 
-describe('tadkit-a2 App', () => {
+describe('tadkit-a5 App', () => {
   let page: AppPage;
 
   beforeEach(() => {
