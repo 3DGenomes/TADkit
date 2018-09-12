@@ -3,7 +3,7 @@ import { Component, OnInit, ElementRef, HostBinding, Input, Inject, ViewEncapsul
 @Component({
   selector: 'tk-widget-region',
   templateUrl: './tk-widget-resizable.component.html',
-  styleUrls: ['./tk-widget-resizable.component.css'],
+  styleUrls: ['./tk-widget-resizable.component.scss'],
   providers: [ { provide: Window, useValue: window } ],
   encapsulation: ViewEncapsulation.None
 })

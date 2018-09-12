@@ -5,13 +5,17 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
-import { TkWorkspaceComponent } from '@workspace/tk-workspace.component';
+import { TkWorkspaceComponent } from '@workspace/basic2x2/tk-workspace.component';
+import { TkWorkspaceResizableComponent } from '@workspace/resizable/tk-workspace.component';
+import { TkWorkspaceResizablyComponent } from '@workspace/resizably/tk-workspace.component';
+import { TkWorkspaceGridsterComponent } from '@workspace/gridster/tk-workspace.component';
 import { TkWidgetSpawnerComponent } from '@workspace/widget-spawner/tk-widget-spawner.component';
 
-import { TkWidgetRegionComponent } from './widget-resizable/tk-widget-resizable.component';
-import { TkWidgetDragDirective } from '@workspace/widget-resizable/tk-widget-drag.directive';
+import { TkWidgetRegionComponent } from './resizable/tk-widget-resizable.component';
+import { TkWidgetDragDirective } from '@workspace/resizable/tk-widget-drag.directive';
 
 import { GenomicsLibModule } from 'genomics-lib';
+import { GridsterModule } from 'angular-gridster2';
 
 @NgModule({
   imports: [
@@ -19,10 +23,14 @@ import { GenomicsLibModule } from 'genomics-lib';
     ProgressSpinnerModule,
     ButtonModule,
     ConfirmDialogModule,
+    GridsterModule,
     GenomicsLibModule
   ],
   declarations: [
     TkWorkspaceComponent,
+    TkWorkspaceResizableComponent,
+    TkWorkspaceResizablyComponent,
+    TkWorkspaceGridsterComponent,
     TkWidgetSpawnerComponent,
     TkWidgetRegionComponent,
     TkWidgetDragDirective,
