@@ -1,0 +1,8 @@
+// Serve app to http://localhost:4200/
+ng serve
+
+// Generate new component in library
+ng generate component component-name --prefix tk
+
+// Build documentation
+npm run compodoc
