@@ -1,0 +1,19 @@
+<div class="content vert">
+    <ng-container *ngFor="let lay of widgets; index as i;">
+      <tk-widget-layout *ngIf="i<2" class="row" [directions]="['right']" [rFlex]="true">{{i}}
+        <ng-container *ngFor="let widget of widgets; index as w; let flex=even;">
+        <tk-widget-layout *ngIf="w<2" class="cell" [directions]="['bottom']" [rFlex]="flex">
+          <tk-widget [widget]="widget" [dataStream]="dataStream"></tk-widget>
+        </tk-widget-layout>
+        </ng-container>
+      </tk-widget-layout>
+      <tk-widget-layout *ngIf="i>1" class="row" [directions]="['right']" [rFlex]="false">{{i}}
+        <ng-container *ngFor="let widget of widgets; index as w; let flex=even;">
+        <tk-widget-layout *ngIf="w>1" class="cell" [directions]="['bottom']" [rFlex]="flex">
+          <tk-widget [widget]="widget" [dataStream]="dataStream"></tk-widget>
+        </tk-widget-layout>
+        </ng-container>
+      </tk-widget-layout>
+    </ng-container>
+  </div>
+  

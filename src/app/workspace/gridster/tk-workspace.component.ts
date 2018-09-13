@@ -37,10 +37,11 @@ export class TkWorkspaceGridsterComponent implements OnInit {
     private tkWorkspaceService: TkWorkspaceService,
     private tkProjectsService: TkProjectsService
   ) {
+    // spatial, info, matrix, tracks
     this.dashboard = [
-      {x: 0, y: 0, rows: 4, cols: 6},
-      {x: 0, y: 6, rows: 6, cols: 6},
+      {x: 0, y: 0, rows: 6, cols: 6},
       {x: 6, y: 0, rows: 6, cols: 6},
+      {x: 0, y: 6, rows: 6, cols: 6},
       {x: 6, y: 6, rows: 6, cols: 6}
     ];
 

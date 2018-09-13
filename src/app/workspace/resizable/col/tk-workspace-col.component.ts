@@ -9,11 +9,11 @@ import { BindObservable } from 'bind-observable';
 
 @Component({
   selector: 'tk-workspace',
-  templateUrl: './tk-workspace.component.html',
-  styleUrls: ['./tk-workspace.component.scss']
+  templateUrl: './tk-workspace-col.component.html',
+  styleUrls: ['./tk-workspace-col.component.scss']
 })
 
-export class TkWorkspaceResizablyComponent implements OnInit {
+export class TkWorkspaceResizableColComponent implements OnInit {
   @HostBinding('class') classes = 'workspace';
 
   private widgets: WidgetComponent[] = [];

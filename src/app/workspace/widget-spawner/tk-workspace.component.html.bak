@@ -1,25 +1,25 @@
 <main>
-	<tk-widget-region class='nav' [directions]="['right']" [rFlex]="true">
+	<tk-widget-layout class='nav' [directions]="['right']" [rFlex]="true">
 		<span class="icon-big icon_expand-1"></span>
 		<br /><br />
 		<h1>{{ title }}</h1>
 		<p>
 			A teensy weensy directive for creating resizable containers.
 		</p>
-	</tk-widget-region>
+	</tk-widget-layout>
 	<div class="content">
-		<tk-widget-region class="row" [directions]="['bottom']" [rFlex]="true">
-			<tk-widget-region class="section" id="one" [directions]="['right']" [rFlex]="true">
+		<tk-widget-layout class="row" [directions]="['bottom']" [rFlex]="true">
+			<tk-widget-layout class="section" id="one" [directions]="['right']" [rFlex]="true">
 				<p>Works with flexbox.</p>
-			</tk-widget-region>
+			</tk-widget-layout>
 			<div class="section" id="two">
 				<p>2</p>
 			</div>
-		</tk-widget-region>
+		</tk-widget-layout>
 		<div class="row">
-			<tk-widget-region class="section" id="three" [directions]="['right']" [rFlex]="true">
+			<tk-widget-layout class="section" id="three" [directions]="['right']" [rFlex]="true">
 				<p>Completely seperates <strong>layout logic</strong> from <strong>resize logic</strong>. All layout logic must be done by you in the CSS (as it should be).</p>
-			</tk-widget-region>
+			</tk-widget-layout>
 			<div class="section" id="four">4</div>
 		</div>
 	</div>

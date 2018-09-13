@@ -16,9 +16,9 @@
           <td>{{project.description}}</td>
           <td>{{project.date}}</td>
           <!-- <td><p-radioButton (click)="setProject(project)" name="selectProject" value="{{project.title}}" [(ngModel)]="currentCheck"></p-radioButton></td> -->
-          <td><button (click)="setProject(project.title)" pButton type="button" icon="pi pi-check" iconPos="left" [ngClass]="{'ui-state-active': project.title === (currentProject | async).title }"></button></td>
+          <td><button (click)="setProject(project)" pButton type="button" icon="pi pi-check" iconPos="left" [ngClass]="{'ui-state-active': project.title === (currentProject | async).title }"></button></td>
           <td><button pButton type="button" icon="pi pi-pencil" iconPos="left"></button></td>
-          <td><button (click)="deleteProject(project.title)" pButton type="button" icon="pi pi-trash" iconPos="left"></button></td>
+          <td><button (click)="deleteProject(project)" pButton type="button" icon="pi pi-trash" iconPos="left"></button></td>
         </tr>
       </table>
       <!-- </ng-container>     -->

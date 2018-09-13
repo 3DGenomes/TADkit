@@ -53,13 +53,13 @@ export class TkProjectsService {
     }
   }
 
-  public setProject(projectTitle?): void {
+  public setProject(project?): void {
     let theProject = null;
-    if (projectTitle) {
+    if (project) {
       theProject = this.projects
       .pipe(
         map(prjs => prjs
-          .find(prj => prj.title === projectTitle)
+          .find(prj => prj.title === project.title)
         )
       );
     } else {

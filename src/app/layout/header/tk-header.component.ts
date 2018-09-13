@@ -10,8 +10,8 @@ export class TkHeaderComponent {
 
   private topmenu: any[] = [
     { title: 'Workspace', route: '/workspace' },
-    { title: 'Resizable', route: '/resizable' },
-    { title: 'Resizably', route: '/resizably' },
+    { title: 'Resize Col', route: '/resizable-col' },
+    { title: 'Resize Row', route: '/resizable-row' },
     { title: 'Gridster', route: '/gridster' },
     { title: 'Projects', route: '/projects' },
     { title: 'User', link: '#' }

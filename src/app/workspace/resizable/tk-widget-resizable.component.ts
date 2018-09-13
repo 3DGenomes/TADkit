@@ -1,15 +1,16 @@
-import { Component, OnInit, ElementRef, HostBinding, Input, Inject, ViewEncapsulation, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ElementRef, HostBinding, Input, Inject,
+   ViewEncapsulation, Output, EventEmitter, Renderer2 } from '@angular/core';
 
 @Component({
-  selector: 'tk-widget-region',
+  selector: 'tk-widget-layout',
   templateUrl: './tk-widget-resizable.component.html',
   styleUrls: ['./tk-widget-resizable.component.scss'],
   providers: [ { provide: Window, useValue: window } ],
   encapsulation: ViewEncapsulation.None
 })
-export class TkWidgetRegionComponent implements OnInit {
+export class TkWidgetLayoutComponent implements OnInit {
 
-  @HostBinding('class.resizable') true;
+  @HostBinding('class.resizable') resizable = true;
   @HostBinding('class.no-transition') noTransition = false;
   @HostBinding('style.width') width;
   @HostBinding('style.height') height;
@@ -45,12 +46,13 @@ export class TkWidgetRegionComponent implements OnInit {
 
   // private flexBasis;
 
-  constructor(private regionElement: ElementRef, @Inject(Window) private window: Window) {
+  constructor(private regionElement: ElementRef, @Inject(Window) private window: Window, private renderer: Renderer2) {
     this.nativeElement = this.regionElement.nativeElement;
     this.style = this.window.getComputedStyle(this.nativeElement, null);
   }
 
   ngOnInit() {
+    if (!this.rFlex) { console.log(this.rFlex); this.resizable = false; }
     this.flexBasis = 'flexBasis' in this.nativeElement.style ? 'flexBasis' :
       'webkitFlexBasis' in this.nativeElement.style ? 'webkitFlexBasis' :
       'msFlexPreferredSize' in this.nativeElement.style ? 'msFlexPreferredSize' : 'flexBasis';

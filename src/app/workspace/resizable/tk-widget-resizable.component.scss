@@ -1,12 +1,98 @@
-$spacing: 14px;
+/*
+ * Resizable Layout
+ * Default like HTML table rows:
+  +--------+--------+
+  | Cell 1   Cell 2 |
+  +--------+--------+
+  | Cell 3   Cell 4 |
+  +--------+--------+
+  <div class="content">
+    <tk-widget-layout class="row" [directions]="['bottom']" [rFlex]="true">
+      <tk-widget-layout class="cell" [directions]="['right']" [rFlex]="true">
+        <p>Cell Content 1</p>
+      </tk-widget-layout>
+      <div class="cell">
+        <p>Cell Content 2</p>
+      </div>
+    </tk-widget-layout>
+    <div class="row">
+      <tk-widget-layout class="cell" [directions]="['right']" [rFlex]="true">
+        <p>Cell Content 3</p>
+      </tk-widget-layout>
+      <div class="cell">
+        <p>Cell Content 4</p>
+      </div>
+    </div>
+  </div>
+ *
+ * Add .vert class to container with calss .content below for column based layout:
+  +--------+--------+
+  | Cell 1 | Cell 3 |
+  | Cell 2 | Cell 4 |
+  +--------+--------+
+  <div class="content vert">
+ * 
+ */
 
+  $spacing: 8px;
+
+ .content {
+	flex: 1;
+	display: flex;
+	justify-content: space-around;
+	align-content: space-around;
+  padding: $spacing/2;
+  flex-flow: column nowrap;
+}
+.row {
+	min-height: 50px;
+	flex: 1;
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: space-around;
+	align-content: space-around;
+	&.resizable {
+        flex: 0 0 300px;
+    }
+}
+.cell {
+	box-sizing: border-box;
+	border-radius: 0px;
+	padding: 1.25em 1.75em;
+	background: #fff;
+	border: $spacing/2 solid #f0f0f0;
+	flex: 1;
+	min-width: 30px;
+	&.resizable {
+        flex: 0 0 300px;
+    }
+}
+/* Overide for */
+.vert {
+  @extend .content;
+  flex-flow: row nowrap;
+  .row {
+    min-width: 50px;
+    flex-flow: column nowrap;
+  };
+  .rg-top    { margin-top:    -#{$spacing};   };
+  .rg-right  { margin-right:  -#{$spacing/2}; };
+  .rg-bottom { margin-bottom: -#{$spacing};   };
+  .rg-left   { margin-left:   -#{$spacing/2}; };
+}
+
+/**
+ * Resizable
+ */
 .resizable {
   position: relative;
   &.no-transition {
       transition: none !important;
   }
 }
-
+.rg-none {
+  display: none;
+}
 .rg-right, .rg-left, .rg-top, .rg-bottom {
   display: block;
   width: $spacing;
@@ -46,26 +132,26 @@ $spacing: 14px;
   width: 100%;
   top: 0;
   left: 0;
-  margin-top: -$spacing/2;
+  margin-top: -#{$spacing/2};
 }
 .rg-right   {
   cursor: col-resize;
   height: 100%;
   right: 0;
   top: 0;
-  margin-right: -$spacing;
+  margin-right: -#{$spacing};
 }
 .rg-bottom  {
   cursor: row-resize;
   width: 100%;
   bottom: 0;
   left: 0;
-  margin-bottom: -$spacing/2;
+  margin-bottom: -#{$spacing/2};
 }
 .rg-left    {
   cursor: col-resize;
   height: 100%;
   left: 0;
   top: 0;
-  margin-left: -$spacing;
+  margin-left: -#{$spacing};
 }

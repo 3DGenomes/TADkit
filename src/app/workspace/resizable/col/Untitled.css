@@ -1,0 +1,94 @@
+.resizable[_ngcontent-c6] {
+  position: relative; }
+  .resizable.no-transition[_ngcontent-c6] {
+    transition: none !important; }
+  .rg-right[_ngcontent-c6], .rg-left[_ngcontent-c6], .rg-top[_ngcontent-c6], .rg-bottom[_ngcontent-c6] {
+  display: block;
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  background: transparent;
+  position: absolute;
+  z-index: 1; }
+  .rg-right[_ngcontent-c6]   span[_ngcontent-c6], .rg-left[_ngcontent-c6]   span[_ngcontent-c6], .rg-top[_ngcontent-c6]   span[_ngcontent-c6], .rg-bottom[_ngcontent-c6]   span[_ngcontent-c6] {
+    position: absolute;
+    box-sizing: border-box;
+    display: block;
+    border: 1px solid #ccc; }
+  .rg-right[_ngcontent-c6]   span[_ngcontent-c6], .rg-left[_ngcontent-c6]   span[_ngcontent-c6] {
+  border-width: 0 1px;
+  top: 50%;
+  margin-top: -10px;
+  margin: -10px 0 0 3.5px;
+  height: 20px;
+  width: 7px; }
+  .rg-top[_ngcontent-c6]   span[_ngcontent-c6], .rg-bottom[_ngcontent-c6]   span[_ngcontent-c6] {
+  border-width: 1px 0;
+  left: 50%;
+  margin: 3.5px 0 0 -10px;
+  width: 20px;
+  height: 7px; }
+  .rg-top[_ngcontent-c6] {
+  cursor: row-resize;
+  width: 100%;
+  top: 0;
+  left: 0;
+  margin-top: -7px; }
+  .rg-right[_ngcontent-c6] {
+  cursor: col-resize;
+  height: 100%;
+  right: 0;
+  top: 0;
+  margin-right: -14px; }
+  .rg-bottom[_ngcontent-c6] {
+  cursor: row-resize;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  margin-bottom: -7px; }
+  .rg-left[_ngcontent-c6] {
+  cursor: col-resize;
+  height: 100%;
+  left: 0;
+  top: 0;
+  margin-left: -14px; }
+  [_nghost-c6] {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+  background: #f0f0f0; }
+  .content[_ngcontent-c6] {
+  flex: 1;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-around;
+  align-content: space-around;
+  padding: 7px; }
+  .col[_ngcontent-c6] {
+  min-width: 50px;
+  flex: 1;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-around;
+  align-content: space-around; }
+  .col.resizable[_ngcontent-c6] {
+    flex: 0 0 300px; }
+  .cell[_ngcontent-c6] {
+  box-sizing: border-box;
+  border-radius: 0px;
+  padding: 1.25em 1.75em;
+  background: #fff;
+  border: 7px solid #f0f0f0;
+  flex: 1;
+  min-height: 30px; }
+  .cell.resizable[_ngcontent-c6] {
+    flex: 0 0 300px; }
+  
+  .rg-top[_ngcontent-c6], .rg-bottom[_ngcontent-c6] {
+  margin-top: -14px !important; }
+  .rg-right[_ngcontent-c6], .rg-left[_ngcontent-c6] {
+  margin-right: -7px !important; }

@@ -64,6 +64,7 @@ export class TkWorkspaceService {
   }
 
   public removeWidget(widgetName: string): void {
+    this.widgets.subscribe(wdgt => console.log(wdgt));
     // const widgetsArray = this.widgetsStream.getValue().filter(item => item.data.title !== widgetName);
     // this.updateWidgets(widgetsArray);
   }

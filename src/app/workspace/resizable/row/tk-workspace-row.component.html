@@ -1,0 +1,17 @@
+<div class="content">
+	<tk-widget-layout class="row" [directions]="['bottom']" [rFlex]="true">
+		<ng-container *ngFor="let widget of widgets; index as i; even as flex;">
+			<tk-widget-layout *ngIf="i<2" class="cell" [directions]="['right']" [rFlex]="flex">
+				<tk-widget [widget]="widget" [dataStream]="dataStream"></tk-widget>
+			</tk-widget-layout>
+		</ng-container>
+	</tk-widget-layout>
+	<tk-widget-layout class="row" [directions]="['bottom']" [rFlex]="false">
+		<ng-container *ngFor="let widget of widgets; index as i; even as flex;">
+			<tk-widget-layout *ngIf="i>1" class="cell" [directions]="['right']" [rFlex]="flex">
+				<tk-widget [widget]="widget" [dataStream]="dataStream"></tk-widget>
+			</tk-widget-layout>
+		</ng-container>
+	</tk-widget-layout>
+</div>
+	
