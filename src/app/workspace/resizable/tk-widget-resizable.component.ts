@@ -52,7 +52,7 @@ export class TkWidgetLayoutComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (!this.rFlex) { console.log(this.rFlex); this.resizable = false; }
+    if (!this.rFlex) { this.resizable = false; } // Added to permit use of component for all cells
     this.flexBasis = 'flexBasis' in this.nativeElement.style ? 'flexBasis' :
       'webkitFlexBasis' in this.nativeElement.style ? 'webkitFlexBasis' :
       'msFlexPreferredSize' in this.nativeElement.style ? 'msFlexPreferredSize' : 'flexBasis';

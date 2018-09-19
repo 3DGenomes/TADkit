@@ -4,13 +4,13 @@
         "directive-selector": [
             true,
             "attribute",
-            "tk",
+            "genomics",
             "camelCase"
         ],
         "component-selector": [
             true,
             "element",
-            "tk",
+            "genomics",
             "kebab-case"
         ]
     }

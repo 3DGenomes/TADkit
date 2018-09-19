@@ -1,0 +1,10 @@
+import { NgModule } from '@angular/core';
+import { ThreeLibComponent } from './three-lib.component';
+
+@NgModule({
+  imports: [
+  ],
+  declarations: [ThreeLibComponent],
+  exports: [ThreeLibComponent]
+})
+export class ThreeLibModule { }

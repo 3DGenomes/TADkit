@@ -2,14 +2,19 @@
 @import "primeng/resources/themes/_theme.scss";
 /* @import url('https://fonts.googleapis.com/css?family=Roboto:100'); */
 
+* {
+	margin: 0;
+	padding: 0;
+  }
+  
 body {
-	margin: 0px;
 	font-family: 'Roboto', 'Open Sans', sans-serif;
 	font-weight: 100;
 	background-color: $defaultBackground;
 	color: $textColorDark;
 }
 
+/* PrimeNG Web Component Library overrides */
 .ui-confirmdialog .ui-dialog-content .ui-confirmdialog-icon {
     color: $contentIconTextColor;
 }

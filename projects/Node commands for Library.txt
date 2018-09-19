@@ -1,3 +1,5 @@
+// Generate new Library in Projects
+ng generate library library-lib --prefix=tk
 
 // Generate new component in library
 ng generate component component-name --prefix tk --project genomics-lib --export

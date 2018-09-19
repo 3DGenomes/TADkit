@@ -36,6 +36,8 @@
     "primeng": "^6.1.0",
     "rxjs": "^6.2.2",
     "rxjs-compat": "^6.2.2",
+    "three": "^0.96.0",
+    "three-full": "^11.3.0",
     "zone.js": "^0.8.26"
   },
   "devDependencies": {
@@ -48,6 +50,8 @@
     "@types/jasmine": "^2.8.8",
     "@types/jasminewd2": "~2.0.2",
     "@types/node": "^10.9.4",
+    "@types/three": "^0.92.21",
+    "@types/webvr-api": "0.0.35",
     "codelyzer": "^4.4.3",
     "jasmine-core": "~3.2.1",
     "jasmine-spec-reporter": "~4.2.1",

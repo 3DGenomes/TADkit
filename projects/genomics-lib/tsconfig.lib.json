@@ -15,7 +15,16 @@
     "lib": [
       "dom",
       "es2015"
-    ]
+    ],
+    "baseUrl": "./",
+    "paths": {
+        "three-lib": [
+            "../../dist/three-lib"
+        ],
+        "three-lib/*": [
+            "../../dist/three-lib/*"
+        ]
+    }
   },
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,

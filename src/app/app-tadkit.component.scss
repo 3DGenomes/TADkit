@@ -1,45 +1,39 @@
 *, *:before, *:after {
-	box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 /* CSSGrid Layout */
-tk-header { grid-area: header; }
+tk-header     { grid-area: header; }
 router-outlet { grid-area: router; } /* Placeholder for router - HIDE! */
-tk-main { grid-area: main; }
-tk-sidebar { grid-area: sidebar; }
-tk-footer { grid-area: footer; }
+tk-sidebar    { grid-area: sidebar; }
+tk-workspace  { grid-area: workspace; }
+tk-footer     { grid-area: footer; }
 :host {
-	display: grid;
-	grid-template-areas: "header header"
-						 "router router"
-	                     "sidebar main"
-	                     "footer footer";
-	grid-template-columns: 0px 1fr;
-	grid-template-rows: 50px
-						0px
-						1fr
-						14px;
-	/* grid-gap: 0; */
-	min-height: 100vh;
+  display: grid;
+  grid-template-areas:    "header header"
+                          "router router"
+                          "sidebar workspace"
+                          "footer footer";
+  grid-template-columns:  0px 1fr;
+  grid-template-rows:     50px
+                          0px
+                          1fr
+                          14px;
+  min-height: 100vh;
 }
 /* Small width layout e.g. mobile  */
 @media screen and (max-width: 600px) {
-tk-header { grid-area: header; }
-router-outlet { grid-area: router; } /* Placeholder for router - HIDE! */
-tk-main { grid-area: main; }
-tk-sidebar { grid-area: sidebar; }
-tk-footer { grid-area: footer; }
-:host {
-		grid-template-areas: "header"
-							 "router"
-							 "sidebar"
-							 "main"
-		                     "footer";
-		grid-template-columns: 100%;
-		grid-template-rows: 50px
-							0px
-							0px
-							1fr
-							30px;
-	}
+  :host {
+    grid-template-areas:    "header"
+                            "router"
+                            "sidebar"
+                            "workspace"
+                            "footer";
+    grid-template-columns:  100%;
+    grid-template-rows:     50px
+                            0px
+                            30px
+                            1fr
+                            30px;
+  }
 }

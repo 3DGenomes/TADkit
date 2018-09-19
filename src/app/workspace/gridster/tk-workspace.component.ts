@@ -58,7 +58,7 @@ export class TkWorkspaceGridsterComponent implements OnInit {
       draggable: {
           enabled: true
       },
-      margin: 2
+      margin: 8
    };
 
     this.tkWorkspaceService.widgets.subscribe(wgts => this.widgets = wgts);

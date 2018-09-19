@@ -5,9 +5,6 @@
     "sourceMap": true,
     "baseUrl": "./src",
     "paths": {
-      "@angular-decorators/*": [
-        "angular-decorators/*"
-      ],
       "@projects/*": [
         "app/projects/*"
       ],
@@ -19,6 +16,12 @@
       ],
       "genomics-lib/*": [
         "../dist/genomics-lib/*"
+      ],
+      "three-lib": [
+        "../dist/three-lib"
+      ],
+      "three-lib/*": [
+        "../dist/three-lib/*"
       ]
     },
     "declaration": false,

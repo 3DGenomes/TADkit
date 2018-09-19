@@ -4,11 +4,12 @@
     "outDir": "../out-tsc/app",
     "baseUrl": "./",
     "paths": {
-      "@angular-decorators/*": ["angular-decorators/*"],
       "@projects/*": ["app/projects/*"],
       "@workspace/*": ["app/workspace/*"],
       "genomics-lib": ["../dist/genomics-lib"],
-      "genomics-lib/*": ["../dist/genomics-lib/*"]
+      "genomics-lib/*": ["../dist/genomics-lib/*"],
+      "three-lib": ["../dist/three-lib"],
+      "three-lib/*": ["../dist/three-lib/*"]
     },
     "module": "es2015",
     "types": []

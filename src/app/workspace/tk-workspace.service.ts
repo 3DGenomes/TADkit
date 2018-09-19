@@ -43,7 +43,7 @@ export class TkWorkspaceService {
       if (!Array.isArray(widgets) || !widgets.length) {
         // Default Widgets
         this.addWidgets(
-          'GenomicsSpatialComponent',
+          'GenomicsThreejsComponent',
           'GenomicsMatrixComponent',
           'GenomicsInfoComponent',
           'GenomicsTracksComponent'

@@ -1,0 +1,23 @@
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ */
+/*
+ * Public API Surface of three-lib
+ */
+export { ThreeLibService } from './lib/three-lib.service';
+export { WebGLRendererComponent } from './lib/renderer/webgl-renderer.component';
+export { OrbitControlsDirective } from './lib/controls/orbit-controls.directive';
+export { ColladaLoaderDirective } from './lib/objects/loaders/collada-loader.directive';
+export { ObjLoaderDirective } from './lib/objects/loaders/obj-loader.directive';
+export { Rad2DegPipe } from './lib/pipes/rad2deg.pipe';
+export { Deg2RadPipe } from './lib/pipes/deg2rad.pipe';
+export { PerspectiveCameraDirective } from './lib/cameras/perspective-camera.directive';
+export { SceneDirective } from './lib/objects/scene.directive';
+export { AxesHelperDirective } from './lib/objects/helpers/axes-helper.directive';
+export { GridHelperDirective } from './lib/objects/helpers/grid-helper.directive';
+export { ObjectLoaderDirective } from './lib/objects/loaders/object-loader.directive';
+export { PointLightDirective } from './lib/objects/light/point-light.directive';
+export { ThreeLibModule } from './lib/three-lib.module';
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHVibGljX2FwaS5qcyIsInNvdXJjZVJvb3QiOiJuZzovL3RocmVlLWxpYi8iLCJzb3VyY2VzIjpbInB1YmxpY19hcGkudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7OztBQUlBLGdDQUFjLHlCQUF5QixDQUFDO0FBQ3hDLHVDQUFjLHlDQUF5QyxDQUFDO0FBQ3hELHVDQUFjLHlDQUF5QyxDQUFDO0FBQ3hELHVDQUFjLGdEQUFnRCxDQUFDO0FBQy9ELG1DQUFjLDRDQUE0QyxDQUFDO0FBQzNELDRCQUFjLDBCQUEwQixDQUFDO0FBQ3pDLDRCQUFjLDBCQUEwQixDQUFDO0FBQ3pDLDJDQUFjLDRDQUE0QyxDQUFDO0FBRTNELCtCQUFjLCtCQUErQixDQUFDO0FBQzlDLG9DQUFjLDZDQUE2QyxDQUFDO0FBQzVELG9DQUFjLDZDQUE2QyxDQUFDO0FBQzVELHNDQUFjLCtDQUErQyxDQUFDO0FBQzlELG9DQUFjLDJDQUEyQyxDQUFDO0FBQzFELCtCQUFjLHdCQUF3QixDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLypcbiAqIFB1YmxpYyBBUEkgU3VyZmFjZSBvZiB0aHJlZS1saWJcbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL2xpYi90aHJlZS1saWIuc2VydmljZSc7XG5leHBvcnQgKiBmcm9tICcuL2xpYi9yZW5kZXJlci93ZWJnbC1yZW5kZXJlci5jb21wb25lbnQnO1xuZXhwb3J0ICogZnJvbSAnLi9saWIvY29udHJvbHMvb3JiaXQtY29udHJvbHMuZGlyZWN0aXZlJztcbmV4cG9ydCAqIGZyb20gJy4vbGliL29iamVjdHMvbG9hZGVycy9jb2xsYWRhLWxvYWRlci5kaXJlY3RpdmUnO1xuZXhwb3J0ICogZnJvbSAnLi9saWIvb2JqZWN0cy9sb2FkZXJzL29iai1sb2FkZXIuZGlyZWN0aXZlJztcbmV4cG9ydCAqIGZyb20gJy4vbGliL3BpcGVzL3JhZDJkZWcucGlwZSc7XG5leHBvcnQgKiBmcm9tICcuL2xpYi9waXBlcy9kZWcycmFkLnBpcGUnO1xuZXhwb3J0ICogZnJvbSAnLi9saWIvY2FtZXJhcy9wZXJzcGVjdGl2ZS1jYW1lcmEuZGlyZWN0aXZlJztcbmV4cG9ydCAqIGZyb20gJy4vbGliL3JlbmRlcmVyL3dlYmdsLXJlbmRlcmVyLmNvbXBvbmVudCc7XG5leHBvcnQgKiBmcm9tICcuL2xpYi9vYmplY3RzL3NjZW5lLmRpcmVjdGl2ZSc7XG5leHBvcnQgKiBmcm9tICcuL2xpYi9vYmplY3RzL2hlbHBlcnMvYXhlcy1oZWxwZXIuZGlyZWN0aXZlJztcbmV4cG9ydCAqIGZyb20gJy4vbGliL29iamVjdHMvaGVscGVycy9ncmlkLWhlbHBlci5kaXJlY3RpdmUnO1xuZXhwb3J0ICogZnJvbSAnLi9saWIvb2JqZWN0cy9sb2FkZXJzL29iamVjdC1sb2FkZXIuZGlyZWN0aXZlJztcbmV4cG9ydCAqIGZyb20gJy4vbGliL29iamVjdHMvbGlnaHQvcG9pbnQtbGlnaHQuZGlyZWN0aXZlJztcbmV4cG9ydCAqIGZyb20gJy4vbGliL3RocmVlLWxpYi5tb2R1bGUnO1xuIl19

@@ -1,8 +1,8 @@
 :host {
 	/* Selectors for simple 2x2 CSSgrid layout */
-  padding: 10px;
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	grid-gap: 10px;
 	min-height: 300px;
+	border: solid 8px #f0f0f0;
 }

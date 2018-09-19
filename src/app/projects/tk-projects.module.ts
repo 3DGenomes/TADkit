@@ -8,11 +8,11 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
-import { TkProjectsComponent } from '@projects/tk-projects.component';
-import { TkProjectsListComponent } from '@projects/components/projects-list/tk-projects-list.component';
-import { TkProjectBriefComponent } from '@projects/components/project-brief/tk-project-brief.component';
-import { TkProjectDetailsComponent } from '@projects/components/project-details/tk-project-details.component';
-import { TkProjectCreateComponent } from '@projects/components/project-create/tk-project-create.component';
+import { TkProjectsComponent } from './tk-projects.component';
+import { TkProjectsListComponent } from './components/projects-list/tk-projects-list.component';
+import { TkProjectBriefComponent } from './components/project-brief/tk-project-brief.component';
+import { TkProjectDetailsComponent } from './components/project-details/tk-project-details.component';
+import { TkProjectCreateComponent } from './components/project-create/tk-project-create.component';
 
 
 @NgModule({

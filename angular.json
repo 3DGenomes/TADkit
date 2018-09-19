@@ -170,6 +170,46 @@
           }
         }
       }
+    },
+    "three-lib": {
+      "root": "projects/three-lib",
+      "sourceRoot": "projects/three-lib/src",
+      "projectType": "library",
+      "prefix": "tk",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/three-lib/tsconfig.lib.json",
+            "project": "projects/three-lib/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "project": "projects/three-lib/ng-package.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/three-lib/src/test.ts",
+            "tsConfig": "projects/three-lib/tsconfig.spec.json",
+            "karmaConfig": "projects/three-lib/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/three-lib/tsconfig.lib.json",
+              "projects/three-lib/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "tadkit-a5",

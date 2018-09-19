@@ -37,6 +37,7 @@
   $spacing: 8px;
 
  .content {
+  // min-height: 90%;
 	flex: 1;
 	display: flex;
 	justify-content: space-around;
@@ -58,7 +59,7 @@
 .cell {
 	box-sizing: border-box;
 	border-radius: 0px;
-	padding: 1.25em 1.75em;
+	/* padding: 1.25em 1.75em; */
 	background: #fff;
 	border: $spacing/2 solid #f0f0f0;
 	flex: 1;
