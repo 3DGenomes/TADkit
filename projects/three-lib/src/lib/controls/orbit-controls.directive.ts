@@ -1,6 +1,7 @@
 import { AfterViewInit, ContentChildren, Directive, ElementRef, Input, OnChanges,
    OnDestroy, SimpleChanges, QueryList } from '@angular/core';
 import * as THREE from 'three-full';
+import { OrbitControls } from '@avatsaev/three-orbitcontrols-ts';
 import { WebGLRendererComponent } from '../renderer/webgl-renderer.component';
 import { AbstractCamera } from '../cameras/abstract-camera';
 
@@ -32,7 +33,8 @@ export class OrbitControlsDirective implements AfterViewInit, OnChanges, OnDestr
   @Input() rotateSpeed = 1.0;
   @Input() zoomSpeed = 1.2;
 
-  private controls: THREE.OrbitControls;
+  // private controls: THREE.OrbitControls;
+  private controls: OrbitControls;
 
   constructor() {
     console.log('OrbitControlsDirective.constructor');
@@ -65,8 +67,9 @@ export class OrbitControlsDirective implements AfterViewInit, OnChanges, OnDestr
   }
 
   private setUpOrbitControls() {
-    this.controls = new THREE.OrbitControls(
-      this.childCameras.first.camera,
+    // this.controls = new THREE.OrbitControls(
+    this.controls = new OrbitControls(
+        this.childCameras.first.camera,
       this.listeningControlElement && this.listeningControlElement.nativeElement
     );
     this.controls.rotateSpeed = this.rotateSpeed;

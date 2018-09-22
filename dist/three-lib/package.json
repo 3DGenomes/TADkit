@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "peerDependencies": {
     "@angular/common": "^6.0.0-rc.0 || ^6.0.0",
-    "@angular/core": "^6.0.0-rc.0 || ^6.0.0"
+    "@angular/core": "^6.0.0-rc.0 || ^6.0.0",
+    "three-full": "^11.3.0",
+    "@types/three": "^0.92.21"
   },
   "main": "bundles/three-lib.umd.js",
   "module": "fesm5/three-lib.js",

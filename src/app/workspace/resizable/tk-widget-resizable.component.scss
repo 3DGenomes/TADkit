@@ -68,6 +68,9 @@
         flex: 0 0 300px;
     }
 }
+.cell canvas:first-of-type  {
+  display: flex; 
+}
 /* Overide for */
 .vert {
   @extend .content;

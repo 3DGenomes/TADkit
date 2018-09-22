@@ -4,14 +4,18 @@ export declare class ThreeTestComponent implements AfterViewInit {
     renderer: any;
     scene: any;
     camera: any;
-    mesh: any;
     controls: any;
-    constructor();
+    mesh: any;
+    light: any;
     private readonly canvas;
+    private calculateAspectRatio;
+    constructor();
     ngAfterViewInit(): void;
+    configScene(): void;
     configCamera(): void;
     configRenderer(): void;
     configControls(): void;
+    createLight(): void;
     createMesh(): void;
     animate(): void;
 }
