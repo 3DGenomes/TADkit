@@ -20,6 +20,6 @@ export class GenomicsThreejsComponent implements OnInit {
 
   public ngOnInit() {
     this.dataStream.subscribe(strm => this.data = strm);
-    console.log('ThreeWidgets: ', ThreeWidgets);
+    // console.log('ThreeWidgets: ', ThreeWidgets);
   }
 }

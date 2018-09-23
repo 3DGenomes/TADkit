@@ -14,7 +14,7 @@ import { BindObservable } from 'bind-observable';
 })
 
 export class TkWorkspaceResizableColComponent implements OnInit {
-  @HostBinding('class') classes = 'content vert';
+  @HostBinding('class') classes = 'content-col';
 
   private widgets: WidgetComponent[] = [];
 

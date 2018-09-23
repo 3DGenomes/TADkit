@@ -1,0 +1,20 @@
+<tk-widget-layout-col class="col" [directions]="['right']" [rFlex]="true">
+	<ng-container *ngFor="let widget of widgets; index as i;">
+	<tk-widget-layout-col *ngIf="i===0" class="cell" [directions]="['bottom']" [rFlex]="true">
+		<tk-widget [widget]="widget" [dataStream]="dataStream"></tk-widget>
+	</tk-widget-layout-col>
+	<tk-widget-layout-col *ngIf="i===2" class="cell" [directions]="['bottom']" [rFlex]="false">
+		<tk-widget [widget]="widget" [dataStream]="dataStream"></tk-widget>
+	</tk-widget-layout-col>
+	</ng-container>
+</tk-widget-layout-col>
+<tk-widget-layout-col class="col" [directions]="['right']" [rFlex]="false">
+	<ng-container *ngFor="let widget of widgets; index as i;">
+		<tk-widget-layout-col *ngIf="i===1" class="cell" [directions]="['bottom']" [rFlex]="true">
+			<tk-widget [widget]="widget" [dataStream]="dataStream"></tk-widget>
+		</tk-widget-layout-col>
+		<tk-widget-layout-col *ngIf="i===3" class="cell" [directions]="['bottom']" [rFlex]="false">
+			<tk-widget [widget]="widget" [dataStream]="dataStream"></tk-widget>
+		</tk-widget-layout-col>
+	</ng-container>
+</tk-widget-layout-col>

@@ -3,7 +3,6 @@
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
 import { Component, Input } from '@angular/core';
-import * as ThreeWidgets from 'three-lib';
 export class GenomicsThreejsComponent {
     constructor() {
         this.x = 20;
@@ -18,39 +17,16 @@ export class GenomicsThreejsComponent {
      */
     ngOnInit() {
         this.dataStream.subscribe(strm => this.data = strm);
-        console.log('ThreeWidgets: ', ThreeWidgets);
+        // console.log('ThreeWidgets: ', ThreeWidgets);
     }
 }
 GenomicsThreejsComponent.decorators = [
     { type: Component, args: [{
                 selector: 'genomics-threejs',
-                template: `<three-test></three-test>
-<!-- <three-orbit-controls [rotateSpeed]=1 [zoomSpeed]=1.2 [listeningControlElement]=mainRenderer.renderPane>
-  <three-webgl-renderer #mainRenderer>
-    <three-perspective-camera [fov]=60 [near]=1 [far]=1100 positionX=20 positionY=50 positionZ=50></three-perspective-camera>
-    <three-scene>
-      <three-axes-helper size=200></three-axes-helper>
-      <three-grid-helper size=100 divisions=10></three-grid-helper>
-      <three-point-light color="white" intensity="1" distance="1000" translateX=50 translateY=50 translateZ=50></three-point-light>
-      <three-object-loader
-        model="assets/examples/threejs-test.json"
-        [translateX]="x"
-        [translateZ]="z"
-        [renderer]="mainRenderer"
-        [rotateX]="rotationX"
-        [rotateY]="rotationY"
-        [rotateZ]="rotationZ"
-        [translateY]="translationY"
-      >
-      </three-object-loader>
-    </three-scene>
-  </three-webgl-renderer>
-</three-orbit-controls> -->
-`,
-                styles: [``]
-            },] },
+                template: "<three-test></three-test>\n<!-- <three-orbit-controls [rotateSpeed]=1 [zoomSpeed]=1.2 [listeningControlElement]=mainRenderer.renderPane>\n  <three-webgl-renderer #mainRenderer>\n    <three-perspective-camera [fov]=60 [near]=1 [far]=1100 positionX=20 positionY=50 positionZ=50></three-perspective-camera>\n    <three-scene>\n      <three-axes-helper size=200></three-axes-helper>\n      <three-grid-helper size=100 divisions=10></three-grid-helper>\n      <three-point-light color=\"white\" intensity=\"1\" distance=\"1000\" translateX=50 translateY=50 translateZ=50></three-point-light>\n      <three-object-loader\n        model=\"assets/examples/threejs-test.json\"\n        [translateX]=\"x\"\n        [translateZ]=\"z\"\n        [renderer]=\"mainRenderer\"\n        [rotateX]=\"rotationX\"\n        [rotateY]=\"rotationY\"\n        [rotateZ]=\"rotationZ\"\n        [translateY]=\"translationY\"\n      >\n      </three-object-loader>\n    </three-scene>\n  </three-webgl-renderer>\n</three-orbit-controls> -->\n",
+                styles: [""]
+            }] }
 ];
-/** @nocollapse */
 GenomicsThreejsComponent.ctorParameters = () => [];
 GenomicsThreejsComponent.propDecorators = {
     dataStream: [{ type: Input }]
@@ -73,5 +49,4 @@ if (false) {
     /** @type {?} */
     GenomicsThreejsComponent.prototype.translationY;
 }
-
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZ2Vub21pY3MtdGhyZWVqcy5jb21wb25lbnQuanMiLCJzb3VyY2VSb290Ijoibmc6Ly9nZW5vbWljcy1saWIvIiwic291cmNlcyI6WyJsaWIvZ2Vub21pY3MtdGhyZWVqcy9nZW5vbWljcy10aHJlZWpzLmNvbXBvbmVudC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7O0FBQUEsT0FBTyxFQUFFLFNBQVMsRUFBRSxLQUFLLEVBQVUsTUFBTSxlQUFlLENBQUM7QUFDekQsT0FBTyxLQUFLLFlBQVksTUFBTSxXQUFXLENBQUM7QUE2QjFDLE1BQU07SUFVSjtpQkFQVyxFQUFFO2lCQUNGLEVBQUU7eUJBQ00sQ0FBQzt5QkFDRCxDQUFDO3lCQUNELENBQUM7NEJBQ0UsQ0FBQztLQUVOOzs7O0lBRVYsUUFBUTtRQUNiLElBQUksQ0FBQyxVQUFVLENBQUMsU0FBUyxDQUFDLElBQUksQ0FBQyxFQUFFLENBQUMsSUFBSSxDQUFDLElBQUksR0FBRyxJQUFJLENBQUMsQ0FBQztRQUNwRCxPQUFPLENBQUMsR0FBRyxDQUFDLGdCQUFnQixFQUFFLFlBQVksQ0FBQyxDQUFDOzs7O1lBekMvQyxTQUFTLFNBQUM7Z0JBQ1QsUUFBUSxFQUFFLGtCQUFrQjtnQkFDNUIsUUFBUSxFQUFFOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0NBc0JYO2dCQUNDLE1BQU0sRUFBRSxDQUFDLEVBQUUsQ0FBQzthQUNiOzs7Ozt5QkFFRSxLQUFLIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgQ29tcG9uZW50LCBJbnB1dCwgT25Jbml0IH0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5pbXBvcnQgKiBhcyBUaHJlZVdpZGdldHMgZnJvbSAndGhyZWUtbGliJztcblxuQENvbXBvbmVudCh7XG4gIHNlbGVjdG9yOiAnZ2Vub21pY3MtdGhyZWVqcycsXG4gIHRlbXBsYXRlOiBgPHRocmVlLXRlc3Q+PC90aHJlZS10ZXN0PlxuPCEtLSA8dGhyZWUtb3JiaXQtY29udHJvbHMgW3JvdGF0ZVNwZWVkXT0xIFt6b29tU3BlZWRdPTEuMiBbbGlzdGVuaW5nQ29udHJvbEVsZW1lbnRdPW1haW5SZW5kZXJlci5yZW5kZXJQYW5lPlxuICA8dGhyZWUtd2ViZ2wtcmVuZGVyZXIgI21haW5SZW5kZXJlcj5cbiAgICA8dGhyZWUtcGVyc3BlY3RpdmUtY2FtZXJhIFtmb3ZdPTYwIFtuZWFyXT0xIFtmYXJdPTExMDAgcG9zaXRpb25YPTIwIHBvc2l0aW9uWT01MCBwb3NpdGlvblo9NTA+PC90aHJlZS1wZXJzcGVjdGl2ZS1jYW1lcmE+XG4gICAgPHRocmVlLXNjZW5lPlxuICAgICAgPHRocmVlLWF4ZXMtaGVscGVyIHNpemU9MjAwPjwvdGhyZWUtYXhlcy1oZWxwZXI+XG4gICAgICA8dGhyZWUtZ3JpZC1oZWxwZXIgc2l6ZT0xMDAgZGl2aXNpb25zPTEwPjwvdGhyZWUtZ3JpZC1oZWxwZXI+XG4gICAgICA8dGhyZWUtcG9pbnQtbGlnaHQgY29sb3I9XCJ3aGl0ZVwiIGludGVuc2l0eT1cIjFcIiBkaXN0YW5jZT1cIjEwMDBcIiB0cmFuc2xhdGVYPTUwIHRyYW5zbGF0ZVk9NTAgdHJhbnNsYXRlWj01MD48L3RocmVlLXBvaW50LWxpZ2h0PlxuICAgICAgPHRocmVlLW9iamVjdC1sb2FkZXJcbiAgICAgICAgbW9kZWw9XCJhc3NldHMvZXhhbXBsZXMvdGhyZWVqcy10ZXN0Lmpzb25cIlxuICAgICAgICBbdHJhbnNsYXRlWF09XCJ4XCJcbiAgICAgICAgW3RyYW5zbGF0ZVpdPVwielwiXG4gICAgICAgIFtyZW5kZXJlcl09XCJtYWluUmVuZGVyZXJcIlxuICAgICAgICBbcm90YXRlWF09XCJyb3RhdGlvblhcIlxuICAgICAgICBbcm90YXRlWV09XCJyb3RhdGlvbllcIlxuICAgICAgICBbcm90YXRlWl09XCJyb3RhdGlvblpcIlxuICAgICAgICBbdHJhbnNsYXRlWV09XCJ0cmFuc2xhdGlvbllcIlxuICAgICAgPlxuICAgICAgPC90aHJlZS1vYmplY3QtbG9hZGVyPlxuICAgIDwvdGhyZWUtc2NlbmU+XG4gIDwvdGhyZWUtd2ViZ2wtcmVuZGVyZXI+XG48L3RocmVlLW9yYml0LWNvbnRyb2xzPiAtLT5cbmAsXG4gIHN0eWxlczogW2BgXVxufSlcbmV4cG9ydCBjbGFzcyBHZW5vbWljc1RocmVlanNDb21wb25lbnQgaW1wbGVtZW50cyBPbkluaXQge1xuICBASW5wdXQoKSBkYXRhU3RyZWFtOiBhbnk7XG4gIHB1YmxpYyBkYXRhOiBhbnk7XG4gIHB1YmxpYyB4ID0gMjA7XG4gIHB1YmxpYyB6ID0gMjA7XG4gIHB1YmxpYyByb3RhdGlvblggPSAxO1xuICBwdWJsaWMgcm90YXRpb25ZID0gMjtcbiAgcHVibGljIHJvdGF0aW9uWiA9IDM7XG4gIHB1YmxpYyB0cmFuc2xhdGlvblkgPSAwO1xuXG4gIGNvbnN0cnVjdG9yKCkgeyB9XG5cbiAgcHVibGljIG5nT25Jbml0KCkge1xuICAgIHRoaXMuZGF0YVN0cmVhbS5zdWJzY3JpYmUoc3RybSA9PiB0aGlzLmRhdGEgPSBzdHJtKTtcbiAgICBjb25zb2xlLmxvZygnVGhyZWVXaWRnZXRzOiAnLCBUaHJlZVdpZGdldHMpO1xuICB9XG59XG4iXX0=
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZ2Vub21pY3MtdGhyZWVqcy5jb21wb25lbnQuanMiLCJzb3VyY2VSb290Ijoibmc6Ly9nZW5vbWljcy1saWIvIiwic291cmNlcyI6WyJsaWIvZ2Vub21pY3MtdGhyZWVqcy9nZW5vbWljcy10aHJlZWpzLmNvbXBvbmVudC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7O0FBQUEsT0FBTyxFQUFFLFNBQVMsRUFBRSxLQUFLLEVBQVUsTUFBTSxlQUFlLENBQUM7QUFRekQsTUFBTTtJQVVKO1FBUE8sTUFBQyxHQUFHLEVBQUUsQ0FBQztRQUNQLE1BQUMsR0FBRyxFQUFFLENBQUM7UUFDUCxjQUFTLEdBQUcsQ0FBQyxDQUFDO1FBQ2QsY0FBUyxHQUFHLENBQUMsQ0FBQztRQUNkLGNBQVMsR0FBRyxDQUFDLENBQUM7UUFDZCxpQkFBWSxHQUFHLENBQUMsQ0FBQztJQUVSLENBQUM7Ozs7SUFFVixRQUFRO1FBQ2IsSUFBSSxDQUFDLFVBQVUsQ0FBQyxTQUFTLENBQUMsSUFBSSxDQUFDLEVBQUUsQ0FBQyxJQUFJLENBQUMsSUFBSSxHQUFHLElBQUksQ0FBQyxDQUFDO1FBQ3BELCtDQUErQztJQUNqRCxDQUFDOzs7WUFwQkYsU0FBUyxTQUFDO2dCQUNULFFBQVEsRUFBRSxrQkFBa0I7Z0JBQzVCLG1nQ0FBZ0Q7O2FBRWpEOzs7O3lCQUVFLEtBQUs7Ozs7SUFBTiw4Q0FBeUI7O0lBQ3pCLHdDQUFpQjs7SUFDakIscUNBQWM7O0lBQ2QscUNBQWM7O0lBQ2QsNkNBQXFCOztJQUNyQiw2Q0FBcUI7O0lBQ3JCLDZDQUFxQjs7SUFDckIsZ0RBQXdCIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgQ29tcG9uZW50LCBJbnB1dCwgT25Jbml0IH0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5pbXBvcnQgKiBhcyBUaHJlZVdpZGdldHMgZnJvbSAndGhyZWUtbGliJztcblxuQENvbXBvbmVudCh7XG4gIHNlbGVjdG9yOiAnZ2Vub21pY3MtdGhyZWVqcycsXG4gIHRlbXBsYXRlVXJsOiAnLi9nZW5vbWljcy10aHJlZWpzLmNvbXBvbmVudC5odG1sJyxcbiAgc3R5bGVVcmxzOiBbJy4vZ2Vub21pY3MtdGhyZWVqcy5jb21wb25lbnQuY3NzJ11cbn0pXG5leHBvcnQgY2xhc3MgR2Vub21pY3NUaHJlZWpzQ29tcG9uZW50IGltcGxlbWVudHMgT25Jbml0IHtcbiAgQElucHV0KCkgZGF0YVN0cmVhbTogYW55O1xuICBwdWJsaWMgZGF0YTogYW55O1xuICBwdWJsaWMgeCA9IDIwO1xuICBwdWJsaWMgeiA9IDIwO1xuICBwdWJsaWMgcm90YXRpb25YID0gMTtcbiAgcHVibGljIHJvdGF0aW9uWSA9IDI7XG4gIHB1YmxpYyByb3RhdGlvblogPSAzO1xuICBwdWJsaWMgdHJhbnNsYXRpb25ZID0gMDtcblxuICBjb25zdHJ1Y3RvcigpIHsgfVxuXG4gIHB1YmxpYyBuZ09uSW5pdCgpIHtcbiAgICB0aGlzLmRhdGFTdHJlYW0uc3Vic2NyaWJlKHN0cm0gPT4gdGhpcy5kYXRhID0gc3RybSk7XG4gICAgLy8gY29uc29sZS5sb2coJ1RocmVlV2lkZ2V0czogJywgVGhyZWVXaWRnZXRzKTtcbiAgfVxufVxuIl19
