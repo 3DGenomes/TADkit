@@ -2,19 +2,19 @@ import { Component, HostBinding, OnInit } from '@angular/core';
 import { TkWorkspaceService } from '@workspace/tk-workspace.service';
 import { TkProjectsService } from '@projects/tk-projects.service';
 
-import { WidgetComponent } from '@workspace/widget-spawner/tk-widget.component';
+import { WidgetComponent } from '@workspace/widget-spawner/widget.component';
 import { Observable } from 'rxjs';
 import { Project } from '@projects/models/tk-project.model';
 import { BindObservable } from 'bind-observable';
 
 @Component({
   selector: 'tk-workspace',
-  templateUrl: './tk-workspace.component.html',
-  styleUrls: ['./tk-workspace.component.scss']
+  templateUrl: './workspace-col.component.html',
+  styleUrls: ['./workspace-col.component.scss']
 })
 
-export class TkWorkspaceResizableComponent implements OnInit {
-  @HostBinding('class') classes = 'content';
+export class WorkspaceResizableColComponent implements OnInit {
+  @HostBinding('class') classes = 'content-col';
 
   private widgets: WidgetComponent[] = [];
 

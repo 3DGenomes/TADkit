@@ -2,7 +2,7 @@ import { Injectable, InjectionToken } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { LocalStorageService } from 'ngx-store';
-import { Widget } from '@workspace/widget-spawner/tk-widget';
+import { Widget } from '@workspace/widget-spawner/widget';
 
 import * as genomicsWidgets from 'genomics-lib';
 

@@ -1,18 +1,18 @@
 import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
 
-import { Widget } from '@workspace/widget-spawner/tk-widget';
-import { WidgetComponent } from '@workspace/widget-spawner/tk-widget.component';
+import { Widget } from '@workspace/widget-spawner/widget';
+import { WidgetComponent } from '@workspace/widget-spawner/widget.component';
 
 /**
  * Supported comment MIKE
  */
 @Component({
   selector: 'tk-widget',
-  templateUrl: './tk-widget-spawner.component.html',
-  styleUrls: ['./tk-widget-spawner.component.scss']
+  templateUrl: './widget-spawner.component.html',
+  styleUrls: ['./widget-spawner.component.scss']
 })
 
-export class TkWidgetSpawnerComponent implements OnInit {
+export class WidgetSpawnerComponent implements OnInit {
   @Input() widget: Widget;
   @Input() dataStream: any;
   @ViewChild('widget', {read: ViewContainerRef}) workspace;

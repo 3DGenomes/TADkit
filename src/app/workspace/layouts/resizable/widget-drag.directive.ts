@@ -6,7 +6,7 @@ import { DOCUMENT } from '@angular/platform-browser';
   selector: '[tkWidgetDragHandle]',
   providers: [ { provide: DOCUMENT, useValue: document } ],
 })
-export class TkWidgetDragDirective implements OnInit {
+export class WidgetDragDirective implements OnInit {
 
   @Output() DragStart = new EventEmitter();
   @Output() Drag = new EventEmitter();

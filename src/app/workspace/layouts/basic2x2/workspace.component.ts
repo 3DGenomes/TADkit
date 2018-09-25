@@ -2,18 +2,18 @@ import { Component, HostBinding, OnInit } from '@angular/core';
 import { TkWorkspaceService } from '@workspace/tk-workspace.service';
 import { TkProjectsService } from '@projects/tk-projects.service';
 
-import { WidgetComponent } from '@workspace/widget-spawner/tk-widget.component';
+import { WidgetComponent } from '@workspace/widget-spawner/widget.component';
 import { Observable } from 'rxjs';
 import { Project } from '@projects/models/tk-project.model';
 import { BindObservable } from 'bind-observable';
 
 @Component({
   selector: 'tk-workspace',
-  templateUrl: './tk-workspace.component.html',
-  styleUrls: ['./tk-workspace.component.scss']
+  templateUrl: './workspace.component.html',
+  styleUrls: ['./workspace.component.scss']
 })
 
-export class TkWorkspaceComponent implements OnInit {
+export class WorkspaceComponent implements OnInit {
   @HostBinding('class') classes = 'workspace';
 
   private widgets: WidgetComponent[] = [];

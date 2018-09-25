@@ -3,12 +3,12 @@ import { Component, OnInit, ElementRef, HostBinding, Input, Inject,
 
 @Component({
   selector: 'tk-widget-layout-col',
-  templateUrl: './tk-widget-resizable-col.component.html',
-  styleUrls: ['./tk-widget-resizable-col.component.scss'],
+  templateUrl: './widget-resizable-col.component.html',
+  styleUrls: ['./widget-resizable-col.component.scss'],
   providers: [ { provide: Window, useValue: window } ],
   encapsulation: ViewEncapsulation.None
 })
-export class TkWidgetLayoutColComponent implements OnInit {
+export class WidgetLayoutColComponent implements OnInit {
 
   @HostBinding('class.resizable') resizable = true;
   @HostBinding('class.no-transition') noTransition = false;

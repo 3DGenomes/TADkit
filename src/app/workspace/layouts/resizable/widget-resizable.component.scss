@@ -1,53 +1,50 @@
 /*
- * Resizable Layout - Columns
+ * Resizable Layout
  * Default like HTML table rows:
   +--------+--------+
-  | Cell 1 | Cell 3 |
-  | Cell 2 | Cell 4 |
+  | Cell 1   Cell 2 |
   +--------+--------+
-  <tk-widget-layout-col class="col" [directions]="['right']" [rFlex]="true">
-    <ng-container *ngFor="let widget of widgets; index as i;">
-    <tk-widget-layout-col *ngIf="i===0" class="cell" [directions]="['bottom']" [rFlex]="true">
+  | Cell 3   Cell 4 |
+  +--------+--------+
+  <tk-widget-layout class="row" [directions]="['bottom']" [rFlex]="true">
+    <tk-widget-layout class="cell" [directions]="['right']" [rFlex]="true">
       <p>Cell Content 1</p>
-    </tk-widget-layout-col>
-    <tk-widget-layout-col *ngIf="i===2" class="cell" [directions]="['bottom']" [rFlex]="false">
+    </tk-widget-layout>
+    <div class="cell">
       <p>Cell Content 2</p>
-    </tk-widget-layout-col>
-    </ng-container>
-  </tk-widget-layout-col>
-  <tk-widget-layout-col class="col" [directions]="['right']" [rFlex]="false">
-    <ng-container *ngFor="let widget of widgets; index as i;">
-      <tk-widget-layout-col *ngIf="i===1" class="cell" [directions]="['bottom']" [rFlex]="true">
-        <p>Cell Content 3</p>
-      </tk-widget-layout-col>
-      <tk-widget-layout-col *ngIf="i===3" class="cell" [directions]="['bottom']" [rFlex]="false">
-        <p>Cell Content 4</p>
-      </tk-widget-layout-col>
-    </ng-container>
-  </tk-widget-layout-col>
- * 
+    </div>
+  </tk-widget-layout>
+  <div class="row">
+    <tk-widget-layout class="cell" [directions]="['right']" [rFlex]="true">
+      <p>Cell Content 3</p>
+    </tk-widget-layout>
+    <div class="cell">
+      <p>Cell Content 4</p>
+    </div>
+  </div>
+ *
  */
 
   $spacing: 8px;
 
-.content-col {
+ .content {
   //min-height: 100%;
 	// flex: 1;
 	display: flex;
 	// justify-content: space-around;
 	// align-content: space-around;
   // padding: $spacing/2;
-  flex-flow: row nowrap;
+  flex-flow: column nowrap;
 }
-.col {
-	// min-height: 50px;
+.row {
+	//min-height: 150px;
 	flex: 1;
 	display: flex;
-  flex-flow: column nowrap;
+	flex-flow: row nowrap;
 	// justify-content: space-around;
 	// align-content: space-around;
 	&.resizable {
-        flex: 0 0 300px;
+        flex: 0 0 360px;
     }
 }
 .cell {
@@ -57,13 +54,13 @@
 	background: #fff;
 	border: $spacing/2 solid #f0f0f0;
 	flex: 1;
-	min-width: 60px;
+	//min-width: 60px;
 	&.resizable {
-        flex: 0 0 300px;
+        flex: 0 0 360px;
     }
 }
 .cell canvas:first-of-type  {
-  // display: flex; 
+  //display: flex; 
 }
 
 /**
@@ -117,26 +114,26 @@
   width: 100%;
   top: 0;
   left: 0;
-  margin-top: -#{$spacing};;
+  margin-top: -#{$spacing/2};
 }
 .rg-right   {
   cursor: col-resize;
   height: 100%;
   right: 0;
   top: 0;
-  margin-right: -#{$spacing/2};
+  margin-right: -#{$spacing};
 }
 .rg-bottom  {
   cursor: row-resize;
   width: 100%;
   bottom: 0;
   left: 0;
-  margin-bottom: -#{$spacing};
+  margin-bottom: -#{$spacing/2};
 }
 .rg-left    {
   cursor: col-resize;
   height: 100%;
   left: 0;
   top: 0;
-  margin-left: -#{$spacing/2};
+  margin-left: -#{$spacing};
 }

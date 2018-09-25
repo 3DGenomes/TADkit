@@ -2,7 +2,11 @@
     <ul>
         <li *ngFor="let item of menulist">
             <ng-container *ngIf="item.link"><a href="{{item.link}}">{{item.title}}</a></ng-container>
-            <ng-container *ngIf="item.route"><a routerLink="{{item.route}}">{{item.title}}</a></ng-container>
+            <ng-container *ngIf="item.route"><a routerLink="{{item.route}}">
+                <ng-container *ngIf="item.icon; then icon; else title">icon</ng-container>
+                <ng-template #icon><i class="pi pi-{{item.icon}}" style="font-size: 1.3em"></i></ng-template>
+                <ng-template #title>{{item.title}}</ng-template>
+            </a></ng-container>
         </li>
     </ul>
 </nav>

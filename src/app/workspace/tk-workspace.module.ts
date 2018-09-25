@@ -5,19 +5,20 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
-import { TkWidgetSpawnerComponent } from '@workspace/widget-spawner/tk-widget-spawner.component';
+import { WorkspaceConfigComponent } from '@workspace/config/workspace-config.component';
+import { WidgetSpawnerComponent } from '@workspace/widget-spawner/widget-spawner.component';
 
-import { TkWorkspaceComponent } from '@workspace/basic2x2/tk-workspace.component';
+import { WorkspaceComponent } from '@workspace/layouts/basic2x2/workspace.component';
 
-import { TkWorkspaceResizableComponent } from '@workspace/resizable/row/tk-workspace.component';
-import { TkWidgetLayoutComponent } from '@workspace/resizable/tk-widget-resizable.component';
-import { TkWidgetDragDirective } from '@workspace/resizable/tk-widget-drag.directive';
+import { WorkspaceResizableComponent } from '@workspace/layouts/resizable/row/workspace.component';
+import { WidgetLayoutComponent } from '@workspace/layouts/resizable/widget-resizable.component';
+import { WidgetDragDirective } from '@workspace/layouts/resizable/widget-drag.directive';
 
-import { TkWorkspaceResizableColComponent } from '@workspace/resizable-col/col/tk-workspace-col.component';
-import { TkWidgetLayoutColComponent } from '@workspace/resizable-col/tk-widget-resizable-col.component';
-import { TkWidgetDragColDirective } from '@workspace/resizable-col/tk-widget-drag-col.directive';
+import { WorkspaceResizableColComponent } from '@workspace/layouts/resizable-col/col/workspace-col.component';
+import { WidgetLayoutColComponent } from '@workspace/layouts/resizable-col/widget-resizable-col.component';
+import { WidgetDragColDirective } from '@workspace/layouts/resizable-col/widget-drag-col.directive';
 
-import { TkWorkspaceGridsterComponent } from '@workspace/gridster/tk-workspace.component';
+import { WorkspaceGridsterComponent } from '@workspace/layouts/gridster/workspace.component';
 
 import { GenomicsLibModule } from 'genomics-lib';
 import { GridsterModule } from 'angular-gridster2';
@@ -32,15 +33,16 @@ import { GridsterModule } from 'angular-gridster2';
     GenomicsLibModule
   ],
   declarations: [
-    TkWidgetSpawnerComponent,
-    TkWorkspaceComponent,
-    TkWorkspaceResizableComponent,
-    TkWidgetLayoutComponent,
-    TkWidgetDragDirective,
-    TkWorkspaceResizableColComponent,
-    TkWidgetLayoutColComponent,
-    TkWidgetDragColDirective,
-    TkWorkspaceGridsterComponent,
+    WorkspaceConfigComponent,
+    WidgetSpawnerComponent,
+    WorkspaceComponent,
+    WorkspaceResizableComponent,
+    WidgetLayoutComponent,
+    WidgetDragDirective,
+    WorkspaceResizableColComponent,
+    WidgetLayoutColComponent,
+    WidgetDragColDirective,
+    WorkspaceGridsterComponent,
   ],
   exports: [],
   providers: [],

@@ -2,7 +2,7 @@ import { Component, HostBinding, HostListener, OnInit, SimpleChanges, ViewChild 
 import { TkWorkspaceService } from '@workspace/tk-workspace.service';
 import { TkProjectsService } from '@projects/tk-projects.service';
 
-import { WidgetComponent } from '@workspace/widget-spawner/tk-widget.component';
+import { WidgetComponent } from '@workspace/widget-spawner/widget.component';
 import { Observable } from 'rxjs';
 import { Project } from '@projects/models/tk-project.model';
 import { BindObservable } from 'bind-observable';
@@ -11,11 +11,11 @@ import { GridsterConfig, GridsterItem } from 'angular-gridster2';
 
 @Component({
   selector: 'tk-workspace',
-  templateUrl: './tk-workspace.component.html',
-  styleUrls: ['./tk-workspace.component.scss']
+  templateUrl: './workspace.component.html',
+  styleUrls: ['./workspace.component.scss']
 })
 
-export class TkWorkspaceGridsterComponent implements OnInit {
+export class WorkspaceGridsterComponent implements OnInit {
   @HostBinding('class') classes = 'workspace';
 
   private widgets: WidgetComponent[] = [];
@@ -37,26 +37,26 @@ export class TkWorkspaceGridsterComponent implements OnInit {
     private tkWorkspaceService: TkWorkspaceService,
     private tkProjectsService: TkProjectsService
   ) {
-    // spatial, info, matrix, tracks
+    /* Areas attributes not official Gridster value but to help idenitification */
     this.dashboard = [
-      {x: 0, y: 0, rows: 6, cols: 6},
-      {x: 6, y: 0, rows: 6, cols: 6},
-      {x: 0, y: 6, rows: 6, cols: 6},
-      {x: 6, y: 6, rows: 6, cols: 6}
+      {area: 'spatial', cols: 3, rows: 3, x: 0, y: 0},
+      {area: 'matrix',  cols: 9, rows: 3, x: 3, y: 0},
+      {area: 'info',    cols: 3, rows: 3, x: 0, y: 3},
+      {area: 'tracks',  cols: 9, rows: 3, x: 3, y: 3}
     ];
 
     this.options = {
       pushItems: true,
-      minCols: 12,
+      minCols: 6,
       maxCols: 12,
-      minRows: 12,
+      minRows: 6,
       mobileBreakpoint: 768,
       gridType: 'fit',
       resizable: {
           enabled: true
       },
       draggable: {
-          enabled: true
+          enabled: false
       },
       margin: 8
    };
