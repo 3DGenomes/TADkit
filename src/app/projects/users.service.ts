@@ -7,7 +7,7 @@ import { User, Users } from '@projects/models/tk-user.model';
   providedIn: 'root',
 })
 
-export class TkProjectsService {
+export class UsersService {
     defaultUser: string;
 //   private users: Users;
   public currentUser: Observable<User>;

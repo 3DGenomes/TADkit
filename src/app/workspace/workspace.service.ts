@@ -2,6 +2,7 @@ import { Injectable, InjectionToken } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { LocalStorageService } from 'ngx-store';
+import { Layout } from '@workspace/layouts/layout';
 import { Widget } from '@workspace/widget-spawner/widget';
 
 import * as genomicsWidgets from 'genomics-lib';
@@ -10,7 +11,7 @@ import * as genomicsWidgets from 'genomics-lib';
   providedIn: 'root',
 })
 
-export class TkWorkspaceService {
+export class WorkspaceService {
   private widgetsStreamUrl: string;
   private widgetsStream: BehaviorSubject<Widget[]>;
   public widgets: Observable<Widget[]>;

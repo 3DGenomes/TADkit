@@ -1,23 +1,23 @@
 import { Component, OnInit } from '@angular/core';
-import { TkProjectsService } from '@projects/tk-projects.service';
+import { ProjectsService } from '@projects/projects.service';
 import { Project, Projects } from '@projects/models/tk-project.model';
 
 import { ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'tk-projects-list',
-  templateUrl: './tk-projects-list.component.html',
-  styleUrls: ['./tk-projects-list.component.css'],
+  templateUrl: './projects-list.component.html',
+  styleUrls: ['./projects-list.component.css'],
   providers: [ConfirmationService]
 })
-export class TkProjectsListComponent implements OnInit {
+export class ProjectsListComponent implements OnInit {
 
   public projects: Projects;
   public currentProject: Project;
   // public currentCheck: string;
 
   constructor(
-    private tkProjectsService: TkProjectsService,
+    private projectsService: ProjectsService,
     private confirmationService: ConfirmationService
   ) {}
 
@@ -26,14 +26,14 @@ export class TkProjectsListComponent implements OnInit {
   }
 
   private getProjects(): void {
-    this.tkProjectsService.projects.subscribe(prjs => this.projects = prjs);
-    this.tkProjectsService.currentProject.subscribe(prj => {
+    this.projectsService.projects.subscribe(prjs => this.projects = prjs);
+    this.projectsService.currentProject.subscribe(prj => {
       this.currentProject = prj;
     });
   }
 
   public  setProject(project): void {
-    this.tkProjectsService.setProject(project);
+    this.projectsService.setProject(project);
   }
 
   public  editProject(project): void {
@@ -44,7 +44,7 @@ export class TkProjectsListComponent implements OnInit {
     this.confirmationService.confirm({
       message: 'Are you sure that you want to delete this project',
       accept: () => {
-        this.tkProjectsService.deleteProject(project);
+        this.projectsService.deleteProject(project);
       }
     });
   }

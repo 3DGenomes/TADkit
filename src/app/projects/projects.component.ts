@@ -2,9 +2,9 @@ import { Component, HostBinding } from '@angular/core';
 
 @Component({
   selector: 'tk-projects',
-  templateUrl: './tk-projects.component.html',
+  templateUrl: './projects.component.html',
 })
 
-export class TkProjectsComponent {
+export class ProjectsComponent {
   @HostBinding('class') classes = 'projects';
 }

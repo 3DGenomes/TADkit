@@ -1,12 +1,13 @@
-import { Component, HostBinding } from '@angular/core';
+import { Component, HostBinding, Input } from '@angular/core';
 
 @Component({
   selector: 'tk-header',
-  templateUrl: './tk-header.component.html',
-  styleUrls: ['./tk-header.component.scss']
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.scss']
 })
-export class TkHeaderComponent {
+export class HeaderComponent {
   @HostBinding('class') classes = 'header';
+  // @Input() topmenu: string[] = [];
 
   private topmenu: any[] = [
     { title: 'Workspace', route: '/workspace' },

@@ -2,10 +2,10 @@ import { Component, HostBinding } from '@angular/core';
 
 @Component({
   selector: 'tk-footer',
-  templateUrl: './tk-footer.component.html',
-  styleUrls: ['./tk-footer.component.scss'],
+  templateUrl: './footer.component.html',
+  styleUrls: ['./footer.component.scss'],
 })
-export class TkFooterComponent {
+export class FooterComponent {
   @HostBinding('class') classes = 'footer';
 
   private legalmenu: any[] = [

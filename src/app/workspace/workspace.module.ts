@@ -1,9 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DropdownModule } from 'primeng/dropdown';
 
 import { WorkspaceConfigComponent } from '@workspace/config/workspace-config.component';
 import { WidgetSpawnerComponent } from '@workspace/widget-spawner/widget-spawner.component';
@@ -26,9 +28,11 @@ import { GridsterModule } from 'angular-gridster2';
 @NgModule({
   imports: [
     CommonModule,
+    FormsModule,
     ProgressSpinnerModule,
     ButtonModule,
     ConfirmDialogModule,
+    DropdownModule,
     GridsterModule,
     GenomicsLibModule
   ],
@@ -48,4 +52,4 @@ import { GridsterModule } from 'angular-gridster2';
   providers: [],
   entryComponents: []
 })
-export class TkWorkspaceModule {}
+export class WorkspaceModule {}

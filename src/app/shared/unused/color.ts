@@ -1,11 +1,16 @@
 class RGB {
+
+    constructor(r: number, g: number, b: number) {
+      this.setRed(r).setGreen(g).setBlue(b);
+      this.updateValue();
+   }
   private r = 0;
   private g = 0;
   private b = 0;
   private alpha = 1;
   private value = 0;
-
-  setBlue(arg0: any): any {
+number;
+RGB;   setBlue(arg0: any): any {
     throw new Error('Method not implemented.');
   }
   getBlue(): any {
@@ -24,12 +29,7 @@ class RGB {
     throw new Error('Method not implemented.');
   }
 
-    constructor(r: number, g: number, b: number) {
-      this.setRed(r).setGreen(g).setBlue(b);
-      this.updateValue();
-   }
-
-   private getHexPart(v : number): string {
+   private getHexPart(v: number): string {
      const h: string = v.toString(16);
      return (h.length > 1) ? h : '0' + h;
    }
@@ -52,7 +52,7 @@ class RGB {
 
     public toHexAlpha(light: boolean = true): HEX {
       const tmpRgb: RGB = new RGB(this.getRed(), this.getGreen(), this.getBlue());
-      if(this.getAlpha() < 1) {
+      if (this.getAlpha() < 1) {
         const tmp: number = (1 - this.getAlpha());
         tmpRgb.setRed(tmpRgb.getRed() * tmp);
         tmpRgb.setGreen(tmpRgb.getGreen() * tmp);
@@ -76,11 +76,11 @@ class RGB {
       return this.updateValue();
     }
 
-    public getGreen() number; {
+    public getGreen() {
       return this.g;
     }
 
-    public setBlue(value : number);: RGB; {
+    public setBlue(value: number); : {
       this.b = (value > 255) ? 255 : ((value < 0) ? 0 : Math.floor(value));
       return this.updateValue();
     }
@@ -89,32 +89,32 @@ class RGB {
       return this.b;
     }
 
-    public setAlpha(a : number);: RGB; {
+    public setAlpha(a : number); : RGB; {
       this.alpha = (a <= 1 && a >= 0) ? a : 1;
       return this;
     }
 
-    public getAlpha();: number; {
+    public getAlpha(); : number; {
       return this.alpha;
     }
 
-    public lighten(by : number);: RGB; {
+    public lighten(by : number); : RGB; {
       this.setRed(this.getRed() + by)
           .setBlue(this.getBlue() + by)
           .setGreen(this.getGreen() + by);
       return this.updateValue();
     }
 
-    public darken(by : number);: RGB; {
+    public darken(by : number); : RGB; {
       this.setRed(this.getRed() - by)
           .setBlue(this.getBlue() - by)
           .setGreen(this.getGreen() - by);
       return this.updateValue();
     }
 
-    public toString();: string; {
+    public toString(); : string; {
       return (this.alpha < 1) ?
-       'rgba('+ this.getRed() + ',' + this.getGreen() + ',' + this.getBlue() + ',' + this.getAlpha() + ')' :
+       'rgba(' + this.getRed() + ',' + this.getGreen() + ',' + this.getBlue() + ',' + this.getAlpha() + ')' :
        'rgb(' + this.getRed() + ',' + this.getGreen() + ',' + this.getBlue() + ')';
     }
 

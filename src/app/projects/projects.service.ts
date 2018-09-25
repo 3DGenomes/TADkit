@@ -10,7 +10,7 @@ import { Project, Projects } from '@projects/models/tk-project.model';
   providedIn: 'root',
 })
 
-export class TkProjectsService {
+export class ProjectsService {
   // User projects stream
   private projectsStreamUrl: string;
   private projectsStream: BehaviorSubject<Projects>;

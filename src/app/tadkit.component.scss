@@ -2,7 +2,7 @@
   box-sizing: border-box;
 }
 
-/* CSSGrid Layout */
+/* HolyGrail Layout with CSSGrid Areas */
 tk-header     { grid-area: header; }
 router-outlet { grid-area: router; } /* Placeholder for router - HIDE! */
 tk-sidebar    { grid-area: sidebar; }

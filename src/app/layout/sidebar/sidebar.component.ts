@@ -1,12 +1,13 @@
 import { Component, HostBinding } from '@angular/core';
-import { TkProjectsService } from '@projects/tk-projects.service';
+import { ProjectsService } from '@projects/projects.service';
+
 @Component({
   selector: 'tk-sidebar',
-  templateUrl: './tk-sidebar.component.html',
-  styleUrls: ['./tk-sidebar.component.scss']
+  templateUrl: './sidebar.component.html',
+  styleUrls: ['./sidebar.component.scss']
 })
 
-export class TkSidebarComponent {
+export class SidebarComponent {
   @HostBinding('class') classes = 'sidebar';
 
   private sidemenu: any[] = [
@@ -15,10 +16,10 @@ export class TkSidebarComponent {
     { title: 'Archives', route: '/archives' }
   ];
 
-  constructor(private tkProjectsService: TkProjectsService) {}
+  constructor(private projectsService: ProjectsService) {}
 
   public setProject(projectTitle): void {
-    this.tkProjectsService.setProject(projectTitle);
+    this.projectsService.setProject(projectTitle);
   }
 
 }

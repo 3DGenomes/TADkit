@@ -1,6 +1,6 @@
 import { Component, HostBinding, HostListener, OnInit, SimpleChanges, ViewChild } from '@angular/core';
-import { TkWorkspaceService } from '@workspace/tk-workspace.service';
-import { TkProjectsService } from '@projects/tk-projects.service';
+import { WorkspaceService } from '@workspace/workspace.service';
+import { ProjectsService } from '@projects/projects.service';
 
 import { WidgetComponent } from '@workspace/widget-spawner/widget.component';
 import { Observable } from 'rxjs';
@@ -34,8 +34,8 @@ export class WorkspaceGridsterComponent implements OnInit {
   }
 
   constructor(
-    private tkWorkspaceService: TkWorkspaceService,
-    private tkProjectsService: TkProjectsService
+    private workspaceService: WorkspaceService,
+    private projectsService: ProjectsService
   ) {
     /* Areas attributes not official Gridster value but to help idenitification */
     this.dashboard = [
@@ -61,8 +61,8 @@ export class WorkspaceGridsterComponent implements OnInit {
       margin: 8
    };
 
-    this.tkWorkspaceService.widgets.subscribe(wgts => this.widgets = wgts);
-    this.tkProjectsService.currentProject.subscribe(prj => this.data = prj);
+    this.workspaceService.widgets.subscribe(wgts => this.widgets = wgts);
+    this.projectsService.currentProject.subscribe(prj => this.data = prj);
   }
 
   public ngOnInit() {
@@ -70,10 +70,10 @@ export class WorkspaceGridsterComponent implements OnInit {
   }
 
   private initializeWorkspace(): void {
-    this.tkWorkspaceService.loadWidgets();
+    this.workspaceService.loadWidgets();
   }
 
   public addWidget(widgetName): void {
-    // this.tkWorkspaceService.addWidgets(widgetName);
+    // this.workspaceService.addWidgets(widgetName);
   }
 }

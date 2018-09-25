@@ -1,6 +1,6 @@
 import { Component, HostBinding, OnInit } from '@angular/core';
-import { TkWorkspaceService } from '@workspace/tk-workspace.service';
-import { TkProjectsService } from '@projects/tk-projects.service';
+import { WorkspaceService } from '@workspace/workspace.service';
+import { ProjectsService } from '@projects/projects.service';
 
 import { WidgetComponent } from '@workspace/widget-spawner/widget.component';
 import { Observable } from 'rxjs';
@@ -22,11 +22,11 @@ export class WorkspaceResizableComponent implements OnInit {
   public dataStream: Observable<Project>;
 
   constructor(
-    private tkWorkspaceService: TkWorkspaceService,
-    private tkProjectsService: TkProjectsService
+    private workspaceService: WorkspaceService,
+    private projectsService: ProjectsService
   ) {
-    this.tkWorkspaceService.widgets.subscribe(wgts => this.widgets = wgts);
-    this.tkProjectsService.currentProject.subscribe(prj => this.data = prj);
+    this.workspaceService.widgets.subscribe(wgts => this.widgets = wgts);
+    this.projectsService.currentProject.subscribe(prj => this.data = prj);
   }
 
   public ngOnInit() {
@@ -34,10 +34,10 @@ export class WorkspaceResizableComponent implements OnInit {
   }
 
   private initializeWorkspace(): void {
-    this.tkWorkspaceService.loadWidgets();
+    this.workspaceService.loadWidgets();
   }
 
   public addWidget(widgetName): void {
-    this.tkWorkspaceService.addWidgets(widgetName);
+    this.workspaceService.addWidgets(widgetName);
   }
 }

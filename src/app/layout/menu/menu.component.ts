@@ -2,10 +2,10 @@ import { Component, HostBinding, Input } from '@angular/core';
 
 @Component({
   selector: 'tk-menu',
-  templateUrl: './tk-menu.component.html',
-  styleUrls: ['./tk-menu.component.scss']
+  templateUrl: './menu.component.html',
+  styleUrls: ['./menu.component.scss']
 })
-export class TkMenuComponent {
+export class MenuComponent {
     @HostBinding('class') classes = 'menu';
 
     @Input() private menulist: any[] = [];

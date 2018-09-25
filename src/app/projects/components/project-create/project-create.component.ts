@@ -1,18 +1,18 @@
 import { Component, OnInit } from '@angular/core';
-import { TkProjectsService } from '@projects/tk-projects.service';
+import { ProjectsService } from '@projects/projects.service';
 import { FormGroup, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'tk-project-create',
-  templateUrl: './tk-project-create.component.html'
+  templateUrl: './project-create.component.html'
 })
-export class TkProjectCreateComponent implements OnInit {
+export class ProjectCreateComponent implements OnInit {
 
   private projectForm: FormGroup;
   public title: FormControl;
   public description: FormControl;
 
-  constructor(private tkProjectsService: TkProjectsService) {}
+  constructor(private projectsService: ProjectsService) {}
 
   public ngOnInit() {
     this.createFormControls();
@@ -33,6 +33,6 @@ export class TkProjectCreateComponent implements OnInit {
 
   public addProject(): void {
     const newProject = Object.assign({}, this.projectForm.value);
-    this.tkProjectsService.addProject(newProject);
+    this.projectsService.addProject(newProject);
   }
 }

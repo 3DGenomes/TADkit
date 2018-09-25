@@ -1,29 +1,29 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { AppRoutingModule } from './app-tadkit-routing.module';
+import { RoutingModule } from './routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { WebStorageModule } from 'ngx-store';
 
-import { TkLayoutModule } from './layout/tk-layout.module';
-import { TkProjectsModule } from '@projects/tk-projects.module';
-import { TkWorkspaceModule } from '@workspace/tk-workspace.module';
+import { LayoutModule } from './layout/layout-cssgrid.module';
+import { ProjectsModule } from '@projects/projects.module';
+import { WorkspaceModule } from '@workspace/workspace.module';
 
-import { AppTadkitComponent } from './app-tadkit.component';
+import { TadkitComponent } from './tadkit.component';
 
 @NgModule({
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    AppRoutingModule,
+    RoutingModule,
     HttpClientModule,
     WebStorageModule,
-    TkLayoutModule,
-    TkWorkspaceModule,
-    TkProjectsModule
+    LayoutModule,
+    WorkspaceModule,
+    ProjectsModule
   ],
   declarations: [
-    AppTadkitComponent
+    TadkitComponent
   ],
   providers: [
     /* No need to specify providers if:
@@ -31,6 +31,6 @@ import { AppTadkitComponent } from './app-tadkit.component';
      * - service is provider interal to module
      */
   ],
-  bootstrap: [AppTadkitComponent]
+  bootstrap: [TadkitComponent]
 })
-export class AppTadkitModule { }
+export class TadkitModule { }
