@@ -2,13 +2,13 @@ import { Component, OnInit, ElementRef, HostBinding, Input, Inject,
    ViewEncapsulation, Output, EventEmitter, Renderer2 } from '@angular/core';
 
 @Component({
-  selector: 'tk-widget-layout',
-  templateUrl: './widget-resizable.component.html',
-  styleUrls: ['./widget-resizable.component.scss'],
+  selector: 'tk-resizable',
+  templateUrl: './resizable.component.html',
+  styleUrls: ['./resizable.component.scss'],
   providers: [ { provide: Window, useValue: window } ],
   encapsulation: ViewEncapsulation.None
 })
-export class WidgetLayoutComponent implements OnInit {
+export class ResizableComponent implements OnInit {
 
   @HostBinding('class.resizable') resizable = true;
   @HostBinding('class.no-transition') noTransition = false;

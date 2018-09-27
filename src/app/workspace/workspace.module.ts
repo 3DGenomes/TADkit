@@ -13,13 +13,11 @@ import { WidgetSpawnerComponent } from '@workspace/widget-spawner/widget-spawner
 
 import { WorkspaceFixedComponent } from '@workspace/layouts/fixed/workspace.component';
 
+import { ResizableComponent } from '@workspace/layouts/resizable/resizable.component';
+import { ResizableColComponent } from '@workspace/layouts/cols/resizable/resizable-col.component';
+import { DragDirective } from '@workspace/layouts/resizable/drag.directive';
 import { WorkspaceRowsComponent } from '@workspace/layouts/rows/workspace.component';
-import { WidgetResizableComponent } from '@workspace/layouts/rows/resizable/widget-resizable.component';
-import { WidgetDragDirective } from '@workspace/layouts/rows/resizable/widget-drag.directive';
-
 import { WorkspaceColsComponent } from '@workspace/layouts/cols/workspace-col.component';
-import { WidgetLayoutColComponent } from '@workspace/layouts/cols/resizable/widget-resizable-col.component';
-import { WidgetDragColDirective } from '@workspace/layouts/cols/resizable/widget-drag-col.directive';
 
 import { WorkspaceGridsterComponent } from '@workspace/layouts/gridster/workspace.component';
 
@@ -43,11 +41,10 @@ import { GridsterModule } from 'angular-gridster2';
     WorkspaceComponent,
     WorkspaceFixedComponent,
     WorkspaceRowsComponent,
-    WidgetResizableComponent,
-    WidgetDragDirective,
+    ResizableComponent,
+    ResizableColComponent,
+    DragDirective,
     WorkspaceColsComponent,
-    WidgetLayoutColComponent,
-    WidgetDragColDirective,
     WorkspaceGridsterComponent,
   ],
   exports: [],

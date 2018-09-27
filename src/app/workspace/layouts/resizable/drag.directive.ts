@@ -3,10 +3,10 @@ import { DOCUMENT } from '@angular/platform-browser';
 
 
 @Directive({
-  selector: '[tkWidgetDragColHandle]',
+  selector: '[tkWidgetDragHandle]',
   providers: [ { provide: DOCUMENT, useValue: document } ],
 })
-export class WidgetDragColDirective implements OnInit {
+export class DragDirective implements OnInit {
 
   @Output() DragStart = new EventEmitter();
   @Output() Drag = new EventEmitter();

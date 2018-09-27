@@ -41,7 +41,7 @@ export class WorkspaceComponent implements OnInit {
   public setWorkspace(workspaceName?: string): void {
     // const workspaceComponent = workspaceLayouts[workspaceName];
     // if (!workspaceName) {}; // USE DEFAULT???
-    this.currentWorkspace = new Workspace(WorkspaceRowsComponent, null);
+    this.currentWorkspace = new Workspace(WorkspaceColsComponent, null);
   }
 
   loadWorkpace() {

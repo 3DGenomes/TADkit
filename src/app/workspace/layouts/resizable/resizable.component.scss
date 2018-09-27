@@ -59,9 +59,9 @@
         flex: 0 0 360px;
     }
 }
-.cell canvas:first-of-type  {
-  //display: flex; 
-}
+//  .cell canvas:first-of-type  {
+//   display: flex; 
+// }
 
 /**
  * Resizable
@@ -136,4 +136,16 @@
   left: 0;
   top: 0;
   margin-left: -#{$spacing};
+}
+
+.content.col {
+  &.content {
+    flex-flow: row nowrap;
+  }
+  &.col {
+    flex-flow: column nowrap;
+  }
+  &.cell {
+    min-width: 60px;
+  }
 }
