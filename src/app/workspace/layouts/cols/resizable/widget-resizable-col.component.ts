@@ -2,7 +2,7 @@ import { Component, OnInit, ElementRef, HostBinding, Input, Inject,
    ViewEncapsulation, Output, EventEmitter, Renderer2 } from '@angular/core';
 
 @Component({
-  selector: 'tk-widget-layout-col',
+  selector: 'tk-resizable-col',
   templateUrl: './widget-resizable-col.component.html',
   styleUrls: ['./widget-resizable-col.component.scss'],
   providers: [ { provide: Window, useValue: window } ],

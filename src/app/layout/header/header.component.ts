@@ -11,9 +11,6 @@ export class HeaderComponent {
 
   private topmenu: any[] = [
     { title: 'Workspace', route: '/workspace' },
-    { title: 'Resize Col', route: '/resizable-col' },
-    { title: 'Resize Row', route: '/resizable-row' },
-    { title: 'Gridster', route: '/gridster' },
     { icon: 'user', route: '/projects' },
     { icon: 'cog', route: '/workspace-config' }
   ];

@@ -1,29 +1,21 @@
-import { Component, HostBinding, HostListener, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, HostBinding, Input, HostListener, OnInit } from '@angular/core';
 import { WorkspaceService } from '@workspace/workspace.service';
-import { ProjectsService } from '@projects/projects.service';
-
 import { WidgetComponent } from '@workspace/widget-spawner/widget.component';
-import { Observable } from 'rxjs';
-import { Project } from '@projects/models/tk-project.model';
-import { BindObservable } from 'bind-observable';
-
 import { GridsterConfig, GridsterItem } from 'angular-gridster2';
 
 @Component({
-  selector: 'tk-workspace',
+  selector: 'tk-workspace-layout',
   templateUrl: './workspace.component.html',
   styleUrls: ['./workspace.component.scss']
 })
 
 export class WorkspaceGridsterComponent implements OnInit {
   @HostBinding('class') classes = 'workspace';
+  @Input() dataStream: any;
 
   private widgets: WidgetComponent[] = [];
   public options: GridsterConfig;
   public dashboard: GridsterItem[];
-
-  @BindObservable('dataStream') private data: Project;
-  public dataStream: Observable<Project>;
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
@@ -35,7 +27,6 @@ export class WorkspaceGridsterComponent implements OnInit {
 
   constructor(
     private workspaceService: WorkspaceService,
-    private projectsService: ProjectsService
   ) {
     /* Areas attributes not official Gridster value but to help idenitification */
     this.dashboard = [
@@ -62,7 +53,6 @@ export class WorkspaceGridsterComponent implements OnInit {
    };
 
     this.workspaceService.widgets.subscribe(wgts => this.widgets = wgts);
-    this.projectsService.currentProject.subscribe(prj => this.data = prj);
   }
 
   public ngOnInit() {
@@ -74,6 +64,6 @@ export class WorkspaceGridsterComponent implements OnInit {
   }
 
   public addWidget(widgetName): void {
-    // this.workspaceService.addWidgets(widgetName);
+    this.workspaceService.addWidgets(widgetName);
   }
 }

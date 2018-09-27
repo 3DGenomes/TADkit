@@ -11,13 +11,13 @@ import { Layout } from '@workspace/layouts/layout';
 })
 export class WorkspaceConfigComponent implements OnInit {
   public layouts: SelectItem[];
-  public layout = 'basic2x2';
+  public layout = 'fixed';
 
   constructor(private workspaceService: WorkspaceService) {
     this.layouts = [
-      { label: 'Basic 2x2', value: 'basic2x2'},
-      { label: 'Resizable Columns', value: 'resizable-col'},
-      { label: 'Resizable Rows', value: 'resizable'},
+      { label: 'Fixed', value: 'fixed'},
+      { label: 'Rows', value: 'rows'},
+      { label: 'Columns', value: 'cols'},
       { label: 'Gridster', value: 'gridster'}
     ];
   }
@@ -28,7 +28,7 @@ export class WorkspaceConfigComponent implements OnInit {
     // });
   }
 
-  private onSubmit() {
+  public onChange() {
     // this.workspaceService.layouts.subscribe(lyts => this.layouts = lyts);
     console.log(this.layouts);
   }

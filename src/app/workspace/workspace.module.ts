@@ -8,17 +8,18 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DropdownModule } from 'primeng/dropdown';
 
 import { WorkspaceConfigComponent } from '@workspace/config/workspace-config.component';
+import { WorkspaceComponent } from '@workspace/workspace/workspace.component';
 import { WidgetSpawnerComponent } from '@workspace/widget-spawner/widget-spawner.component';
 
-import { WorkspaceComponent } from '@workspace/layouts/basic2x2/workspace.component';
+import { WorkspaceFixedComponent } from '@workspace/layouts/fixed/workspace.component';
 
-import { WorkspaceResizableComponent } from '@workspace/layouts/resizable/row/workspace.component';
-import { WidgetLayoutComponent } from '@workspace/layouts/resizable/widget-resizable.component';
-import { WidgetDragDirective } from '@workspace/layouts/resizable/widget-drag.directive';
+import { WorkspaceRowsComponent } from '@workspace/layouts/rows/workspace.component';
+import { WidgetResizableComponent } from '@workspace/layouts/rows/resizable/widget-resizable.component';
+import { WidgetDragDirective } from '@workspace/layouts/rows/resizable/widget-drag.directive';
 
-import { WorkspaceResizableColComponent } from '@workspace/layouts/resizable-col/col/workspace-col.component';
-import { WidgetLayoutColComponent } from '@workspace/layouts/resizable-col/widget-resizable-col.component';
-import { WidgetDragColDirective } from '@workspace/layouts/resizable-col/widget-drag-col.directive';
+import { WorkspaceColsComponent } from '@workspace/layouts/cols/workspace-col.component';
+import { WidgetLayoutColComponent } from '@workspace/layouts/cols/resizable/widget-resizable-col.component';
+import { WidgetDragColDirective } from '@workspace/layouts/cols/resizable/widget-drag-col.directive';
 
 import { WorkspaceGridsterComponent } from '@workspace/layouts/gridster/workspace.component';
 
@@ -40,10 +41,11 @@ import { GridsterModule } from 'angular-gridster2';
     WorkspaceConfigComponent,
     WidgetSpawnerComponent,
     WorkspaceComponent,
-    WorkspaceResizableComponent,
-    WidgetLayoutComponent,
+    WorkspaceFixedComponent,
+    WorkspaceRowsComponent,
+    WidgetResizableComponent,
     WidgetDragDirective,
-    WorkspaceResizableColComponent,
+    WorkspaceColsComponent,
     WidgetLayoutColComponent,
     WidgetDragColDirective,
     WorkspaceGridsterComponent,

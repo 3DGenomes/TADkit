@@ -1,32 +1,23 @@
-import { Component, HostBinding, OnInit } from '@angular/core';
+import { Component, Input, HostBinding, OnInit } from '@angular/core';
 import { WorkspaceService } from '@workspace/workspace.service';
-import { ProjectsService } from '@projects/projects.service';
-
 import { WidgetComponent } from '@workspace/widget-spawner/widget.component';
-import { Observable } from 'rxjs';
-import { Project } from '@projects/models/tk-project.model';
-import { BindObservable } from 'bind-observable';
 
 @Component({
-  selector: 'tk-workspace',
+  selector: 'tk-workspace-layout',
   templateUrl: './workspace.component.html',
   styleUrls: ['./workspace.component.scss']
 })
 
-export class WorkspaceComponent implements OnInit {
+export class WorkspaceFixedComponent implements OnInit {
   @HostBinding('class') classes = 'workspace';
+  @Input() dataStream: any;
 
   private widgets: WidgetComponent[] = [];
 
-  @BindObservable('dataStream') private data: Project;
-  public dataStream: Observable<Project>;
-
   constructor(
     private workspaceService: WorkspaceService,
-    private projectsService: ProjectsService
   ) {
     this.workspaceService.widgets.subscribe(wgts => this.widgets = wgts);
-    this.projectsService.currentProject.subscribe(prj => this.data = prj);
   }
 
   public ngOnInit() {

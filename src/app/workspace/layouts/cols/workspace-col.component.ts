@@ -1,32 +1,22 @@
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { WorkspaceService } from '@workspace/workspace.service';
-import { ProjectsService } from '@projects/projects.service';
-
 import { WidgetComponent } from '@workspace/widget-spawner/widget.component';
-import { Observable } from 'rxjs';
-import { Project } from '@projects/models/tk-project.model';
-import { BindObservable } from 'bind-observable';
 
 @Component({
-  selector: 'tk-workspace',
-  templateUrl: './workspace.component.html',
-  styleUrls: ['./workspace.component.scss']
+  selector: 'tk-workspace-layout',
+  templateUrl: './workspace-col.component.html',
+  styleUrls: ['./workspace-col.component.scss']
 })
 
-export class WorkspaceResizableComponent implements OnInit {
-  @HostBinding('class') classes = 'content';
+export class WorkspaceColsComponent implements OnInit {
+  @HostBinding('class') classes = 'content-col';
 
   private widgets: WidgetComponent[] = [];
 
-  @BindObservable('dataStream') private data: Project;
-  public dataStream: Observable<Project>;
-
   constructor(
     private workspaceService: WorkspaceService,
-    private projectsService: ProjectsService
   ) {
     this.workspaceService.widgets.subscribe(wgts => this.widgets = wgts);
-    this.projectsService.currentProject.subscribe(prj => this.data = prj);
   }
 
   public ngOnInit() {
