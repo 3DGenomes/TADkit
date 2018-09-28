@@ -1,9 +1,7 @@
 <p-sidebar [(visible)]="display" [baseZIndex]="10000" styleClass="tadkit-sidebar" >
   <!--nav tk-menu [menulist]="sidemenu"></nav-->
   <tk-project-brief></tk-project-brief>
-
-<button pButton type="text" (click)="setProject('Project 1')" icon="pi pi-arrow-right">Project 1</button>
-<button pButton type="text" (click)="setProject('Project 2')" icon="pi pi-arrow-right">Project 2</button>
+  <tk-projects-list></tk-projects-list>
 
 <tk-menu [menulist]="sidemenu"></tk-menu>
 </p-sidebar>

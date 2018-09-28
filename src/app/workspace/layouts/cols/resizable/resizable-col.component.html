@@ -1,9 +1,0 @@
-<ng-content></ng-content>
-
-<div *ngFor='let direction of directions'
-  [class]="'rc-' + direction"
-  tkWidgetDragHandle (DragStart)="dragStart($event, direction);"
-  (DragEnd)="dragEnd($event)"
-  (Drag)="dragging($event)">
-  <span class="resizable-handle"></span>
-</div>

@@ -1,0 +1,20 @@
+<tk-resizable class="row" [directions]="['right']" [rFlex]="true">
+	<ng-container *ngFor="let widget of widgets; index as i;">
+	<tk-resizable *ngIf="i===0" class="cell" [directions]="['bottom']" [rFlex]="true">
+		<tk-widget [widget]="widget" [dataStream]="dataStream"></tk-widget>
+	</tk-resizable>
+	<tk-resizable *ngIf="i===2" class="cell" [directions]="['none']" [rFlex]="false">
+		<tk-widget [widget]="widget" [dataStream]="dataStream"></tk-widget>
+	</tk-resizable>
+	</ng-container>
+</tk-resizable>
+<tk-resizable class="row" [directions]="['none']" [rFlex]="false">
+	<ng-container *ngFor="let widget of widgets; index as i;">
+		<tk-resizable *ngIf="i===1" class="cell" [directions]="['bottom']" [rFlex]="true">
+			<tk-widget [widget]="widget" [dataStream]="dataStream"></tk-widget>
+		</tk-resizable>
+		<tk-resizable *ngIf="i===3" class="cell" [directions]="['none']" [rFlex]="false">
+			<tk-widget [widget]="widget" [dataStream]="dataStream"></tk-widget>
+		</tk-resizable>
+	</ng-container>
+</tk-resizable>

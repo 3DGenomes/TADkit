@@ -5,10 +5,10 @@ import { Project } from '@projects/models/tk-project.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ProjectsService } from '@projects/projects.service';
 // import * as workspaceLayouts from 'workspaces-lib';
-import { WorkspaceFixedComponent } from '../layouts/fixed/workspace.component';
+import { WorkspaceFixedComponent } from '@workspace/layouts/fixed/workspace.component';
 import { WorkspaceRowsComponent } from '@workspace/layouts/rows/workspace.component';
-import { WorkspaceColsComponent } from '@workspace/layouts/cols/workspace-col.component';
-import { WorkspaceGridsterComponent } from '../layouts/gridster/workspace.component';
+import { WorkspaceColsComponent } from '@workspace/layouts/cols/workspace.component';
+import { WorkspaceGridsterComponent } from '@workspace/layouts/gridster/workspace.component';
 
 @Component({
   selector: 'tk-workspace',

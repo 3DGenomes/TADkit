@@ -11,8 +11,8 @@ export class HeaderComponent {
 
   private topmenu: any[] = [
     { title: 'Workspace', route: '/workspace' },
-    { icon: 'user', route: '/projects' },
-    { icon: 'cog', route: '/workspace-config' }
+    { title: 'User Projects', icon: 'user', route: '/projects' },
+    { title: 'Configuration', icon: 'cog', route: '/workspace-config' }
   ];
 
 }

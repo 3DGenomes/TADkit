@@ -8,16 +8,15 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DropdownModule } from 'primeng/dropdown';
 
 import { WorkspaceConfigComponent } from '@workspace/config/workspace-config.component';
-import { WorkspaceComponent } from '@workspace/workspace/workspace.component';
+import { WorkspaceComponent } from '@workspace/workspace.component';
 import { WidgetSpawnerComponent } from '@workspace/widget-spawner/widget-spawner.component';
 
 import { WorkspaceFixedComponent } from '@workspace/layouts/fixed/workspace.component';
 
 import { ResizableComponent } from '@workspace/layouts/resizable/resizable.component';
-import { ResizableColComponent } from '@workspace/layouts/cols/resizable/resizable-col.component';
 import { DragDirective } from '@workspace/layouts/resizable/drag.directive';
 import { WorkspaceRowsComponent } from '@workspace/layouts/rows/workspace.component';
-import { WorkspaceColsComponent } from '@workspace/layouts/cols/workspace-col.component';
+import { WorkspaceColsComponent } from '@workspace/layouts/cols/workspace.component';
 
 import { WorkspaceGridsterComponent } from '@workspace/layouts/gridster/workspace.component';
 
@@ -42,7 +41,6 @@ import { GridsterModule } from 'angular-gridster2';
     WorkspaceFixedComponent,
     WorkspaceRowsComponent,
     ResizableComponent,
-    ResizableColComponent,
     DragDirective,
     WorkspaceColsComponent,
     WorkspaceGridsterComponent,

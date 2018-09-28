@@ -2,15 +2,15 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { WorkspaceConfigComponent } from '@workspace/config/workspace-config.component';
-import { WorkspaceComponent } from '@workspace/workspace/workspace.component';
+import { WorkspaceComponent } from '@workspace/workspace.component';
 import { WorkspaceFixedComponent } from '@workspace/layouts/fixed/workspace.component';
 import { WorkspaceRowsComponent } from '@workspace/layouts/rows/workspace.component';
-import { WorkspaceColsComponent } from '@workspace/layouts/cols/workspace-col.component';
+import { WorkspaceColsComponent } from '@workspace/layouts/cols/workspace.component';
 import { WorkspaceGridsterComponent } from '@workspace/layouts/gridster/workspace.component';
 import { ProjectsComponent } from '@projects/projects.component';
 
 const routes: Routes = [
-    { path: '', redirectTo: '/projects', pathMatch: 'full' },
+    { path: '', redirectTo: '/workspace', pathMatch: 'full' },
     { path: 'workspace-config', component: WorkspaceConfigComponent },
     { path: 'workspace', component: WorkspaceComponent },
     { path: 'workspace-fixed', component: WorkspaceFixedComponent },

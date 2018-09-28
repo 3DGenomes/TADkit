@@ -30,7 +30,7 @@ export class WorkspaceConfigComponent implements OnInit {
 
   public onChange() {
     // this.workspaceService.layouts.subscribe(lyts => this.layouts = lyts);
-    console.log(this.layouts);
+    console.log(this.layout);
   }
 
 }

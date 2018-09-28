@@ -4,12 +4,12 @@ import { WidgetComponent } from '@workspace/widget-spawner/widget.component';
 
 @Component({
   selector: 'tk-workspace-layout',
-  templateUrl: './workspace-col.component.html',
-  styleUrls: ['./workspace-col.component.scss']
+  templateUrl: './workspace.component.html',
+  styleUrls: ['./workspace.component.scss']
 })
 
 export class WorkspaceColsComponent implements OnInit {
-  @HostBinding('class') classes = 'content-col';
+  @HostBinding('class') classes = 'content cols';
 
   private widgets: WidgetComponent[] = [];
 
