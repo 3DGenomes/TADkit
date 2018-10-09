@@ -22,6 +22,12 @@
       ],
       "three-lib/*": [
         "../dist/three-lib/*"
+      ],
+      "projects-lib": [
+        "dist/projects-lib"
+      ],
+      "projects-lib/*": [
+        "dist/projects-lib/*"
       ]
     },
     "declaration": false,

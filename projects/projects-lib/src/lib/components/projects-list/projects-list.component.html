@@ -1,0 +1,31 @@
+<section class="tk-list">
+  <h3>Projects List</h3>
+  <div *ngIf="projects else loading">
+      <!-- <ng-container *ngIf="projects.length; else noItems"> -->
+      <table>
+        <tr>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Date</th>
+          <th>Select</th>
+          <th>Edit</th>
+          <th>Delete</th>
+        </tr>
+        <tr *ngFor="let project of projects">
+          <td>{{project.title}}</td>
+          <td>{{project.description}}</td>
+          <td>{{project.date}}</td>
+          <!-- <td><p-radioButton (click)="setProject(project)" name="selectProject" value="{{project.title}}" [(ngModel)]="currentCheck"></p-radioButton></td> -->
+          <td><button (click)="setProject(project)" pButton type="button" icon="pi pi-check" iconPos="left" [ngClass]="{'ui-state-active': project.title === (currentProject | async).title }"></button></td>
+          <td><button pButton type="button" icon="pi pi-pencil" iconPos="left"></button></td>
+          <td><button (click)="deleteProject(project)" pButton type="button" icon="pi pi-trash" iconPos="left"></button></td>
+        </tr>
+      </table>
+      <!-- </ng-container>     -->
+      <ng-template #noItems>No Items!</ng-template>
+    </div>
+    <ng-template #loading>
+      <p-progressSpinner></p-progressSpinner>
+    </ng-template> 
+</section>
+<p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle" width="425"></p-confirmDialog>

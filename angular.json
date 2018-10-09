@@ -250,6 +250,41 @@
           }
         }
       }
+    },
+    "projects-lib": {
+      "root": "projects/projects-lib",
+      "sourceRoot": "projects/projects-lib/src",
+      "projectType": "library",
+      "prefix": "projects",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/projects-lib/tsconfig.lib.json",
+            "project": "projects/projects-lib/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/projects-lib/src/test.ts",
+            "tsConfig": "projects/projects-lib/tsconfig.spec.json",
+            "karmaConfig": "projects/projects-lib/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/projects-lib/tsconfig.lib.json",
+              "projects/projects-lib/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "tadkit-a5",
