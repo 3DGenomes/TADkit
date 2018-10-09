@@ -13,15 +13,14 @@ import { WidgetSpawnerComponent } from '@workspace/widget-spawner/widget-spawner
 
 import { WorkspaceFixedComponent } from '@workspace/layouts/fixed/workspace.component';
 
-import { ResizableComponent } from '@workspace/layouts/resizable/resizable.component';
-import { DragDirective } from '@workspace/layouts/resizable/drag.directive';
+import { NgxResizableModule } from '@3dgenomes/ngx-resizable';
 import { WorkspaceRowsComponent } from '@workspace/layouts/rows/workspace.component';
 import { WorkspaceColsComponent } from '@workspace/layouts/cols/workspace.component';
 
+import { GridsterModule } from 'angular-gridster2';
 import { WorkspaceGridsterComponent } from '@workspace/layouts/gridster/workspace.component';
 
 import { GenomicsLibModule } from 'genomics-lib';
-import { GridsterModule } from 'angular-gridster2';
 
 @NgModule({
   imports: [
@@ -31,8 +30,9 @@ import { GridsterModule } from 'angular-gridster2';
     ButtonModule,
     ConfirmDialogModule,
     DropdownModule,
+    NgxResizableModule,
     GridsterModule,
-    GenomicsLibModule
+    GenomicsLibModule,
   ],
   declarations: [
     WorkspaceConfigComponent,
@@ -40,13 +40,16 @@ import { GridsterModule } from 'angular-gridster2';
     WorkspaceComponent,
     WorkspaceFixedComponent,
     WorkspaceRowsComponent,
-    ResizableComponent,
-    DragDirective,
     WorkspaceColsComponent,
-    WorkspaceGridsterComponent,
+    WorkspaceGridsterComponent
   ],
   exports: [],
   providers: [],
-  entryComponents: []
+  entryComponents: [
+    WorkspaceFixedComponent,
+    WorkspaceRowsComponent,
+    WorkspaceColsComponent,
+    WorkspaceGridsterComponent
+  ]
 })
 export class WorkspaceModule {}

@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
-  selector: 'tk-genomics-spatial',
+  selector: 'genomics-spatial',
   templateUrl: './genomics-spatial.component.html',
   styleUrls: ['./genomics-spatial.component.css']
 })

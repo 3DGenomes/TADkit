@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
-  selector: 'tk-genomics-info',
+  selector: 'genomics-info',
   templateUrl: './genomics-info.component.html',
   styleUrls: ['./genomics-info.component.css']
 })

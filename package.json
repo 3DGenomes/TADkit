@@ -1,6 +1,6 @@
 {
-  "name": "tadkit-a5",
-  "version": "0.0.0",
+  "name": "tadkit",
+  "version": "2.0.1",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -13,6 +13,7 @@
   },
   "private": true,
   "dependencies": {
+    "@3dgenomes/ngx-resizable": "^1.0.1",
     "@angular/animations": "^6.1.8",
     "@angular/common": "^6.1.8",
     "@angular/compiler": "^6.1.8",

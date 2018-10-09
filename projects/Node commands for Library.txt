@@ -5,4 +5,4 @@ ng generate library library-lib --prefix=tk
 ng generate component component-name --prefix tk --project genomics-lib --export
 
 // Build library
-ng build --prod genomics-lib
+ng build genomics-lib

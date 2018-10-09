@@ -29,7 +29,7 @@ export class Ensemble {
   metadata: Metadata;
   uuid: string;
   ref: string;
-  source: string; 
+  source: string;
   type: string;
   components: 3;
   models: Models[] | null; // {"1","0,0,0","0,0,0"}; // return empty particle pair

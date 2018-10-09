@@ -1,6 +1,6 @@
 import { Injectable, ContentChildren, Input, Component, ViewChild, ElementRef, HostListener, NgModule, Directive, Pipe, defineInjectable, forwardRef } from '@angular/core';
 import { __extends, __awaiter, __generator } from 'tslib';
-import { Object3D, PerspectiveCamera, Scene, ColladaLoader, OBJLoader, MTLLoader, ObjectLoader, WebGLRenderer, PCFSoftShadowMap, AxesHelper, GridHelper, PointLight } from 'three-full';
+import { Object3D, Scene, ColladaLoader, PerspectiveCamera, OBJLoader, MTLLoader, ObjectLoader, WebGLRenderer, PCFSoftShadowMap, AxesHelper, GridHelper, PointLight } from 'three-full';
 import { OrbitControls } from '@avatsaev/three-orbitcontrols-ts';
 import { Scene as Scene$1, PerspectiveCamera as PerspectiveCamera$1, Color, WebGLRenderer as WebGLRenderer$1, PointLight as PointLight$1, BoxGeometry, MeshLambertMaterial, Mesh } from 'three';
 import { CommonModule } from '@angular/common';

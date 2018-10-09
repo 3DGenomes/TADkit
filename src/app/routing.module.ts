@@ -11,12 +11,12 @@ import { ProjectsComponent } from '@projects/projects.component';
 
 const routes: Routes = [
     { path: '', redirectTo: '/workspace', pathMatch: 'full' },
-    { path: 'workspace-config', component: WorkspaceConfigComponent },
     { path: 'workspace', component: WorkspaceComponent },
-    { path: 'workspace-fixed', component: WorkspaceFixedComponent },
-    { path: 'workspace-rows', component: WorkspaceRowsComponent },
-    { path: 'workspace-cols', component: WorkspaceColsComponent },
-    { path: 'workspace-grid', component: WorkspaceGridsterComponent },
+    { path: 'workspace-config', component: WorkspaceConfigComponent },
+    // { path: 'workspace-fixed', component: WorkspaceFixedComponent },
+    // { path: 'workspace-rows', component: WorkspaceRowsComponent },
+    // { path: 'workspace-cols', component: WorkspaceColsComponent },
+    // { path: 'workspace-grid', component: WorkspaceGridsterComponent },
     { path: 'projects', component: ProjectsComponent }
   ];
 

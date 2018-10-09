@@ -11,7 +11,7 @@ type SpeciesCommon =
     | 'unknown'
     ;
 
-type SpeciesScientific = 
+type SpeciesScientific =
       'Homo sapiens' | 'Homo neanderthalensis' | 'Gorilla gorilla' | 'Pan troglodytes' | 'Pan paniscus'
     | 'Mus musculus'
     | 'Drosophila melanogaster'
