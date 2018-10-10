@@ -1,0 +1,62 @@
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ */
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { ButtonModule } from 'primeng/button';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DropdownModule } from 'primeng/dropdown';
+import { WorkspaceConfigComponent } from './config/workspace-config.component';
+import { WorkspaceComponent } from './workspace/workspace.component';
+import { WidgetSpawnerComponent } from './widget-spawner/widget-spawner.component';
+import { WorkspaceFixedComponent } from './layouts/fixed/workspace.component';
+import { NgxResizableModule } from '@3dgenomes/ngx-resizable';
+import { WorkspaceRowsComponent } from './layouts/rows/workspace.component';
+import { WorkspaceColsComponent } from './layouts/cols/workspace.component';
+import { GridsterModule } from 'angular-gridster2';
+import { WorkspaceGridsterComponent } from './layouts/gridster/workspace.component';
+import { GenomicsLibModule } from 'genomics-lib';
+import { ProjectsLibModule } from 'projects-lib';
+var WorkspaceLibModule = /** @class */ (function () {
+    function WorkspaceLibModule() {
+    }
+    WorkspaceLibModule.decorators = [
+        { type: NgModule, args: [{
+                    imports: [
+                        CommonModule,
+                        FormsModule,
+                        ProgressSpinnerModule,
+                        ButtonModule,
+                        ConfirmDialogModule,
+                        DropdownModule,
+                        NgxResizableModule,
+                        GridsterModule,
+                        GenomicsLibModule,
+                        ProjectsLibModule
+                    ],
+                    declarations: [
+                        WorkspaceConfigComponent,
+                        WidgetSpawnerComponent,
+                        WorkspaceComponent,
+                        WorkspaceFixedComponent,
+                        WorkspaceRowsComponent,
+                        WorkspaceColsComponent,
+                        WorkspaceGridsterComponent,
+                    ],
+                    exports: [],
+                    providers: [],
+                    entryComponents: [
+                        WorkspaceFixedComponent,
+                        WorkspaceRowsComponent,
+                        WorkspaceColsComponent,
+                        WorkspaceGridsterComponent
+                    ]
+                },] }
+    ];
+    return WorkspaceLibModule;
+}());
+export { WorkspaceLibModule };
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoid29ya3NwYWNlLWxpYi5tb2R1bGUuanMiLCJzb3VyY2VSb290Ijoibmc6Ly93b3Jrc3BhY2UtbGliLyIsInNvdXJjZXMiOlsibGliL3dvcmtzcGFjZS1saWIubW9kdWxlLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7QUFBQSxPQUFPLEVBQUUsUUFBUSxFQUFFLE1BQU0sZUFBZSxDQUFDO0FBQ3pDLE9BQU8sRUFBRSxZQUFZLEVBQUUsTUFBTSxpQkFBaUIsQ0FBQztBQUMvQyxPQUFPLEVBQUUsV0FBVyxFQUFFLE1BQU0sZ0JBQWdCLENBQUM7QUFFN0MsT0FBTyxFQUFFLHFCQUFxQixFQUFFLE1BQU0seUJBQXlCLENBQUM7QUFDaEUsT0FBTyxFQUFFLFlBQVksRUFBRSxNQUFNLGdCQUFnQixDQUFDO0FBQzlDLE9BQU8sRUFBRSxtQkFBbUIsRUFBRSxNQUFNLHVCQUF1QixDQUFDO0FBQzVELE9BQU8sRUFBRSxjQUFjLEVBQUUsTUFBTSxrQkFBa0IsQ0FBQztBQUVsRCxPQUFPLEVBQUUsd0JBQXdCLEVBQUUsTUFBTSxxQ0FBcUMsQ0FBQztBQUMvRSxPQUFPLEVBQUUsa0JBQWtCLEVBQUUsTUFBTSxpQ0FBaUMsQ0FBQztBQUNyRSxPQUFPLEVBQUUsc0JBQXNCLEVBQUUsTUFBTSwyQ0FBMkMsQ0FBQztBQUVuRixPQUFPLEVBQUUsdUJBQXVCLEVBQUUsTUFBTSxxQ0FBcUMsQ0FBQztBQUU5RSxPQUFPLEVBQUUsa0JBQWtCLEVBQUUsTUFBTSwwQkFBMEIsQ0FBQztBQUM5RCxPQUFPLEVBQUUsc0JBQXNCLEVBQUUsTUFBTSxvQ0FBb0MsQ0FBQztBQUM1RSxPQUFPLEVBQUUsc0JBQXNCLEVBQUUsTUFBTSxvQ0FBb0MsQ0FBQztBQUU1RSxPQUFPLEVBQUUsY0FBYyxFQUFFLE1BQU0sbUJBQW1CLENBQUM7QUFDbkQsT0FBTyxFQUFFLDBCQUEwQixFQUFFLE1BQU0sd0NBQXdDLENBQUM7QUFFcEYsT0FBTyxFQUFFLGlCQUFpQixFQUFFLE1BQU0sY0FBYyxDQUFDO0FBQ2pELE9BQU8sRUFBRSxpQkFBaUIsRUFBRSxNQUFNLGNBQWMsQ0FBQztBQUVqRDtJQUFBO0lBK0JpQyxDQUFDOztnQkEvQmpDLFFBQVEsU0FBQztvQkFDUixPQUFPLEVBQUU7d0JBQ1AsWUFBWTt3QkFDWixXQUFXO3dCQUNYLHFCQUFxQjt3QkFDckIsWUFBWTt3QkFDWixtQkFBbUI7d0JBQ25CLGNBQWM7d0JBQ2Qsa0JBQWtCO3dCQUNsQixjQUFjO3dCQUNkLGlCQUFpQjt3QkFDakIsaUJBQWlCO3FCQUNsQjtvQkFDRCxZQUFZLEVBQUU7d0JBQ1osd0JBQXdCO3dCQUN4QixzQkFBc0I7d0JBQ3RCLGtCQUFrQjt3QkFDbEIsdUJBQXVCO3dCQUN2QixzQkFBc0I7d0JBQ3RCLHNCQUFzQjt3QkFDdEIsMEJBQTBCO3FCQUMzQjtvQkFDRCxPQUFPLEVBQUUsRUFBRTtvQkFDWCxTQUFTLEVBQUUsRUFBRTtvQkFDYixlQUFlLEVBQUU7d0JBQ2YsdUJBQXVCO3dCQUN2QixzQkFBc0I7d0JBQ3RCLHNCQUFzQjt3QkFDdEIsMEJBQTBCO3FCQUMzQjtpQkFDRjs7SUFDZ0MseUJBQUM7Q0FBQSxBQS9CbEMsSUErQmtDO1NBQXJCLGtCQUFrQiIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IE5nTW9kdWxlIH0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5pbXBvcnQgeyBDb21tb25Nb2R1bGUgfSBmcm9tICdAYW5ndWxhci9jb21tb24nO1xuaW1wb3J0IHsgRm9ybXNNb2R1bGUgfSBmcm9tICdAYW5ndWxhci9mb3Jtcyc7XG5cbmltcG9ydCB7IFByb2dyZXNzU3Bpbm5lck1vZHVsZSB9IGZyb20gJ3ByaW1lbmcvcHJvZ3Jlc3NzcGlubmVyJztcbmltcG9ydCB7IEJ1dHRvbk1vZHVsZSB9IGZyb20gJ3ByaW1lbmcvYnV0dG9uJztcbmltcG9ydCB7IENvbmZpcm1EaWFsb2dNb2R1bGUgfSBmcm9tICdwcmltZW5nL2NvbmZpcm1kaWFsb2cnO1xuaW1wb3J0IHsgRHJvcGRvd25Nb2R1bGUgfSBmcm9tICdwcmltZW5nL2Ryb3Bkb3duJztcblxuaW1wb3J0IHsgV29ya3NwYWNlQ29uZmlnQ29tcG9uZW50IH0gZnJvbSAnLi9jb25maWcvd29ya3NwYWNlLWNvbmZpZy5jb21wb25lbnQnO1xuaW1wb3J0IHsgV29ya3NwYWNlQ29tcG9uZW50IH0gZnJvbSAnLi93b3Jrc3BhY2Uvd29ya3NwYWNlLmNvbXBvbmVudCc7XG5pbXBvcnQgeyBXaWRnZXRTcGF3bmVyQ29tcG9uZW50IH0gZnJvbSAnLi93aWRnZXQtc3Bhd25lci93aWRnZXQtc3Bhd25lci5jb21wb25lbnQnO1xuXG5pbXBvcnQgeyBXb3Jrc3BhY2VGaXhlZENvbXBvbmVudCB9IGZyb20gJy4vbGF5b3V0cy9maXhlZC93b3Jrc3BhY2UuY29tcG9uZW50JztcblxuaW1wb3J0IHsgTmd4UmVzaXphYmxlTW9kdWxlIH0gZnJvbSAnQDNkZ2Vub21lcy9uZ3gtcmVzaXphYmxlJztcbmltcG9ydCB7IFdvcmtzcGFjZVJvd3NDb21wb25lbnQgfSBmcm9tICcuL2xheW91dHMvcm93cy93b3Jrc3BhY2UuY29tcG9uZW50JztcbmltcG9ydCB7IFdvcmtzcGFjZUNvbHNDb21wb25lbnQgfSBmcm9tICcuL2xheW91dHMvY29scy93b3Jrc3BhY2UuY29tcG9uZW50JztcblxuaW1wb3J0IHsgR3JpZHN0ZXJNb2R1bGUgfSBmcm9tICdhbmd1bGFyLWdyaWRzdGVyMic7XG5pbXBvcnQgeyBXb3Jrc3BhY2VHcmlkc3RlckNvbXBvbmVudCB9IGZyb20gJy4vbGF5b3V0cy9ncmlkc3Rlci93b3Jrc3BhY2UuY29tcG9uZW50JztcblxuaW1wb3J0IHsgR2Vub21pY3NMaWJNb2R1bGUgfSBmcm9tICdnZW5vbWljcy1saWInO1xuaW1wb3J0IHsgUHJvamVjdHNMaWJNb2R1bGUgfSBmcm9tICdwcm9qZWN0cy1saWInO1xuXG5ATmdNb2R1bGUoe1xuICBpbXBvcnRzOiBbXG4gICAgQ29tbW9uTW9kdWxlLFxuICAgIEZvcm1zTW9kdWxlLFxuICAgIFByb2dyZXNzU3Bpbm5lck1vZHVsZSxcbiAgICBCdXR0b25Nb2R1bGUsXG4gICAgQ29uZmlybURpYWxvZ01vZHVsZSxcbiAgICBEcm9wZG93bk1vZHVsZSxcbiAgICBOZ3hSZXNpemFibGVNb2R1bGUsXG4gICAgR3JpZHN0ZXJNb2R1bGUsXG4gICAgR2Vub21pY3NMaWJNb2R1bGUsXG4gICAgUHJvamVjdHNMaWJNb2R1bGVcbiAgXSxcbiAgZGVjbGFyYXRpb25zOiBbXG4gICAgV29ya3NwYWNlQ29uZmlnQ29tcG9uZW50LFxuICAgIFdpZGdldFNwYXduZXJDb21wb25lbnQsXG4gICAgV29ya3NwYWNlQ29tcG9uZW50LFxuICAgIFdvcmtzcGFjZUZpeGVkQ29tcG9uZW50LFxuICAgIFdvcmtzcGFjZVJvd3NDb21wb25lbnQsXG4gICAgV29ya3NwYWNlQ29sc0NvbXBvbmVudCxcbiAgICBXb3Jrc3BhY2VHcmlkc3RlckNvbXBvbmVudCxcbiAgXSxcbiAgZXhwb3J0czogW10sXG4gIHByb3ZpZGVyczogW10sXG4gIGVudHJ5Q29tcG9uZW50czogW1xuICAgIFdvcmtzcGFjZUZpeGVkQ29tcG9uZW50LFxuICAgIFdvcmtzcGFjZVJvd3NDb21wb25lbnQsXG4gICAgV29ya3NwYWNlQ29sc0NvbXBvbmVudCxcbiAgICBXb3Jrc3BhY2VHcmlkc3RlckNvbXBvbmVudFxuICBdXG59KVxuZXhwb3J0IGNsYXNzIFdvcmtzcGFjZUxpYk1vZHVsZSB7fVxuIl19

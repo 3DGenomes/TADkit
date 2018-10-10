@@ -1,4 +1,4 @@
-import { AfterViewInit, Input, QueryList, ContentChildren } from '@angular/core';
+import { AfterViewInit, Input, ContentChildren } from '@angular/core';
 import * as THREE from 'three-full';
 
 export abstract class AbstractCamera<T extends THREE.Camera> implements AfterViewInit {

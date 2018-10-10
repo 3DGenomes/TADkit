@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { SelectItem } from 'primeng/api';
 
-import { WorkspaceService } from '@workspace/workspace.service';
-// import { Layout } from '@workspace/layouts/layout';
+import { WorkspaceService } from '../workspace-lib.service';
+// import { Layout } from '../layouts/layout';
 
 @Component({
   selector: 'workspace-config',

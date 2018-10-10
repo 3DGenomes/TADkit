@@ -7,20 +7,21 @@ import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DropdownModule } from 'primeng/dropdown';
 
-import { WorkspaceConfigComponent } from '@workspace/config/workspace-config.component';
-import { WorkspaceComponent } from '@workspace/workspace.component';
-import { WidgetSpawnerComponent } from '@workspace/widget-spawner/widget-spawner.component';
+import { WorkspaceConfigComponent } from './config/workspace-config.component';
+import { WorkspaceComponent } from './workspace/workspace.component';
+import { WidgetSpawnerComponent } from './widget-spawner/widget-spawner.component';
 
-import { WorkspaceFixedComponent } from '@workspace/layouts/fixed/workspace.component';
+import { WorkspaceFixedComponent } from './layouts/fixed/workspace.component';
 
 import { NgxResizableModule } from '@3dgenomes/ngx-resizable';
-import { WorkspaceRowsComponent } from '@workspace/layouts/rows/workspace.component';
-import { WorkspaceColsComponent } from '@workspace/layouts/cols/workspace.component';
+import { WorkspaceRowsComponent } from './layouts/rows/workspace.component';
+import { WorkspaceColsComponent } from './layouts/cols/workspace.component';
 
 import { GridsterModule } from 'angular-gridster2';
-import { WorkspaceGridsterComponent } from '@workspace/layouts/gridster/workspace.component';
+import { WorkspaceGridsterComponent } from './layouts/gridster/workspace.component';
 
 import { GenomicsLibModule } from 'genomics-lib';
+import { ProjectsLibModule } from 'projects-lib';
 
 @NgModule({
   imports: [
@@ -32,7 +33,8 @@ import { GenomicsLibModule } from 'genomics-lib';
     DropdownModule,
     NgxResizableModule,
     GridsterModule,
-    GenomicsLibModule
+    GenomicsLibModule,
+    ProjectsLibModule
   ],
   declarations: [
     WorkspaceConfigComponent,
@@ -45,6 +47,11 @@ import { GenomicsLibModule } from 'genomics-lib';
   ],
   exports: [],
   providers: [],
-  entryComponents: []
+  entryComponents: [
+    WorkspaceFixedComponent,
+    WorkspaceRowsComponent,
+    WorkspaceColsComponent,
+    WorkspaceGridsterComponent
+  ]
 })
-export class WorkspaceModule {}
+export class WorkspaceLibModule {}

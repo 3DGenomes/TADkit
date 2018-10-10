@@ -8,7 +8,7 @@ import { Project } from '../../models/project.model';
 })
 export class ProjectsDetailsComponent implements OnInit {
 
-private project: Project;
+public project;
 
   constructor(private projectsService: ProjectsLibService) {}
 

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { WebStorageModule } from 'ngx-store';
 
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ButtonModule } from 'primeng/button';
@@ -19,6 +20,7 @@ import { ProjectsCreateComponent } from './components/projects-create/projects-c
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    WebStorageModule,
     ProgressSpinnerModule,
     ButtonModule,
     RadioButtonModule,

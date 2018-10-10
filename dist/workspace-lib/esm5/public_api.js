@@ -1,0 +1,18 @@
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ */
+/*
+ * Public API Surface of workspace-lib
+ */
+export { WorkspaceService } from './lib/workspace-lib.service';
+export { WorkspaceComponent } from './lib/workspace/workspace.component';
+export { WorkspaceConfigComponent } from './lib/config/workspace-config.component';
+export {} from './lib/workspace/workspace.component';
+export { WidgetSpawnerComponent } from './lib/widget-spawner/widget-spawner.component';
+export { WorkspaceFixedComponent } from './lib/layouts/fixed/workspace.component';
+export { WorkspaceRowsComponent } from './lib/layouts/rows/workspace.component';
+export { WorkspaceColsComponent } from './lib/layouts/cols/workspace.component';
+export { WorkspaceGridsterComponent } from './lib/layouts/gridster/workspace.component';
+export { WorkspaceLibModule } from './lib/workspace-lib.module';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHVibGljX2FwaS5qcyIsInNvdXJjZVJvb3QiOiJuZzovL3dvcmtzcGFjZS1saWIvIiwic291cmNlcyI6WyJwdWJsaWNfYXBpLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7QUFJQSxpQ0FBYyw2QkFBNkIsQ0FBQztBQUM1QyxtQ0FBYyxxQ0FBcUMsQ0FBQztBQUNwRCx5Q0FBYyx5Q0FBeUMsQ0FBQztBQUN4RCxlQUFjLHFDQUFxQyxDQUFDO0FBQ3BELHVDQUFjLCtDQUErQyxDQUFDO0FBQzlELHdDQUFjLHlDQUF5QyxDQUFDO0FBQ3hELHVDQUFjLHdDQUF3QyxDQUFDO0FBQ3ZELHVDQUFjLHdDQUF3QyxDQUFDO0FBQ3ZELDJDQUFjLDRDQUE0QyxDQUFDO0FBQzNELG1DQUFjLDRCQUE0QixDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLypcbiAqIFB1YmxpYyBBUEkgU3VyZmFjZSBvZiB3b3Jrc3BhY2UtbGliXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9saWIvd29ya3NwYWNlLWxpYi5zZXJ2aWNlJztcbmV4cG9ydCAqIGZyb20gJy4vbGliL3dvcmtzcGFjZS93b3Jrc3BhY2UuY29tcG9uZW50JztcbmV4cG9ydCAqIGZyb20gJy4vbGliL2NvbmZpZy93b3Jrc3BhY2UtY29uZmlnLmNvbXBvbmVudCc7XG5leHBvcnQgKiBmcm9tICcuL2xpYi93b3Jrc3BhY2Uvd29ya3NwYWNlLmNvbXBvbmVudCc7XG5leHBvcnQgKiBmcm9tICcuL2xpYi93aWRnZXQtc3Bhd25lci93aWRnZXQtc3Bhd25lci5jb21wb25lbnQnO1xuZXhwb3J0ICogZnJvbSAnLi9saWIvbGF5b3V0cy9maXhlZC93b3Jrc3BhY2UuY29tcG9uZW50JztcbmV4cG9ydCAqIGZyb20gJy4vbGliL2xheW91dHMvcm93cy93b3Jrc3BhY2UuY29tcG9uZW50JztcbmV4cG9ydCAqIGZyb20gJy4vbGliL2xheW91dHMvY29scy93b3Jrc3BhY2UuY29tcG9uZW50JztcbmV4cG9ydCAqIGZyb20gJy4vbGliL2xheW91dHMvZ3JpZHN0ZXIvd29ya3NwYWNlLmNvbXBvbmVudCc7XG5leHBvcnQgKiBmcm9tICcuL2xpYi93b3Jrc3BhY2UtbGliLm1vZHVsZSc7XG4iXX0=

@@ -2,6 +2,25 @@
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
   "dest": "../../dist/workspace-lib",
   "lib": {
-    "entryFile": "src/public_api.ts"
+    "entryFile": "src/public_api.ts",
+    "umdModuleIds": {
+      "genomics-lib": "GenomicsLibModule",
+      "three-lib": "ThreeLibModule",
+      "three": "THREE",
+      "three-full": "THREE",
+      "@avatsaev/three-orbitcontrols-ts": "OrbitControls",
+      "projects-lib": "ProjectsLibModule",
+      "ngx-store": "WebStorageModule",
+      "primeng/api": "ConfirmationService",
+      "primeng/progressspinner": "ProgressSpinnerModule",
+      "primeng/button": "ButtonModule",
+      "primeng/radiobutton": "RadioButtonModule",
+      "primeng/checkbox": "CheckboxModule",
+      "primeng/confirmdialog": "ConfirmDialogModule",
+      "primeng/dropdown": "DropdownModule",
+      "bind-observable": "BindObservable",
+      "@3dgenomes/ngx-resizable": "NgxResizableModule",
+      "angular-gridster2": "angular-gridster2"
+    }
   }
 }

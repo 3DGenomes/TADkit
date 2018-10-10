@@ -1,0 +1,21 @@
+{
+  "name": "workspace-lib",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^6.0.0-rc.0 || ^6.0.0",
+    "@angular/core": "^6.0.0-rc.0 || ^6.0.0"
+  },
+  "main": "bundles/workspace-lib.umd.js",
+  "module": "fesm5/workspace-lib.js",
+  "es2015": "fesm2015/workspace-lib.js",
+  "esm5": "esm5/workspace-lib.js",
+  "esm2015": "esm2015/workspace-lib.js",
+  "fesm5": "fesm5/workspace-lib.js",
+  "fesm2015": "fesm2015/workspace-lib.js",
+  "typings": "workspace-lib.d.ts",
+  "metadata": "workspace-lib.metadata.json",
+  "sideEffects": false,
+  "dependencies": {
+    "tslib": "^1.9.0"
+  }
+}

@@ -6,8 +6,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { WebStorageModule } from 'ngx-store';
 
 import { LayoutModule } from './layout/layout-cssgrid.module';
-import { ProjectsModule } from '@projects/projects.module';
-import { WorkspaceModule } from '@workspace/workspace.module';
+import { ProjectsLibModule } from 'projects-lib';
+import { WorkspaceLibModule } from 'workspace-lib';
 
 import { TadkitComponent } from './tadkit.component';
 
@@ -19,8 +19,8 @@ import { TadkitComponent } from './tadkit.component';
     HttpClientModule,
     WebStorageModule,
     LayoutModule,
-    WorkspaceModule,
-    ProjectsModule
+    WorkspaceLibModule,
+    ProjectsLibModule
   ],
   declarations: [
     TadkitComponent

@@ -4,6 +4,7 @@
 
 export * from './lib/users-admin.service';
 export * from './lib/projects-lib.service';
+export * from './lib/models/project.model';
 export * from './lib/components/projects-admin/projects-admin.component';
 export * from './lib/components/projects-brief/projects-brief.component';
 export * from './lib/components/projects-create/projects-create.component';

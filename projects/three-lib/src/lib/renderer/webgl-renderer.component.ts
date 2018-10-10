@@ -1,15 +1,5 @@
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  ElementRef,
-  ContentChildren,
-  HostListener,
-  QueryList,
-  EventEmitter,
-  Output,
-  AfterViewInit
-} from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ContentChildren, HostListener,
+  QueryList, EventEmitter, Output, AfterViewInit} from '@angular/core';
 import * as THREE from 'three-full';
 import { SceneDirective } from '../objects/scene.directive';
 import { AbstractCamera } from '../cameras/abstract-camera';

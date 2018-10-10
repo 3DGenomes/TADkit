@@ -1,20 +1,20 @@
 <rsz-layout class="row" [directions]="['bottom']" [rFlex]="true">
 	<ng-container *ngFor="let widget of widgets; index as i; even as flex;">
 		<rsz-layout *ngIf="i<2 && flex" class="cell" [directions]="['right']" [rFlex]="flex">
-			<tk-widget [widget]="widget" [dataStream]="dataStream"></tk-widget>
+			<workspace-widget [widget]="widget" [dataStream]="dataStream"></workspace-widget>
 		</rsz-layout>
 		<rsz-layout *ngIf="i<2 && !flex" class="cell" [directions]="['none']" [rFlex]="flex">
-			<tk-widget [widget]="widget" [dataStream]="dataStream"></tk-widget>
+			<workspace-widget [widget]="widget" [dataStream]="dataStream"></workspace-widget>
 		</rsz-layout>
 	</ng-container>
 </rsz-layout>
 <rsz-layout class="row" [directions]="['none']" [rFlex]="false">
 	<ng-container *ngFor="let widget of widgets; index as i; even as flex;">
 		<rsz-layout *ngIf="i>1 && flex" class="cell" [directions]="['right']" [rFlex]="flex">
-			<tk-widget [widget]="widget" [dataStream]="dataStream"></tk-widget>
+			<workspace-widget [widget]="widget" [dataStream]="dataStream"></workspace-widget>
 		</rsz-layout>
 		<rsz-layout *ngIf="i>1 && !flex" class="cell" [directions]="['none']" [rFlex]="flex">
-			<tk-widget [widget]="widget" [dataStream]="dataStream"></tk-widget>
+			<workspace-widget [widget]="widget" [dataStream]="dataStream"></workspace-widget>
 		</rsz-layout>
 	</ng-container>
 </rsz-layout>

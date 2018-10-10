@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
 
-import { Widget } from '@workspace/widget-spawner/widget';
-import { WidgetComponent } from '@workspace/widget-spawner/widget.component';
+import { Widget } from '../widget-spawner/widget';
+import { WidgetComponent } from '../widget-spawner/widget.component';
 
 /**
  * Supported comment MIKE

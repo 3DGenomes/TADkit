@@ -1,23 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { WorkspaceConfigComponent } from '@workspace/config/workspace-config.component';
-import { WorkspaceComponent } from '@workspace/workspace.component';
-import { WorkspaceFixedComponent } from '@workspace/layouts/fixed/workspace.component';
-import { WorkspaceRowsComponent } from '@workspace/layouts/rows/workspace.component';
-import { WorkspaceColsComponent } from '@workspace/layouts/cols/workspace.component';
-import { WorkspaceGridsterComponent } from '@workspace/layouts/gridster/workspace.component';
-import { ProjectsComponent } from '@projects/projects.component';
+import { WorkspaceConfigComponent } from 'workspace-lib';
+import { WorkspaceComponent } from 'workspace-lib';
+import { ProjectsAdminComponent } from 'projects-lib';
 
 const routes: Routes = [
     { path: '', redirectTo: '/workspace', pathMatch: 'full' },
     { path: 'workspace', component: WorkspaceComponent },
     { path: 'workspace-config', component: WorkspaceConfigComponent },
-    // { path: 'workspace-fixed', component: WorkspaceFixedComponent },
-    // { path: 'workspace-rows', component: WorkspaceRowsComponent },
-    // { path: 'workspace-cols', component: WorkspaceColsComponent },
-    // { path: 'workspace-grid', component: WorkspaceGridsterComponent },
-    { path: 'projects', component: ProjectsComponent }
+    { path: 'projects', component: ProjectsAdminComponent }
   ];
 
 @NgModule({

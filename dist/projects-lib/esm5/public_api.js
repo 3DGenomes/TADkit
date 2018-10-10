@@ -1,0 +1,17 @@
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ */
+/*
+ * Public API Surface of projects-lib
+ */
+export { UsersAdminService } from './lib/users-admin.service';
+export { ProjectsLibService } from './lib/projects-lib.service';
+export { Project, Projects } from './lib/models/project.model';
+export { ProjectsAdminComponent } from './lib/components/projects-admin/projects-admin.component';
+export { ProjectsBriefComponent } from './lib/components/projects-brief/projects-brief.component';
+export { ProjectsCreateComponent } from './lib/components/projects-create/projects-create.component';
+export { ProjectsDetailsComponent } from './lib/components/projects-details/projects-details.component';
+export { ProjectsListComponent } from './lib/components/projects-list/projects-list.component';
+export { ProjectsLibModule } from './lib/projects-lib.module';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHVibGljX2FwaS5qcyIsInNvdXJjZVJvb3QiOiJuZzovL3Byb2plY3RzLWxpYi8iLCJzb3VyY2VzIjpbInB1YmxpY19hcGkudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7OztBQUlBLGtDQUFjLDJCQUEyQixDQUFDO0FBQzFDLG1DQUFjLDRCQUE0QixDQUFDO0FBQzNDLGtDQUFjLDRCQUE0QixDQUFDO0FBQzNDLHVDQUFjLDBEQUEwRCxDQUFDO0FBQ3pFLHVDQUFjLDBEQUEwRCxDQUFDO0FBQ3pFLHdDQUFjLDREQUE0RCxDQUFDO0FBQzNFLHlDQUFjLDhEQUE4RCxDQUFDO0FBQzdFLHNDQUFjLHdEQUF3RCxDQUFDO0FBQ3ZFLGtDQUFjLDJCQUEyQixDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLypcbiAqIFB1YmxpYyBBUEkgU3VyZmFjZSBvZiBwcm9qZWN0cy1saWJcbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL2xpYi91c2Vycy1hZG1pbi5zZXJ2aWNlJztcbmV4cG9ydCAqIGZyb20gJy4vbGliL3Byb2plY3RzLWxpYi5zZXJ2aWNlJztcbmV4cG9ydCAqIGZyb20gJy4vbGliL21vZGVscy9wcm9qZWN0Lm1vZGVsJztcbmV4cG9ydCAqIGZyb20gJy4vbGliL2NvbXBvbmVudHMvcHJvamVjdHMtYWRtaW4vcHJvamVjdHMtYWRtaW4uY29tcG9uZW50JztcbmV4cG9ydCAqIGZyb20gJy4vbGliL2NvbXBvbmVudHMvcHJvamVjdHMtYnJpZWYvcHJvamVjdHMtYnJpZWYuY29tcG9uZW50JztcbmV4cG9ydCAqIGZyb20gJy4vbGliL2NvbXBvbmVudHMvcHJvamVjdHMtY3JlYXRlL3Byb2plY3RzLWNyZWF0ZS5jb21wb25lbnQnO1xuZXhwb3J0ICogZnJvbSAnLi9saWIvY29tcG9uZW50cy9wcm9qZWN0cy1kZXRhaWxzL3Byb2plY3RzLWRldGFpbHMuY29tcG9uZW50JztcbmV4cG9ydCAqIGZyb20gJy4vbGliL2NvbXBvbmVudHMvcHJvamVjdHMtbGlzdC9wcm9qZWN0cy1saXN0LmNvbXBvbmVudCc7XG5leHBvcnQgKiBmcm9tICcuL2xpYi9wcm9qZWN0cy1saWIubW9kdWxlJztcbiJdfQ==

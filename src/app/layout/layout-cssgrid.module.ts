@@ -5,7 +5,7 @@ import { RoutingModule } from '../routing.module';
 import { ButtonModule } from 'primeng/primeng';
 import { SidebarModule } from 'primeng/sidebar';
 
-import { ProjectsModule } from '@projects/projects.module';
+import { ProjectsLibModule } from 'projects-lib';
 
 import { HeaderComponent } from './header/header.component';
 import { MenuComponent } from './menu/menu.component';
@@ -19,7 +19,7 @@ import { FooterComponent } from './footer/footer.component';
     RoutingModule,
     ButtonModule,
     SidebarModule,
-    ProjectsModule
+    ProjectsLibModule
   ],
   declarations: [
     HeaderComponent,

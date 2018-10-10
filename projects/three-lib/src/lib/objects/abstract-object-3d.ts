@@ -1,11 +1,4 @@
-import {
-  AfterViewInit,
-  ContentChildren,
-  Input,
-  OnChanges,
-  QueryList,
-  SimpleChanges
-} from '@angular/core';
+import { AfterViewInit, ContentChildren, Input, OnChanges, QueryList, SimpleChanges } from '@angular/core';
 import * as THREE from 'three-full';
 
 export abstract class AbstractObject3D<T extends THREE.Object3D> implements AfterViewInit, OnChanges {

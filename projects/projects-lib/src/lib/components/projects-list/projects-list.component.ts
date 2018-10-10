@@ -13,8 +13,9 @@ import { ConfirmationService } from 'primeng/api';
 export class ProjectsListComponent implements OnInit {
 
   public projects: Projects;
-  public currentProject: Project;
-  // public currentCheck: string;
+  public currentProject;
+  // N.B. in the template, as currentProject is undefined, use safe-traversal-operator:
+  // https://angular.io/api/common/NgIf#storing-conditional-result-in-a-variable
 
   constructor(
     private projectsService: ProjectsLibService,

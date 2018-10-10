@@ -5,12 +5,6 @@
     "sourceMap": true,
     "baseUrl": "./src",
     "paths": {
-      "@projects/*": [
-        "app/projects/*"
-      ],
-      "@workspace/*": [
-        "app/workspace/*"
-      ],
       "genomics-lib": [
         "../dist/genomics-lib"
       ],
@@ -23,11 +17,17 @@
       "three-lib/*": [
         "../dist/three-lib/*"
       ],
+      "workspace-lib": [
+        "../dist/workspace-lib"
+      ],
+      "workspace-lib/*": [
+        "../dist/workspace-lib/*"
+      ],
       "projects-lib": [
-        "dist/projects-lib"
+        "../dist/projects-lib"
       ],
       "projects-lib/*": [
-        "dist/projects-lib/*"
+        "../dist/projects-lib/*"
       ]
     },
     "declaration": false,

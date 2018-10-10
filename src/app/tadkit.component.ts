@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ProjectsService } from '@projects/projects.service';
+import { ProjectsLibService } from 'projects-lib';
 
 @Component({
   selector: 'tk-tadkit',
@@ -9,7 +9,7 @@ import { ProjectsService } from '@projects/projects.service';
 
 export class TadkitComponent implements OnInit {
 
-  constructor(private projectsService: ProjectsService) {}
+  constructor(private projectsService: ProjectsLibService) {}
 
   public ngOnInit(): void {
     this.initializeTADkit();

@@ -1,6 +1,6 @@
 import { Component, HostBinding, Input, OnInit } from '@angular/core';
-import { WorkspaceService } from '@workspace/workspace.service';
-import { WidgetComponent } from '@workspace/widget-spawner/widget.component';
+import { WorkspaceService } from '../../workspace-lib.service';
+import { WidgetComponent } from '../../widget-spawner/widget.component';
 
 @Component({
   selector: 'workspace-layout',
@@ -12,7 +12,7 @@ export class WorkspaceRowsComponent implements OnInit {
   @HostBinding('class') classes = 'content';
   @Input() dataStream: any;
 
-  private widgets: WidgetComponent[] = [];
+  public widgets: WidgetComponent[] = [];
 
   constructor(
     private workspaceService: WorkspaceService,

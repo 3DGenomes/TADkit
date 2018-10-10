@@ -1,6 +1,6 @@
 import { Component, HostBinding, Input, HostListener, OnInit } from '@angular/core';
-import { WorkspaceService } from '@workspace/workspace.service';
-import { WidgetComponent } from '@workspace/widget-spawner/widget.component';
+import { WorkspaceService } from '../../workspace-lib.service';
+import { WidgetComponent } from '../../widget-spawner/widget.component';
 import { GridsterConfig, GridsterItem } from 'angular-gridster2';
 
 @Component({
@@ -13,7 +13,7 @@ export class WorkspaceGridsterComponent implements OnInit {
   @HostBinding('class') classes = 'workspace';
   @Input() dataStream: any;
 
-  private widgets: WidgetComponent[] = [];
+  public widgets: WidgetComponent[] = [];
   public options: GridsterConfig;
   public dashboard: GridsterItem[];
 

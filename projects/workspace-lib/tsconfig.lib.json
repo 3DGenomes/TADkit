@@ -15,7 +15,28 @@
     "lib": [
       "dom",
       "es2015"
-    ]
+    ],
+    "baseUrl": "./",
+    "paths": {
+      "genomics-lib": [
+        "../../dist/genomics-lib"
+      ],
+      "genomics-lib/*": [
+        "../../dist/genomics-lib/*"
+      ],
+      "three-lib": [
+        "../../dist/three-lib"
+      ],
+      "three-lib/*": [
+        "../../dist/three-lib/*"
+      ],
+      "projects-lib": [
+        "../../dist/projects-lib"
+      ],
+      "projects-lib/*": [
+        "../../dist/projects-lib/*"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,

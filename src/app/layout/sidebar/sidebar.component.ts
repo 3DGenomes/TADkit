@@ -1,5 +1,5 @@
 import { Component, HostBinding } from '@angular/core';
-import { ProjectsService } from '@projects/projects.service';
+import { ProjectsLibService } from 'projects-lib';
 
 @Component({
   selector: 'tk-sidebar',
@@ -16,7 +16,7 @@ export class SidebarComponent {
     { title: 'Archives', route: '/archives' }
   ];
 
-  constructor(private projectsService: ProjectsService) {}
+  constructor(private projectsService: ProjectsLibService) {}
 
   public setProject(projectTitle): void {
     this.projectsService.setProject(projectTitle);

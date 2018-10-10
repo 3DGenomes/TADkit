@@ -2,6 +2,15 @@
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
   "dest": "../../dist/projects-lib",
   "lib": {
-    "entryFile": "src/public_api.ts"
+    "entryFile": "src/public_api.ts",
+    "umdModuleIds": {
+      "ngx-store": "WebStorageModule",
+      "primeng/api": "ConfirmationService",
+      "primeng/progressspinner": "ProgressSpinnerModule",
+      "primeng/button": "ButtonModule",
+      "primeng/radiobutton": "RadioButtonModule",
+      "primeng/checkbox": "CheckboxModule",
+      "primeng/confirmdialog": "ConfirmDialogModule"
+    }
   }
 }

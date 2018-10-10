@@ -1,14 +1,14 @@
 import { Component, OnInit, Input, ViewChild, ViewContainerRef,  ComponentFactoryResolver } from '@angular/core';
 import { Workspace } from './workspace';
 import { BindObservable } from 'bind-observable';
-import { Project } from '@projects/models/tk-project.model';
+import { Project } from 'projects-lib';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { ProjectsService } from '@projects/projects.service';
+import { ProjectsLibService } from 'projects-lib';
 // import * as workspaceLayouts from 'workspaces-lib';
-import { WorkspaceFixedComponent } from '@workspace/layouts/fixed/workspace.component';
-import { WorkspaceRowsComponent } from '@workspace/layouts/rows/workspace.component';
-import { WorkspaceColsComponent } from '@workspace/layouts/cols/workspace.component';
-import { WorkspaceGridsterComponent } from '@workspace/layouts/gridster/workspace.component';
+import { WorkspaceFixedComponent } from '../layouts/fixed/workspace.component';
+import { WorkspaceRowsComponent } from '../layouts/rows/workspace.component';
+import { WorkspaceColsComponent } from '../layouts/cols/workspace.component';
+import { WorkspaceGridsterComponent } from '../layouts/gridster/workspace.component';
 
 @Component({
   selector: 'workspace-layout',
@@ -27,7 +27,7 @@ export class WorkspaceComponent implements OnInit {
 
   constructor(
     private componentFactoryResolver: ComponentFactoryResolver,
-    private projectsService: ProjectsService
+    private projectsService: ProjectsLibService
   ) {
     // this.workspacesStream = new BehaviorSubject<Workspace[]>([]);
     // this.workspaces = this.workspacesStream.asObservable();

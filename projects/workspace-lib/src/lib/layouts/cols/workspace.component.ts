@@ -1,6 +1,6 @@
-import { Component, HostBinding, OnInit } from '@angular/core';
-import { WorkspaceService } from '@workspace/workspace.service';
-import { WidgetComponent } from '@workspace/widget-spawner/widget.component';
+import { Component, HostBinding, Input, OnInit } from '@angular/core';
+import { WorkspaceService } from '../../workspace-lib.service';
+import { WidgetComponent } from '../../widget-spawner/widget.component';
 
 @Component({
   selector: 'workspace-layout',
@@ -10,8 +10,9 @@ import { WidgetComponent } from '@workspace/widget-spawner/widget.component';
 
 export class WorkspaceColsComponent implements OnInit {
   @HostBinding('class') classes = 'content cols';
+  @Input() dataStream: any;
 
-  private widgets: WidgetComponent[] = [];
+  public widgets: WidgetComponent[] = [];
 
   constructor(
     private workspaceService: WorkspaceService,

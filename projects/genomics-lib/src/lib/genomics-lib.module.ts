@@ -8,7 +8,10 @@ import { GenomicsThreejsComponent } from './genomics-threejs/genomics-threejs.co
 import { ThreeLibModule } from 'three-lib';
 
 @NgModule({
-  imports: [CommonModule, ThreeLibModule],
+  imports: [
+    CommonModule,
+    ThreeLibModule
+  ],
   declarations: [
     GenomicsInfoComponent,
     GenomicsMatrixComponent,
