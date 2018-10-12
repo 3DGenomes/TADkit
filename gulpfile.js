@@ -172,7 +172,17 @@ gulp.task('assets-img', function() {
 		])
 		.pipe(gulp.dest('tadkit/assets/img'));
 });
-
+//Transfer Data Assets
+gulp.task('assets-data', function() {
+	return gulp.src([
+		'src/assets/data/BindingSites.wig',
+		'src/assets/data/cytoBand.txt',
+		'src/assets/data/hg19.fa.fai',
+		'src/assets/data/refGene.hg19.bed.gz',
+		'src/assets/data/refGene.hg19.bed.gz.tbi'
+		])
+		.pipe(gulp.dest('tadkit/assets/data'));
+});
 // Transfer Defaults
 gulp.task('assets-defaults', function() {
 	return gulp.src([
@@ -192,7 +202,7 @@ gulp.task('assets-examples', function() {
 	return gulp.src([
 		'src/assets/examples/readme.txt',
 		'src/assets/examples/conf.json',
-		'src/assets/examples/example-models.json'
+		'src/assets/examples/models.json'
 		])
 		.pipe(gulp.dest('tadkit/assets/examples'));
 });
@@ -243,6 +253,7 @@ gulp.task('watch', function() {
 		'assets-css',
 		'assets-fonts',
 		'assets-img',
+		'assets-data',
 		'assets-defaults',
 		'assets-offline',
 		'assets-examples'
@@ -263,6 +274,7 @@ gulp.task('default', [
 	'assets-css',
 	'assets-fonts',
 	'assets-img',
+	'assets-data',
 	'assets-defaults',
 	'assets-offline',
 	'assets-examples',
