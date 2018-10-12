@@ -7,6 +7,9 @@
 			<md-icon data-ng-hide="view.controls.autoRotate" class="icon-play-arrow"></md-icon>
 			<md-icon data-ng-show="view.controls.autoRotate" class="icon-pause"></md-icon>
 		</a>
+		<a ng-click='centerScene()' class="options">
+			<md-icon class="fa fa-dot-circle-o"></md-icon>
+		</a>	
 		<a ng-click='toggleOptions()' class="options toggle-{{optionsState}}">
 			<md-icon class="icon-settings"></md-icon>
 		</a>
