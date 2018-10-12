@@ -1,0 +1,13 @@
+{
+	"dataset" : "assets/examples/models.json",
+	"tracks": [
+		    {
+		      "name": "Transcrip. factors binding sites",
+		      "type": "wig",
+		      "format": "wig",
+		      "sourceType": "file",
+		      "url": "assets/data/BindingSites.wig",
+		      "indexed": false
+		    }
+	]
+}
