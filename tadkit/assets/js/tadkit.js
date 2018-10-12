@@ -1,29 +1,7 @@
 (function() {
 	'use strict';
 
-	/**
-	 * @ngdoc module
-	 * @name TADkit
-	 * @module TADkit
-	 * @description
-	 * Main module for TADkit app.
-	 *
-	 * @example
-	 * <example>
-	 * 	<file name="index.html">
-	 * 		<div ng-app="TADkit" route-css-classnames>
-	 * 			<div data-ui-view id="main" class="fullheight"></div>
-	 * 		</div>
-	 * 	</file>
-	 * </example>
-	 *
-	 * @requires TADkit.datasets
-	 * @requires TADkit.layers
-	 * @requires ui.router
-	 * @requires ngMaterial
-	 * @requires uuid4
-	 * @requires d3js
-	 */
+	// ANGULAR APP
 	angular.module('TADkit',['ui.router','ngMaterial','uuid4','d3']);
 	     
 })();
@@ -445,7 +423,7 @@
 				var segmentColor = colors[i];
 				var segmentMaterial = new THREE.MeshLambertMaterial({
 					color: segmentColor,
-//					ambient: segmentColor,
+					ambient: segmentColor,
 					emissive: segmentColor,
 					vertexColors: THREE.VertexColors,
 					opacity: 1.0, 
@@ -5719,10 +5697,10 @@
 				// Where maxDistance is the max diameter of the cluster of vertices
 				// Calculation is of distance from center to each vertex.
 				var maxDistCalc = 0;
-				// var clusterGeometry = new THREE.BufferGeometry();
-				// clusterGeometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-				// clusterGeometry.computeBoundingSphere();
-				var clusterDiameter = 500; //Math.ceil(clusterGeometry.boundingSphere.radius * 2.0);
+				var clusterGeometry = new THREE.BufferGeometry();
+				clusterGeometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+				clusterGeometry.computeBoundingSphere();
+				var clusterDiameter = Math.ceil(clusterGeometry.boundingSphere.radius * 2.0);
 				return clusterDiameter;
 			},
 			at: function(currentParticle) {
