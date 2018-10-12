@@ -17,13 +17,13 @@
 		// Material Design Themes
 		$mdThemingProvider.theme('default')
 			//for tadkit
-			//.primaryPalette('green')
-			//.accentPalette('lime', {
-			//	'default': '500'
-			//})
+			.primaryPalette('green')
+			.accentPalette('lime', {
+				'default': '500'
+			})
 			//for vre
-			.primaryPalette('VreMap')
-			.accentPalette('blue')
+			//.primaryPalette('VreMap')
+			//.accentPalette('blue')
    			.warnPalette('red')
 			.backgroundPalette('grey');
 		$mdThemingProvider.theme('darkKit').dark();
