@@ -7,7 +7,10 @@
 	function Users($q, $http, uuid4) {
 		var users = {
 			loaded : [],
-			current : {index:0}
+			current : {
+				index:0,
+				tracks: []
+			}
 		};
 
 		return {
@@ -18,9 +21,9 @@
 					deferral.resolve(users);
 				} else {
 					$http.get(dataUrl)
-					.success( function(data) {
-						users.loaded = data;
-						console.log("Users (" + data.length + ") loaded from " + dataUrl);
+					.then( function(data) {
+						users.loaded = data.data;
+						console.log("Users (" + data.data.length + ") loaded from " + dataUrl);
 						deferral.resolve(users);
 					});
 				}
@@ -71,6 +74,13 @@
 				if (index === undefined || index === false) index = users.current.index;
 				var permissions = users.loaded[index].permissions;
 				return permissions;
+			},
+			setTracks: function(tracks) {
+				users.current.tracks = tracks;
+				return;
+			},
+			getTracks: function(index) {
+				return users.current.tracks;
 			}
 		};
 	}

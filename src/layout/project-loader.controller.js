@@ -4,28 +4,24 @@
 		.module('TADkit')
 		.controller('ProjectLoaderController', ProjectLoaderController);
 
-	function ProjectLoaderController($q, $state, $stateParams, $scope, Datasets, Overlays, Storyboards) {
-
+	function ProjectLoaderController($q, $http, $state, $scope, Datasets, Overlays, Components, Storyboards, Users, Hic_data) {
+		
 		$scope.updateCurrent = function() {
+			delete $scope.settings.current.tad_selected;
 			$scope.current.dataset = Datasets.getDataset();
 			$scope.current.model = Datasets.getModel();
+			var overlays = Overlays.get();
+			while (overlays.loaded.length > 1) { // remove all overlays
+				overlays.loaded.pop();
+			}
+			Overlays.set(0);
+			
 			$scope.current.overlay = Overlays.getOverlay();
+			$scope.current.components = Components.load();
+			$scope.current.storyboards = Storyboards.load();
 			$scope.current.storyboard = Storyboards.getStoryboard();
-			console.log("Current dataset, model, overlay and storyboard updated.");			
+			console.log("Current dataset, model, overlay and storyboard updated.");		
 		};
-
-		// On click load dataset from URL Params
-		// Loads local JSON and then associated TSV tracks from /examples folder
-		$scope.loadDatasetFromParam = function() {
-			var loading = Datasets.load($stateParams.loadDataset);
-			return $q.all([ loading ])
-			.then(function(results){
-				$scope.updateCurrent();
-				console.log("Dataset loaded: " + $stateParams.loadDataset);			
-				$state.go('browser');
-			});
-		};
-		if ($stateParams.loadDataset) $scope.loadDatasetFromParam();
 
 		// On dropzone (load external file)
 		// Adds JSON to current project - load TSV when in browser
@@ -36,8 +32,28 @@
 				$scope.updateCurrent();
 				// ADD FILENAME (SEE OVERLAY-IMPORT)
 				console.log("Dataset added."); //: " + $stateParams.loadDataset);			
-				$state.go('dataset');
-			});
-		};		
+				if($scope.current.dataset.models.length>0)
+					$state.go('dataset');
+				else
+					$state.go('browser');
+			});			
+		};
+//		$scope.cleanDataset = function(event) {
+//			Datasets.clear();
+//			Hic_data.clear();
+//			var loadexample = Datasets.load('assets/defaults/tk-example-dataset.json');
+//			return $q.all([ loadexample ])
+//			.then(function(results){
+//				$scope.updateCurrent();
+//				// ADD FILENAME (SEE OVERLAY-IMPORT)
+//				console.log("Dataset example loaded.");			
+//				$state.go('browser', { conf: null });
+//			});
+//		};
+		$scope.cleanDataset = function(event) {		
+			$state.go('dataset', { conf: 'assets/examples/conf.json' });
+		};
+		
+		
 	}
 })();

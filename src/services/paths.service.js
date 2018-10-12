@@ -37,7 +37,7 @@
 						var p23 = new THREE.Vector3(0,0,0);
 						p23.addVectors(p3,p2).divideScalar(2);
 
-						var splineCurve = new THREE.SplineCurve3([p1,p23,p4]);
+						var splineCurve = new THREE.CatmullRomCurve3([p1,p23,p4]);
 						curvePath.add(splineCurve);
 					}
 				}

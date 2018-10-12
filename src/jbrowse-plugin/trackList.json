@@ -1,0 +1,71 @@
+{
+   "include": ["jbrowse-tadkit.conf"],
+   "css" : "plugins/TADkit/css/main.css",
+   "plugins" : [
+      "HideTrackLabels",
+      "TADkit"
+   ],
+   "tracks" : [
+      {
+         "chunkSize" : 20000,
+         "storeClass" : "JBrowse/Store/Sequence/StaticChunked",
+         "urlTemplate" : "seq/{refseq_dirpath}/{refseq}-",
+         "category" : "Reference sequence",
+         "type" : "SequenceTrack",
+         "label" : "DNA",
+         "key" : "Reference sequence"
+      },
+      {
+         "autocomplete" : "all",
+         "track" : "Genes",
+         "style" : {
+            "className" : "feature5",
+            "arrowheadClass" : "transcript-arrowhead"
+         },
+         "key" : "genes",
+         "feature" : [
+            "gene"
+         ],
+         "displayMode" : "compact",
+         "storeClass" : "JBrowse/Store/SeqFeature/NCList",
+         "urlTemplate" : "tracks/Genes/{refseq}/trackData.json",
+         "compress" : 0,
+         "label" : "Genes",
+         "type" : "FeatureTrack",
+         "category" : "Genes",
+         "subfeatures" : false
+      },
+      {
+         "style" : {
+            "className" : "chromType"
+         },
+         "key" : "filion_colors",
+         "storeClass" : "JBrowse/Store/SeqFeature/NCList",
+         "trackType" : "FeatureTrack",
+         "urlTemplate" : "tracks/filion_colors/{refseq}/trackData.json",
+         "compress" : 0,
+         "type" : "TADkit/View/Track/TADkitOverlay",
+         "label" : "Chromatin Types"
+      },
+      {
+         "key" : "restraints",
+         "storeClass" : "TADkit/Store/SeqFeature/Restraints",
+         "type" : "TADkit/View/Track/TADkitRestraints",
+         "label" : "Restraints",
+         "maxHeight":100,
+         "style": {
+             "showLabels": false,
+             "color": "blue"
+         },
+         "onClick": {
+            "action": "contentDialog",
+            "content" : "function(track,feature,div) { return '<p><b>Value:'+feature.get('score')+'</b></p>';} "
+         }
+     },
+   ],
+   "names" : {
+      "url" : "names/",
+      "type" : "Hash"
+   },
+   "formatVersion" : 1
+}

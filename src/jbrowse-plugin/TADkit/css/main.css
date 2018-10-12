@@ -1,0 +1,40 @@
+#trackbar-tadkit {
+    background-color: #ff0000;
+    cursor: crosshair;
+    display: block;
+    height: 100%;
+    position: fixed;
+    width: 3px;
+    z-index: 15;
+}
+#trackbar-tadkit-left-mark, #trackbar-tadkit-right-mark{
+    background-color: #ff0000;
+    display: block;
+    height: 100%;
+    position: fixed;
+    width: 1px;
+    z-index: 15;
+}
+.track .global_highlight {
+    position: absolute;
+    background: rgba( 185,246,202, 0.3 );
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+
+    border: 1px solid rgb(255, 178, 13);
+    border-width: 0;
+}
+#tad-highlight-tadkit {
+	display: block;
+    height: 100%;
+    position: fixed;
+    background-color: white;
+	border-left: 3px dashed black;
+    border-right: 3px dashed black;
+}
+div.gridline_minor {
+    border-color: rgba(0,0,0,0);
+}
+

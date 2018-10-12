@@ -45,7 +45,7 @@ gulp.task('dist-scripts', function() {
 		'src/layout/*.js',
 		'src/services/*.js',
 		])
-		.pipe(concat('tadkit.js'))
+		.pipe(concat('tadkit-0810-01.js'))
 		// .pipe(gulp.dest('dist'))
 		.pipe(gulp.dest('tadkit/assets/js'))
 		.pipe(rename('tadkit.min.js'))
@@ -70,12 +70,20 @@ gulp.task('dist-vendor', function() {
 		'bower_components/threejs/build/three.js', // see asset-libs below
 		'bower_components/threejs/examples/js/controls/TrackballControls.js',
 		'bower_components/threejs/examples/js/controls/OrbitControls.js',
+		'bower_components/angular-awesome-slider/dist/angular-awesome-slider.min.js',
+		'bower_components/angular-resizable/angular-resizable.min.js',
+		'bower_components/jquery/dist/jquery.min.js',
+		'bower_components/jquery-ui/jquery-ui.min.js',
+		'node_modules/angular-ui-grid/ui-grid.min.js',
+		'node_modules/xlsx/dist/xlsx.full.min.js',
+		'node_modules/file-saver/FileSaver.min.js',
+		//'src/assets/js/igv-all.js',
 		])
 		.pipe(gulp.dest('src/assets/libs'))
 		.pipe(concat('vendors.js'))
 		.pipe(uglify()) // TODO: test other options eg. ng-min
-		// .pipe(gulp.dest('dist'))
 		.pipe(gulp.dest('tadkit/assets/js'));
+		// .pipe(gulp.dest('dist'))
 });
 
 // Transfer Demo index.html
@@ -100,6 +108,8 @@ gulp.task('assets-libs', function() {
 		'bower_components/angular/angular.min.js.map',
 		'bower_components/d3/d3.min.js',
 		'bower_components/threejs/build/three.min.js',
+		//'src/assets/js/igv-1.0.9.js'
+		'src/assets/js/igv-all.js'
 		])
 		.pipe(gulp.dest('src/assets/js'))
 		.pipe(gulp.dest('tadkit/assets/js'));
@@ -131,9 +141,17 @@ gulp.task('assets-html', function() {
 // Transfer CSS Assets
 gulp.task('assets-css', function() {
 	return gulp.src([
-		'src/assets/css/angular-material.css',
+		'bower_components/angular-material/angular-material.css',
 		'src/assets/css/tadkit.css',
 		'src/assets/css/ensembl-genes.css',
+		'bower_components/angular-awesome-slider/dist/css/angular-awesome-slider.min.css',
+		//'src/assets/css/igv-1.0.9.css',
+		'src/assets/css/igv-all.css',
+		'bower_components/jquery-ui/themes/cupertino/jquery-ui.css',
+		'bower_components/angular-resizable/angular-resizable.min.css',
+		'node_modules/angular-ui-grid/ui-grid.min.css',
+		'node_modules/angular-ui-grid/ui-grid.woff',
+		'node_modules/angular-ui-grid/ui-grid.ttf'
 		])
 		.pipe(gulp.dest('tadkit/assets/css'));
 });
@@ -148,7 +166,9 @@ gulp.task('assets-fonts', function() {
 // Transfer Image Assets
 gulp.task('assets-img', function() {
 	return gulp.src([
-		'src/assets/img/*.png'
+		'src/assets/img/*.png',
+		'src/assets/img/*.svg',
+		'bower_components/angular-awesome-slider/dist/img/jslider.blue.vertical.png'
 		])
 		.pipe(gulp.dest('tadkit/assets/img'));
 });
@@ -170,7 +190,9 @@ gulp.task('assets-offline', function() {
 // Transfer Examples
 gulp.task('assets-examples', function() {
 	return gulp.src([
-		'src/assets/examples/readme.txt'
+		'src/assets/examples/readme.txt',
+		'src/assets/examples/conf.json',
+		'src/assets/examples/example-models.json'
 		])
 		.pipe(gulp.dest('tadkit/assets/examples'));
 });

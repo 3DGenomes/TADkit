@@ -11,7 +11,7 @@
 				particles: 0,
 				visible: true,
 				color: "#ff0000",
-				size: 200,
+				size: 100,
 				opacity: 0.8,
 				map: "assets/img/sphere-glossy.png",
 				depthtest: true,
@@ -22,6 +22,7 @@
 			angular.extend(this, angular.copy(defaults), settings);
 
 			var particlesGeometry = getGeometry(data);
+			particlesGeometry.center();
 			particlesGeometry.computeBoundingSphere();
 
 			var vertexColors = [];
@@ -32,9 +33,12 @@
 			particlesGeometry.colors = vertexColors;
 
 			var particleMap = null; // render only point
-			if (this.map) particleMap = THREE.ImageUtils.loadTexture(this.map);
+			if (this.map) {
+				var loader = new THREE.TextureLoader();
+				particleMap = loader.load(this.map);
+			}
 
-			var particlesMaterial = new THREE.PointCloudMaterial({
+			var particlesMaterial = new THREE.PointsMaterial({
 				color: this.color,
     			vertexColors: THREE.VertexColors,
 				size: this.size,
@@ -45,7 +49,7 @@
 				transparent: this.transparent
 			});
 
-			var particlesCloud = new THREE.PointCloud( particlesGeometry, particlesMaterial );
+			var particlesCloud = new THREE.Points( particlesGeometry, particlesMaterial );
 			// particlesCloud.sortParticles = true;
 			particlesCloud.name = "Particles Cloud";
 			

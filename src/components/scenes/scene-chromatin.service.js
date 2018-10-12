@@ -5,58 +5,33 @@
 		.factory('Chromatin', Chromatin);
 
 	// constructor for chromatin model instances
-	function Chromatin(Paths, PathControls) {
-		return function(data, colors, settings) {
+	function Chromatin(Paths, PathControls, ColorConvert, Proximities) {
+		return function(data, colors, view_settings, resolution_scale, settings) {
 			// console.log(colors);
 
 			var defaults = {
 				visible: true,
 				genomeLength: 816394, // bactieria mycoplasma_pneumoniae_m129
 				particles: 0,
-				particleSegments: 5,
+				particleSegments: 40,
 				curveSegments: 1,
 				radius: 15,
 				radiusSegments: 16,
 				endcap: false,
-				pathClosed: false
+				pathClosed: false,
+				tubed: true,
+				resolution_scales : {
+					"2000" : 1,
+					"10000" : 1,
+					"50000" : 5,
+					"100000" : 5
+				}
 			};		
-			settings = settings || {};
-			angular.extend(this, angular.copy(defaults), settings);
+			view_settings = view_settings || {};
+			angular.extend(this, angular.copy(defaults), view_settings);
 
-			// Convert Data to Vector triplets
-			var geometry = getGeometry(data);
-			for (var g = geometry.vertices.length - 1; g >= 0; g--) {
-				var geometryColor = new THREE.Color(colors[g*20]);
-				geometry.colors.unshift(geometryColor);
-			}
-
-			// Derive path controls from geometry vectors
-			// var pathControls = getPathControls( geometry.vertices );
-			var pathControls = PathControls.cubic(geometry.vertices, this.pathClosed);
-
-			var controlsGeom = new THREE.Geometry();
-			for ( var h = 0; h < pathControls.vertices.length; h ++ ) {
-				controlsGeom.vertices.push( new THREE.Vector3( pathControls.vertices[h].x, pathControls.vertices[h].y, pathControls.vertices[h].z || 0) );
-				var vertexColor = pathControls.colors[h];
-				controlsGeom.colors.push(vertexColor);
-			}
-			controlsGeom.name = "controlsGeom";
-
-			// Set number of Particles
-			if (this.particles === 0) this.particles = geometry.vertices.length; //pathControls.vertices.length - 1;
-			// Derive chromatin geometry path segments
-			var pathSegments = this.particles * this.particleSegments; // same as segmentsCount...
-			this.pathSegments = pathSegments;
-
-			/*** TODO: Calculate PathSegments based on number of base pairs in the model ***/
-			var cubicPath = Paths.cubicBezier(pathControls.vertices, pathSegments, this.pathClosed);
-			var cubicGeom = cubicPath.createPointsGeometry(pathSegments);
-			for (var j = cubicGeom.vertices.length - 1; j >= 0; j--) {
-				var cubicGeomColor = new THREE.Color(colors[j]);
-				cubicGeom.colors.unshift(cubicGeomColor);
-			}
-			cubicGeom.name = "cubicGeom";
-
+			//var chromBreaks = [];
+			var resolution = settings.segmentLength*settings.particleSegments;
 			// ********************************************
 			// * MODEL SCALE = 1unit : 1nanometer         *
 			// * 1 micrometer (µm) = 1000 nanometers (nm) *
@@ -65,73 +40,201 @@
 			// var cellRadius = 10000;
 			// Nucleus diameter == 6 µm (3 - 10 micrometers) = 3000 units radius
 			// var nucelusRadius = 20;
-			// Chromatin diameter == 30nm
-			var pathLength = cubicPath.getLength();
-			var chromatinRadius = 15; // 30nm * 0.5
+			// Chromatin diameter == 10nm
+			//var pathLength = cubicPath.getLength();
+			var chromatinRadius = 5; // 10nm * 0.5
 			// Chromatin density == 1080 BP : 11nm
 			var chromatinLength = this.genomeLength * 11 / 1080;
-			this.radius = (pathLength * chromatinRadius) / chromatinLength;
-			// console.log(this.radius);
-
-
-			// Generate Chromatin model
-			var chromatinFiber = new THREE.Object3D(); // unmerged network
-			var chromatinGeometry = new THREE.Geometry(); // to calculate merged bounds
-
-			for ( var i = 0 ; i < pathSegments; i++) {
-				// cap if end segment
-				this.endcap = ( i === 0 || i === pathSegments - 1 ) ? false : true ;
-				// color linked to scene scope
-				
-				var segmentColor = colors[i];
-				var segmentMaterial = new THREE.MeshLambertMaterial({
-					color: segmentColor,
-					ambient: segmentColor,
-					emissive: segmentColor,
-					vertexColors: THREE.VertexColors,
-					opacity: 1.0, 
-					transparent: false,
-					wireframe: false
-				});
-				var segment = segmentGeometry(cubicGeom.vertices[i], cubicGeom.vertices[i+1], this );
-				chromatinGeometry.merge(segment);
-
-				var chromatinSegment = new THREE.Mesh(segment, segmentMaterial);
-				chromatinSegment.name = "segment-" + (i + 1);
-				chromatinFiber.add(chromatinSegment);
+			//this.radius = (pathLength * chromatinRadius) / chromatinLength;
+			this.radius = resolution_scale*chromatinRadius;
+			//console.log(this.radius);
+			
+			// Convert Data to Vector triplets
+			var geometry = getGeometry(data);
+			for (var g = geometry.vertices.length - 1; g >= 0; g--) {
+				var geometryColor = new THREE.Color(colors[g*20]);
+				geometry.colors.unshift(geometryColor);
 			}
+			geometry.computeBoundingSphere();
+			geometry.center();
 
-			// Visualize Controls
-			// var controlsMaterial = new THREE.LineBasicMaterial({color: "#ff0000",opacity: 0.5});
-			// var controlsOutline = new THREE.Line(controlsGeom, controlsMaterial);
-			// chromatinFiber.add(controlsOutline);
+	//			var transparentMaterial = new THREE.MeshLambertMaterial({
+	//			  transparent:true, 
+	//			  opacity:0.0
+	//			});
+			var solidMaterial = new THREE.MeshLambertMaterial({
+			    color: 0xffffff,
+		        //shading: THREE.FlatShading,
+		        //side: THREE.DoubleSide,
+		        wireframe: false,
+		        transparent: false,
+		        vertexColors: THREE.FaceColors, // CHANGED
+		        overdraw: true
+		    });
 
-			var cubicMaterial = new THREE.LineBasicMaterial({color: "#0000ff"});
-			var chromatinCubic = new THREE.Line(cubicGeom, cubicMaterial);
-			// chromatinFiber.add(chromatinCubic);
+			var simple_chrom_colors = ['#FF0000','#00FF00','#0000FF','#FFFF00','#00FFFF','#FF00FF','#C0C0C0','#808080','#800000','#808000','#008000','#800080','#008080','#000080','#A52A2A','#E9967A','#B8860B','#FFFF00','#006400','#98FB98','#2F4F4F','#40E0D0','#4682B4','#87CEFA','#DC143C','#FFD700','#F0E68C','#7CFC00','#00FF00','#00FF7F','#3CB371','#00FFFF','#AFEEEE','#6495ED','#87CEEB'];
+			var chromatinFiber = new THREE.Object3D(); // unmerged network
+			var i;
+			var colori = 0;
+			var chr_bins,pathControls,pathSegments,cubicPath,cubicGeom, chromatinGeometry, tubeMesh, newChromatinColor;
+			var j;
+			var offset = 0;
+			var fpart = 0;
+			var proximities = Proximities.get();
+			settings.facesParticle = [];
+			for (var l = 0 ; l < settings.chromosomeIndexes.length; l++) {
+				chr_bins = Math.round((settings.chromEnd[l]-settings.chromStart[l])/resolution);
+				//chromBreaks.push(offset);
+			
+				// Derive path controls from geometry vectors
+				// var pathControls = getPathControls( geometry.vertices );
+				var model_points = geometry.vertices.slice(offset,offset+chr_bins);
+				pathControls = PathControls.cubic(model_points, this.pathClosed);
+				//pathControls = PathControls.simple(geometry.vertices.slice(offset,offset+chr_bins));
 
-			// Visualize Controls Nodes
-			// var particleMap = null; // render only point
-			// particleMap = THREE.ImageUtils.loadTexture("assets/img/sphere-glossy.png");
-			// var particlesMaterial = new THREE.PointCloudMaterial({
-			// 	// color: "#0000ff",
-   //  			vertexColors: THREE.VertexColors,
-			// 	size: 10,
-			// 	opacity: 1.0,
-			// 	// map: particleMap,
-			// 	// depthTest: true,
-			// 	// alphaTest: true,
-			// 	// transparent: true
-			// });
-			// var chromatinCloud = new THREE.PointCloud(controlsGeom, particlesMaterial);
-			// chromatinFiber.add(chromatinCloud);
-
-			chromatinGeometry.computeBoundingSphere();
-			chromatinFiber.boundingSphere = chromatinGeometry.boundingSphere;
+				// Set number of Particles
+				if (this.particles === 0) this.particles += geometry.vertices.length; //pathControls.vertices.length - 1;
+				// Derive chromatin geometry path segments
+				pathSegments = chr_bins * this.particleSegments; // same as segmentsCount...
+				
+				/*** TODO: Calculate PathSegments based on number of base pairs in the model ***/
+				cubicPath = Paths.cubicBezier(pathControls.vertices, pathSegments, this.pathClosed);
+				cubicGeom = new THREE.Geometry().setFromPoints( cubicPath.getPoints() );
+				
+				//cubicGeom.name = "cubicGeom";
+	
+				// Generate Chromatin model
+				
+				if(view_settings.tubed) {
+					chromatinGeometry = new THREE.TubeGeometry(cubicPath, pathSegments, this.radius, 8, this.pathClosed);
+					
+				    tubeMesh = new THREE.Mesh(chromatinGeometry, solidMaterial);
+					
+				    //var faces = chromatinGeometry.vertices.length;
+				    var faces = chromatinGeometry.faces.length;
+					var segment_lengths = [];
+					for (i = 0; i < model_points.length-1; i++) segment_lengths.push(distance(model_points[i+1],model_points[i]));
+					var total_length = 0;
+					for (i = 0; i < segment_lengths.length; i++) total_length += segment_lengths[i];
+					var facesParticle = [];
+					for (i = 0; i < chr_bins; i++) facesParticle.push([0,0]);
+					for (i = chr_bins-1; i >= 0; i--) {
+						// we add right part of curve if not  last particle
+						if(i < chr_bins - 1 ) fpart = Math.round(((chromatinGeometry.faces.length)/16)*((segment_lengths[i]/2)/total_length));
+						//if(i < chr_bins - 1 ) fpart = Math.round(((chromatinGeometry.vertices.length-8)/8)*((segment_lengths[i]/2)/total_length));
+						// we add left part of curve if not first particle
+						if(i > 0 ) fpart += Math.round(((chromatinGeometry.faces.length)/16)*((segment_lengths[i-1]/2)/total_length));
+						//if(i > 0 ) fpart += Math.round(((chromatinGeometry.vertices.length-8)/8)*((segment_lengths[i-1]/2)/total_length)); 
+						faces--;
+						if(faces > 1) facesParticle[i][1]=faces;
+						else facesParticle[i][1]=1;
+						faces -= Math.ceil(fpart*16); // segments have 8 faces
+						if(faces > 0) facesParticle[i][0]=faces;
+						else facesParticle[i][0]=0;
+						
+					}
+					settings.facesParticle.push(facesParticle);
+					
+					chromatinGeometry.dynamic = true;
+					chromatinGeometry.verticesNeedUpdate = true;
+					
+					//chromatinGeometry.center();
+					
+				    //for(var k=0;k< chromatinGeometry.faces.length;k++) {
+				    	//if(k%12) chromatinGeometry.faces[k].color.setRGB(1,0,0);
+				    	//else chromatinGeometry.faces[k].color.setRGB(0,0,0);
+				    //	chromatinGeometry.faces[k].color.setRGB(1,0,0);
+					//}
+					
+					
+				    /*for (i = 0; i < colors.length; i++) {
+				    	//if(chromBreaks.indexOf(Math.floor(i/settings.particleSegments))>-1) {
+				    	if(chromBreaks.indexOf(Math.floor(i/this.particleSegments))>-1) {
+				    		for (j = 0; j < 16; j++) {
+				    			if(typeof tubeMesh.geometry.faces[i*16+j] !== 'undefined') tubeMesh.geometry.faces[i*16+j].materialIndex = 1;
+							}
+				    	} else {
+							if(ColorConvert.testIfHex(colors[i]) || colors[i].indexOf('#')===0) {
+								newChromatinColor =  new THREE.Color(colors[i]);	 
+							} else {
+								newChromatinColor =  new THREE.Color(ColorConvert.nameToHex(colors[i]));
+							} 
+							for (j = 0; j < 16; j++) {
+								if(typeof tubeMesh.geometry.faces[i*16+j] !== 'undefined') tubeMesh.geometry.faces[i*16+j].color.set(newChromatinColor);
+							}
+				    	}
+					}*/
+					for (i = 0; i < chromatinGeometry.faces.length; i++) {
+						if(settings.chromosomeIndexes.length > 1) colors[Math.floor(colori/16)] = simple_chrom_colors[l];
+						if(ColorConvert.testIfHex(colors[Math.floor(colori/16)]) || colors[Math.floor(colori/16)].indexOf('#')===0) {
+							newChromatinColor =  new THREE.Color(colors[Math.floor(colori/16)]);	 
+						} else {
+							newChromatinColor =  new THREE.Color(ColorConvert.nameToHex(colors[Math.floor(i/16)]));
+						} 
+						for (j = 0; j < 16; j++) {
+							if(typeof chromatinGeometry.faces[i+j] !== 'undefined') chromatinGeometry.faces[i+j].color.set(newChromatinColor);
+						}
+						colori++;
+					}
+					tubeMesh.geometry.__dirtyColors = true;
+					tubeMesh.geometry.elementsNeedUpdate = true;
+				    tubeMesh.dynamic = true;
+				    tubeMesh.needsUpdate = true;
+				    
+					chromatinFiber.add( tubeMesh );
+					//chromatinFiber.userData = {display:'tube'};
+	
+				} else {
+					// Rings
+						chromatinGeometry = new THREE.Geometry(); // to calculate merged bounds
+	
+					for ( i = 0 ; i < pathSegments; i++) {
+						// cap if end segment
+						this.endcap = ( i === 0 || i === pathSegments - 1 ) ? false : true ;
+						// color linked to scene scope
+						
+						var segmentColor = colors[i];
+						var segmentMaterial = new THREE.MeshLambertMaterial({
+							color: segmentColor,
+							emissive: segmentColor,
+							vertexColors: THREE.VertexColors,
+							opacity: 1.0, 
+							transparent: false,
+							wireframe: false
+						});
+						var segment = segmentGeometry(cubicGeom.vertices[i], cubicGeom.vertices[i+1], this );
+						chromatinGeometry.merge(segment);
+						THREE.GeometryUtils.center( chromatinGeometry );
+	
+						var chromatinSegment = new THREE.Mesh(segment, segmentMaterial);
+						chromatinSegment.name = "segment-" + (i + 1);
+						chromatinFiber.add(chromatinSegment);
+					}	
+				}
+	
+				chromatinGeometry.computeBoundingSphere();
+				//chromatinGeometry.computeBoundingBox();
+				offset += chr_bins;
+			}
+			
+			//tubeMesh.position.x -= objectCenter.x;
+			//tubeMesh.position.y -= objectCenter.y;
+			//tubeMesh.position.z -= objectCenter.z;
+			
+			//chromatinFiber.boundingSphere = chromatinGeometry.boundingSphere;
+			chromatinFiber.boundingSphere = geometry.boundingSphere;
 			chromatinFiber.name = "Chromatin Fiber";
 			
 			return chromatinFiber;
 		};
+	}
+
+	function distance(p1,p2) {
+		var dx = p2.x - p1.x;
+		var dy = p2.y - p1.y;
+		var dz = p2.z - p1.z;
+		var dist = Math.sqrt( dx * dx + dy * dy + dz * dz );
+		return dist;
 	}
 	
 	function getGeometry(data) {
@@ -171,5 +274,6 @@
 		
 		return newGeometry;
 	}
+
 		
 })();

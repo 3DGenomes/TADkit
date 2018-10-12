@@ -6,20 +6,32 @@
 
 	function Segments(d3Service, Color) {
 		return {
-			gradientHCL: function(overlay, count) {
+			gradientHCL: function(overlay, count, counts) {
 				// Using D3 HCL for correct perceptual model
 				// Data is an array of 2 hex colors eg. ff0000
 				// Output is RGB hex (000000-ffffff) eg. [rrggbb,rrggbb,rrggbb...]
 				// Note: prefix depends API ie. THREE == 0xrrggbb and D3 == #rrggbb
+				if (counts === undefined || counts === false) counts = [count];
 				var gradient = [];
 				var hexStart = overlay.palette[0];
 				var hexEnd = overlay.palette[1];
 
-				for (var i = count - 1; i >= 0; i--) {
-					var step = i / count; // This should be between 0 and 1
-					var hex = d3.interpolateHcl(hexStart, hexEnd)(step);
-					gradient.push(hex);
+				//var hStart = new THREE.Color(hexStart);
+				//var hEnd = new THREE.Color(hexEnd);
+				var c;
+				for (var j = 0; j < counts.length;j++) {
+					c = counts[j];
+					for (var i = c - 1; i >= 0; i--) {
+						var step = i / c; // This should be between 0 and 1
+						var hex = d3.interpolateHcl(hexStart, hexEnd)(step);
+						gradient.push(hex);
+					}
 				}
+				// for (var i = 0; i < count; i++) {
+				// 	var step = i / count; // This should be between 0 and 1
+				// 	var hex = '#'+hStart.lerp(hEnd,step).getHexString();
+				// 	gradient.push(hex);
+				// }
 				return gradient;
 			},
 			gradientComponentRGB: function(overlay, count) { // UNUSED

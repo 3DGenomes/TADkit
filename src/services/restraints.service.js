@@ -31,6 +31,13 @@
 				settings = settings || {};
 				angular.extend(this, angular.copy(defaults), settings);
 
+				restraints = {
+					dimension: 0,
+					harmonics: [],
+					lowerBounds: [],
+					upperBounds: [],
+					neighbours: []
+				};
 				restraints.dimension = vertices.length / 3; // 3 == xyz components of vertices
 
 				for (var i = 0; i < datasetRestraints.length; i++) {

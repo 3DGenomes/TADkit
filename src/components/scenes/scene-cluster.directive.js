@@ -22,6 +22,7 @@
 				// console.log(scope.cluster);
 				
 				var renderer;
+				var screenshot;
 				var scene, viewport;
 				var camera, cameraPosition, cameraTarget, cameraTranslate;
 				var ambientLight, pointLight;
@@ -29,7 +30,7 @@
 				var width, height, contW, contH, windowHalfX, windowHalfY;
 
 				scope.init = function () {
-
+					
 					// VIEWPORT
 					/* component-controller == children[0]
 					 * - component-header == children[0]
@@ -42,18 +43,20 @@
 					height = parseInt(scope.state.height);
 					// OJO! DOM NOT READY
 					// console.log(element[0].firstChild.children[2].clientWidth);
-
+					
 					if (window.WebGLRenderingContext)
 						renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
 					else
 						renderer = new THREE.CanvasRenderer({alpha: true});	
+						
 					var background = scope.view.settings.background;
 					var clearColor = "0x" + background.substring(1);
-					renderer.setClearColor( clearColor );
+					renderer.setClearColor( parseInt(clearColor) );
 					renderer.setSize( width, height );
 					renderer.autoClear = false; // To allow render overlay on top of sprited sphere
 					renderer.setSize( width, height );
 					viewport.appendChild( renderer.domElement );
+					
 
 					// SCENE
 					scene = new THREE.Scene();
@@ -67,10 +70,10 @@
 					orbit = new THREE.OrbitControls(camera, renderer.domElement);
 					orbit.autoRotate = scope.view.controls.autoRotate;
 					orbit.autoRotateSpeed = scope.view.controls.autoRotateSpeed;
-					orbit.noZoom = true;
-					orbit.noRotate = true;
-					orbit.noPan = true;
-					orbit.noKeys = true;
+					orbit.enableZoom = false;
+					orbit.enableRotate = false;
+					orbit.enablePan = false;
+					orbit.enableKeys = false;
 					controls = new THREE.TrackballControls(camera, renderer.domElement);
 					controls.noZoom = true;
 					controls.noRotate = true;
@@ -78,8 +81,9 @@
 					
 					// GEOMETRY: PARTICLES
 					particles = new Particles( scope.cluster.data[scope.cluster.centroidIndex], scope.view.settings.particles );
+					particles.geometry.center();
 					particles.visible = scope.view.settings.particles.visible;
-					scene.add(particles);
+					//scene.add(particles);
 
 					//GEOMETRY: CLUSTER
 					cluster = new Cluster( scope.cluster.data, scope.cluster.centroidIndex, scope.overlay, scope.view.settings.cluster );
@@ -90,9 +94,18 @@
 					// SET CAMERA ORIENTATION
 					cameraPosition = new THREE.Vector3(); //cluster.boundingSphere.center;
 					cameraTarget = new THREE.Vector3( 0,0,0 ); //cluster.boundingSphere.center;
-					cameraTranslate = cluster.boundingSphere.radius * scope.view.viewpoint.scale;
-					scope.lookAtTarget(cameraPosition, cameraTarget, cameraTranslate);
 
+					/*var objectCenter = cluster.boundingSphere.center;
+
+					cluster.position.x -= objectCenter.x;
+					cluster.position.y -= objectCenter.y;
+					cluster.position.z -= objectCenter.z;
+					*/
+					var angle = scope.view.viewpoint.fov / 2;
+					var margin = 0.6;
+					var	scale = Math.tan(angle).toFixed(2) * margin;
+					cameraTranslate = cluster.boundingSphere.radius * scale;
+					scope.lookAtTarget(cameraPosition, cameraTarget, cameraTranslate);
 				};
 
 				scope.lookAtTarget = function (position, target, translate) {
@@ -104,7 +117,8 @@
 						// (creates consistent view orientation)
 						camera.position.set(position.x, position.y, position.z);
 						camera.lookAt(origin);
-						camera.translateZ(translate);
+						orbit.target = target;
+						camera.translateY(translate);
 						// Retarget on target
 						camera.lookAt(target);
 						camera.updateMatrixWorld();
@@ -129,6 +143,30 @@
 				// Begin
 				scope.init();
 				scope.animate();
+				
+				scope.destroy_scene = function () {
+					scene.remove(cluster);
+					scene.remove(particles);
+					
+			        
+			        particles.geometry.dispose();
+			        particles.material.dispose();
+			        
+			        for(var i=0;i<cluster.children.length;i++) {
+			        	cluster.children[i].geometry.dispose();
+			        	cluster.children[i].material.dispose();
+			        	
+			        }
+
+			        particles = undefined;
+			        cluster = undefined;
+			        if(renderer) renderer.forceContextLoss();
+			        
+				};
+				scope.$on('$destroy', function() {
+					scope.destroy_scene();
+			    });
+				
 			}
 		};
 	}

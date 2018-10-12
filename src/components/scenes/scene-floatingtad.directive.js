@@ -34,7 +34,6 @@
 					// console.log(JSON.stringify(testgeom));
 
 					material = new THREE.MeshDepthMaterial({
-						color: 0x666666,
 						wireframe: true,
 						wireframeLinewidth: 1
 					});
