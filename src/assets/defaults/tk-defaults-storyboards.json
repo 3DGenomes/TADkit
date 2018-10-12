@@ -266,8 +266,7 @@
 										{
 											"name": "Genes",
 											"type": "annotation",
-						                    "url": "//igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz",
-						                    "index": "//igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz.tbi",
+						                    "url": "assets/data/refGene.hg38.bed.gz",
 						                    "displayMode": "EXPANDED",
 						                    "height": 1000,
 						                    "autoHeight": true

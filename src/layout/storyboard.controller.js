@@ -11,7 +11,7 @@
 		
 		$scope.current.dataset = Datasets.getDataset();
 		//Settings.set($scope.current.dataset);
-		$scope.current.model = Datasets.getModel();
+		$scope.current.model = Datasets.getModel(Datasets.getCentroid(),$scope.settings.current.chromosomeIndexes);
 		Overlays.segment();
 		$scope.current.overlay = Overlays.getOverlay();
 		$scope.current.storyboard = Storyboards.getStoryboard();

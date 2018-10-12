@@ -82,7 +82,7 @@
 		$scope.selectCluster = function(index) {
 			$scope.clusterArray = Datasets.setCluster(index + 1);
 			$scope.centroidRef = Datasets.getCentroid();
-			$scope.current.model = Datasets.getModel();
+			$scope.current.model = Datasets.getModel($scope.centroidRef,$scope.settings.current.chromosomeIndexes);
 			console.log("Current Cluster: " + (index + 1) + "(Centroid Model: " + $scope.centroidRef + ")");
 			$state.go('browser');
 		};
