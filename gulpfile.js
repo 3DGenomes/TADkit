@@ -218,7 +218,7 @@ gulp.task('webserver', function() {
 });
 
 gulp.task('openbrowser', function() {
-  opn( 'http://' + server.host + ':' + server.port + '/src/index.html');
+  opn( 'http://' + server.host + ':' + server.port + '/tadkit');
 });
 
 
