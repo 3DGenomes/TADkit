@@ -100,7 +100,7 @@
     "gulp-webserver": "^0.9.1",
     "jquery": "jquery/jquery-dist#>= 2.1.0",
     "jquery-placeholder": "mathiasbynens/jquery-placeholder#~2.0.7",
-    "jquery-ui": "components/jqueryui#~1.11.2",
+    "jquery-ui": "components/jqueryui#>=1.12.0",
     "jquery.cookie": "carhartl/jquery-cookie#~1.4.0",
     "matches-selector": "desandro/matches-selector#1.x",
     "minimatch": "^3.0.4",
