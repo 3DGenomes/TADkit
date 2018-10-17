@@ -1,0 +1,42 @@
+<!-- This file is generated — do not edit by hand! -->
+<md-content>
+	<div layout="row" layout-align="start stretch" md-theme="default" style="padding: 5px;">
+		<md-input-container layout="row">
+			<md-select ng-model="selDataset" aria-label="Selected Dataset">
+				<md-option ng-value="$index" ng-repeat="ds in datasets.loaded">{{ ds.object.title }}</md-option>
+			</md-select>
+		</md-input-container>
+		<div>
+			<md-button class="md-raised md-primary" ng-click="setDataset();">
+				Set
+			</md-button>
+			<md-button class="md-raised md-primary" ng-click="addDataset();">
+				<md-icon class="icon-file-upload" style="color: white;"></md-icon>
+				Add dataset
+			</md-button>
+		</div>
+	</div>
+	
+	<div md-theme="default" ng-hide="current.dataset.models.length > 0">
+		No models in the dataset<br>
+		<md-button class="md-raised md-primary" ui-sref="browser">
+			Go to browser
+		</md-button>
+	</div>
+	<div ng-show="current.dataset.models.length > 0">
+		<md-grid-list md-cols="5" md-gutter="0.2em" md-row-height="4:5">
+			<md-grid-tile ng-repeat='cluster in clusters | startFrom:currentPage*pageSize | limitTo:pageSize' ng-click="selectCluster($index+currentPage*pageSize)">
+				<tk-component-scene-cluster id="{{clusterComponent.object.id}}-{{$index+currentPage*pageSize+1}}" cluster="cluster" type="clusterComponent.object.type" state="clusterComponent.object.state" view="clusterComponent.view" overlay="clusterComponent.overlay" ng-class="{selected: $index+1 == datasets.current.cluster}" class="tile-content"></tk-component-scene-cluster>
+			</md-grid-tile>
+		</md-grid-list>
+		<div style="margin-left:50px;">
+			<button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
+		        Previous
+		    </button>
+		    {{currentPage+1}}/{{numberOfPages()}}
+		    <button ng-disabled="currentPage >= clusters.length/pageSize - 1" ng-click="currentPage=currentPage+1">
+		        Next
+		    </button>
+		</div>
+	</div>
+</md-content>
