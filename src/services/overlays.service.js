@@ -7,7 +7,7 @@
 	function Overlays($q, $http, uuid4, d3Service, Settings, Storyboards, Ensembl, Segments, Networks, Resources) {
 		var overlays = {
 			loaded : [],
-			current : {index:0}
+			current : {index:-1}
 		};
 
 		return {
@@ -18,10 +18,10 @@
 					deferral.resolve(overlays);
 				} else {
 					$http.get(dataUrl)
-					.success( function(data) {
-						overlays.loaded = data;
-						// overlays.current.index = overlays.loaded.length - 1;
-						console.log("Overlays (" + data.length + ") loaded from " + dataUrl);
+					.then( function(data) {
+						overlays.loaded = data.data;
+						overlays.current.index = overlays.loaded.length - 1;
+						console.log("Overlays (" + data.data.length + ") loaded from " + dataUrl);
 						deferral.resolve(overlays);
 					});
 				}
@@ -43,7 +43,7 @@
 				if (filename != "tk-example-dataset") datapath = "examples";
 				var dataUrl = "assets/" + datapath + "/" + filename + "." + filetype;
 				$http.get(dataUrl)
-				.success( function(fileData) {
+				.then( function(fileData) {
 					var importedOverlays = self.import(fileData,[],[],defaults);
 					console.log("Overlays (" + importedOverlays.length + ") imported from " + dataUrl);
 					deferral.resolve(overlays);
@@ -244,6 +244,18 @@
 
 				return newOverlays;
 			},
+			addDirect: function(newOverlay) {
+				var self = this;
+				var currentOverlaysIndex = overlays.loaded.length - 1;
+				for (var i = overlays.loaded.length - 1; i >= 0; i--) {
+					if (overlays.loaded[i].object.uuid == newOverlay.object.uuid) return true;
+				}
+				currentOverlaysIndex++;
+				newOverlay.object.state.index = currentOverlaysIndex;
+				overlays.loaded = overlays.loaded.concat(newOverlay);
+				
+				return currentOverlaysIndex;
+			},
 			clear: function() {
 				while (overlays.loaded.length > 0) { // remove all overlays
 					overlays.loaded.shift();
@@ -327,7 +339,14 @@
 						if (type == "gradient" && format == "hex") {
 							// palette must contain 2 hex values
 							overlay.colors.particles = Segments.gradientHCL(overlay, settings.current.particlesCount);
-							overlay.colors.chromatin = Segments.gradientHCL(overlay, settings.current.segmentsCount);
+							var counts = [];
+							var resolution = settings.current.segmentLength*settings.current.particleSegments;
+							var num_segments = 0;
+							for (var l = 0 ; l < settings.current.chromosomeIndexes.length; l++) {
+								num_segments = Math.round((settings.current.chromEnd[l]-settings.current.chromStart[l])/resolution);
+								counts.push(num_segments*settings.current.particleSegments);
+							}
+							overlay.colors.chromatin = Segments.gradientHCL(overlay, settings.current.segmentsCount, counts);
 							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
 							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
 						} else if (type == "wiggle_0" && format == "fixed") {
@@ -363,7 +382,6 @@
 							overlay.colors.network.RGB = Networks.linePiecesRGB(overlay, settings.current.edgesCount);
 							overlay.colors.network.alpha = Networks.linePiecesAlpha(overlay, settings.current.edgesCount);
 						}
-
 					} else {
 						// already segmented
 						console.log("Overlay '" + overlay.object.title + "' already segmented as color array matching current dataset length");
@@ -396,6 +414,11 @@
 				if (index === undefined || index === false) index = overlays.current.index;
 				var overlay = overlays.loaded[index];
 				return overlay;
+			},
+			replaceOverlay: function(overlay, index) {
+				if (index === undefined || index === false) index = overlays.current.index;
+				overlays.loaded[index] = overlay;
+				return;
 			},
 			getOverlayById: function (id) {
 				var overlay, found;

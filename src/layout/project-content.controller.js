@@ -4,8 +4,8 @@
 		.module('TADkit')
 		.controller('ProjectContentController', ProjectContentController);
 
-	function ProjectContentController($scope) {
+	function ProjectContentController() {
 
-
+		
 	}
 })();

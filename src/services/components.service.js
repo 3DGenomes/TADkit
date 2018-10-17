@@ -18,9 +18,9 @@
 					deferral.resolve(components);
 				} else {
 					$http.get(dataUrl)
-					.success( function(data) {
-						components.loaded = data;
-						console.log("Components (" + data.length + ") loaded from " + dataUrl);
+					.then( function(data) {
+						components.loaded = data.data;
+						console.log("Components (" + data.data.length + ") loaded from " + dataUrl);
 						deferral.resolve(components);
 					});
 				}
@@ -109,6 +109,7 @@
 			},
 			getComponentByType: function (type) {
 				var component, defaultComponent, found;
+				found = -1;
 				if (type !== undefined || type !== false) {
 					for (var i = components.loaded.length - 1; i >= 0; i--) {
 						if (components.loaded[i].object.type === type) {
@@ -121,7 +122,7 @@
 						}
 					}
 				}
-				if (!found) {
+				if (found<0) {
 					component = defaultComponent;
 					console.log("Component type '" + type + "' not found: returning default.");
 				}

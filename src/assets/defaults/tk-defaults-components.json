@@ -70,6 +70,15 @@
 					"pathClosed" : false,
 					"visible" : true
 				},
+				"cluster" : {
+					"color" : "0x000000",
+					"linewidth" : 1,
+					"transparent" : true,
+					"modelOpacity" : 0.1,
+					"centroidOpacity" : 0.8,
+					"fog" : true,
+					"visible" : true
+				},
 				"occupancy" :  {
 					"visible" : false
 				},
@@ -148,6 +157,41 @@
 		}
 	},
 	{
+        "metadata" : {
+            "version" : 1.0,
+            "type" : "component",
+            "generator" : "TADkit"
+        },
+        "object" : {
+            "uuid" : "00000000-0000-0000-0000-000000000005",
+            "id" : "default-hic-data-panel",
+            "title" : "Hic Data",
+            "type" : "panel-hicdata",
+            "dataset" : "default",
+            "state" : {
+                "width" : "600px",
+                "height" : "400px",
+                "margin" : "4px",
+                "position" : 1
+            }
+        },
+        "view" : {
+            "viewpoint" : {
+                "chromStart" : 1,
+                "chromEnd" : 10,
+                "scale" : 1
+            },
+            "viewtype" : "matrix",
+            "settings" : {
+                "background" : "#ffffff",
+                "heightInner" : "40px",
+                "margin" : "4px",
+                "padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
+                "example" : 1
+            }
+        }
+    },
+	{
 		"metadata" : {
 			"version" : 1.0,
 			"type" : "component",
@@ -155,30 +199,33 @@
 		},
 		"object" : {
 			"uuid" : "00000000-0000-0000-0000-000000000000",
-			"id" : "default-panel",
-			"title" : "Inspector",
-			"type" : "panel-inspector",
+			"id" : "slider-external",
+			"title" : "Navigation",
+			"type" : "panel-jbrowse",
 			"dataset" : "default",
 			"state" : {
-				"width" : "400px",
-				"height" : "300px",
-				"margin" : "4px",
+				"width" : "100%",
+				"height" : "400px",
 				"position" : 1
 			}
 		},
 		"view" : {
 			"viewpoint" : {
 				"chromStart" : 1,
-				"chromEnd" : 10,
+				"chromEnd" : 999999,
 				"scale" : 1
 			},
-			"viewtype" : "list",
+			"viewtype" : "linear",
 			"settings" : {
 				"background" : "#ffffff",
-				"heightInner" : "40px",
 				"margin" : "4px",
 				"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
-				"example" : 1
+				"jbrowse_path" : "../JBrowse/",
+				"species_data" : {
+					"human": "http://inb.bsc.es/MuG/JBrowse-1.12.1/data",
+					"drosophila_melanogaster" : "http://mmb.irbbarcelona.org/NucleosomeDynamics/JBrowse/JBrowse-1.12.0/user_jbrowse/dmel-r5.1/jbrowse",
+					"saccharomyces_cerevisiae" : "http://mmb.irbbarcelona.org/NucleosomeDynamics/JBrowse/JBrowse-1.12.0/user_jbrowse/R64-1-1/jbrowse"
+				}
 			}
 		}
 	},
@@ -189,16 +236,15 @@
 			"generator" : "TADkit"
 		},
 		"object" : {
-			"uuid" : "00000000-0000-0000-0000-000000000000",
-			"id" : "slider",
+			"uuid" : "00000000-0000-0000-0000-000000000007",
+			"id" : "slider-external",
 			"title" : "Navigation",
-			"type" : "track-slider",
+			"type" : "panel-igvjs",
 			"dataset" : "default",
 			"state" : {
 				"width" : "100%",
-				"height" : "auto",
-				"margin" : "4px",
-				"position" : 2
+				"height" : "400px",
+				"position" : 1
 			}
 		},
 		"view" : {
@@ -210,156 +256,11 @@
 			"viewtype" : "linear",
 			"settings" : {
 				"background" : "#ffffff",
-				"heightInner" : "40px",
 				"margin" : "4px",
 				"padding" : {"top": "5px", "right": "100px", "bottom": "5px", "left": "100px"},
-				"sense" : true,
-				"segments" : 1000
-			}
-		}
-	},
-	{
-		"metadata" : {
-			"version" : 1.0,
-			"type" : "component",
-			"generator" : "TADkit"
-		},
-		"object" : {
-			"uuid" : "00000000-0000-0000-0000-000000000000",
-			"id" : "genes-track",
-			"title" : "Genes",
-			"type" : "track-genes",
-			"dataset" : "default",
-			"state" : {
-				"width" : "100%",
-				"height" : "auto",
-				"margin" : "4px",
-				"position" : 3
-			}
-		},
-		"view" : {
-			"viewpoint" : {
-				"chromStart" : 1,
-				"chromEnd" : 999999,
-				"scale" : 1
-			},
-			"viewtype" : "step-variable",
-			"settings" : {
-				"background" : "#ffffff",
-				"heightInner" : "40px",
-				"margin" : "4px",
-				"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
-				"sense" : true,
-				"segments" : 1000
-			}
-		}
-	},
-	{
-		"metadata" : {
-			"version" : 1.0,
-			"type" : "component",
-			"generator" : "TADkit"
-		},
-		"object" : {
-			"uuid" : "00000000-0000-0000-0000-000000000000",
-			"id" : "default-wiggle",
-			"title" : "BigWig Track",
-			"type" : "wiggle_0",
-			"dataset" : "default",
-			"state" : {
-				"width" : "100%",
-				"height" : "auto",
-				"margin" : "4px",
-				"position" : 3
-			}
-		},
-		"view" : {
-			"viewpoint" : {
-				"chromStart" : 1,
-				"chromEnd" : 999999,
-				"scale" : 1
-			},
-			"viewtype" : "step-fixed",
-			"settings" : {
-				"background" : "#ffffff",
-				"heightInner" : "20px",
-				"margin" : "4px",
-				"padding" : {"top": "0px", "right": "100px", "bottom": "0px", "left": "100px"},
-				"sense" : false,
-				"segments" : 1000
-			}
-		}
-	},
-	{
-		"metadata" : {
-			"version" : 1.0,
-			"type" : "component",
-			"generator" : "TADkit"
-		},
-		"object" : {
-			"uuid" : "00000000-0000-0000-0000-000000000000",
-			"id" : "default-bedgraph",
-			"title" : "BedGraph Track",
-			"type" : "bedgraph",
-			"dataset" : "default",
-			"state" : {
-				"width" : "100%",
-				"height" : "auto",
-				"margin" : "4px",
-				"position" : 4
-			}
-		},
-		"view" : {
-			"viewpoint" : {
-				"chromStart" : 1,
-				"chromEnd" : 999999,
-				"scale" : 1
-			},
-			"viewtype" : "step-fixed",
-			"settings" : {
-				"background" : "#ffffff",
-				"heightInner" : "40px",
-				"margin" : "4px",
-				"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
-				"sense" : false,
-				"segments" : 1000
-			}
-		}
-	},
-	{
-		"metadata" : {
-			"version" : 1.0,
-			"type" : "component",
-			"generator" : "TADkit"
-		},
-		"object" : {
-			"uuid" : "00000000-0000-0000-0000-000000000004",
-			"id" : "h-restraints-track",
-			"title" : "Restraints",
-			"type" : "track-barchart",
-			"dataset" : "restraints",
-			"state" : {
-				"width" : "100%",
-				"height" : "auto",
-				"margin" : "0px",
-				"position" : 4
-			}
-		},
-		"view" : {
-			"viewpoint" : {
-				"chromStart" : 1,
-				"chromEnd" : 999999,
-				"scale" : 1
-			},
-			"viewtype" : "linear",
-			"settings" : {
-				"background" : "#ffffff",
-				"heightInner" : "80px",
-				"margin" : "0px",
-				"padding" : {"top": "10px", "right": "100px", "bottom": "10px", "left": "100px"},
-				"color" : "#0000ff",
-				"nodeSize" : 5,
-				"cursorWidth" : 1
+				"species_data" : {
+					"drosophila_melanogaster" : "data"
+				}
 			}
 		}
 	}

@@ -4,11 +4,23 @@
 		.module('TADkit')
 		.controller('StoryboardController', StoryboardController);
 
-	function StoryboardController($window, $scope, Settings, Storyboards, Components, Overlays, Proximities, Restraints) {
+	function StoryboardController($window, $scope, $state, $stateParams, Settings, Storyboards, Components, Overlays, Proximities, Restraints, Hic_data, Track_data, Datasets) {
 
 		// WATCH FOR WINDOW RESIZE
 		angular.element($window).on('resize', function(){ $scope.$apply(); });
-
+		
+		$scope.current.dataset = Datasets.getDataset();
+		//Settings.set($scope.current.dataset);
+		$scope.current.model = Datasets.getModel(Datasets.getCentroid(),$scope.settings.current.chromosomeIndexes);
+		Overlays.segment();
+		$scope.current.overlay = Overlays.getOverlay();
+		$scope.current.storyboard = Storyboards.getStoryboard();
+		
+		var datasets = Datasets.get();
+		if(datasets.loaded.length===0) { 
+			$state.go('loader',{ conf: $stateParams.conf });
+			return;
+		}
 		// $scope.current.storyboard.components[0].view.settings.chromatin.segmentLength = $scope.settings.current.segmentLength;
 
 		$scope.settings.views.scale = 1; //$scope.current.dataset.object.scale;
@@ -17,29 +29,52 @@
 
 		// Calculating Initial Proximities
 		//NOTE in future if more than 1 currentModel need same number of currentProximities
+//		var scene_component;
 		$scope.allProximities = Proximities.get(); // for Scene
-		$scope.currentProximities = Proximities.at($scope.settings.current.particle); // for D3 tracks
-
-		// Calculating Initial Restraints
-		//NOTE in future if more than 1 currentModel need same number of currentRestraints
-		$scope.currentRestraints = Restraints.at($scope.settings.current.particle); // for D3 tracks
-
+		if($scope.current.dataset.models.length > 0) { // we have models
+			$scope.currentProximities = Proximities.at($scope.settings.current.particle); // for D3 tracks
+	
+			// Calculating Initial Restraints
+			//NOTE in future if more than 1 currentModel need same number of currentRestraints
+			$scope.currentRestraints = Restraints.at($scope.settings.current.particle); // for D3 tracks
+		} 
+//		else { // we have only the matrix
+//			scene_component = Storyboards.getComponentById('Chromatin');
+//			if(typeof scene_component !== 'undefined') Storyboards.removeComponentById("Chromatin");
+//		}
 		// Assign data and overlays for each component by type
 		angular.forEach( $scope.current.storyboard.components, function(component, index) {
 
 			// if (component.object.dataset == "default") {
-				var overlay, overlayProximities;
+				var overlay, overlayProximities, all_data;
 				if (component.object.type == "scene") {
-					component.data = $scope.current.model.data;
+					all_data = {
+						tad_data: Hic_data.get(),
+						data: $scope.current.model.data,
+						object: $scope.current.dataset.object
+					};
+					component.data = all_data;
+					//component.data = $scope.current.model.data;
 					 // component.proximities required for Scenes: overlay.colors Saturation
 					component.proximities = $scope.allProximities;
 					component.overlay = $scope.current.overlay;
 					component.overlay.state = {};
 					component.overlay.object.state.index = Overlays.getCurrentIndex();
+					
 				} else if (component.object.type == "track-genes" || component.object.type == "panel-inspector") {
-					overlay = Overlays.getOverlayById("genes");
-					component.data = overlay.data;
+					// overlay = Overlays.getOverlayById("genes");
+					// component.data = overlay.data;
 					// component.overlay required for toggle
+					all_data = {
+						tad_data: Hic_data.get(),
+						track_data: Track_data.get(),
+						data: [],
+						object: $scope.current.dataset.object
+					};
+					if(!angular.isUndefined($scope.current.model)) {
+						all_data.data = $scope.current.model.data;
+					}
+					component.data = all_data;
 					component.overlay = overlay;
 				} else if (component.object.type == "track-proximities") {
 					// ie only one... see note above for Calculating Proximities
@@ -57,6 +92,18 @@
 					//   and for Scenes: overlay.colors Hue
 					overlay = Overlays.getOverlayById("restraints");
 					component.overlay = overlay;
+				} else if (component.object.type == "panel-hicdata") {
+					component.data = Hic_data.get();
+				} else if (component.object.type == "panel-jbrowse" || component.object.type == "panel-igvjs") {
+					//component.data = Restraints.get();
+					all_data = {
+							tad_data: Hic_data.get(),
+							data: $scope.currentRestraints,
+					};
+					component.data = all_data;
+					//component.data = $scope.currentRestraints;
+					overlay = Overlays.getOverlayById("restraints");
+					component.overlay = overlay;
 				}
 				// } else if (component.object.type == "track-wiggle") {
 				// 	overlay = Overlays.getOverlayById(component.object.dataset);
@@ -71,8 +118,8 @@
 		// Watch for Slider Position updates
 		$scope.$watch('settings.current.particle', function(newParticle, oldParticle) { // deep watch as change direct and changes all?
 			if ( newParticle !== oldParticle ) {
-				$scope.currentProximities = Proximities.at(newParticle); // for D3 tracks
-				$scope.currentRestraints = Restraints.at(newParticle); // for D3 tracks
+				// $scope.currentProximities = Proximities.at(newParticle); // for D3 tracks
+				// $scope.currentRestraints = Restraints.at(newParticle); // for D3 tracks
 				if ($scope.current.overlay.object.type == "matrix") {
 					Overlays.at(newParticle);
 					$scope.current.overlay = Overlays.getOverlay();
@@ -111,7 +158,7 @@
 		$scope.testfn = function() {
 			console.log("test worked");
 		};
-
+		
 		// $scope.keyControls = function (e, component) {
 		// 	if (event.keyCode === 32 || event.charCode === 32) {
 		// 		component.view.controls.autoRotate = !component.view.controls.autoRotate; 

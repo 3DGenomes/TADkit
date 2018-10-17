@@ -58,18 +58,21 @@
 					reader.readAsText(file);
 					console.log("File loaded...");
 				};
-
+				
 				element.bind("dragover", onDragOver)
 							 .bind("dragleave", onDragEnd)
 							 .bind("drop", function (e) {
 									 onDragEnd(e);
-									 loadFile(e.dataTransfer.files[0]);
+									 if(e.dataTransfer.files.length===0) scope.showAdvanced();
+									 else loadFile(e.dataTransfer.files[0]);
 							 });
 
 				scope.$watch(expression, function () {
 						element.attr("src", accesor(scope));
 				});
-
+				
+				scope.loadFile = loadFile;
+				      
 				// element.bind("drop", onDrop);
 
 			}

@@ -15,28 +15,56 @@
 					deferral.resolve(settings);
 				} else {
 					$http.get(dataUrl)
-					.success( function(data) {
-						settings = data;
+					.then( function(data) {
+						settings = data.data;
 						console.log("Settings loaded from " + dataUrl);
 						deferral.resolve(settings);
 					});
 				}
 				return deferral.promise;
 			},
-			set: function(dataset) {
+			set: function(dataset, chromosomeIndex, currentChrom) {
 				var self = this;
-				var chromosomeIndex = 0;
-				if (dataset.object.chromosomeIndex) { chromosomeIndex = dataset.object.chromosomeIndex;	}
-				settings.current.chrom = dataset.object.chrom[chromosomeIndex];
-				settings.current.chromStart = dataset.object.chromStart[chromosomeIndex];
-				settings.current.chromEnd = dataset.object.chromEnd[chromosomeIndex];
+				if (currentChrom === undefined || currentChrom === false) currentChrom = dataset.object.chrom[0];
+				if (chromosomeIndex === undefined || chromosomeIndex === false) chromosomeIndex = [currentChrom];
+				//settings.current.chrom = dataset.object.chrom[chromosomeIndex];
+				//settings.current.chromStart = dataset.object.chromStart[chromosomeIndex];
+				//settings.current.chromEnd = dataset.object.chromEnd[chromosomeIndex];
+				settings.current.chrom = currentChrom;
+				settings.current.chromIdx = chromosomeIndex.indexOf(settings.current.chrom);
+				settings.current.chromStart = [];
+				settings.current.chromEnd = [];
+				var chromIdx;
+				//var offset = 0;
+				var resolution = dataset.object.resolution;
+				settings.current.particlesCount = 0;
+				for (var l = 0 ; l < dataset.object.chrom.length; l++) {
+					chromIdx = chromosomeIndex.indexOf(dataset.object.chrom[l]);
+					if(chromIdx > -1) {
+						settings.current.chromStart.push(Math.round(dataset.object.chromStart[l]));
+						settings.current.chromEnd.push(Math.round(dataset.object.chromEnd[l]));
+						settings.current.particlesCount += Math.round(dataset.object.chromEnd[l]/resolution) - Math.round(dataset.object.chromStart[l]/resolution);
+					}
+					//offset += Math.round(dataset.object.chromEnd[l])-Math.round(dataset.object.chromStart[l])+1*resolution;
+				}
+				//settings.current.chromosomeIndexes = [settings.current.chrom];
+				settings.current.chromosomeIndexes = chromosomeIndex;
+				
 				settings.current.species = dataset.object.species;
 				settings.current.speciesUrl = dataset.object.speciesUrl;
+				if(typeof dataset.object.assembly !== 'undefined') 
+					settings.current.assemblyUrl = dataset.object.assembly;
+				
 				// NOTE: particle segements as lowest resolution of model
 				// instead of particleSegments as variable in TADkit
 				// i.e settings.current.particleSegments = storyboard.components[0].view.settings.chromatin.particleSegments;
-				settings.current.particleSegments = 20;// ((dataset.object.chromEnd - dataset.object.chromStart) / dataset.object.resolution);
-				settings.current.particlesCount = dataset.models[0].data.length / dataset.object.components;
+				//settings.current.particleSegments = 20; // ((dataset.object.chromEnd - dataset.object.chromStart) / dataset.object.resolution);
+				//settings.current.particleSegments = Math.round((dataset.object.chromEnd - dataset.object.chromStart) / (5*dataset.object.resolution));
+				// Max rings in 3d aprox 2000
+				//settings.current.particlesCount = dataset.models[0].data.length / dataset.object.components;
+				
+				//settings.current.particlesCount = Math.round((settings.current.chromEnd-settings.current.chromStart)/dataset.object.resolution);
+				settings.current.particleSegments = Math.ceil(2500/settings.current.particlesCount);
 				settings.current.edgesCount = ((settings.current.particlesCount*settings.current.particlesCount)-settings.current.particlesCount)*0.5;
 				settings.current.segmentsCount = settings.current.particlesCount * settings.current.particleSegments;
 				// NOTE: segmentLength can be calculated in 2 ways:
@@ -46,8 +74,11 @@
 				// Also focus on particles and does not address rounding off of sequence length.
 				settings.current.segmentLength = dataset.object.resolution / settings.current.particleSegments; // base pairs
 				// SET INITIAL position at midpoint
-				settings.current.position = settings.current.chromStart + parseInt((settings.current.chromEnd - settings.current.chromStart) * 0.5);
+				
+				//settings.current.position = settings.current.chromStart + parseInt((settings.current.chromEnd - settings.current.chromStart) * 0.5);
+				settings.current.position = settings.current.chromStart[settings.current.chromIdx] + parseInt((settings.current.chromEnd[settings.current.chromIdx] - settings.current.chromStart[settings.current.chromIdx]) * 0.5);
 				settings.current.particle = self.getParticle();
+				settings.current.particleSize = Math.ceil(dataset.object.resolution/20);
 				// AND SEGMENT IT LIES WITHIN
 				settings.current.segment = self.getSegment(settings.current.position);
 				settings.current.segmentLower = settings.current.position - (settings.current.segment * 0.5);
@@ -77,20 +108,30 @@
 				return online;
 			},
 			getSegment: function (chromPosition) {
-				chromPosition = chromPosition || settings.current.position;
 				var self = this;
-				var chromOffset = self.getRange(settings.current.chromStart, chromPosition);
-				var chromRange = self.getRange(settings.current.chromStart, settings.current.chromEnd);
-				var segment = Math.ceil((chromOffset * settings.current.segmentsCount) / chromRange);
+				//var particle = self.getParticle(chromPosition);
+				chromPosition = chromPosition || settings.current.position;
+				var resolution = settings.current.segmentLength*settings.current.particleSegments; // base pairs
+				var chromOffset = chromPosition-settings.current.chromStart[settings.current.chromIdx];
+				var chromRange=0;
+				for(var l=0;l<settings.current.chromosomeIndexes.length;l++) chromRange += Math.round(settings.current.chromEnd[l])-Math.round(settings.current.chromStart[l]);
+				var particlesCount = settings.current.particlesCount;
+				var segmentsCount = particlesCount * settings.current.particleSegments;				
+				var segment = Math.round((chromOffset * (segmentsCount)) / chromRange);
+				//var segment = Math.round((particle-1)*settings.current.particleSegments+settings.current.particleSegments/2);
 				return segment;
 			},
 			getParticle: function (chromPosition) {
 				chromPosition = chromPosition || settings.current.position;
 				var self = this;
-				var chromOffset = self.getRange(settings.current.chromStart, chromPosition);
-				var chromRange = self.getRange(settings.current.chromStart, settings.current.chromEnd);
-				var particle = Math.ceil((chromOffset * settings.current.particlesCount) / chromRange);
-				return particle;
+				var resolution = settings.current.segmentLength*settings.current.particleSegments; // base pairs
+				var chromOffset = chromPosition-settings.current.chromStart[settings.current.chromIdx];
+				var chromRange=0;
+				for(var l=0;l<settings.current.chromosomeIndexes.length;l++) chromRange += Math.round(settings.current.chromEnd[l])-Math.round(settings.current.chromStart[l]); 
+				
+				var particlesCount = settings.current.particlesCount;
+				var particle = Math.round((chromOffset * particlesCount) / chromRange)+1;
+				return Math.min(particle,settings.current.particlesCount);
 			},
 			getRange: function (start, end) {
 				var range = 0;

@@ -80,7 +80,9 @@
 							foreParticle = vertices[0];
 						} else {
 							// fore particle == extend same dist as to previous particle
-							foreParticle.copy(baseParticle).addVectors(baseParticle, vertices[i - 1]);
+							// really ???
+							//foreParticle.copy(baseParticle).addVectors(baseParticle, vertices[i - 1]);
+							foreParticle.copy(baseParticle).add(new THREE.Vector3(0.5, 0.5, 0.5));
 						}
 					} else {
 						foreParticle = vertices[i + 1];

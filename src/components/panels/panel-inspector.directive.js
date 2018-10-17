@@ -12,6 +12,7 @@
 				state: '=',
 				view: '=',
 				data: '=',
+				currentmodel: '=',
 				settings:'='
 			},
 			templateUrl: 'assets/templates/panel-inspector.html',

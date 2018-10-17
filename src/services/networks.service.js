@@ -19,7 +19,9 @@
 				//     4         ==  ((4*4)-4)*0.5  = 6 pairs of colors
 				var self = this;
 				var featuresCount = overlay.data.length;
-				var colorPairs = new Float32Array(edgeCount * 6); // ie. * 2 (vertices) * 3 (RGB)
+				var usedEdgeCount = edgeCount*6;
+				if( usedEdgeCount > Math.pow(2, 10)-1) usedEdgeCount = Math.pow(2, 10)-1;
+				var colorPairs = new Float32Array(usedEdgeCount); // ie. * 2 (vertices) * 3 (RGB)
 				var defaultRGB = new THREE.Color("#000000");
 				for (var h = colorPairs.length - 1; h >= 0; h--) {
 					colorPairs[i] = defaultRGB;
@@ -49,7 +51,10 @@
 			},
 			linePiecesAlpha: function(overlay, edgeCount) {
 				var self = this;
-				var alphaPairs = new Float32Array(edgeCount * 2); // ie. * 2 (vertices)
+				var usedEdgeCount = edgeCount*2;
+				if( usedEdgeCount > Math.pow(2, 10)-1) usedEdgeCount = Math.pow(2, 10)-1;
+				
+				var alphaPairs = new Float32Array(usedEdgeCount); // ie. * 2 (vertices)
 				var defaultAlpha = 0.0;
 				for (var h = alphaPairs.length - 1; h >= 0; h--) {
 					alphaPairs[h] = defaultAlpha;

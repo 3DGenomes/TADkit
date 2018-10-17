@@ -8,6 +8,9 @@ svg {
 	font: 0.7rem sans-serif;
 	max-height: 100%; /* Webkit height error fix */
 }
+.draggable {
+	cursor: move;
+}
 .codecheck {
 	height: 6rem;
 	background: #111;
@@ -46,22 +49,29 @@ md-checkbox.md-default-theme:not([disabled]).md-primary .md-icon {
 md-toolbar {
 	min-height: 48px;
 }
-.tad-species {}
-.tad-region { font-size: 1.0rem; }
+.tad-species {
+	color: #fff;
+}
+.tad-region { 
+	font-size: 1.0rem;
+	color: #fff; 
+}
 .md-toolbar-tools .md-button {
   font-size: 1em;
+  width: 100%;
 }
-md-input-container {
-	width: 220px;
-}
-.md-button.md-default-theme.md-accent,
+.md-button.md-darkKit-theme.md-primary.md-raised ,
+.md-button.md-default-theme.md-primary.md-raised,
 md-toolbar md-icon {
 	color: #fff;
 }
+md-input-container {
+	margin: 0px;
+}
 md-input-container.md-default-theme .md-input {
 	text-align: end;
-	color: #fff;
-	border-color: rgba(255,255,255,0.37);
+	/*color: #fff;*/
+	border-color: rgba(0,0,0,0.12);
 	/*width: 180px;*/
 }
 md-input-container.md-default-theme .md-input:focus {
@@ -74,8 +84,9 @@ md-input-container.md-icon-float>md-icon {
 	left: 24px;
 }
 .md-toolbar-tools {
-	height: 48px;
-	max-height: 48px;
+	color: #FFF;
+	height: 50px;
+	max-height: 50px;
 }
 #tklogo {
 	z-index: 1000;
@@ -100,22 +111,33 @@ md-sidenav.md-locked-open {
   /*min-width: 244px;*/
   /*max-width: 244px;*/
 }
+md-sidenav .md-subheader {
+    padding: 10px 0px 0px 0px;
+}
 md-sidenav md-list-item {
   border-radius: 0;
   color: inherit;
   cursor: pointer;
   font-weight: 400;
-  line-height: 40px;
-  margin: 0;
-  /*max-height: 40px;*/
-  overflow: hidden;
-  padding: 0px 16px;
   text-align: left;
   text-decoration: none;
   white-space: normal;
   width: 100%;
 }
-
+#sidebar-left {
+	top: 50px;
+}
+#bt-openLeftSidenav {
+	position: absolute;
+	top: 500px;
+		
+}
+#bt-closeLeftSidenav {
+	position: absolute;
+	top: 500px;
+	left: 250px;
+		
+}
 /*** HOME ***/
 #backdrop a {
 	color: #cb225a !important;
@@ -143,33 +165,50 @@ md-sidenav md-list-item {
 	padding: 80px 140px 20px;
 }
 #home .md-button {
-	/*min-width: 300px;*/
+	min-width: 300px;
 	/*margin-top: 16px;*/
 	/*margin-bottom: 16px;*/
 }
-#home .md-button md-icon {
-/*	margin-left: 0;
+/*
+.material-icons {
+	color: #fff;
+	margin-left: 0;
 	margin-right: 16px;
-*/}
+}*/
 
 
 /*** PROJECTS ***/
 #project-list {
+}
+#spinnerdiv {  
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:1000;
+    background-color:grey;
+    opacity: .8;
+ }
+.spinner-loader {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -32px; /* -1 * image width / 2 */
+    margin-top: -32px;  /* -1 * image height / 2 */
+    display: block;     
 }
 #project-content .tk-toolbar {
 	background-color: transparent;
 	box-shadow: none;
 }
 .loader .md-button {
-	min-width: 300px;
 }
 .loader .md-button md-icon {
 /*	margin-left: 0;
 	margin-right: 16px;
 */}
-.loader div[tk-project-dropzone] {
-	background: rgb(76,175,80);
-	color: #fff;
+div[tk-project-dropzone] {
 	border: dashed 1px #fff;
 	min-width: 300px;
 	padding: 16px 6px;
@@ -179,7 +218,16 @@ md-sidenav md-list-item {
 	-webkit-box-shadow: inset 0 2px 5px rgba(0,0,0,0.26);
 	box-shadow: inset 0 2px 5px rgba(0,0,0,0.26);
 }
-.loader div[tk-project-dropzone]:hover {
+div[tk-project-dropzone] {
+	background: rgb(76,175,80);
+	color: #fff;
+}
+.loader div[tk-project-dropzone] {
+	background: rgb(76,175,80);
+	color: #fff;
+}
+
+div[tk-project-dropzone]:hover {
 	background: rgb(67,160,71);
 	-webkit-box-shadow: inset 0 4px 8px rgba(0,0,0,0.4);
 	box-shadow: inset 0 4px 8px rgba(0,0,0,0.4);
@@ -224,7 +272,7 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
 	color: rgba(76,175,80,1);
 }
 md-checkbox {
-	margin: 3px;
+	margin-bottom: 6px;
 }
 /*
 md-checkbox .md-ripple {
@@ -242,6 +290,7 @@ md-checkbox.md-checked .md-icon {
 .component-controller {
 	position: relative;
 	display: inline-block;
+	/* float: left; */
 }
 .component-header {
 	position: absolute;
@@ -269,6 +318,7 @@ md-checkbox.md-checked .md-icon {
 	margin: 0 0 0 0.5rem;
 	padding: 0 0 0 0.3rem;
 	font-size: 0.8rem;
+	z-index: 9999;
 }
 .component-controls md-icon {
   font-size: 16px !important;
@@ -281,11 +331,12 @@ md-checkbox.md-checked .md-icon {
 	top: 28px; /* height of #component-title */
 	left: 0;
 	margin: 2.0rem;
-	padding: 0.3rem;
+	padding: 0.6rem;
 	background: rgba(255,255,255,0.8);
 	border: rgba(205,220,57,0.87) solid 2px;
 	border-radius: 0.6rem;
-	font-size: 0.6rem;
+	/*font-size: 0.6rem;*/
+	z-index: 9999;
 }
 .component-options.track {
 	position: relative;
@@ -306,7 +357,7 @@ md-checkbox.md-checked .md-icon {
 .component-body {
 	display: inline-block;
 /*	font-size: 0.4rem;
-*/	line-height: 0;
+	line-height: 0;*/
 	margin: 0;
 	padding: 0;
 }
@@ -316,7 +367,7 @@ md-checkbox.md-checked .md-icon {
 	font-size: 0.8rem;
 }
 
-/* dynmaic with Packery and Draggabilly */
+/* dynamic with Packery and Draggabilly */
 .component-container {
 	width: 100%;
 	/*border: 1px solid #d1d1d1;*/
@@ -336,6 +387,13 @@ md-checkbox.md-checked .md-icon {
 	width: 100%;
 	/*border: 2px solid #fff;*/
 }
+md-dialog.almostfullscreen-dialog {
+    max-width: 60%;
+    width: 60%;
+}
+.md-dialog-container {
+	z-index: 150;
+}
 .component-container .component {
 	float: left;
 }
@@ -346,6 +404,61 @@ md-checkbox.md-checked .md-icon {
 .component-container .panel-inspector {
 	width: 300px;
 	height: 324px;
+}
+.component-container .panel-hicdata {
+	width: 600px;
+	height: 600px;
+}
+.component #hic_data_container #hic_canvas, .component-container img {
+	cursor: move;
+    image-rendering: optimizeSpeed;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: optimize-contrast;
+    image-rendering: pixelated;
+    -ms-interpolation-mode: nearest-neighbor;
+}
+.component #hic_data_container{
+	overflow: hidden;
+	/*border: 5px solid #ddd;*/
+}
+.component #hic_data_container #zoom-buttons {
+	z-index: 2;
+    position: absolute;
+    left: 0px;
+}
+.component #hic_data_container #show_restraints {
+    padding-bottom: 4px;
+    padding-right: 6px;
+}
+.component #hic_data_container #slider-hic {
+	/*position: absolute;
+    left: 100px;*/
+    width: 230px;
+    height: 20px;
+    /*top: 0;
+    float: right;*/
+}
+.component #hic_data_container table,
+.component #hic_data_container tr,
+.component #hic_data_container td
+{
+    border-style: none;
+}
+.component #hic_data_container .jslider.vertical {
+	height: 100px;
+}
+.component #hic_data_container .md-button.md-default-theme.md-fab {
+	font-size: 30px;
+	line-height: 14px;
+    width: 30px;
+    height: 30px;	
+    padding-bottom: 8px;
+}
+.component #hic_data_container #no_hic_data_label {
+	position: absolute;
+    top: 200px;
+    left: 200px;
 }
 .component-container .track-slider,
 .component-container .track-genes {
@@ -363,7 +476,35 @@ md-checkbox.md-checked .md-icon {
 	width: 20px;
 	height: 20px;
 }
+.component-body .igv-root-div {
+	line-height: normal;	
+}
+.component-controller .igv-logo {
+	background: rgba(0, 0, 0, 0) url("../img/igv-logo.svg") no-repeat scroll 0 0 / 34px 16px;
+}
 
+#igvDiv .igv-viewport-div-border-right {
+    border-right-color: red;
+}
+
+#tad-highlight-tadkit {
+	z-index: 15;
+	pointer-events: none;
+	display: block;
+    height: 100%;
+    position: absolute;
+    background-color: transparent;
+	border-left: 3px dashed black;
+    border-right: 3px dashed black;
+}
+#trackbar-tadkit-left-mark, #trackbar-tadkit-right-mark{
+    background-color: #ff0000;
+    display: block;
+    height: 100%;
+    position: fixed;
+    width: 1px;
+    z-index: 15;
+}
 /**
  * MODALS
  */
@@ -401,12 +542,23 @@ md-checkbox.md-checked .md-icon {
 /**
  * PANELS
  */
-.panel-inspector .component-body {
-	margin-top: 1.4rem;
-	padding: 0.4rem;
+.panel-inspector .component-body .md-tab-content {
+	padding-top: 10px;
+	overflow: overlay;
 }
-.panel-inspector .component-body div {
-	overflow: scroll;
+.panel-inspector .component-body .feature-title {
+	font-weight: bold;
+}
+.panel-inspector .component-body .feature-column-header{
+    width: 100%;
+    font-size: 0.9rem;
+    padding-right: 5px;
+    text-align: center;
+}
+.panel-inspector .component-body .feature-column-body{
+    width: 100%;
+    display: block;
+    text-align: center;
 }
 .panel-inspector .component-body .accordion .accordion-navigation > a,
 .panel-inspector .component-body .accordion dd > a {
@@ -417,16 +569,45 @@ md-checkbox.md-checked .md-icon {
 .panel-inspector .component-body .accordion dd > .content {
 	padding: 0.6rem;
 }
-.panel-inspector .component-body table {
+.panel-inspector .md-button.md-default-theme.md-accent,
+.almostfullscreen-dialog .md-button.md-default-theme{
+	color: rgb(0,96,128);
+	background-color: rgb(248,248,248);
+}
+.md-tabs.md-default-theme .md-header {
+	overflow-x: hidden;
+}
+.tadkitGrid {
+  width: 100%;
+  height: 100%;
+}
+.md-default-theme table, .md-default-theme table tr {
 	width: 100%;
 	border: none;
 }
-.panel-inspector .component-body table tr th,
-.panel-inspector .component-body table tr td {
-	font-size: 0.6rem;
-	line-height: 0.8rem;
+.md-default-theme table tr th,
+.md-default-theme table tr td {
+	font-size: 1.0rem;
+	line-height: 1.8rem;
 	padding: 0;
+	padding-right: 10px;
+	border: none;
 }
+md-dialog.md-default-theme {
+	padding: 0px;
+	/*opacity: 1;*/
+}
+md-dialog-content.md-default-theme {
+	padding: 10px;
+	overflow-y: scroll;
+}
+md-dialog-actions {
+	padding: 10px;
+}
+md-select {
+    margin-top: 0;
+}
+.md-select-menu-container { z-index: 99999 !important; }
 md-list-item .md-secondary-container, md-list-item .md-secondary, md-list-item .md-list-item-inner .md-secondary-container, md-list-item .md-list-item-inner .md-secondary {
   margin-left: 16px;
   position: absolute;
@@ -499,7 +680,7 @@ track {
 }
 .axis text { fill: #999; }
 .brush .extent {
-	stroke: #;
+	stroke: #ccc;
 	fill-opacity: .25;
 	shape-rendering: crispEdges;
 }
@@ -660,7 +841,6 @@ data-tk-component-bedgraph rect {
 }
 [class^="icon-"], [class*=" icon-"] {
 	font-family: 'tadkit';
-	speak: none;
 	font-style: normal;
 	font-weight: normal;
 	font-variant: normal;
