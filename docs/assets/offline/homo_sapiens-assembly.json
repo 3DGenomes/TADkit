@@ -1,0 +1,1016 @@
+{
+  "karyotype": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "20",
+    "21",
+    "22",
+    "X",
+    "Y",
+    "MT"
+  ],
+  "assembly_date": "2013-12",
+  "genebuild_last_geneset_update": "2014-08",
+  "assembly_name": "GRCh38",
+  "coord_system_versions": [
+    "GRCh38",
+    "GRCh37",
+    "NCBI36",
+    "NCBI35",
+    "NCBI34"
+  ],
+  "top_level_region": [
+    {
+      "length": 71251,
+      "name": "KI270757.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 157432,
+      "name": "KI270741.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 79590,
+      "name": "KI270756.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 112551,
+      "name": "KI270730.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 73985,
+      "name": "KI270739.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 99375,
+      "name": "KI270738.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 103838,
+      "name": "KI270737.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 998,
+      "name": "KI270312.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 5796,
+      "name": "KI270591.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 2805,
+      "name": "KI270371.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 990,
+      "name": "KI270385.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1930,
+      "name": "KI270381.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 3253,
+      "name": "KI270517.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1951,
+      "name": "KI270508.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 993,
+      "name": "KI270539.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 3041,
+      "name": "KI270593.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 2168,
+      "name": "KI270530.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 6158,
+      "name": "KI270588.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 971,
+      "name": "KI270392.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 2378,
+      "name": "KI270375.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1040,
+      "name": "KI270329.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1026,
+      "name": "KI270336.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 5353,
+      "name": "KI270507.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 981,
+      "name": "KI270423.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 4215,
+      "name": "KI270382.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1750,
+      "name": "KI270383.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 4055,
+      "name": "KI270468.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1045,
+      "name": "KI270379.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 6361,
+      "name": "KI270515.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 6504,
+      "name": "KI270582.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1444,
+      "name": "KI270316.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 8127,
+      "name": "KI270511.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1233,
+      "name": "KI270466.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 2186,
+      "name": "KI270518.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1553,
+      "name": "KI270580.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1428,
+      "name": "KI270340.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1445,
+      "name": "KI270422.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 4513,
+      "name": "KI270584.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 2983,
+      "name": "KI270528.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1652,
+      "name": "KI270330.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 2318,
+      "name": "KI270509.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 2969,
+      "name": "KI270587.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 970,
+      "name": "KI270394.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1048,
+      "name": "KI270335.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1650,
+      "name": "KI270372.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1216,
+      "name": "KI270388.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1201,
+      "name": "KI270310.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 5674,
+      "name": "KI270522.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 8320,
+      "name": "KI270366.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1368,
+      "name": "KI270334.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1179,
+      "name": "KI270412.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 2274,
+      "name": "KI270302.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 7046,
+      "name": "KI270581.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 2140,
+      "name": "KI270424.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1599,
+      "name": "KI270548.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1880,
+      "name": "KI270396.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 2656,
+      "name": "KI270374.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1143,
+      "name": "KI270395.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1537,
+      "name": "KI270387.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 2145,
+      "name": "KI270418.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1298,
+      "name": "KI270389.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1048,
+      "name": "KI270378.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1029,
+      "name": "KI270419.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1202,
+      "name": "KI270544.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 2415,
+      "name": "KI270510.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 7992,
+      "name": "KI270448.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 4685,
+      "name": "KI270590.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1899,
+      "name": "KI270529.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1361,
+      "name": "KI270429.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1136,
+      "name": "KI270376.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 3530,
+      "name": "KI270362.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1400,
+      "name": "KI270583.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 7642,
+      "name": "KI270521.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1472,
+      "name": "KI270305.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1300,
+      "name": "KI270516.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1121,
+      "name": "KI270337.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1884,
+      "name": "KI270425.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1658,
+      "name": "KI270384.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1308,
+      "name": "KI270393.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1451,
+      "name": "KI270373.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1484,
+      "name": "KI270391.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1788,
+      "name": "KI270386.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1428,
+      "name": "KI270338.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1803,
+      "name": "KI270363.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 91309,
+      "name": "KI270538.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 3920,
+      "name": "KI270467.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1774,
+      "name": "KI270465.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 4416,
+      "name": "KI270320.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1942,
+      "name": "KI270303.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 2646,
+      "name": "KI270411.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 2276,
+      "name": "KI270315.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 12399,
+      "name": "KI270311.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 21476,
+      "name": "KI270322.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 2699,
+      "name": "KI270333.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 37690,
+      "name": "KI270317.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 2165,
+      "name": "KI270304.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 2043,
+      "name": "KI270417.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 2321,
+      "name": "KI270420.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 2387,
+      "name": "KI270390.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 44474,
+      "name": "KI270589.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 2489,
+      "name": "KI270414.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 31033,
+      "name": "KI270579.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 2855,
+      "name": "KI270364.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 392061,
+      "name": "KI270442.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 280839,
+      "name": "KI270729.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 181920,
+      "name": "KI270736.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 112505,
+      "name": "KI270438.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 138126,
+      "name": "KI270519.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 22689,
+      "name": "KI270512.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 92983,
+      "name": "KI270435.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 42210,
+      "name": "KI270711.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 201709,
+      "name": "GL000009.2",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 155397,
+      "name": "GL000221.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 172810,
+      "name": "KI270725.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 37240,
+      "name": "KI270740.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 150742,
+      "name": "KI270751.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 66486,
+      "name": "KI270746.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 164239,
+      "name": "GL000213.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 168472,
+      "name": "KI270744.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 161802,
+      "name": "GL000220.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 42811,
+      "name": "KI270735.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 165050,
+      "name": "KI270734.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 66860,
+      "name": "KI270709.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 93321,
+      "name": "KI270748.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 41891,
+      "name": "KI270745.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 92689,
+      "name": "GL000208.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 179693,
+      "name": "GL000224.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 27745,
+      "name": "KI270752.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 137718,
+      "name": "GL000214.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 186739,
+      "name": "KI270742.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 161471,
+      "name": "KI270715.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 182896,
+      "name": "GL000195.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 62944,
+      "name": "KI270753.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 194050,
+      "name": "KI270722.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 176845,
+      "name": "KI270719.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 36723,
+      "name": "KI270755.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 176043,
+      "name": "KI270712.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 41543,
+      "name": "KI270732.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 127682,
+      "name": "KI270708.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 150754,
+      "name": "KI270731.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 39050,
+      "name": "KI270720.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 191469,
+      "name": "GL000194.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 40745,
+      "name": "KI270713.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 153799,
+      "name": "KI270716.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 38115,
+      "name": "KI270723.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 15008,
+      "name": "GL000226.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 179198,
+      "name": "GL000219.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 148850,
+      "name": "KI270750.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 39555,
+      "name": "KI270724.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 32032,
+      "name": "KI270707.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 40191,
+      "name": "KI270754.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 175055,
+      "name": "KI270706.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 161147,
+      "name": "GL000218.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 41717,
+      "name": "KI270714.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 179772,
+      "name": "KI270733.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 100316,
+      "name": "KI270721.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 158759,
+      "name": "KI270749.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 176608,
+      "name": "GL000216.2",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 185591,
+      "name": "GL000205.2",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 38054,
+      "name": "KI270718.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 40062,
+      "name": "KI270717.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 210658,
+      "name": "KI270743.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 209709,
+      "name": "GL000008.2",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 40176,
+      "name": "KI270710.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 211173,
+      "name": "GL000225.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 198735,
+      "name": "KI270747.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 43739,
+      "name": "KI270726.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 1872759,
+      "name": "KI270728.1",
+      "coord_system": "scaffold"
+    },
+    {
+      "length": 57227415,
+      "name": "Y",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 64444167,
+      "name": "20",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 156040895,
+      "name": "X",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 114364328,
+      "name": "13",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 50818468,
+      "name": "22",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 133797422,
+      "name": "10",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 170805979,
+      "name": "6",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 58617616,
+      "name": "19",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 107043718,
+      "name": "14",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 80373285,
+      "name": "18",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 242193529,
+      "name": "2",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 190214555,
+      "name": "4",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 46709983,
+      "name": "21",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 138394717,
+      "name": "9",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 135086622,
+      "name": "11",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 83257441,
+      "name": "17",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 145138636,
+      "name": "8",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 159345973,
+      "name": "7",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 101991189,
+      "name": "15",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 133275309,
+      "name": "12",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 248956422,
+      "name": "1",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 90338345,
+      "name": "16",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 181538259,
+      "name": "5",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 198295559,
+      "name": "3",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 16569,
+      "name": "MT",
+      "coord_system": "chromosome"
+    },
+    {
+      "length": 448248,
+      "name": "KI270727.1",
+      "coord_system": "scaffold"
+    }
+  ],
+  "assembly_accession": "GCA_000001405.15",
+  "genebuild_initial_release_date": "2014-07",
+  "genebuild_start_date": "2014-01-Ensembl",
+  "genebuild_method": "full_genebuild",
+  "default_coord_system_version": "GRCh38"
+}

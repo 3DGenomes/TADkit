@@ -1,0 +1,23 @@
+{
+  "karyotype": [
+    "Chromosome"
+  ],
+  "assembly_date": "2014-01",
+  "genebuild_last_geneset_update": "2014-01",
+  "assembly_name": "ASM2734v1",
+  "coord_system_versions": [
+    "GCA_000027345.1"
+  ],
+  "top_level_region": [
+    {
+      "length": 816394,
+      "name": "Chromosome",
+      "coord_system": "chromosome"
+    }
+  ],
+  "assembly_accession": "GCA_000027345.1",
+  "genebuild_initial_release_date": "2005-12-EnsemblBacteria",
+  "default_coord_system_version": "GCA_000027345.1",
+  "genebuild_start_date": "2005-12-EnsemblBacteria",
+  "genebuild_method": "Generated from ENA annotation"
+}
