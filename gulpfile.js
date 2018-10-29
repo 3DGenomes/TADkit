@@ -45,7 +45,7 @@ gulp.task('dist-scripts', function() {
 		'src/layout/*.js',
 		'src/services/*.js',
 		])
-		.pipe(concat('tadkit-0810-01.js'))
+		.pipe(concat('tadkit.js'))
 		// .pipe(gulp.dest('dist'))
 		.pipe(gulp.dest('tadkit/assets/js'))
 		.pipe(rename('tadkit.min.js'))
@@ -108,8 +108,10 @@ gulp.task('assets-libs', function() {
 		'bower_components/angular/angular.min.js.map',
 		'bower_components/d3/d3.min.js',
 		'bower_components/threejs/build/three.min.js',
-		//'src/assets/js/igv-1.0.9.js'
-		'src/assets/js/igv-all.js'
+		'src/assets/js/igv.js'
+		//'src/assets/js/igv.min.js',
+		//'src/assets/js/igv.min.js.map'
+		//'src/assets/js/igv-all.js'
 		])
 		.pipe(gulp.dest('src/assets/js'))
 		.pipe(gulp.dest('tadkit/assets/js'));
@@ -145,8 +147,8 @@ gulp.task('assets-css', function() {
 		'src/assets/css/tadkit.css',
 		'src/assets/css/ensembl-genes.css',
 		'bower_components/angular-awesome-slider/dist/css/angular-awesome-slider.min.css',
-		//'src/assets/css/igv-1.0.9.css',
-		'src/assets/css/igv-all.css',
+		'src/assets/css/igv.css',
+		'src/assets/css/igv.css.map',
 		'bower_components/jquery-ui/themes/cupertino/jquery-ui.css',
 		'bower_components/angular-resizable/angular-resizable.min.css',
 		'node_modules/angular-ui-grid/ui-grid.min.css',
@@ -218,7 +220,7 @@ gulp.task('webserver', function() {
 });
 
 gulp.task('openbrowser', function() {
-  opn( 'http://' + server.host + ':' + server.port + '/src/index.html');
+  opn( 'http://' + server.host + ':' + server.port + '/tadkit');
 });
 
 

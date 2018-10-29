@@ -880,6 +880,59 @@
 		//});
         };
         
+        igv.Browser.prototype.updateLocusSearchWidget = function (genomicState) {
+
+            var self = this,
+                referenceFrame,
+                ss,
+                ee,
+                str,
+                end,
+                chromosome;
+
+
+            if (this.rulerTrack) {
+                this.rulerTrack.updateLocusLabel();
+            }
+
+            if (0 === this.genomicStateList.indexOf(genomicState) && 1 === this.genomicStateList.length) {
+
+                if (genomicState.locusSearchString && 'all' === genomicState.locusSearchString.toLowerCase()) {
+
+                    this.$searchInput.val(genomicState.locusSearchString);
+                    this.chromosomeSelectWidget.$select.val('all');
+                } else {
+
+                    referenceFrame = genomicState.referenceFrame;
+                    this.chromosomeSelectWidget.$select.val(referenceFrame.chrName);
+
+                    if (this.$searchInput) {
+
+                        end = referenceFrame.start + referenceFrame.bpPerPixel * (self.viewportContainerWidth() / this.genomicStateList.length);
+
+                        if (this.genome) {
+                            chromosome = this.genome.getChromosome(referenceFrame.chrName);
+                            if (chromosome) {
+                                end = Math.min(end, chromosome.bpLength);
+                            }
+                        }
+
+                        ss = igv.numberFormatter(Math.floor(referenceFrame.start + 1));
+                        ee = igv.numberFormatter(Math.floor(end));
+                        str = referenceFrame.chrName + ":" + ss + "-" + ee;
+                        this.$searchInput.val(str);
+                    }
+
+                    this.fireEvent('locuschange', [referenceFrame, str]);
+                    $scope.locuschange(referenceFrame, str);
+                }
+
+            } else {
+                this.$searchInput.val('');
+            }
+
+        };
+
         igv.Browser.prototype.updateLocusSearchWithGenomicState = function (genomicState) {
 
             var self = this,
