@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+
 (function() {
 	'use strict';
 	angular
@@ -63,13 +65,25 @@
 			},
 			
 			rgbToHex: function(color) {
-					var digits = /(.*?)rgb\((\d+), (\d+), (\d+)\)/.exec(color);
+			    color = ""+ color;
+			    if (!color || color.indexOf("rgb") < 0) {
+			        return;
+			    }
 
-					var r = parseInt(digits[2]);
-					var g = parseInt(digits[3]);
-					var b = parseInt(digits[4]);
+			    if (color.charAt(0) == "#") {
+			        return color;
+			    }
 
-				    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+			    var nums = /(.*?)rgb\((\d+),\s*(\d+),\s*(\d+)\)/i.exec(color),
+			        r = parseInt(nums[2], 10).toString(16),
+			        g = parseInt(nums[3], 10).toString(16),
+			        b = parseInt(nums[4], 10).toString(16);
+
+			    return "#"+ (
+			        (r.length == 1 ? "0"+ r : r) +
+			        (g.length == 1 ? "0"+ g : g) +
+			        (b.length == 1 ? "0"+ b : b)
+			    );
 			},
 
 			hslToHex: function(data) {
@@ -212,6 +226,10 @@
 
 				ary.splice(0, 1);
 				return rootObj.arrayToRGBA(ary.map(scale));
+			},
+			shadeRGBColor: function(color, percent) {
+			    var f=color.split(","),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=parseInt(f[0].slice(4)),G=parseInt(f[1]),B=parseInt(f[2]);
+			    return "rgb("+(Math.round((t-R)*p)+R)+","+(Math.round((t-G)*p)+G)+","+(Math.round((t-B)*p)+B)+")";
 			},
 			hexToRGB: function(hex) {
 				var RGB = [];
