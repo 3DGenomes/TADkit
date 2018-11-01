@@ -1,0 +1,20 @@
+[
+	{
+		"metadata" : {
+			"version" : 1.0,
+			"type" : "project",
+			"generator" : "TADkit"
+		},
+		"object" : {
+			"uuid" : "64564304-c7f5-11e4-8731-1681e6b88ec1",
+			"id" : "default",
+			"title" : "Default Project",
+			"description" : "An example project.",
+			"group" : "Default Group",
+			"state" : "active"
+		},
+		"datasets" : [],
+		"overlays" : [],
+		"storyboards" : []
+	}
+]

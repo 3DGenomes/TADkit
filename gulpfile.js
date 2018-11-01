@@ -46,11 +46,11 @@ gulp.task('dist-scripts', function() {
 		'src/services/*.js',
 		])
 		.pipe(concat('tadkit.js'))
-		// .pipe(gulp.dest('dist'))
+		.pipe(gulp.dest('docs/assets/js'))
 		.pipe(gulp.dest('tadkit/assets/js'))
 		.pipe(rename('tadkit.min.js'))
 		.pipe(uglify())
-		// .pipe(gulp.dest('dist'))
+		.pipe(gulp.dest('docs/assets/js'))
 		.pipe(gulp.dest('tadkit/assets/js'));
 });
 
@@ -82,8 +82,8 @@ gulp.task('dist-vendor', function() {
 		.pipe(gulp.dest('src/assets/libs'))
 		.pipe(concat('vendors.js'))
 		.pipe(uglify()) // TODO: test other options eg. ng-min
+		.pipe(gulp.dest('docs/assets/js'))
 		.pipe(gulp.dest('tadkit/assets/js'));
-		// .pipe(gulp.dest('dist'))
 });
 
 // Transfer Demo index.html

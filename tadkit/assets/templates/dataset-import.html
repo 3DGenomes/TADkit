@@ -1,0 +1,42 @@
+<!-- This file is generated — do not edit by hand! -->
+<md-dialog md-theme="default" aria-label="Import Data">
+	<md-toolbar>
+		<div class="md-toolbar-tools">
+		<h2 class="md-flex">Add dataset</h2>
+		</div>
+	</md-toolbar>
+  	<md-dialog-content class="md-default-theme">
+		<section>
+			<div ng-hide="fileData">
+				Select a TADbit json file.
+			</div>
+			<div ng-show="fileData">
+				<div class="component-caption" layout="column" layout-align="left center">
+					<table>
+						<tr><td valign="top"><b>Title:</b></td><td>{{fileData.object.title}}</td></tr>
+						<tr><td valign="top"><b>Species:</b></td><td>{{fileData.object.species}}</td></tr>
+						<tr><td valign="top"><b>Chromosomes:</b></td><td>
+						<span ng-repeat="chrom in fileData.object.chrom">
+						  <label>{{chrom}}</label>
+						</span></td></tr>
+						<tr><td valign="top"><b>Region:</b></td><td>{{fileData.object.region}}</td></tr>
+						<tr><td valign="top"><b>UUID:</b></td><td>{{fileData.object.uuid}}</td></tr>
+						<tr><td valign="top"><b>Resolution:</b></td><td>{{fileData.object.resolution}}</td></tr>
+						<tr><td valign="top"><b>Bins:</b></td><td>{{bins}}</td></tr>
+						<tr><td valign="top"><b>Number of clusters:</b></td><td>{{fileData.centroids.length}}</td></tr>
+						<tr><td valign="top"><b>Number of models:</b></td><td>{{fileData.models.length}}</td></tr>
+					</table>
+				</div>
+			</div>
+		</section>
+	</md-dialog-content>
+	<md-dialog-actions>		
+		<md-input-container layout-padding ng-hide="fileData">
+			<input class="ng-show" id="file-input" aria-label="File input" type="file" tk-data-import="parseFile($fileContent)" filetitle="fileTitle" />
+		</md-input-container>
+		<span flex></span>
+		<!-- type=button is needed so form uses submit button -->
+		<md-button type=button ng-click="cancel()" class="md-raised md-primary">Cancel</md-button>
+		<md-button ng-show="fileData" type="submit" ng-click="importData(fileData)" class="md-raised md-primary">Import Data</md-button>
+	</md-dialog-actions>
+</md-dialog>

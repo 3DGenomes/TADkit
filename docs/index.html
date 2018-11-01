@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>TADkit</title>
+	<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/favicon-32x32.png">
+	<link rel="stylesheet" href="assets/css/angular-material.css">
+	<link rel="stylesheet" href="assets/css/tadkit.css" />
+	<link rel="stylesheet" href="assets/css/ensembl-genes.css" />
+	<link rel="stylesheet" href="assets/css/angular-awesome-slider.min.css">
+	<link rel="stylesheet" href="assets/css/angular-resizable.min.css">
+	<link rel="stylesheet" href="assets/css/ui-grid.min.css">
+	<!--  <link rel="stylesheet" href="assets/css/igv-1.0.9.css">-->
+	<link rel="stylesheet" href="assets/css/igv-all.css">
+	<link rel="stylesheet" href="assets/css/jquery-ui.css">
+	<link rel="stylesheet" type="text/css"
+          href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"/>
+</head>
+<body ng-app="TADkit">
+	<div id="spinnerdiv">
+	<md-progress-circular md-mode="indeterminate" class="spinner-loader"></md-progress-circular>
+	</div>
+	<div data-ui-view id="main" class="fullheight"></div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+	<script src="assets/js/vendors.js"></script>
+	<script src="assets/js/tadkit-0810-01.js"></script>
+	<!-- <script src="assets/js/igv-1.0.9.js"></script> -->
+	<script src="assets/js/igv-all.js"></script>
+	<!--base href="/demo/"></base-->
+</body>
+</html>

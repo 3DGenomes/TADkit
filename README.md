@@ -1,4 +1,12 @@
-![TADkit Logo](/doc/logo/tadkit-logo-title.png?raw=true "TADkit Logo" =240x)
+![TADkit Logo](https://raw.githubusercontent.com/3DGenomes/TADkit/master/docs/assets/logo/tadkit-logo-title.png)
+
+![GitHub issues](https://img.shields.io/github/issues/3DGenomes/TADkit.svg)
+![Version](https://img.shields.io/github/release/3DGenomes/TADkit.svg)
+![GitHub issues](https://img.shields.io/github/license/3DGenomes/TADkit.svg)
+<br />
+![AngularJS](https://img.shields.io/badge/AngularJS-1.6.10-red.svg)
+![Three.js](https://img.shields.io/badge/Three.js-v0.97.0-orange.svg)
+
 
 TADkit is a HTML5 and JavaScript-based 3D genome browser. It makes use of D3.js for rendering the 1D and 2D tracks and WebGl by Three.js for rendering the 3D track.
 
@@ -16,7 +24,7 @@ locally you'll need to use Chrome with the flag "--allow-file-access-from-files"
 ###How to use it
 Visualization of 3D models and overlaying of data for analysis in TADkit is achieved in three simple steps. (1) The user may import a [TADbit](http://3Dgenomes.org/tadbit/) JSON file by using the drop-in area or the file menu in the TADkit main page. (2) The user is presented with an overview of the data. Each 3D model cluster is shown as an ensemble of grey strands, with its centroid model highlighted. After selecting a cluster, the browser view opens (see figure below) with a 3D scene of the centroid of the selected cluster, along with “classic” genomic tracks. (3) Finally, the user may add additional genomic tracks to the browser by inputting them using BigWig or BedGraph formats.
 
-![Browser View](/doc/screenshots/tadkit_scene.png?raw=true "Browser View" =800x)
+![Browser View](https://raw.githubusercontent.com/3DGenomes/TADkit/master/docs/assets/screenshots/tadkit_scene.png)
 
 The browser view is composed by: 
 * a. Top toolbar with the model title, internal navigation links, data input link and the current genomic position.

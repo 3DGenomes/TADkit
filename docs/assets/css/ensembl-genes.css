@@ -1,0 +1,89 @@
+/* [gene]
+   .#genes / transcripts are labelled by biotype, the exceptions being
+   .#projected genes, vega genes and merged ensembl/havana genes.
+   .#The colour and legend term is defined below
+   */
+
+/* Other */
+.default { fill: hsla(38.8,100%,50%,0.4) } /* orange #ffa500 decimal:16753920 */
+/* Protein Alignment */
+.protein { fill: hsla(240,100%,50%,0.2) } /* blue #0000ff decimal:255 */
+/* Protein Coding */
+.protein_coding { fill: hsla(18.1,85.8%,38.6%,0.3) } /* Ensembl: rust hsla(18.1,85.8%,38.6%) #b7410e decimal:12009742 */
+
+/* Pseudogene */
+.pseudogene,
+.processed_pseudogene,
+.unprocessed_pseudogene,
+.polymorphic_pseudogene,
+.translated_processed_pseudogene,
+.transcribed_processed_pseudogene,
+.transcribed_unprocessed_pseudogene,
+.translated_unprocessed_pseudogene,
+.rrna_pseudogene,
+.unitary_pseudogene,
+.misc_rna_pseudogene,
+.mt_trna_pseudogene,
+.snorna_pseudogene,
+.scrna_pseudogene,
+.trna_pseudogene,
+.ig_pseudogene,
+.ig_c_pseudogene,
+.ig_j_pseudogene,
+.ig_v_pseudogene,
+.tr_pseudogene,
+.mirna_pseudogene,
+.ncrna_pseudogene,
+.snrna_pseudogene,
+.tr_v_pseudogene,
+.tr_j_pseudogene { fill: hsla(0,0%,40%,0.6) } /* Ensembl: grey40 #666666 decimal:6710886 */
+
+
+/* Processed Transcript */
+.sense_intronic,
+.sense_overlapping,
+.processed_transcript,
+.nonsense_mediated_decay,
+.non_stop_decay,
+.antisense,
+.retained_intron,
+.tec,
+.non_coding,
+.ambiguous_orf,
+.disrupted_domain,
+._3prime_overlapping_ncrna { fill: hsla(240,100%,50%,0.6) } /* blue #0000ff decimal:255 */
+
+/* RNA Gene */
+.lincrna,
+.mirna,
+.pre_mirna,
+.rna,
+.rrna,
+.snrna,
+.trna,
+.snorna,
+.mt_rrna,
+.mt_trna,
+.misc_rna,
+.ncrna,
+.ncrna_host,
+.snlrna { fill: hsla(300,15.4%,47.3%, 1.0) } /* Ensembl: plum4 #8b668b decimal:9135755 */
+
+/* IG ... Genes */
+.ig_c_gene { fill: hsla(29.9,100%,40.2%,0.6) } /* Ensembl: darkorange3 #cd6600 decimal:13460992 */
+.ig_d_gene { fill: hsla(29.6,58.7%,52.5%,0.6) } /* Ensembl: peru #cd853f decimal:13468991 */
+.ig_j_gene { fill: hsla(29.5,82.9%,61%,0.6) } /* Ensembl: tan2 #ee9a49 decimal:15637065 */
+.ig_lv_gene { fill: hsla(29.9,100%,50%,0.6) } /* Ensembl: darkorange1 #ff7f00 decimal:16744192 */
+.ig_m_gene { fill: hsla(29.6,58.7%,52.5%,0.6) } /* Ensembl: tan3 #cd853f decimal:13468991 */
+.ig_v_gene { fill: hsla(29.8,100%,27.3%,0.6) } /* Ensembl: darkorange4 #8b4500 decimal:9127168 */
+.ig_z_gene { fill: hsla(24.9,85.8%,53.1%,0.6) } /* Ensembl: chocolate2 #ee7621 decimal:15627809 */
+
+/* TR Gene */
+.tr_gene,
+.tr_c_gene,
+.tr_d_gene,
+.tr_j_gene, { fill: hsla(29.7,100%,46.7%),0.6 } /* Ensembl: darkorange2 #ee7600 decimal:15627776 */
+
+/* EST Transcript */
+.estgene,
+.singapore_est { fill: hsla(271.2,85.1%,55.3%,0.6) } /* Ensembl: purple2 #912cee decimal:9514222 */

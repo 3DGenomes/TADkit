@@ -1,0 +1,34 @@
+[
+	{
+		"metadata" : {
+			"version" : 1.0,
+			"type" : "overlay",
+			"generator" : "TADkit"
+		},
+		"object" : {
+			"uuid" : "00000000-0000-0000-0001-000000000000",
+			"id" : "gradient",
+			"title" : "Blue to Red",
+			"source" : "TADkit",
+			"url" : "local",
+			"description" : "Simple gradient from blue to red.",
+			"type" : "gradient",
+			"format" : "hex",
+			"components" : 2,
+			"state" : {
+				"index" : 0,
+				"overlaid" : false
+			}
+		},
+		"palette" : ["#0000ff","#00ffff"],
+		"data" : [],
+		"colors" : {
+			"particles" : [],
+			"chromatin" : [],
+			"network" : {
+				"RGB" : [],
+				"alpha" : []
+			}
+		}
+	}
+]
