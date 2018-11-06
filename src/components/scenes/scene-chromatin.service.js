@@ -169,7 +169,7 @@
 						if(ColorConvert.testIfHex(colors[Math.floor(colori/16)]) || colors[Math.floor(colori/16)].indexOf('#')===0) {
 							newChromatinColor =  new THREE.Color(colors[Math.floor(colori/16)]);	 
 						} else {
-							newChromatinColor =  new THREE.Color(ColorConvert.nameToHex(colors[Math.floor(i/16)]));
+							newChromatinColor =  new THREE.Color(ColorConvert.rgbToHex(colors[Math.floor(i/16)]));
 						} 
 						for (j = 0; j < 16; j++) {
 							if(typeof chromatinGeometry.faces[i+j] !== 'undefined') chromatinGeometry.faces[i+j].color.set(newChromatinColor);

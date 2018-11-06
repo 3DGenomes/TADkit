@@ -57,13 +57,13 @@
 			if ( newValue !== oldValue ) {
 				// playback.autoRotate = !playback.autoRotate;
 				$scope.width = $scope.state.width = $window.innerWidth - newValue - 50 - 2*parseInt($scope.state.margin);
-				$scope.myIgv.repaint();
+				//$scope.myIgv.repaint();
+				$scope.myIgv.resize();
 //		  		$scope.myIgv.genomicStateList.forEach(function (genomicState) {
 //            		$scope.myIgv.updateWithLocusIndex( genomicState );
 //        		});
 			}
 		});
-
 		var w = angular.element($window);
 		$scope.$watch(
 		  function () {

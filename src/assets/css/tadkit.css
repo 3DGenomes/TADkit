@@ -290,6 +290,7 @@ md-checkbox.md-checked .md-icon {
 .component-controller {
 	position: relative;
 	display: inline-block;
+	vertical-align: top;
 	/* float: left; */
 }
 .component-header {
