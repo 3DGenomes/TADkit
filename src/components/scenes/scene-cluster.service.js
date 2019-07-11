@@ -57,16 +57,16 @@
 					var model = new THREE.Line(modelGeometry, modelMaterial);
 					model.name = "model-"+settings.current.chromosomeIndexes[l]+"-"+i;
 					model.geometry.computeBoundingSphere();
-					model.geometry.center();
+					//model.geometry.center();
 					if(model.geometry.boundingSphere.radius>max_radius) max_radius = model.geometry.boundingSphere.radius;
 					clusterEnsemble.add(model);
 					offset += chr_bins;
 				}
 				
 			}
-			for ( i = 0 ; i < clusterEnsemble.children.length; i++) {
-				clusterEnsemble.children[i].geometry.center();
-			}
+			//for ( i = 0 ; i < clusterEnsemble.children.length; i++) {
+			//	clusterEnsemble.children[i].geometry.center();
+			//}
 			clusterEnsemble.boundingSphere = clusterEnsemble.children[0].geometry.boundingSphere.clone();
 			clusterEnsemble.boundingSphere.radius = max_radius;
 			clusterEnsemble.name = "Cluster Ensemble";
@@ -86,7 +86,7 @@
 			vertex.z = components[ offset ++ ];
 			modelGeometry.vertices.push( vertex );
 		}
-		modelGeometry.center();
+		//modelGeometry.center();
 		return modelGeometry;
 	}
 

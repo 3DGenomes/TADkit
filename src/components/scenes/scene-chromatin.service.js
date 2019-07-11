@@ -56,7 +56,7 @@
 				geometry.colors.unshift(geometryColor);
 			}
 			geometry.computeBoundingSphere();
-			geometry.center();
+			//geometry.center();
 
 	//			var transparentMaterial = new THREE.MeshLambertMaterial({
 	//			  transparent:true, 
