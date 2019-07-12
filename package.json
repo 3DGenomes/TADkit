@@ -99,7 +99,7 @@
     "graceful-fs": "^4.1.10",
     "gulp-plumber": "^1.1.0",
     "gulp-webserver": "^0.9.1",
-    "jquery": "jquery/jquery-dist#>= 2.1.0",
+    "jquery": "jquery/jquery-dist#>= 3.4.0",
     "jquery-placeholder": "mathiasbynens/jquery-placeholder#~2.0.7",
     "jquery-ui": "components/jqueryui#>=1.12.0",
     "jquery.cookie": "carhartl/jquery-cookie#~1.4.0",
