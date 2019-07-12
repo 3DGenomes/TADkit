@@ -389,7 +389,7 @@
 												if(ColorConvert.testIfHex(newColors[colori]) || newColors[colori].indexOf('#')===0) {
 													newChromatinColor =  new THREE.Color(newColors[colori]);	 
 												} else {
-													newChromatinColor =  new THREE.Color(ColorConvert.nameToHex(newColors[colori]));
+													newChromatinColor =  new THREE.Color(ColorConvert.rgbToHex(newColors[colori]));
 												}
 												for (k = partFaces[i][0]; k <= partFaces[i][1]; k++) {	 
 													if(typeof geom.faces[k] !== 'undefined') geom.faces[k].color.set(newChromatinColor);

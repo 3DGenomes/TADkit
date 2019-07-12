@@ -22,7 +22,7 @@
 			angular.extend(this, angular.copy(defaults), settings);
 
 			var particlesGeometry = getGeometry(data);
-			particlesGeometry.center();
+			//particlesGeometry.center();
 			particlesGeometry.computeBoundingSphere();
 
 			var vertexColors = [];
