@@ -59,7 +59,7 @@
   version "0.3.1"
   resolved "https://codeload.github.com/monicao/angular-uuid4/tar.gz/a7e960b538b5f3d96b9b77b933812281629ac084"
 
-"@bower_components/angular@angular/bower-angular#~1.6", angular@angular/bower-angular#~1.6:
+"@bower_components/angular@angular/bower-angular#~1.6":
   version "1.6.10"
   resolved "https://codeload.github.com/angular/bower-angular/tar.gz/309e7f82ecc9098e1f93870eb33083b84dead289"
 
@@ -237,10 +237,10 @@ angular-ui-grid@^4.0.11:
   dependencies:
     angular ">=1.4.0 1.7.x"
 
-"angular@>=1.4.0 1.7.x":
-  version "1.7.5"
-  resolved "https://registry.yarnpkg.com/angular/-/angular-1.7.5.tgz#d1c1c01c6f5dc835638f3f9aa51012857bdac49e"
-  integrity sha512-760183yxtGzni740IBTieNuWLtPNAoMqvmC0Z62UoU0I3nqk+VJuO3JbQAXOyvo3Oy/ZsdNQwrSTh/B0OQZjNw==
+"angular@>=1.4.0 1.7.x", angular@angular/bower-angular#~1.7:
+  version "1.7.9"
+  uid "84a5b810f33f82a552cee361268b77181691ce65"
+  resolved "https://codeload.github.com/angular/bower-angular/tar.gz/84a5b810f33f82a552cee361268b77181691ce65"
 
 ansi-cyan@^0.1.1:
   version "0.1.1"

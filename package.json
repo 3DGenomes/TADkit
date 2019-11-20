@@ -69,7 +69,7 @@
     "@flowjs/ng-flow": "flowjs/ng-flow#~2",
     "FileSaver": "^0.10.0",
     "Modernizr": "Modernizr/Modernizr#2.8.3",
-    "angular": "angular/bower-angular#~1.6",
+    "angular": "angular/bower-angular#~1.7",
     "angular-animate": "angular/bower-angular-animate#~1.6",
     "angular-aria": "angular/bower-angular-aria#1.6.x",
     "angular-awesome-slider": "darul75/angular-awesome-slider#~2.4.4",
