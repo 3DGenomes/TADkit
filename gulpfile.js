@@ -47,11 +47,9 @@ gulp.task('dist-scripts', function() {
 		])
 		.pipe(concat('tadkit.js'))
 		.pipe(gulp.dest('docs/assets/js'))
-		.pipe(gulp.dest('tadkit/assets/js'))
 		.pipe(rename('tadkit.min.js'))
 		.pipe(uglify())
-		.pipe(gulp.dest('docs/assets/js'))
-		.pipe(gulp.dest('tadkit/assets/js'));
+		.pipe(gulp.dest('docs/assets/js'));
 });
 
 // Transfer Vendor JS
@@ -66,7 +64,6 @@ gulp.task('dist-vendor', function() {
 		'bower_components/ng-flow/dist/ng-flow-standalone.js',
 		'bower_components/angular-uuid4/angular-uuid4.js',
 		'bower_components/papaparse/papaparse.min.js',
-		// 'bower_components/d3/d3.min.js', // see asset-libs below
 		'bower_components/threejs/build/three.js', // see asset-libs below
 		'bower_components/threejs/examples/js/controls/TrackballControls.js',
 		'bower_components/threejs/examples/js/controls/OrbitControls.js',
@@ -77,13 +74,11 @@ gulp.task('dist-vendor', function() {
 		'node_modules/angular-ui-grid/ui-grid.min.js',
 		'node_modules/xlsx/dist/xlsx.full.min.js',
 		'node_modules/file-saver/FileSaver.min.js',
-		//'src/assets/js/igv-all.js',
 		])
 		.pipe(gulp.dest('src/assets/libs'))
 		.pipe(concat('vendors.js'))
 		.pipe(uglify()) // TODO: test other options eg. ng-min
-		.pipe(gulp.dest('docs/assets/js'))
-		.pipe(gulp.dest('tadkit/assets/js'));
+		.pipe(gulp.dest('docs/assets/js'));
 });
 
 // Transfer Demo index.html
@@ -92,29 +87,26 @@ gulp.task('app-index', function() {
 		'src/tadkit-index.html'
 		])
 		.pipe(rename('index.html'))
-		.pipe(gulp.dest('tadkit'));
+		.pipe(gulp.dest('docs'));
 });
 // Transfer Favicon Assets
 gulp.task('app-favicon', function() {
 	return gulp.src([
 		'src/favicon-32x32.png'
 		])
-		.pipe(gulp.dest('tadkit'));
+		.pipe(gulp.dest('docs'));
 });
 
-// Transfer Libs used in Services for local offline load
+// Transfer Libs used in Services for Demo load
 gulp.task('assets-libs', function() {
 	return gulp.src([
 		'bower_components/angular/angular.min.js.map',
 		'bower_components/d3/d3.min.js',
 		'bower_components/threejs/build/three.min.js',
 		'src/assets/js/igv.js'
-		//'src/assets/js/igv.min.js',
-		//'src/assets/js/igv.min.js.map'
-		//'src/assets/js/igv-all.js'
 		])
 		.pipe(gulp.dest('src/assets/js'))
-		.pipe(gulp.dest('tadkit/assets/js'));
+		.pipe(gulp.dest('docs/assets/js'));
 });
 
 // Transfer HTML Templates
@@ -127,7 +119,7 @@ gulp.task('assets-html', function() {
 		])
         .pipe(header("<!-- This file is generated — do not edit by hand! -->\n"))
 		.pipe(gulp.dest('src/assets/templates'))
-		.pipe(gulp.dest('tadkit/assets/templates'));
+		.pipe(gulp.dest('docs/assets/templates'));
 });
 
 // Compile Sass
@@ -143,19 +135,19 @@ gulp.task('assets-html', function() {
 // Transfer CSS Assets
 gulp.task('assets-css', function() {
 	return gulp.src([
-		'bower_components/angular-material/angular-material.css',
-		'src/assets/css/tadkit.css',
-		'src/assets/css/ensembl-genes.css',
 		'bower_components/angular-awesome-slider/dist/css/angular-awesome-slider.min.css',
+		'bower_components/angular-material/angular-material.css',
+		'bower_components/angular-resizable/angular-resizable.min.css',
+		'src/assets/css/ensembl-genes.css',
 		'src/assets/css/igv.css',
 		'src/assets/css/igv.css.map',
 		'bower_components/jquery-ui/themes/cupertino/jquery-ui.css',
-		'bower_components/angular-resizable/angular-resizable.min.css',
+		'src/assets/css/tadkit.css',
 		'node_modules/angular-ui-grid/ui-grid.min.css',
 		'node_modules/angular-ui-grid/ui-grid.woff',
-		'node_modules/angular-ui-grid/ui-grid.ttf'
+		'node_modules/angular-ui-grid/ui-grid.ttf',
 		])
-		.pipe(gulp.dest('tadkit/assets/css'));
+		.pipe(gulp.dest('docs/assets/css'));
 });
 
 // Transfer Fonts Assets
@@ -163,7 +155,7 @@ gulp.task('assets-fonts', function() {
 	return gulp.src([
 		'src/assets/fonts/*.*',
 		])
-		.pipe(gulp.dest('tadkit/assets/fonts'));
+		.pipe(gulp.dest('docs/assets/fonts'));
 });
 // Transfer Image Assets
 gulp.task('assets-img', function() {
@@ -172,7 +164,7 @@ gulp.task('assets-img', function() {
 		'src/assets/img/*.svg',
 		'bower_components/angular-awesome-slider/dist/img/jslider.blue.vertical.png'
 		])
-		.pipe(gulp.dest('tadkit/assets/img'));
+		.pipe(gulp.dest('docs/assets/img'));
 });
 //Transfer Data Assets
 gulp.task('assets-data', function() {
@@ -183,21 +175,14 @@ gulp.task('assets-data', function() {
 		'src/assets/data/refGene.hg19.bed.gz',
 		'src/assets/data/refGene.hg19.bed.gz.tbi'
 		])
-		.pipe(gulp.dest('tadkit/assets/data'));
+		.pipe(gulp.dest('docs/assets/data'));
 });
 // Transfer Defaults
 gulp.task('assets-defaults', function() {
 	return gulp.src([
 		'src/assets/defaults/*.*'
 		])
-		.pipe(gulp.dest('tadkit/assets/defaults'));
-});
-// Transfer Offline
-gulp.task('assets-offline', function() {
-	return gulp.src([
-		'src/assets/offline/*.*'
-		])
-		.pipe(gulp.dest('tadkit/assets/offline'));
+		.pipe(gulp.dest('docs/assets/defaults'));
 });
 // Transfer Examples
 gulp.task('assets-examples', function() {
@@ -206,7 +191,7 @@ gulp.task('assets-examples', function() {
 		'src/assets/examples/conf.json',
 		'src/assets/examples/models.json'
 		])
-		.pipe(gulp.dest('tadkit/assets/examples'));
+		.pipe(gulp.dest('docs/assets/examples'));
 });
 
 gulp.task('webserver', function() {
@@ -220,7 +205,7 @@ gulp.task('webserver', function() {
 });
 
 gulp.task('openbrowser', function() {
-  opn( 'http://' + server.host + ':' + server.port + '/tadkit');
+  opn( 'http://' + server.host + ':' + server.port + '/docs');
 });
 
 
@@ -229,9 +214,8 @@ gulp.task('watch', function() {
 	gulp.watch([
 		'src/*.js',
 		'src/*.html',
-		// 'src/assets/css/*.css',
+		'src/assets/css/*.css',
 		'src/assets/defaults/*.*',
-		'src/assets/offline/*.*',
 		'src/assets/examples/*.*',
 		'src/components/*.js',
 		'src/components/panels/*.js',
@@ -257,7 +241,6 @@ gulp.task('watch', function() {
 		'assets-img',
 		'assets-data',
 		'assets-defaults',
-		'assets-offline',
 		'assets-examples'
 	]);
 	// gulp.watch('src/assets/scss/*.scss', ['sass']);
@@ -278,7 +261,6 @@ gulp.task('default', [
 	'assets-img',
 	'assets-data',
 	'assets-defaults',
-	'assets-offline',
 	'assets-examples',
 	'webserver',
 	'openbrowser',
