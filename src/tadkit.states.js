@@ -4,7 +4,8 @@
 		.module('TADkit')
 		.config(config);
 
-	function config($stateProvider, $urlRouterProvider, $httpProvider) {
+	function config($stateProvider, $locationProvider, $urlRouterProvider, $httpProvider) {
+		$locationProvider.hashPrefix('');
 		$urlRouterProvider.otherwise("/project/loader");
 		$httpProvider.interceptors.push('myHttpInterceptor');
 		$stateProvider

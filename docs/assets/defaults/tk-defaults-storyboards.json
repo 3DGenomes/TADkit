@@ -277,7 +277,7 @@
 					        	"R64-1-1" : {
 									"id" : "R64-1-1",
 									"fastaURL": "assets/data/R64-1-1.fa",
-									"cytobandURL": "assets/data/R64-1-1_cytoband.txt",
+									
 									"tracks": [{
 	                                                                              "name": "Genomic sequence features",
 	                                                                              "type": "annotation",

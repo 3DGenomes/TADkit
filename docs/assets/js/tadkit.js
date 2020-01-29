@@ -55,7 +55,8 @@
 		.module('TADkit')
 		.config(config);
 
-	function config($stateProvider, $urlRouterProvider, $httpProvider) {
+	function config($stateProvider, $locationProvider, $urlRouterProvider, $httpProvider) {
+		$locationProvider.hashPrefix('');
 		$urlRouterProvider.otherwise("/project/loader");
 		$httpProvider.interceptors.push('myHttpInterceptor');
 		$stateProvider
@@ -696,8 +697,11 @@
 		                			if(currentOverlay.color.length>0) {
 		                				ctx.fillStyle = "rgba("+Math.round(255*currentOverlay.color[i].r)+","+Math.round(255*currentOverlay.color[i].g)+","+Math.round(255*currentOverlay.color[i].b)+","+val/255+")";
 		                			} else {
-			                			if(scope.data.value[i]>=0) ctx.fillStyle = "rgba(255,0,0,"+val/255+")";
-			                			else ctx.fillStyle = "rgba(0,0,255,"+val/255+")";
+		                				if(scope.data.min < 0) {
+		                					if(scope.data.value[i]>=0) ctx.fillStyle = "rgba(255,0,0,"+val/255+")";
+			                				else ctx.fillStyle = "rgba(0,0,255,"+val/255+")";
+		                				} else
+		                					if(scope.data.value[i]>=0) ctx.fillStyle = d3.interpolateViridis(val/255);
 		                			}
 		                		}
 		                		ctx.fillRect( x, y, 1 , 1 );
@@ -720,7 +724,7 @@
 								this.$apply(fn);
 								}
 							};
-		                	brush = d3.svg.brush();
+		                	brush = d3.brush();
 
 			                //tads svg
 			                var hic_data_container = angular.element(document.querySelector('#hic_data_container'));
@@ -1427,12 +1431,12 @@
 										if(ColorConvert.testIfHex(newColors[colori+k]) || newColors[colori+k].indexOf('#')===0) {
 											newChromatinColori =  new THREE.Color(newColors[colori+k]);	 
 										} else {
-											newChromatinColori =  new THREE.Color(ColorConvert.nameToHex(newColors[colori+k]));
+											newChromatinColori =  new THREE.Color(ColorConvert.rgbToHex(newColors[colori+k]));
 										}
 										if(ColorConvert.testIfHex(newColors[colorj+k]) || newColors[colorj+k].indexOf('#')===0) {
 											newChromatinColorj =  new THREE.Color(newColors[colorj+k]);
 										} else {
-											newChromatinColorj =  new THREE.Color(ColorConvert.nameToHex(newColors[colorj+k]));
+											newChromatinColorj =  new THREE.Color(ColorConvert.rgbToHex(newColors[colorj+k]));
 										}
 									}
 									
@@ -1477,7 +1481,7 @@
 		.module('TADkit')
 		.controller('PanelIgvjsControllerBeta', PanelIgvjsControllerBeta);
 
-	function PanelIgvjsControllerBeta($scope, $window, $timeout, $mdDialog, Overlays,Storyboards, uuid4, Track_data, d3Service, Datasets, Users, Settings) {
+	function PanelIgvjsControllerBeta($scope, $window, $timeout, $mdDialog, Overlays, Storyboards, ColorConvert, uuid4, Track_data, d3Service, Datasets, Users, Settings) {
 
 		$scope.showInfo = function(info) {
 			$mdDialog.show({
@@ -1530,13 +1534,13 @@
 			if ( newValue !== oldValue ) {
 				// playback.autoRotate = !playback.autoRotate;
 				$scope.width = $scope.state.width = $window.innerWidth - newValue - 50 - 2*parseInt($scope.state.margin);
-				$scope.myIgv.repaint();
+				//$scope.myIgv.repaint();
+				$scope.myIgv.resize();
 //		  		$scope.myIgv.genomicStateList.forEach(function (genomicState) {
 //            		$scope.myIgv.updateWithLocusIndex( genomicState );
 //        		});
 			}
 		});
-
 		var w = angular.element($window);
 		$scope.$watch(
 		  function () {
@@ -1639,7 +1643,7 @@
 			
 			$timeout(function() {$scope.$apply();});
 		};
-		$scope.applyOverlay =  function(track,features) {
+		$scope.applyOverlay =  function(track,features,track_color) {
 			var self = this;
 			var overlays = Overlays.get();
 			for(var i=0;i<overlays.loaded.length;i++) {
@@ -1710,6 +1714,10 @@
 			if(scored_color) {
 				var hexEnd = '#0000ff';
 				var hexStart = '#ffffff';
+				if(typeof track_color !== 'undefined') {
+					//hexStart = ColorConvert.rgbToHex(ColorConvert.shadeRGBColor(track_color,-0.5));
+					hexEnd = ColorConvert.rgbToHex(track_color);
+				}
 				var first_start = 0;
 				var n = 0;
 				l = 0;
@@ -1886,7 +1894,7 @@
 	    	
         	resolution = $scope.settings.current.segmentLength*$scope.settings.current.particleSegments;
         	mainGenomicState = $scope.myIgv.genomicStateList[0];
-        	viewportWidth = igv.browser.viewportContainerWidth()/mainGenomicState.locusCount;
+        	viewportWidth = igv.browser.viewportContainerWidth()/$scope.myIgv.genomicStateList.length;
         	offset = (mainGenomicState.referenceFrame.bpPerPixel * viewportWidth) + mainGenomicState.referenceFrame.start;
         	offset -= ($scope.settings.current.chromEnd[0]-$scope.settings.current.chromStart[0]);
         	
@@ -1902,7 +1910,8 @@
     		referenceFrame.start = start;
 
 	    	for(var t=0;t<$scope.myIgv.trackViews.length;t++) {
-    			$scope.myIgv.trackViews[t].update();
+    			//$scope.myIgv.trackViews[t].update();
+	    		$scope.myIgv.trackViews[t].updateViews();
     		}
 	    	//$scope.myIgv.update();
         };
@@ -1922,7 +1931,7 @@
         	
         	var genomicState = $scope.myIgv.genomicStateList[locusIndex];
         	var referenceFrame = genomicState.referenceFrame;
-        	var viewportWidth = igv.browser.viewportContainerWidth()/genomicState.locusCount;
+        	var viewportWidth = igv.browser.viewportContainerWidth()/$scope.myIgv.genomicStateList.length;
         	// clamp left
             referenceFrame.start = Math.max(0, referenceFrame.start);
 
@@ -1982,10 +1991,11 @@
         	igvjs_go.push($scope.settings.current.chromosomeIndexes[0]);
         	if(!$scope.view.settings.leading_chr) igvjs_go[0] = igvjs_go[0].replace('chr','');
         	
-        	if(mainGenomicState.locusCount>1) {
+        	if($scope.myIgv.genomicStateList.length>1) {
 				if(y <= 0) {
 					igvjs_go[0] += ':' + mainGenomicState.referenceFrame.start + '-' + (mainGenomicState.referenceFrame.start+Math.round(span_region));
-					$scope.myIgv.parseSearchInput(igvjs_go.join(' '));
+					//$scope.myIgv.parseSearchInput(igvjs_go.join(' '));
+					$scope.myIgv.search(igvjs_go.join(' '));
 					angular.element($scope.myIgv.trackContainerDiv).css("pointer-events","initial");
 					return;
 				}
@@ -2017,7 +2027,8 @@
 				end = Math.round(end2-75*mainGenomicState.referenceFrame.bpPerPixel);
 				igvjs_go[1] += ':' + (start) + '-' + (end);
 				
-				$scope.myIgv.parseSearchInput(igvjs_go.join(' '));
+				//$scope.myIgv.parseSearchInput(igvjs_go.join(' '));
+				$scope.myIgv.search(igvjs_go.join(' '));
 				$scope.hideIgvLabels(true);
 				angular.element($scope.myIgv.trackContainerDiv).css("pointer-events","none");
 				//$scope.moveViewport(1,-x);
@@ -2091,7 +2102,8 @@
 					
 				}
 				
-				$scope.myIgv.parseSearchInput(igvjs_go.join(' '));
+				//$scope.myIgv.parseSearchInput(igvjs_go.join(' '));
+				$scope.myIgv.search(igvjs_go.join(' '));
 				$scope.hideIgvLabels(true);
 		    	Track_data.clear();
 		    	$scope.updateFeaturesList();
@@ -2133,11 +2145,11 @@
 
         	var genomicState = _.first($scope.myIgv.genomicStateList);
         	var referenceFrame = genomicState.referenceFrame;
-        	var viewportWidth = igv.browser.viewportContainerWidth()/genomicState.locusCount;
+        	var viewportWidth = igv.browser.viewportContainerWidth()/$scope.myIgv.genomicStateList.length;
         	var resolution = $scope.settings.current.segmentLength*$scope.settings.current.particleSegments;
         	var offset = 0;
         	if($scope.settings.current.chromosomeIndexes.length == 2 && markerschrom[1] != $scope.settings.current.chromosomeIndexes[0]) {
-        		offset = referenceFrame.bpPerPixel*Math.floor($scope.myIgv.viewportContainerWidth()/genomicState.locusCount);
+        		offset = referenceFrame.bpPerPixel*Math.floor($scope.myIgv.viewportContainerWidth()/$scope.myIgv.genomicStateList.length);
         	}
     		var leftpx = (markerspos[1]+offset-referenceFrame.start)/referenceFrame.bpPerPixel; 
     		leftpx = Math.min(leftpx,viewportWidth);
@@ -2148,13 +2160,13 @@
         	offset = 0;
         	
         	var rightpx;
-        	if(genomicState.locusCount>1) {
+        	if($scope.myIgv.genomicStateList.length>1) {
         		var nextgenomicState = $scope.myIgv.genomicStateList[1];
             	var nextreferenceFrame = nextgenomicState.referenceFrame;
             	
 	        	if($scope.settings.current.chromosomeIndexes.length == 2 && markerschrom[0] != $scope.settings.current.chromosomeIndexes[0]) { 
         		
-	        		//offset = referenceFrame.bpPerPixel*Math.floor($scope.myIgv.viewportContainerWidth()/genomicState.locusCount);
+	        		//offset = referenceFrame.bpPerPixel*Math.floor($scope.myIgv.viewportContainerWidth()/$scope.myIgv.genomicStateList.length);
 	        		offset = (referenceFrame.bpPerPixel * viewportWidth) + referenceFrame.start;
 	        		offset -= nextreferenceFrame.start -($scope.settings.current.chromStart[1]);
 	        		offset = Math.max(0, offset);
@@ -2291,8 +2303,8 @@
 
         	var genomicState = _.first($scope.myIgv.genomicStateList);
         	var referenceFrame = genomicState.referenceFrame;
-        	//var viewportWidth = Math.floor($scope.myIgv.viewportContainerWidth()/genomicState.locusCount);
-        	var viewportWidth = Math.floor($scope.myIgv.viewportContainerWidth()/genomicState.locusCount);
+        	//var viewportWidth = Math.floor($scope.myIgv.viewportContainerWidth()/$scope.myIgv.genomicStateList.length);
+        	var viewportWidth = Math.floor($scope.myIgv.viewportContainerWidth()/$scope.myIgv.genomicStateList.length);
 //        	var viewport = igv.Viewport.viewportsWithLocusIndex(0);
 //        	var viewportWidth = Math.floor($scope.myIgv.viewportContainerWidth());
 //        	if(viewport.length>0) {
@@ -2353,33 +2365,38 @@
 		//});
         };
         
-        igv.Browser.prototype.updateLocusSearchWithGenomicState = function (genomicState) {
+        igv.Browser.prototype.updateLocusSearchWidget = function (genomicState) {
 
             var self = this,
                 referenceFrame,
-                secondreferenceFrame,
                 ss,
                 ee,
                 str,
                 end,
                 chromosome;
 
-            //if (0 === genomicState.locusIndex && 1 === genomicState.locusCount) {
-            if (0 === genomicState.locusIndex) {
 
-                if ('all' === genomicState.locusSearchString.toLowerCase()) {
+            if (this.rulerTrack) {
+                this.rulerTrack.updateLocusLabel();
+            }
+
+            if (0 === this.genomicStateList.indexOf(genomicState) && 1 === this.genomicStateList.length) {
+
+                if (genomicState.locusSearchString && 'all' === genomicState.locusSearchString.toLowerCase()) {
 
                     this.$searchInput.val(genomicState.locusSearchString);
+                    this.chromosomeSelectWidget.$select.val('all');
                 } else {
 
                     referenceFrame = genomicState.referenceFrame;
+                    this.chromosomeSelectWidget.$select.val(referenceFrame.chrName);
 
                     if (this.$searchInput) {
 
-                        end = referenceFrame.start + referenceFrame.bpPerPixel * (self.viewportContainerWidth()/genomicState.locusCount);
+                        end = referenceFrame.start + referenceFrame.bpPerPixel * (self.viewportContainerWidth() / this.genomicStateList.length);
 
                         if (this.genome) {
-                            chromosome = this.genome.getChromosome( referenceFrame.chrName );
+                            chromosome = this.genome.getChromosome(referenceFrame.chrName);
                             if (chromosome) {
                                 end = Math.min(end, chromosome.bpLength);
                             }
@@ -2390,7 +2407,7 @@
                         str = referenceFrame.chrName + ":" + ss + "-" + ee;
                         this.$searchInput.val(str);
                     }
-                    
+
                     this.fireEvent('locuschange', [referenceFrame, str]);
                     $scope.locuschange(referenceFrame, str);
                 }
@@ -2410,129 +2427,85 @@
         It should be updated if it changes in new releases of igvjs.
         The injected code is properly marked. 
         */
+        igv.trackApply3DMenuItem = function (trackView) {
+
+            var $e,
+                menuClickHandler;
+            
+            // Init tracksOverlaid to false
+            if (typeof $scope.tracksOverlaid[trackView.track.id] === "undefined") {
+            	$scope.tracksOverlaid[trackView.track.id] = false;
+            }
+            
+            //$e = $('<div>');
+            //$e.addClass('igv-track-menu-border-top');
+            //$e.text('Apply to 3D');
+            $e = igv.createCheckbox("Apply to 3D", $scope.tracksOverlaid[trackView.track.id]);
+            $e.addClass('igv-track-menu-border-top');
+            
+            menuClickHandler = function () {
+                
+                if($scope.tracksOverlaid[trackView.track.id]) {
+                   	$scope.removeOverlay(trackView.track.id);
+                   	$scope.tracksOverlaid[trackView.track.id] = false;
+                } else {
+                	var genomicState = _.first(trackView.browser.genomicStateList);
+                   	var referenceFrame = genomicState.referenceFrame;   
+                   	// get features and pass them for overlay
+                   	trackView.track.getFeatures(referenceFrame.chrName, $scope.settings.current.chromStart[$scope.settings.current.chromIdx], $scope.settings.current.chromEnd[$scope.settings.current.chromIdx], referenceFrame.bpPerPixel).then(function (features) {
+                           if (features) {
+                           	$scope.applyOverlay(trackView.track.id,features,trackView.track.color);
+                           }
+                   	}).catch(function (error) {
+                           if (error instanceof igv.AbortLoad) {
+                               console.log("Aborted ---");
+                           } else {
+                               igv.presentAlert(error);
+                           }
+                       });
+                   	$scope.myIgv.trackViews.forEach(function (tV) {
+                   		$scope.tracksOverlaid[tV.track.id] = (trackView.track.id == tV.track.id);
+                   	});
+               }
+              
+            };
+
+            return {object: $e, click: menuClickHandler};
+
+
+        };
         igv.trackMenuItemList = function (popover, trackView) {
 
-            var menuItems = [],
-                all;
+            var menuItems = [];
 
-            menuItems.push(igv.trackMenuItem(popover, trackView, "Set track name", function () {
-                return "Track Name";
-            }, trackView.track.name, function () {
+            if (trackView.track.config.type !== 'sequence') {
+                menuItems.push(igv.trackRenameMenuItem(trackView));
+                menuItems.push(igv.trackHeightMenuItem(trackView));
+            }
 
-                var alphanumeric = parseAlphanumeric(igv.dialog.$dialogInput.val());
+            if (doProvideColoSwatchWidget(trackView.track)) {
+                menuItems.push(igv.colorPickerMenuItem(trackView));
+            }
 
-                if (undefined !== alphanumeric) {
-                    igv.setTrackLabel(trackView.track, alphanumeric);
-                    trackView.update();
-                }
+            if (trackView.track.menuItemList) {
+                menuItems = menuItems.concat(trackView.track.menuItemList());
+            }
 
-                function parseAlphanumeric(value) {
-
-                    var alphanumeric_re = /(?=.*[a-zA-Z].*)([a-zA-Z0-9 ]+)/,
-                        alphanumeric = alphanumeric_re.exec(value);
-
-                    return (null !== alphanumeric) ? alphanumeric[0] : "untitled";
-                }
-
-            }, undefined));
-
-            menuItems.push(igv.trackMenuItem(popover, trackView, "Set track height", function () {
-                return "Track Height";
-            }, trackView.trackDiv.clientHeight, function () {
-
-                var number = parseFloat(igv.dialog.$dialogInput.val(), 10);
-
-                if (undefined !== number) {
-    // If explicitly setting the height adust min or max, if neccessary.
-                    if (trackView.track.minHeight !== undefined && trackView.track.minHeight > number) {
-                        trackView.track.minHeight = number;
-                    }
-                    if (trackView.track.maxHeight !== undefined && trackView.track.maxHeight < number) {
-                        trackView.track.minHeight = number;
-                    }
-                    trackView.setTrackHeight(number);
-                    trackView.track.autoHeight = false;   // Explicitly setting track height turns off autoHeight
-
-                }
-
-            }, undefined));
+            if (trackView.track.removable !== false) {
+                menuItems.push(igv.trackRemovalMenuItem(trackView));
+            }
             
-            /*
-            Start of injected code
-            */
-           // Init tracksOverlaid to false
-           if (typeof $scope.tracksOverlaid[trackView.track.id] === "undefined") {
-           	$scope.tracksOverlaid[trackView.track.id] = false;
-           }
-           // Creation of the DOM element of the menu item
-           var apply3D, $e;
+            if (trackView.track.config.type !== 'sequence') {
+                menuItems.push(igv.trackApply3DMenuItem(trackView));
+            }
 
-           apply3D = '<div class="igv-track-menu-item igv-track-menu-border-top">';
-           if (false === $scope.tracksOverlaid[trackView.track.id]) {
-           	apply3D = apply3D + '<i class="fa fa-check fa-check-shim fa-check-hidden"></i>Apply to 3D</div>';
-           } else {
-           	apply3D = apply3D + '<i class="fa fa-check fa-check-shim"></i>Apply to 3D</div>';
-           }
-           
-           // Handler function when clicking the menu item
-           var clickHandler = function(){
-               if($scope.tracksOverlaid[trackView.track.id]) {
-               	$scope.removeOverlay(trackView.track.id);
-               	$scope.tracksOverlaid[trackView.track.id] = false;
-               } else {
-            	var genomicState = _.first(trackView.browser.genomicStateList);
-               	var referenceFrame = genomicState.referenceFrame;   
-               	// get features and pass them for overlay
-               	trackView.track.getFeatures(referenceFrame.chrName, $scope.settings.current.chromStart[$scope.settings.current.chromIdx], $scope.settings.current.chromEnd[$scope.settings.current.chromIdx], referenceFrame.bpPerPixel).then(function (features) {
-                       if (features) {
-                       	$scope.applyOverlay(trackView.track.id,features);
-                       }
-               	}).catch(function (error) {
-                       if (error instanceof igv.AbortLoad) {
-                           console.log("Aborted ---");
-                       } else {
-                           igv.presentAlert(error);
-                       }
-                   });
-               	$scope.myIgv.trackViews.forEach(function (tV) {
-               		$scope.tracksOverlaid[tV.track.id] = (trackView.track.id == tV.track.id);
-               	});
-           	}
-               // Hide menu
-               popover.hide();
-           };
-
-           $e = $(apply3D);
-           $e.click(clickHandler);
-
-           // Add the new menu item to the track menu
-           menuItems = menuItems.concat({ object: $e, init: undefined });
-           /*
-            End of injected code
-            */
-
-           all = [];
-           if (trackView.track.menuItemList) {
-               all = menuItems.concat(igv.trackMenuItemListHelper(trackView.track.menuItemList(popover)));
-           }
-           
-           if (trackView.track.removable !== false) {
-
-               all.push(
-                   igv.trackMenuItem(popover, trackView, "Remove track", function () {
-                       var label = "Remove " + trackView.track.name;
-                       return '<div class="igv-dialog-label-centered">' + label + '</div>';
-                   }, undefined, function () {
-                       popover.hide();
-                       trackView.browser.removeTrack(trackView.track);
-                       // trackView.browser.removeTrackByName(trackView.track.name);
-                   }, true)
-               );
-           }
-
-           return all;
-
-        };     
+            return menuItems;
+        };
+        
+        function doProvideColoSwatchWidget(track) {
+            return (track instanceof igv.BAMTrack || track instanceof igv.FeatureTrack || track instanceof igv.VariantTrack || track instanceof igv.WIGTrack);
+        }
+       
 	}
 })();
 (function() {
@@ -3747,7 +3720,7 @@
 				geometry.colors.unshift(geometryColor);
 			}
 			geometry.computeBoundingSphere();
-			geometry.center();
+			//geometry.center();
 
 	//			var transparentMaterial = new THREE.MeshLambertMaterial({
 	//			  transparent:true, 
@@ -3860,7 +3833,7 @@
 						if(ColorConvert.testIfHex(colors[Math.floor(colori/16)]) || colors[Math.floor(colori/16)].indexOf('#')===0) {
 							newChromatinColor =  new THREE.Color(colors[Math.floor(colori/16)]);	 
 						} else {
-							newChromatinColor =  new THREE.Color(ColorConvert.nameToHex(colors[Math.floor(i/16)]));
+							newChromatinColor =  new THREE.Color(ColorConvert.rgbToHex(colors[Math.floor(i/16)]));
 						} 
 						for (j = 0; j < 16; j++) {
 							if(typeof chromatinGeometry.faces[i+j] !== 'undefined') chromatinGeometry.faces[i+j].color.set(newChromatinColor);
@@ -4201,16 +4174,16 @@
 					var model = new THREE.Line(modelGeometry, modelMaterial);
 					model.name = "model-"+settings.current.chromosomeIndexes[l]+"-"+i;
 					model.geometry.computeBoundingSphere();
-					model.geometry.center();
+					//model.geometry.center();
 					if(model.geometry.boundingSphere.radius>max_radius) max_radius = model.geometry.boundingSphere.radius;
 					clusterEnsemble.add(model);
 					offset += chr_bins;
 				}
 				
 			}
-			for ( i = 0 ; i < clusterEnsemble.children.length; i++) {
-				clusterEnsemble.children[i].geometry.center();
-			}
+			//for ( i = 0 ; i < clusterEnsemble.children.length; i++) {
+			//	clusterEnsemble.children[i].geometry.center();
+			//}
 			clusterEnsemble.boundingSphere = clusterEnsemble.children[0].geometry.boundingSphere.clone();
 			clusterEnsemble.boundingSphere.radius = max_radius;
 			clusterEnsemble.name = "Cluster Ensemble";
@@ -4230,7 +4203,7 @@
 			vertex.z = components[ offset ++ ];
 			modelGeometry.vertices.push( vertex );
 		}
-		modelGeometry.center();
+		//modelGeometry.center();
 		return modelGeometry;
 	}
 
@@ -4492,7 +4465,7 @@
 			angular.extend(this, angular.copy(defaults), settings);
 
 			var particlesGeometry = getGeometry(data);
-			particlesGeometry.center();
+			//particlesGeometry.center();
 			particlesGeometry.computeBoundingSphere();
 
 			var vertexColors = [];
@@ -5048,7 +5021,7 @@
 												if(ColorConvert.testIfHex(newColors[colori]) || newColors[colori].indexOf('#')===0) {
 													newChromatinColor =  new THREE.Color(newColors[colori]);	 
 												} else {
-													newChromatinColor =  new THREE.Color(ColorConvert.nameToHex(newColors[colori]));
+													newChromatinColor =  new THREE.Color(ColorConvert.rgbToHex(newColors[colori]));
 												}
 												for (k = partFaces[i][0]; k <= partFaces[i][1]; k++) {	 
 													if(typeof geom.faces[k] !== 'undefined') geom.faces[k].color.set(newChromatinColor);
@@ -8560,6 +8533,8 @@
 		//});
 	}
 })();
+/*jshint esversion: 6 */
+
 (function() {
 	'use strict';
 	angular
@@ -8625,13 +8600,25 @@
 			},
 			
 			rgbToHex: function(color) {
-					var digits = /(.*?)rgb\((\d+), (\d+), (\d+)\)/.exec(color);
+			    color = ""+ color;
+			    if (!color || color.indexOf("rgb") < 0) {
+			        return;
+			    }
 
-					var r = parseInt(digits[2]);
-					var g = parseInt(digits[3]);
-					var b = parseInt(digits[4]);
+			    if (color.charAt(0) == "#") {
+			        return color;
+			    }
 
-				    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+			    var nums = /(.*?)rgb\((\d+),\s*(\d+),\s*(\d+)\)/i.exec(color),
+			        r = parseInt(nums[2], 10).toString(16),
+			        g = parseInt(nums[3], 10).toString(16),
+			        b = parseInt(nums[4], 10).toString(16);
+
+			    return "#"+ (
+			        (r.length == 1 ? "0"+ r : r) +
+			        (g.length == 1 ? "0"+ g : g) +
+			        (b.length == 1 ? "0"+ b : b)
+			    );
 			},
 
 			hslToHex: function(data) {
@@ -8774,6 +8761,10 @@
 
 				ary.splice(0, 1);
 				return rootObj.arrayToRGBA(ary.map(scale));
+			},
+			shadeRGBColor: function(color, percent) {
+			    var f=color.split(","),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=parseInt(f[0].slice(4)),G=parseInt(f[1]),B=parseInt(f[2]);
+			    return "rgb("+(Math.round((t-R)*p)+R)+","+(Math.round((t-G)*p)+G)+","+(Math.round((t-B)*p)+B)+")";
 			},
 			hexToRGB: function(hex) {
 				var RGB = [];
