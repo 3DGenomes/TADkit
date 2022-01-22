@@ -8,6 +8,9 @@
 ![Three.js](https://img.shields.io/badge/Three.js-v0.97.0-orange.svg)
 
 
+### **Unfortunately we have ceased the development and maintenance of TADkit**
+
+
 TADkit is a HTML5 and JavaScript-based 3D genome browser. It makes use of D3.js for rendering the 1D and 2D tracks and WebGl by Three.js for rendering the 3D track.
 
 TADkit is currently developed at the [MarciusLab](http://www.marciuslab.org) with the contributions of Mike Goodstadt, David Castillo and many maembers of our Lab.
